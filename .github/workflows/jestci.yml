@@ -1,0 +1,34 @@
+name: Jest CI
+
+on:
+  push:
+    branches: ["main"]
+    paths: ["backend/**"]
+  pull_request:
+    branches: ["main"]
+    paths: ["backend/**"]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [14.x, 16.x, 18.x]
+        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          cache-dependency-path: ./backend/yarn.lock
+          node-version: ${{ matrix.node-version }}
+          cache: "yarn"
+      - name: Setup Dotenv, Dependencies, and Run Tests
+        working-directory: ./backend/
+        run: |
+          echo 'NODE_ENV = "test"' > .env
+          echo 'DEV_URI = "${{ secrets.MONGO_DEV }}"' >> .env
+          yarn install
+          yarn test
