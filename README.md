@@ -72,12 +72,14 @@ This project aims to develop a volunteer management system for Lagos Food Bank I
    ```
 2. Start the client
    ```sh
-   cd client
+   cd frontend
+   yarn install
    yarn run dev
    ```
 3. Start the server
    ```sh
-   cd server
+   cd backend
+   yarn install
    yarn run server
    ```
 
