@@ -2,7 +2,7 @@
 <br />
 <div align="center">
   <a href="https://github.com/github_username/repo_name">
-    <img src="/lfbi_logo.png" alt="Logo" width="80" height="80">
+    <img src="/lfbi_logo.png" alt="Logo" width="100" height="80">
   </a>
 
 <h3 align="center">Lagos Food Bank Initiative</h3>
@@ -10,12 +10,6 @@
   <p align="center">
     Lagos Food Bank Initiative is a non-profit organization that aims to reduce food waste and hunger in Lagos, Nigeria.
     <br />    
-    <br />
-    <!-- <a href="https://github.com/github_username/repo_name">View Demo</a>
-    ·
-    <a href="https://github.com/github_username/repo_name/issues">Report Bug</a>
-    ·
-    <a href="https://github.com/github_username/repo_name/issues">Request Feature</a> -->
   </p>
 </div>
 
@@ -49,10 +43,10 @@ This project aims to develop a volunteer management system for Lagos Food Bank I
 
 ### Built With
 
-* [![Next][Next.js]][https://nextjs.org/]
-* [![React][React.js]][https://reactjs.org/]
-* [![Express][Express.js]][https://expressjs.com/]
-* [![Postresql][Prisma.io]][https://www.prisma.io/]
+* [![Next][Next.js]][Next-url]
+* [![React][React.js]][React-url]
+* [![Express][Express.js]][Express-url]
+* [![Postresql][Prisma.io]][Prisma-url]
 
 <!-- GETTING STARTED -->
 ## Getting Started
@@ -96,4 +90,6 @@ This project aims to develop a volunteer management system for Lagos Food Bank I
 [React-url]: https://reactjs.org/
 [Prisma.io]: https://img.shields.io/badge/Prisma-3982CE?style=for-the-badge&logo=Prisma&logoColor=white
 [Express.js]: https://img.shields.io/badge/express.js-%23404d59.svg?style=for-the-badge&logo=express&logoColor=%2361DAFB
+[Express-url]: https://expressjs.com/
+[Prisma-url]: https://www.prisma.io/
 
