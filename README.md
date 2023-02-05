@@ -55,8 +55,8 @@ This project aims to develop a volunteer management system for Lagos Food Bank I
 > Folder structure 
 
     .
-    ├── client                  # NextJs Frontend
-    ├── Server                  # ExpressJs server
+    ├── frontend                  # NextJs client
+    ├── backend                  # ExpressJs server
     └── README.md
 
 ### Prerequisites
@@ -80,6 +80,8 @@ This project aims to develop a volunteer management system for Lagos Food Bank I
    cd server
    yarn server
    ```
+
+> Note: See individual project files for more information on how to build and deploy the project.
 
 
 <!-- MARKDOWN LINKS & IMAGES -->
