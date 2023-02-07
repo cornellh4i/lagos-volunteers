@@ -1,6 +1,6 @@
 import { dbConnect, dbDisconnect } from "../src/database";
-import CustomerController from "../src/customers/controllers";
-import { Customer } from "../src/customers/models";
+import CustomerController from "../src/users/controllers";
+import { Customer } from "../src/users/models";
 
 beforeAll(async () => {
   await dbConnect();
