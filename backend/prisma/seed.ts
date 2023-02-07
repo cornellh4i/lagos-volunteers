@@ -1,6 +1,6 @@
 import { PrismaClient, Prisma } from "@prisma/client";
 
-export const prisma = new PrismaClient();
+let prisma = new PrismaClient();
 
 const userData: Prisma.UserCreateInput[] = [
   {
@@ -68,3 +68,5 @@ main()
     await prisma.$disconnect();
     process.exit(1);
   });
+
+export default prisma;
