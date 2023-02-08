@@ -1,6 +1,5 @@
-import { PrismaClient, Prisma } from "@prisma/client";
-
-let prisma = new PrismaClient();
+import { Prisma } from "@prisma/client";
+import prisma from "../client";
 
 const userData: Prisma.UserCreateInput[] = [
   {

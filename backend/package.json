@@ -17,6 +17,7 @@
     "jest": "^29.3.1",
     "mongoose": "^6.8.4",
     "prisma": "^4.9.0",
+    "supertest": "^6.3.3",
     "swagger-autogen": "^2.22.0",
     "swagger-ui-express": "^4.6.0",
     "ts-jest": "^29.0.5",
@@ -29,5 +30,11 @@
     "build": "tsc",
     "test": "jest",
     "swagger": "ts-node -r dotenv/config src/swagger.ts"
+  },
+  "prisma":{
+    "seed": "ts-node --compiler-options {\"module\":\"CommonJS\"} prisma/seed.ts"
+  },
+  "devDependencies": {
+    "@types/supertest": "^2.0.12"
   }
 }

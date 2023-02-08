@@ -34,3 +34,5 @@ app.post("/", (req, res) => {
 app.listen(process.env.PORT || 8000, async () => {
   console.log("✅ Server is up and running at http://localhost:8000");
 });
+
+export default app;
