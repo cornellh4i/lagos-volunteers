@@ -11,6 +11,7 @@ import prisma from "../../prisma/seed";
  */
 
 const createNewPost = async (req: Request, res: Response) => {
+  // #swagger.tags = ['Posts']
   const { title, content, authorEmail } = req.body;
 
   try {
@@ -35,6 +36,7 @@ const createNewPost = async (req: Request, res: Response) => {
  */
 
 const deletePost = async (req: Request, res: Response) => {
+  // #swagger.tags = ['Posts']
   try {
     const { id } = req.params;
     const post = await prisma.post.delete({
@@ -55,6 +57,7 @@ const deletePost = async (req: Request, res: Response) => {
  */
 
 const getPost = async (req: Request, res: Response) => {
+  // #swagger.tags = ['Posts']
   try {
     const { id } = req.params;
     const post = await prisma.post.findUnique({
@@ -65,6 +68,7 @@ const getPost = async (req: Request, res: Response) => {
     });
     res.status(200).json(post);
   } catch (error: any) {
+    console.log(error);
     res.status(500).json({ error: error.message });
   }
 };
@@ -75,6 +79,7 @@ const getPost = async (req: Request, res: Response) => {
  * @returns promise with post or error
  */
 const publishPost = async (req: Request, res: Response) => {
+  // #swagger.tags = ['Posts']
   try {
     const { id } = req.params;
     const post = await prisma.post.update({
@@ -93,10 +98,13 @@ const publishPost = async (req: Request, res: Response) => {
  * */
 
 const getAllPublishedPosts = async (req: Request, res: Response) => {
+  // #swagger.tags = ['Posts']
   try {
     const posts = await prisma.post.findMany({
       where: { published: true },
-      include: { author: true },
+      include: {
+        author: true,
+      },
     });
     res.status(200).json(posts);
   } catch (error: any) {
