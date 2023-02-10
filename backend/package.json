@@ -17,7 +17,7 @@
     "jest": "^29.3.1",
     "mongoose": "^6.8.4",
     "nodemon": "^2.0.20",
-    "prisma": "^4.9.0",
+    "prisma": "^4.10.1",
     "supertest": "^6.3.3",
     "swagger-autogen": "^2.22.0",
     "swagger-ui-express": "^4.6.0",
