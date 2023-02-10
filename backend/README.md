@@ -49,9 +49,9 @@ The major components we are using are:
 
 The Prisma schema is located in `backend/prisma/schema.prisma`. This file contains all of the models and relationships between them. To learn more about the Prisma schema, check out <a href="https://www.prisma.io/docs/concepts/components/prisma-schema">this page</a> on the Prisma website.
 
-To create a new migration, run `yarn prisma migrate dev --name <name of migration>`. This will create a new migration file in `backend/prisma/migrations`. To apply the migration to your database, run `yarn prisma migrate deploy`. To view the current state of the database, run `yarn prisma studio`.
+To create a new migration, run `npx prisma migrate dev --name <name of migration>`. This will create a new migration file in `backend/prisma/migrations`. To apply the migration to your database, run `yarn prisma migrate deploy`. To view the current state of the database, run `yarn prisma studio`.
 
-`backend/prisma/seed.ts` contains a script that will seed the database with some dummy data. To run this script, run `yarn prisma seed`. 
+`backend/prisma/seed.ts` contains a script that will seed the database with some dummy data. To run this script, run `yarn prisma db seed`. 
 
 
 ## Using Docker
