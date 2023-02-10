@@ -80,7 +80,7 @@ This project aims to develop a volunteer management system for Lagos Food Bank I
    ```sh
    cd backend
    yarn install
-   yarn start
+   yarn run backend
    ```
 
 > Note: See individual project files for more information on how to build and deploy the project.

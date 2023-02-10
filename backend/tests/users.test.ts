@@ -1,10 +1,6 @@
-import userController from "../src/users/controllers";
 import { PrismaClient } from "@prisma/client";
 import app from "../src/index";
 import request from "supertest";
-import type { Server } from "http";
-
-let server: Server;
 
 const prisma = new PrismaClient();
 
@@ -31,3 +27,5 @@ describe("Testing user Endpoints", () => {
     expect(response.status).toBe(201);
   });
 });
+
+// TODO: Add Tests for post endpoints
