@@ -1,15 +1,12 @@
-// use Controllers here, just as we did in ../users/controllers.ts
-
 import { Router } from "express";
+import userController from "./controllers";
 
 const userRouter = Router();
 
-userRouter.get("/", (req, res) => {
-  res.send("Hello from a subrouter");
-});
+/** User Specific Routes */
 
-userRouter.post("/", (req, res) => {
-  res.send(req.body);
-});
+// This approach is cleaner for us becuase we can easily add middle ware
+userRouter.get("/", userController.getUsers);
+userRouter.post("/signup", userController.createNewUser);
 
 export default userRouter;
