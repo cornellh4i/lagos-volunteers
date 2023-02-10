@@ -1,16 +1,16 @@
 
-Table of Contents
-=================
-    * [Getting Started](#getting-Started)
-    * [Swagger](#swagger)
-    * [Prisma](#prisma)
-    * [Using Docker](#using-docker)
+# Table of Contents
+- [Table of Contents](#table-of-contents)
+  - [Getting Started](#getting-started)
+  - [Swagger](#swagger)
+  - [Prisma](#prisma)
+  - [Using Docker](#using-docker)
 
 ## Getting Started
 
-Start off by copying `.envtemplate` and renaming the copy to `.env`. Configure the node env and mongo dev/prod URI's based on your current environment and secrets.
+Start off by copying `.envtemplate` and renaming the copy to `.env`. Configure the node env and databse dev/prod URI's based on your current environment and secrets. See Prisma documentation for more information of database URL.
 
-If you don't have yarn and/or node on your system, run `brew install yarn`. Alternatively, if you already have node you can also run `sudo npm i -g yarn`.
+If you don't have yarn and/or node on your system, run `brew install yarn` if you have homebrew installed. Alternatively, if you already have node you can also run `sudo npm i -g yarn`.
 
 Now, run `yarn install` to install all dependencies. Once that finishes, you're all set to run the backend!
 
@@ -37,7 +37,7 @@ In order to structure our swagger documentation properly, ensure that you add th
 ```js
 // #swagger.tags = ['Users']
 ```
-Swagger is useful for us because we can then import the swagger.json file into Postman and use it to generate a collection of requests that we can use to test our backend. To do this, simply import the swagger.json file into Postman and it will automatically generate a collection of requests for you.
+Swagger is useful for us because we can then import the swagger.json file into Postman and use it to generate a collection of requests that we can use to test our backend. To do this, simply import the api-docs.json file into Postman and it will automatically generate a collection of requests for you.
 
 ## Prisma
 This backend makes use of Prisma, a database toolkit that allows us to easily create and manage our database schema. To learn more about Prisma, check out their <a href="https://www.prisma.io/docs/">documentation</a>. The documentation is really well written and easy to follow.
