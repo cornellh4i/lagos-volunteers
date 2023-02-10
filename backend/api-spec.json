@@ -122,6 +122,23 @@
         }
       }
     },
+    "/post/feed": {
+      "get": {
+        "tags": [
+          "Posts"
+        ],
+        "description": "",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
     "/post/{id}": {
       "delete": {
         "tags": [
@@ -182,23 +199,6 @@
             "type": "string"
           }
         ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          },
-          "500": {
-            "description": "Internal Server Error"
-          }
-        }
-      }
-    },
-    "/post/feed": {
-      "get": {
-        "tags": [
-          "Posts"
-        ],
-        "description": "",
-        "parameters": [],
         "responses": {
           "200": {
             "description": "OK"
