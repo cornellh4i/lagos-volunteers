@@ -11,7 +11,11 @@ import prisma from "../../client";
 const getUsers = async (req: Request, res: Response) => {
   // #swagger.tags = ['Users']
   try {
-    const users = await prisma.user.findMany();
+    const users = await prisma.user.findMany({
+      include: {
+        profile: true, // Returns all Profile fields
+      },
+    })
     res.status(200).json(users);
   } catch (error: any) {
     res.status(500).json({ error: error.message });
@@ -40,7 +44,24 @@ const createNewUser = async (req: Request, res: Response) => {
   }
 };
 
+
+const deleteUser = async (req: Request, res: Response) => {
+  // #swagger.tags = ['Users']
+  try {
+    const result = await prisma.user.delete({
+      where:{
+        id: req.body.id,
+      }
+    });
+
+    res.status(201).json(result);
+  } catch (err: any) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
 export default {
   getUsers,
   createNewUser,
+  deleteUser
 };
