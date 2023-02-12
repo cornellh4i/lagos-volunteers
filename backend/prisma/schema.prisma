@@ -15,6 +15,7 @@ model User {
   email String  @unique
   name  String?
   posts Post[]
+  profile Profile?
 }
 
 model Post {
@@ -28,3 +29,15 @@ model Post {
   author    User?    @relation(fields: [authorId], references: [id])
   authorId  Int?
 }
+
+model Profile {
+  id        Int      @id @default(autoincrement())
+  user      User   @relation(fields: [userEmail], references: [email])
+  userEmail String @unique
+  bio       String
+  following Int      @default(0)
+  followers Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
