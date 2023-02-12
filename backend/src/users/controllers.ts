@@ -5,7 +5,7 @@ import { Request, Response } from "express";
 import prisma from "../../client";
 
 /**
- * Finds all users in DB
+ * Finds all users with their profiles in DB
  * @returns promise with all users or error
  */
 const getUsers = async (req: Request, res: Response) => {
