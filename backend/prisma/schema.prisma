@@ -11,10 +11,10 @@ datasource db {
 }
 
 model User {
-  id    Int     @id @default(autoincrement())
-  email String  @unique
-  name  String?
-  posts Post[]
+  id      Int      @id @default(autoincrement())
+  email   String   @unique
+  name    String?
+  posts   Post[]
   profile Profile?
 }
 
@@ -32,12 +32,11 @@ model Post {
 
 model Profile {
   id        Int      @id @default(autoincrement())
-  user      User   @relation(fields: [userEmail], references: [email])
-  userEmail String @unique
+  user      User     @relation(fields: [userEmail], references: [email])
+  userEmail String   @unique
   bio       String
   following Int      @default(0)
   followers Int      @default(0)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
-
