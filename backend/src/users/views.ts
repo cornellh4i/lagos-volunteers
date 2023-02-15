@@ -8,5 +8,6 @@ const userRouter = Router();
 // This approach is cleaner for us becuase we can easily add middle ware
 userRouter.get("/", userController.getUsers);
 userRouter.post("/signup", userController.createNewUser);
+userRouter.delete("/deleteUser:userid", userController.deleteUser);
 
 export default userRouter;
