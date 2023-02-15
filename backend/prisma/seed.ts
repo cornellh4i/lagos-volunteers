@@ -14,6 +14,11 @@ const userData: Prisma.UserCreateInput[] = [
         },
       ],
     },
+    profile: {
+      create: {
+        bio: "If I had a world of my own, everything would be nonsense",
+      },
+    },
   },
   {
     name: "Nilu",
@@ -54,6 +59,7 @@ async function main() {
   console.log("deleting previous seed data");
   await prisma.post.deleteMany();
   await prisma.user.deleteMany();
+  await prisma.profile.deleteMany();
   console.log(`Start seeding ...`);
   for (const u of userData) {
     const user = await prisma.user.create({
