@@ -14,6 +14,11 @@ const userData: Prisma.UserCreateInput[] = [
         },
       ],
     },
+    Profile: {
+      create: {
+          bio:  "This is Alice's Bio",       
+        },
+      }
   },
   {
     name: "Nilu",

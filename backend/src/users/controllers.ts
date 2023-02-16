@@ -11,7 +11,9 @@ import prisma from "../../client";
 const getUsers = async (req: Request, res: Response) => {
   // #swagger.tags = ['Users']
   try {
-    const users = await prisma.user.findMany();
+    const users = await prisma.user.findMany({include: {
+      Profile: true, // Returns all Profile fields
+    },});
     res.status(200).json(users);
   } catch (error: any) {
     res.status(500).json({ error: error.message });
