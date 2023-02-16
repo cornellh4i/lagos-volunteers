@@ -22,9 +22,9 @@ jobs:
         postgres:
             image: postgres:latest
             env:
-            POSTGRES_USER: postgres
-            POSTGRES_PASSWORD: postgres
-            POSTGRES_DB: mydb
+              POSTGRES_USER: postgres
+              POSTGRES_PASSWORD: postgres
+              POSTGRES_DB: mydb
             ports:
             - 5433:5432
             options: >-
@@ -54,8 +54,8 @@ jobs:
           yarn prisma db seed
 
       - name: Run Jest Tests
+        working-directory: ./backend/
         env:
           DATABASE_URL: "postgres://postgres:postgres@localhost:5433/mydb"
-          working-directory: ./backend/
           run: |
             yarn test
