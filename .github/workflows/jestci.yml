@@ -47,6 +47,8 @@ jobs:
           yarn install
       - name: Generate Prisma Client, migrations and seed
         working-directory: ./backend/
+        env:
+          DATABASE_URL: postgres://postgres:postgres@localhost:5433/mydb
         run: |
           npx prisma generate
           npx prisma migrate dev --name init --preview-feature
@@ -54,7 +56,5 @@ jobs:
 
       - name: Run Jest Tests
         working-directory: ./backend/
-        env:
-          DATABASE_URL: postgres://postgres:postgres@localhost:5433/mydb
         run: yarn test
 
