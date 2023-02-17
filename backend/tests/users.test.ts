@@ -21,7 +21,7 @@ describe("Testing user Endpoints", () => {
   test("Create a new user", async () => {
     const user = {
       name: "John Doe",
-      email: "johnnewnew@gmail.com",
+      email: "johndoe@gmail.com",
     };
     const response = await request(app).post("/user/signup").send(user);
     expect(response.status).toBe(201);
