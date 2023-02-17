@@ -19,6 +19,7 @@ const getUsers = async (req: Request, res: Response) => {
     })
     res.status(200).json(users);
   } catch (error: any) {
+    // Do we need to log the error?
     res.status(500).json({ error: error.message });
   }
 };
