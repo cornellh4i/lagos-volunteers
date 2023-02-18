@@ -94,25 +94,6 @@ async function enrollAlice(){
      }
   })
 
-  // try {
-  //   const result = await prisma.user.update({
-  //     where:{
-  //       id: alice?.id
-  //     },
-  //     data:{
-  //       events:{
-  //           create:{
-  //             event:{
-  //               connect:{ id: event?.id }
-  //             }
-  //           }
-  //       }
-  //     }
-  //   })
-  //
-  // }catch (err: any) {
-  //   console.log(err)
-  // }
 }
 
 async function main() {
