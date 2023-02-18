@@ -1,5 +1,3 @@
-import { PrismaClient } from "@prisma/client";
-import express, {Application} from "express";
 import request from "supertest";
 import app from "../src/index";
 import prisma from "../client";
@@ -23,7 +21,6 @@ describe("Testing user Endpoints", () => {
 
   test("Create a new user", async () => {
     const user = {
-      name: "John Doe",
       email: "johnw@gmail.com",
     };
     const response = await request(app).post("/user/signup").send(user);
