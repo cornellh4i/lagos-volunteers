@@ -14,21 +14,21 @@ datasource db {
 
 model User {
   // Metadata
-  id        String   @id @default(cuid())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  email   String   @unique
+  id            String   @id @default(cuid()) @unique
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  email         String   @unique
 
   // User info
+  role          userRole? @default(VOLUNTEER)
   profile       Profile?
-  role          Role              @relation(fields: [roleId], references:[id], name: "UserRole")
-  roleId        String            @unique
   verified      Boolean? @default(false)
   hours         Int? @default(0)  //toal hours workd
   status        UserStatus?        @default(ACTIVE)
   createdEvents Event[]          @relation(name: "EventOwner")
   events        EventEnrollment[]
   preferences   UserPreferences?
+  permissions   Permission[]    @relation(name: "RolePermission")
 }
 
 model Profile {
@@ -38,7 +38,6 @@ model Profile {
   nickname  String?
   imageURL  String?
   disciplinaryNotices Int? @default(0)
-
   user User @relation(fields: [userId], references: [id])
   userId String @unique
 }
@@ -53,22 +52,20 @@ model UserPreferences {
 }
 
 
-model Role {
-  id        String   @id @default(cuid())
-  // Role info
-  title  userRole? @unique @default(VOLUNTEER)
-  users  User[] @relation(name: "UserRole")
-
-  // Permisssions
+model Permission {
+  user  User @relation(fields: [userId], references:[id], name: "RolePermission")
+  userId String @unique
   canCreateEvent Boolean @default(false)
   canEditEvent   Boolean @default(false)
   canDeleteEvent Boolean @default(false)
   canAssignRoles Boolean @default(false)
+
+  @@id([userId])
 }
 
 model Event {
   // Metadata
-  id        String   @id @default(cuid())
+  id        String   @id @default(cuid()) @unique
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -91,7 +88,7 @@ model Event {
 
 model EventTags {
   // Metadata
-  id        String   @id @default(cuid())
+  id        String   @id @default(cuid()) @unique
   // Tag info
   name   String
   events Event[]
@@ -103,12 +100,12 @@ model EventEnrollment {
   updatedAt DateTime @updatedAt
 
   // Attendees info
+  eventId  String  @unique
+  userId   String  @unique
   event    Event   @relation(fields: [eventId], references: [id])
-  eventId  String
   user     User    @relation(fields: [userId], references: [id])
-  userId   String
   showedUp Boolean? @default(false)
-  workedHours  Int @default(0)
+  workedHours  Int? @default(0)
 
   @@id([userId, eventId])
 }
