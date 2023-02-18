@@ -10,21 +10,129 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model User {
-  id    Int     @id @default(autoincrement())
-  email String  @unique
-  name  String?
-  posts Post[]
-}
 
-model Post {
-  id        Int      @id @default(autoincrement())
+
+model User {
+  // Metadata
+  id        String   @id @default(cuid())
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  title     String
-  content   String?
-  published Boolean  @default(false)
-  viewCount Int      @default(0)
-  author    User?    @relation(fields: [authorId], references: [id])
-  authorId  Int?
+  email   String   @unique
+
+  // User info
+  profile       Profile?
+  role          Role              @relation(fields: [roleId], references:[id], name: "UserRole")
+  roleId        String            @unique
+  verified      Boolean? @default(false)
+  hours         Int? @default(0)  //toal hours workd
+  status        UserStatus?        @default(ACTIVE)
+  createdEvents Event[]          @relation(name: "EventOwner")
+  events        EventEnrollment[]
+  preferences   UserPreferences?
 }
+
+model Profile {
+  // Profile info
+  user      User  @relation(fields: [userId], references: [id])
+  userId    String?  @unique
+  firstName String?
+  lastName  String?
+  nickname  String?
+  imageURL  String?
+  disciplinaryNotices Int? @default(0)
+}
+
+model UserPreferences {
+  // User settings info
+  user                  User    @relation(fields: [userId], references: [id])
+  userId                String  @unique
+  sendEmailNotification Boolean @default(true)
+  sendPromotions        Boolean @default(false)
+
+}
+
+
+model Role {
+  id        String   @id @default(cuid())
+  // Role info
+  title  userRole? @unique @default(VOLUNTEER)
+  users  User[] @relation(name: "UserRole")
+
+  // Permisssions
+  canCreateEvent Boolean @default(false)
+  canEditEvent   Boolean @default(false)
+  canDeleteEvent Boolean @default(false)
+  canAssignRoles Boolean @default(false)
+}
+
+model Event {
+  // Metadata
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Event info
+  name                String
+  subtitle            String?
+  location            String
+  description         String
+  imageURL            String?
+  startDate           DateTime
+  endDate             DateTime
+  mode                EventMode?         @default(IN_PERSON)
+  status              EventStatus?       @default(DRAFT)
+  owner               User              @relation(fields: [ownerId], references: [id], name: "EventOwner")
+  ownerId             String
+  attendees           EventEnrollment[]
+  capacity            Int
+  tags                EventTags[]
+}
+
+model EventTags {
+  // Metadata
+  id        String   @id @default(cuid())
+  // Tag info
+  name   String
+  events Event[]
+}
+
+model EventEnrollment {
+  // Metadata
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Attendees info
+  event    Event   @relation(fields: [eventId], references: [id])
+  eventId  String
+  user     User    @relation(fields: [userId], references: [id])
+  userId   String
+  showedUp Boolean? @default(false)
+  workedHours  Int @default(0)
+
+  @@id([userId, eventId])
+}
+
+enum userRole {
+  ADMIN
+  VOLUNTEER
+  SUPERVISOR
+}
+
+enum UserStatus {
+  ACTIVE
+  INACTIVE
+  HOLD
+}
+
+enum EventStatus {
+  DRAFT
+  ACTIVE
+  COMPLETED
+  CANCELED
+}
+
+enum EventMode {
+  VIRTUAL
+  IN_PERSON
+}
+
