@@ -1,8 +1,10 @@
 import { PrismaClient } from "@prisma/client";
-import app from "../src/index";
+import express, {Application} from "express";
 import request from "supertest";
+import app from "../src/index";
+import prisma from "../client";
 
-const prisma = new PrismaClient();
+
 
 beforeAll(async () => {
   await prisma.$connect();
@@ -10,6 +12,7 @@ beforeAll(async () => {
 
 afterAll(async () => {
   await prisma.$disconnect();
+  await app.set('connection', 'close')
 });
 
 describe("Testing user Endpoints", () => {
