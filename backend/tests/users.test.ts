@@ -1,8 +1,10 @@
 import { PrismaClient } from "@prisma/client";
-import app from "../src/index";
+import express, {Application} from "express";
 import request from "supertest";
+import app from "../src/index";
+import prisma from "../client";
 
-const prisma = new PrismaClient();
+
 
 beforeAll(async () => {
   await prisma.$connect();
@@ -10,6 +12,7 @@ beforeAll(async () => {
 
 afterAll(async () => {
   await prisma.$disconnect();
+  await app.set('connection', 'close')
 });
 
 describe("Testing user Endpoints", () => {
@@ -21,7 +24,7 @@ describe("Testing user Endpoints", () => {
   test("Create a new user", async () => {
     const user = {
       name: "John Doe",
-      email: "john@gmail.com",
+      email: "johnw@gmail.com",
     };
     const response = await request(app).post("/user/signup").send(user);
     expect(response.status).toBe(201);

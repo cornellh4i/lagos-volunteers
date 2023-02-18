@@ -1,11 +1,11 @@
-import express from "express";
+import express, {Application} from "express";
 import bodyParser from "body-parser";
 import userRouter from "./users/views";
 import postRouter from "./posts/views";
 import swaggerUI from "swagger-ui-express";
 import spec from "../api-spec.json";
 
-const app = express();
+const app: Application = express();
 
 // Middleware to parse json request bodies
 app.use(bodyParser.json());
@@ -35,4 +35,5 @@ app.listen(process.env.PORT || 8000, async () => {
   console.log("✅ Server is up and running at http://localhost:8000");
 });
 
-export default app;
+export default app
+
