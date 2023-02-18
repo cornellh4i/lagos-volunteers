@@ -40,7 +40,45 @@ const createNewUser = async (req: Request, res: Response) => {
   }
 };
 
+/**
+ * Gets all Users in database and all data associated with each user
+ * @returns promise with all users or error
+ * 
+ * 
+ */
+
+const getAllUsers = async (req: Request, res: Response) => {
+  try {
+    const users = await prisma.user.findMany();
+    res.status(200).json(users);
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+};
+/**
+ * returns a list of all users where [option] is [value]. [option] corresponds to the columns in the User table. 
+ * @query option the column on the User table
+ * @query value the value we are searching for given the option? 
+ * @returns promise with user list or error
+ * 
+ */
+const getSearchedUser = async (req: Request, res: Response) => {
+  try {
+    const option = req.query.option;
+    const value = req.query.value;
+    console.log("option: " + option);
+    console.log("value: " + value);
+    const users = await prisma.user.findMany({
+    });
+    res.status(200).json(users);
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
 export default {
   getUsers,
   createNewUser,
+  getAllUsers,
+  getSearchedUser
 };
