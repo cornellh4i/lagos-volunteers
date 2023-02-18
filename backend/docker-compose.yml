@@ -10,10 +10,13 @@ services:
     ports:
       - "8000:8000"
     depends_on:
-      - db
+      - postgres
+    restart:
+        always
 
-  db:
+  postgres:
     image: postgres:latest
+    container_name: postgres
     environment:
         - POSTGRES_USER=postgres
         - POSTGRES_PASSWORD=postgres

@@ -33,13 +33,14 @@ model User {
 
 model Profile {
   // Profile info
-  user      User  @relation(fields: [userId], references: [id])
-  userId    String?  @unique
   firstName String?
   lastName  String?
   nickname  String?
   imageURL  String?
   disciplinaryNotices Int? @default(0)
+
+  user User @relation(fields: [userId], references: [id])
+  userId String @unique
 }
 
 model UserPreferences {
