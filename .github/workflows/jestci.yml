@@ -51,7 +51,7 @@ jobs:
           DATABASE_URL: postgres://postgres:postgres@localhost:5433/mydb
         run: |
           npx prisma generate
-          npx prisma migrate dev --name init --preview-feature
+          npx prisma db push --preview-feature
           yarn prisma db seed
 
       - name: Run Jest Tests
