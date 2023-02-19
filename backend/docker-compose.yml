@@ -13,7 +13,8 @@ services:
       - db
 
   db:
-    image: postgres:latest
+    image: postgres
+    hostname: localhost
     environment:
         - POSTGRES_USER=postgres
         - POSTGRES_PASSWORD=postgres
