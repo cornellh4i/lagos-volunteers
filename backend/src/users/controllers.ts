@@ -48,6 +48,7 @@ const createNewUser = async (req: Request, res: Response) => {
  */
 
 const getAllUsers = async (req: Request, res: Response) => {
+  // #swagger.tags = ['Users']
   try {
     const users = await prisma.user.findMany();
     res.status(200).json(users);
@@ -63,6 +64,7 @@ const getAllUsers = async (req: Request, res: Response) => {
  * 
  */
 const getSearchedUser = async (req: Request, res: Response) => {
+  // #swagger.tags = ['Users']
   try {
     const option = req.query.option;
     const value = req.query.value;
