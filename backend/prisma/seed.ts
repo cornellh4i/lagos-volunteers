@@ -45,18 +45,24 @@ const userData: Prisma.UserCreateInput[] = [
 
 ]
 
-// Some random date
+// Some sample dates
 const _FormatISO = formatISO(new Date());
+const pastDate1=formatISO(new Date("2019-01-16"));  
+const pastDate2=formatISO(new Date("2019-01-17")); 
+const pastDate3=formatISO(new Date("2019-01-18"));  
+const futureDate1=formatISO(new Date("2077-01-16"));  
+const futureDate2=formatISO(new Date("2077-01-17"));
+const futureDate3=formatISO(new Date("2077-01-18"));
 
 
 const eventData: Prisma.EventCreateInput[] = [
 
   {
-    name: "Prisma Day",
+    name: "Past Event 1",
     description: "Prisma Day is a one-day conference for developers who want to learn about Prisma, the open-source database toolkit for Node.js and TypeScript.",
     location: "Berlin",
-    startDate: _FormatISO,
-    endDate: _FormatISO,
+    startDate: pastDate1,
+    endDate: pastDate2,
     owner:{connect:
           {
             id: userData[2].id,
@@ -64,6 +70,76 @@ const eventData: Prisma.EventCreateInput[] = [
           },
     },
     capacity: 100,
+  },
+  {
+    name: "Past Event 2",
+    description: "This is a past event.",
+    location: "Tokyo",
+    startDate: pastDate2,
+    endDate: pastDate3,
+    owner:{connect:
+          {
+            id: userData[2].id,
+            email: userData[2].email
+          },
+    },
+    capacity: 10,
+  },
+  {
+    name: "Current Event 1",
+    description: "This is a current event.",
+    location: "Paris",
+    startDate: pastDate1,
+    endDate: futureDate1,
+    owner:{connect:
+          {
+            id: userData[2].id,
+            email: userData[2].email
+          },
+    },
+    capacity: 10,
+  },
+  {
+    name: "Current Event 2",
+    description: "This is a current event.",
+    location: "London",
+    startDate: pastDate2,
+    endDate: futureDate3,
+    owner:{connect:
+          {
+            id: userData[2].id,
+            email: userData[2].email
+          },
+    },
+    capacity: 20,
+  },
+  {
+    name: "Future Event 1",
+    description: "Welcome to Cyberpunk 2077",
+    location: "Night City",
+    startDate: futureDate1,
+    endDate: futureDate2,
+    owner:{connect:
+          {
+            id: userData[2].id,
+            email: userData[2].email
+          },
+    },
+    capacity: 100,
+  },
+  {
+    name: "Future Event 2",
+    description: "Welcome to Cyberpunk 2077",
+    location: "Day City",
+    startDate: futureDate2,
+    endDate: futureDate3,
+    owner:{connect:
+          {
+            id: userData[2].id,
+            email: userData[2].email
+          },
+    },
+    capacity: 50,
   }
 ]
 

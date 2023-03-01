@@ -1,6 +1,7 @@
 import express, {Application} from "express";
 import bodyParser from "body-parser";
 import userRouter from "./users/views";
+import eventRouter from "./events/views";
 import swaggerUI from "swagger-ui-express";
 import spec from "../api-spec.json";
 
@@ -14,6 +15,7 @@ app.use("/api-docs", swaggerUI.serve, swaggerUI.setup(spec));
  * Sub-routers for our main router, we should have one sub-router per "entity" in the application
  */
 app.use("/user", userRouter);
+app.use("/event", eventRouter)
 
 // Root Url
 app.get("/", (req, res) => {
