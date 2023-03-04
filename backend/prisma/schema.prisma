@@ -10,36 +10,34 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-
-
 model User {
   // Metadata
-  id            String   @id @default(cuid()) @unique
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
-  email         String   @unique
+  id        String   @id @unique @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  email     String   @unique
 
   // User info
-  role          userRole? @default(VOLUNTEER)
+  role          userRole?         @default(VOLUNTEER)
   profile       Profile?
-  verified      Boolean? @default(false)
-  hours         Int? @default(0)  //toal hours workd
-  status        UserStatus?        @default(ACTIVE)
-  createdEvents Event[]          @relation(name: "EventOwner")
+  verified      Boolean?          @default(false)
+  hours         Int?              @default(0) //toal hours workd
+  status        UserStatus?       @default(ACTIVE)
+  createdEvents Event[]           @relation(name: "EventOwner")
   events        EventEnrollment[]
   preferences   UserPreferences?
-  permissions   Permission[]    @relation(name: "RolePermission")
+  permissions   Permission[]      @relation(name: "RolePermission")
 }
 
 model Profile {
   // Profile info
-  firstName String?
-  lastName  String?
-  nickname  String?
-  imageURL  String?
-  disciplinaryNotices Int? @default(0)
-  user User @relation(fields: [userId], references: [id])
-  userId String @unique
+  firstName           String?
+  lastName            String?
+  nickname            String?
+  imageURL            String?
+  disciplinaryNotices Int?    @default(0)
+  user                User    @relation(fields: [userId], references: [id])
+  userId              String  @unique
 }
 
 model UserPreferences {
@@ -48,13 +46,11 @@ model UserPreferences {
   userId                String  @unique
   sendEmailNotification Boolean @default(true)
   sendPromotions        Boolean @default(false)
-
 }
 
-
 model Permission {
-  user  User @relation(fields: [userId], references:[id], name: "RolePermission")
-  userId String @unique
+  user           User    @relation(fields: [userId], references: [id], name: "RolePermission")
+  userId         String  @unique
   canCreateEvent Boolean @default(false)
   canEditEvent   Boolean @default(false)
   canDeleteEvent Boolean @default(false)
@@ -65,30 +61,30 @@ model Permission {
 
 model Event {
   // Metadata
-  id        String   @id @default(cuid()) @unique
+  id        String   @id @unique @default(cuid())
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   // Event info
-  name                String
-  subtitle            String?
-  location            String
-  description         String
-  imageURL            String?
-  startDate           DateTime
-  endDate             DateTime
-  mode                EventMode?         @default(IN_PERSON)
-  status              EventStatus?       @default(DRAFT)
-  owner               User              @relation(fields: [ownerId], references: [id], name: "EventOwner")
-  ownerId             String
-  attendees           EventEnrollment[]
-  capacity            Int
-  tags                EventTags[]
+  name        String
+  subtitle    String?
+  location    String
+  description String
+  imageURL    String?
+  startDate   DateTime
+  endDate     DateTime
+  mode        EventMode?        @default(IN_PERSON)
+  status      EventStatus?      @default(DRAFT)
+  owner       User              @relation(fields: [ownerId], references: [id], name: "EventOwner")
+  ownerId     String
+  attendees   EventEnrollment[]
+  capacity    Int
+  tags        EventTags[]
 }
 
 model EventTags {
   // Metadata
-  id        String   @id @default(cuid()) @unique
+  id     String  @id @unique @default(cuid())
   // Tag info
   name   String
   events Event[]
@@ -100,12 +96,12 @@ model EventEnrollment {
   updatedAt DateTime @updatedAt
 
   // Attendees info
-  eventId  String  @unique
-  userId   String  @unique
-  event    Event   @relation(fields: [eventId], references: [id])
-  user     User    @relation(fields: [userId], references: [id])
-  showedUp Boolean? @default(false)
-  workedHours  Int? @default(0)
+  eventId     String   @unique
+  userId      String   @unique
+  event       Event    @relation(fields: [eventId], references: [id])
+  user        User     @relation(fields: [userId], references: [id])
+  showedUp    Boolean? @default(false)
+  workedHours Int?     @default(0)
 
   @@id([userId, eventId])
 }
@@ -133,4 +129,3 @@ enum EventMode {
   VIRTUAL
   IN_PERSON
 }
-
