@@ -5,11 +5,9 @@ import { Request, Response } from "express";
 import prisma from "../../client";
 
 /**
- * Finds all users in DB
- * @returns promise with all users or error
+ * Get all events in DB
+ * @returns promise with all events or error
  */
-
-// Returns all events in the database
 const getEvents = async (req: Request, res: Response) => {
   try {
     const events= await prisma.event.findMany();
@@ -19,6 +17,10 @@ const getEvents = async (req: Request, res: Response) => {
   }
 }
 
+/**
+ * Get all events with a start date after Date.now()
+ * @returns promise with all events or error
+ */
 const getUpcomingEvents = async (req: Request, res: Response) => {
   let dateTime = new Date()
   try {
@@ -35,6 +37,11 @@ const getUpcomingEvents = async (req: Request, res: Response) => {
   }
 }
 
+/**
+ * Get all events with a start date before Date.now() and an end date 
+ * after Date.now()
+ * @returns promise with all events or error
+ */
 const getCurrentEvents = async (req: Request, res: Response) => {
   let dateTime = new Date()
   try {
@@ -54,6 +61,10 @@ const getCurrentEvents = async (req: Request, res: Response) => {
   }
 }
 
+/**
+ * Get all events all events with an end date before Date.now()
+ * @returns promise with all events or error
+ */
 const getPastEvents = async (req: Request, res: Response) => {
   let dateTime = new Date()
   try {
