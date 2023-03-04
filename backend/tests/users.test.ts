@@ -24,7 +24,11 @@ describe("Testing user Endpoints", () => {
   test("Create a new user", async () => {
     const user = {
       name: "John Doe",
-      email: "johnnewnew@gmail.com",
+<<<<<<<<< Temporary merge branch 1
+      email: "johnw@gmail.com",
+=========
+      email: "johndoe@gmail.com",
+>>>>>>>>> Temporary merge branch 2
     };
     const response = await request(app).post("/user/signup").send(user);
     expect(response.status).toBe(201);
