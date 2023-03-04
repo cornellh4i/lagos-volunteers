@@ -29,6 +29,6 @@ const doc = {
 };
 
 const outputFile = "../api-spec.json";
-const endpointsFiles = ["C:\\Users\\hanna\\OneDrive\\Desktop\\lagos-volunteers\\backend\\src\\index.ts"];
+const endpointsFiles = ["./index.ts"];
 
 swaggerAutogen()(outputFile, endpointsFiles, doc);
