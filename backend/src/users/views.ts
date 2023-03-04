@@ -9,6 +9,6 @@ const userRouter = Router();
 userRouter.get("/", userController.getUsers);
 userRouter.post("/signup", userController.createNewUser);
 userRouter.get("/all", userController.getAllUsers);
-userRouter.get("/search?[option]=[value]", userController.getSearchedUser);
+userRouter.get("/search", userController.getSearchedUser);
 
 export default userRouter;

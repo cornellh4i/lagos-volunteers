@@ -14,6 +14,7 @@ const getUsers = async (req: Request, res: Response) => {
     const users = await prisma.user.findMany();
     res.status(200).json(users);
   } catch (error: any) {
+    // Do we need to log the error?
     res.status(500).json({ error: error.message });
   }
 };
@@ -66,11 +67,13 @@ const getAllUsers = async (req: Request, res: Response) => {
 const getSearchedUser = async (req: Request, res: Response) => {
   // #swagger.tags = ['Users']
   try {
-    const option = req.query.option;
+    console.log()
+    const option = req.query;
     const value = req.query.value;
-    console.log("option: " + option);
+    console.log("option: " + JSON.stringify(option));
     console.log("value: " + value);
     const users = await prisma.user.findMany({
+
     });
     res.status(200).json(users);
   } catch (error: any) {
