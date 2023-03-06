@@ -1,4 +1,4 @@
-import { Prisma } from "@prisma/client";
+import { Prisma, userRole, UserStatus } from "@prisma/client";
 import { Request, Response } from "express";
 
 // We are using one connection to prisma client to prevent multiple connections
@@ -45,9 +45,13 @@ const getSearchedUser = async (req: Request, res: Response) => {
         AND: [
           {
             email: Array.isArray(query.email) ? { in: query.email } : query.email,
-            //role: query.role ? { equals: query.role } : undefined,
+            role: {
+              equals: query.role as userRole
+            },
             hours: query.hours ? parseInt(query.hours as any) : undefined,
-            // status: query.status != null ? query.status : undefined,
+            status: {
+              equals: query.status as UserStatus
+            },
             profile: {
               firstName: Array.isArray(query.firstName) ? { in: query.firstName } : query.firstName,
               lastName: Array.isArray(query.lastName) ? { in: query.lastName } : query.lastName,
