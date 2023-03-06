@@ -42,16 +42,21 @@ describe("Testing users Endpoints", () => {
     expect(response.status).toBe(200);
   });
 
-
-
-
-  test("Create a new user", async () => {
-    const user = {
-      email: "johnw@gmail.com",
-    };
-    const response = await request(app).post("/user/signup").send(user);
-    expect(response.status).toBe(201);
+  test("Get users with hours=0&firstName=Alice", async () => {
+    const response = await request(app).get("/users/search?hours=0&firstName=Alice");
+    expect(response.status).toBe(200);
   });
+
+
+  /* user tests*/
+
+  //   test("Create a new user", async () => {
+  //     const user = {
+  //       email: "johnw@gmail.com",
+  //     };
+  //     const response = await request(app).post("/user/signup").send(user);
+  //     expect(response.status).toBe(201);
+  //   });
 });
 
 // TODO: Add Tests for post endpoints

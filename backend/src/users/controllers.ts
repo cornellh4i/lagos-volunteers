@@ -39,7 +39,6 @@ const getSearchedUser = async (req: Request, res: Response) => {
   try {
     const query = req.query;
     console.log("query: " + JSON.stringify(req.query));
-    console.log("email: " + query.email);
     const users = await prisma.user.findMany({
       where: {
         AND: [
