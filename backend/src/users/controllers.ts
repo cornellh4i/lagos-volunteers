@@ -5,43 +5,6 @@ import { Request, Response } from "express";
 import prisma from "../../client";
 
 /**
- * Finds all users in DB
- * @returns promise with all users or error
- */
-const getUsers = async (req: Request, res: Response) => {
-  // #swagger.tags = ['Users']
-  try {
-    const users = await prisma.user.findMany();
-    res.status(200).json(users);
-  } catch (error: any) {
-    // Do we need to log the error?
-    res.status(500).json({ error: error.message });
-  }
-};
-
-/**
- * Sign up a new user. User details are passed in request body.
- * Request body includes:
- * - email (string)
- * - name (string)
- * @returns promise with user or error
- */
-const createNewUser = async (req: Request, res: Response) => {
-  // #swagger.tags = ['Users']
-  try {
-    const result = await prisma.user.create({
-      data: {
-        ...req.body,
-      },
-    });
-
-    res.status(201).json(result);
-  } catch (err: any) {
-    res.status(500).json({ error: err.message });
-  }
-};
-
-/**
  * Gets all Users in database and all data associated with each user
  * @returns promise with all users or error
  * 
@@ -58,21 +21,43 @@ const getAllUsers = async (req: Request, res: Response) => {
   }
 };
 /**
- * returns a list of all users where [option] is [value]. [option] corresponds to the columns in the User table. 
- * @query option the column on the User table
- * @query value the value we are searching for given the option? 
- * @returns promise with user list or error
+ * returns promise with list of all users where [option] is [value], or. 
+ * [option] corresponds to the columns in the User table. 
+ * Search supports multiple queries 
+ * The following options are supported: 
+ * email
+ * role
+ * firstName
+ * lastName
+ * nickname
+ * hours
+ * status
  * 
  */
 const getSearchedUser = async (req: Request, res: Response) => {
   // #swagger.tags = ['Users']
   try {
-    console.log()
-    const option = req.query;
-    const value = req.query.value;
-    console.log("option: " + JSON.stringify(option));
-    console.log("value: " + value);
+    const query = req.query;
+    console.log("query: " + JSON.stringify(query));
     const users = await prisma.user.findMany({
+      where: {
+        AND: [
+          query,
+          { //what some do idk 
+            email: query.email != null ? query.email : undefined,
+            role: query.role != null ? query.role : undefined,
+            hours: query.hours != null ? query.hours : undefined,
+            status: query.status != null ? query.status : undefined,
+            profile: {
+              // some: { //what some do idk 
+              firstName: query.firstName != null ? query.firstName : undefined,
+              lastName: query.lastName != null ? query.lastName : undefined,
+              nickname: query.nickname != null ? query.nickname : undefined,
+            }
+            // }
+          }
+        ],
+      }
 
     });
     res.status(200).json(users);
@@ -82,8 +67,6 @@ const getSearchedUser = async (req: Request, res: Response) => {
 };
 
 export default {
-  getUsers,
-  createNewUser,
   getAllUsers,
   getSearchedUser
 };
