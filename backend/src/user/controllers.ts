@@ -9,7 +9,7 @@ import prisma from "../../client";
  * @returns promise with all users or error
  */
 const getUsers = async (req: Request, res: Response) => {
-  // #swagger.tags = ['Users']
+  // #swagger.tags = ['User']
   try {
     const users = await prisma.user.findMany();
     res.status(200).json(users);
@@ -27,7 +27,7 @@ const getUsers = async (req: Request, res: Response) => {
  * @returns promise with user or error
  */
 const createNewUser = async (req: Request, res: Response) => {
-  // #swagger.tags = ['Users']
+  // #swagger.tags = ['User']
   try {
     const result = await prisma.user.create({
       data: {

@@ -38,25 +38,28 @@ const getSearchedUser = async (req: Request, res: Response) => {
   // #swagger.tags = ['Users']
   try {
     const query = req.query;
-    console.log("query: " + JSON.stringify(query));
+    console.log("query: " + JSON.stringify(req.query));
+    console.log("email: " + query.email);
     const users = await prisma.user.findMany({
       where: {
         AND: [
-          query,
-          { //what some do idk 
-            email: query.email != null ? query.email : undefined,
-            role: query.role != null ? query.role : undefined,
-            hours: query.hours != null ? query.hours : undefined,
-            status: query.status != null ? query.status : undefined,
+          {
+            email: Array.isArray(query.email) ? { in: query.email } : query.email,
+            //role: query.role ? { equals: query.role } : undefined,
+            hours: query.hours ? parseInt(query.hours as any) : undefined,
+            // status: query.status != null ? query.status : undefined,
             profile: {
-              // some: { //what some do idk 
-              firstName: query.firstName != null ? query.firstName : undefined,
-              lastName: query.lastName != null ? query.lastName : undefined,
-              nickname: query.nickname != null ? query.nickname : undefined,
+              firstName: Array.isArray(query.firstName) ? { in: query.firstName } : query.firstName,
+              lastName: Array.isArray(query.lastName) ? { in: query.lastName } : query.lastName,
+              nickname: Array.isArray(query.nickname) ? { in: query.nickname } : query.nickname,
             }
-            // }
           }
+
         ],
+
+      },
+      include: {
+        profile: true
       }
 
     });

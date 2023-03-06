@@ -5,23 +5,23 @@ import { formatISO } from 'date-fns';
 const userData: Prisma.UserCreateInput[] = [
   {
     email: "alice@hey.com",
-    profile:{
-      create:{
+    profile: {
+      create: {
         firstName: "Alice",
         lastName: "Smith",
         nickname: "Asmithy",
       }
     },
-    preferences:{
-        create:{
-          sendPromotions: true,
-        }
+    preferences: {
+      create: {
+        sendPromotions: true,
+      }
     }
   },
   {
     email: "grace@hey.com",
-    profile:{
-      create:{
+    profile: {
+      create: {
         firstName: "Grace",
         lastName: "Vanderwaal",
         nickname: "Gracey",
@@ -32,8 +32,8 @@ const userData: Prisma.UserCreateInput[] = [
   },
   {
     email: "prisma@hey.com",
-    profile:{
-      create:{
+    profile: {
+      create: {
         firstName: "Prisma",
         lastName: "Solanke",
         nickname: "Destiny",
@@ -57,11 +57,12 @@ const eventData: Prisma.EventCreateInput[] = [
     location: "Berlin",
     startDate: _FormatISO,
     endDate: _FormatISO,
-    owner:{connect:
-          {
-            id: userData[2].id,
-            email: userData[2].email
-          },
+    owner: {
+      connect:
+      {
+        id: userData[2].id,
+        email: userData[2].email
+      },
     },
     capacity: 100,
   }
@@ -70,28 +71,28 @@ const eventData: Prisma.EventCreateInput[] = [
 
 // Enroll Alice in Prisma Day
 
-async function enrollAlice(){
+async function enrollAlice() {
   const alice = await prisma.user.findFirst({
-    where:{
+    where: {
       id: userData[1].id
     }
   })
 
   const event = await prisma.event.findFirst({
-    where:{
+    where: {
       id: eventData[0].id
     }
   })
 
   await prisma.eventEnrollment.create({
-     data:{
-          user:{
-            connect:{ id: alice?.id }
-          },
-       event:{
-            connect:{ id: event?.id }
-       }
-     }
+    data: {
+      user: {
+        connect: { id: alice?.id }
+      },
+      event: {
+        connect: { id: event?.id }
+      }
+    }
   })
 
 }
@@ -112,16 +113,16 @@ async function main() {
   }
   for (const e of eventData) {
     const event = await prisma.event.create({
-        data: e,
+      data: e,
     })
     console.log(`Created event with id: ${event.id}`)
 
-    }
+  }
   await enrollAlice()
   console.log(`Seeding finished.`)
 }
-  // This is for demo purposes only. Everytime we start the server, our seed script will run.
-  // But, we will get constraint errors becuause we are creating the same data again.
+// This is for demo purposes only. Everytime we start the server, our seed script will run.
+// But, we will get constraint errors becuause we are creating the same data again.
 
 
 main()
