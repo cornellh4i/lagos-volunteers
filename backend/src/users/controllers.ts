@@ -32,7 +32,6 @@ const getAllUsers = async (req: Request, res: Response) => {
  * nickname
  * hours
  * status
- * 
  */
 const getSearchedUser = async (req: Request, res: Response) => {
   // #swagger.tags = ['Users']
