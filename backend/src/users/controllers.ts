@@ -62,9 +62,6 @@ const getSearchedUser = async (req: Request, res: Response) => {
         ],
 
       },
-      include: {
-        profile: true
-      }
 
     });
     res.status(200).json(users);

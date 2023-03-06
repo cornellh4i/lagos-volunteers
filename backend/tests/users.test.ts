@@ -13,11 +13,37 @@ afterAll(async () => {
   await app.set('connection', 'close')
 });
 
-describe("Testing user Endpoints", () => {
+describe("Testing users Endpoints", () => {
+  /*get all users test*/
   test("Get all users in DB", async () => {
     const response = await request(app).get("/users");
     expect(response.status).toBe(200);
   });
+
+  /*search tests*/
+
+  test("Get users with status=ACTIVE", async () => {
+    const response = await request(app).get("/users/search?status=ACTIVE");
+    expect(response.status).toBe(200);
+  });
+
+  test("Get users with firstName=Alice", async () => {
+    const response = await request(app).get("/users/search?firstName=Alice");
+    expect(response.status).toBe(200);
+  });
+
+  test("Get users with role=ADMIN", async () => {
+    const response = await request(app).get("/users/search?role=ADMIN");
+    expect(response.status).toBe(200);
+  });
+
+  test("Get users with hours=0", async () => {
+    const response = await request(app).get("/users/search?hours=0");
+    expect(response.status).toBe(200);
+  });
+
+
+
 
   test("Create a new user", async () => {
     const user = {
