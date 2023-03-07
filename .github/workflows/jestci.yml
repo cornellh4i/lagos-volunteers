@@ -11,24 +11,52 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
-
     strategy:
       matrix:
         node-version: [14.x, 16.x, 18.x]
         # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
 
+    services:
+        postgres:
+            image: postgres:latest
+            env:
+              POSTGRES_USER: postgres
+              POSTGRES_PASSWORD: postgres
+              POSTGRES_DB: mydb
+            ports:
+            - 5433:5432
+            options: >-
+              --health-cmd pg_isready
+              --health-interval 10s
+              --health-timeout 5s
+              --health-retries 5
+
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout repository code
+        uses: actions/checkout@v2
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v3
         with:
           cache-dependency-path: ./backend/yarn.lock
           node-version: ${{ matrix.node-version }}
           cache: "yarn"
-      - name: Setup Dotenv, Dependencies, and Run Tests
+      - name: Setup Dotenv, Dependencies .
         working-directory: ./backend/
         run: |
           echo 'NODE_ENV = "test"' > .env
-          echo 'DEV_URI = "${{ secrets.MONGO_DEV }}"' >> .env
           yarn install
-          yarn test
+      - name: Generate Prisma Client, migrations and seed
+        working-directory: ./backend/
+        env:
+          DATABASE_URL: postgres://postgres:postgres@localhost:5433/mydb
+        run: |
+          npx prisma generate
+          npx prisma db push --preview-feature
+          yarn prisma db seed
+
+      - name: Run Jest Tests
+        working-directory: ./backend/
+        env:
+          DATABASE_URL: postgres://postgres:postgres@localhost:5433/mydb
+        run: yarn test
+
