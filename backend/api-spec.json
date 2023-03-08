@@ -86,7 +86,7 @@
         }
       }
     },
-    "/event/all": {
+    "/events/all": {
       "get": {
         "description": "",
         "parameters": [],
@@ -100,7 +100,7 @@
         }
       }
     },
-    "/event/upcoming": {
+    "/events/upcoming": {
       "get": {
         "description": "",
         "parameters": [],
@@ -114,7 +114,7 @@
         }
       }
     },
-    "/event/current": {
+    "/events/current": {
       "get": {
         "description": "",
         "parameters": [],
@@ -128,7 +128,7 @@
         }
       }
     },
-    "/event/past": {
+    "/events/past": {
       "get": {
         "description": "",
         "parameters": [],
