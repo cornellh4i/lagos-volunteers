@@ -22,7 +22,7 @@ const getEvents = async (req: Request, res: Response) => {
  * @returns promise with all events or error
  */
 const getUpcomingEvents = async (req: Request, res: Response) => {
-  let dateTime = new Date()
+  const dateTime = new Date()
   try {
     const events= await prisma.event.findMany({
       where: {
@@ -43,7 +43,7 @@ const getUpcomingEvents = async (req: Request, res: Response) => {
  * @returns promise with all events or error
  */
 const getCurrentEvents = async (req: Request, res: Response) => {
-  let dateTime = new Date()
+  const dateTime = new Date()
   try {
     const events=await prisma.event.findMany({
       where:{
@@ -66,7 +66,7 @@ const getCurrentEvents = async (req: Request, res: Response) => {
  * @returns promise with all events or error
  */
 const getPastEvents = async (req: Request, res: Response) => {
-  let dateTime = new Date()
+  const dateTime = new Date()
   try {
     const events=await prisma.event.findMany({
       where:{

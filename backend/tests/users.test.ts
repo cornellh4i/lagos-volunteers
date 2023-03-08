@@ -1,7 +1,5 @@
 import request from "supertest";
 import app from "../src/index";
-import prisma from "../client";
-
 
 // Testing users endpoints
 describe("Testing Users Endpoints", () => {
