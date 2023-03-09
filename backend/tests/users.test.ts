@@ -13,15 +13,14 @@ afterAll(async () => {
   await app.set('connection', 'close')
 });
 
-describe("Testing users Endpoints", () => {
-  /*get all users test*/
+describe("Testing get all users Endpoints", () => {
   test("Get all users in DB", async () => {
     const response = await request(app).get("/users");
     expect(response.status).toBe(200);
   });
+});
 
-  /*search tests*/
-
+describe("Testing users Endpoints", () => {
   test("Get users with status=ACTIVE", async () => {
     const response = await request(app).get("/users/search?status=ACTIVE");
     expect(response.status).toBe(200);
