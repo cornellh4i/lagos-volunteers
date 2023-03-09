@@ -1,4 +1,5 @@
 import { Prisma } from "@prisma/client";
+import { ExecException } from "child_process";
 import { Request, Response } from "express";
 
 // We are using one connection to prisma client to prevent multiple connections
@@ -12,8 +13,9 @@ const getEvents = async (req: Request, res: Response) => {
   try {
     const events= await prisma.event.findMany();
     res.status(200).json(events);
-  } catch (error: any) {
-    res.status(500).json({ error: error.message });
+  } catch (error) {
+    const result = (error as Error).message
+    res.status(500).json({ result });
   }
 }
 
@@ -32,8 +34,9 @@ const getUpcomingEvents = async (req: Request, res: Response) => {
       },
     });
     res.status(200).json(events);
-  } catch (error: any) {
-    res.status(500).json({ error: error.message });
+  } catch (error) {
+    const result = (error as Error).message
+    res.status(500).json({ result });
   }
 }
 
@@ -56,8 +59,9 @@ const getCurrentEvents = async (req: Request, res: Response) => {
       },
     });
     res.status(200).json(events);
-  } catch (error:any){
-    res.status(500).json({error: error.message});
+  } catch (error) {
+    const result = (error as Error).message
+    res.status(500).json({ result });
   }
 }
 
@@ -76,8 +80,9 @@ const getPastEvents = async (req: Request, res: Response) => {
       },
     });
     res.status(200).json(events);
-  } catch (error:any){
-    res.status(500).json({error: error.message});
+  } catch (error) {
+    const result = (error as Error).message
+    res.status(500).json({ result });
   }
 }
 

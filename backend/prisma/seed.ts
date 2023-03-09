@@ -46,7 +46,7 @@ const userData: Prisma.UserCreateInput[] = [
 ]
 
 // Some sample dates
-const _FormatISO = formatISO(new Date());
+// const _FormatISO = formatISO(new Date());
 const pastDate1=formatISO(new Date("2019-01-16"));  
 const pastDate2=formatISO(new Date("2019-01-17")); 
 const pastDate3=formatISO(new Date("2019-01-18"));  
