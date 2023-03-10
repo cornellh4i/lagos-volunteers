@@ -6,10 +6,10 @@ const userRouter = Router();
 /** User Specific Routes */
 
 // This approach is cleaner for us becuase we can easily add middle ware
-userRouter.get("/", userController.getUsers);
-userRouter.post("/signup", userController.createNewUser);
-userRouter.post("/users", userController.createUser);
-userRouter.delete("/users/:userID", userController.deleteUser);
-userRouter.put("/users/:userID", userController.updateUser);
+userRouter.post("/", userController.createUser);
+userRouter.delete("/:userID", userController.deleteUser);
+userRouter.put("/:userID", userController.updateUser);
+userRouter.get("/all", userController.getAllUsers);
+userRouter.get("/search", userController.getSearchedUser);
 
 export default userRouter;
