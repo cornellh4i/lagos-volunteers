@@ -9,7 +9,7 @@ const userRouter = Router();
 userRouter.post("/", userController.createUser);
 userRouter.delete("/:userID", userController.deleteUser);
 userRouter.put("/:userID", userController.updateUser);
-userRouter.get("/all", userController.getAllUsers);
+userRouter.get("/", userController.getAllUsers);
 userRouter.get("/search", userController.getSearchedUser);
 
 export default userRouter;

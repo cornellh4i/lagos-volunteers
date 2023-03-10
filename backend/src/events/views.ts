@@ -5,7 +5,7 @@ const eventRouter = Router();
 
 /** Event Specific Routes */
 
-eventRouter.get("/all", eventController.getEvents);
+eventRouter.get("/", eventController.getEvents);
 eventRouter.get("/upcoming", eventController.getUpcomingEvents);
 eventRouter.get("/current", eventController.getCurrentEvents);
 eventRouter.get("/past", eventController.getPastEvents);

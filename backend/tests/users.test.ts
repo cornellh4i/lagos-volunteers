@@ -2,33 +2,31 @@ import request from "supertest";
 import app from "../src/server";
 
 // Testing users endpoints
-describe("Testing Users Endpoints", () => {
-  describe("Testing GET /users", () => {
-    test("Get all users in DB", async () => {
-      const response = await request(app).get("/users");
-      expect(response.status).toBe(200);
-    });
+describe("Testing GET /users", () => {
+  test("Get all users in DB", async () => {
+    const response = await request(app).get("/users");
+    expect(response.status).toBe(200);
+  });
+});
+
+describe("Testing POST /users", () => {
+  test("POST Create a new user", async () => {
+    const user = {
+      email: "desi2@gmail.com",
+      role: "ADMIN",
+    };
+    const response = await request(app).post("/users").send(user);
+    const data = response.body;
+    expect(data.email).toBe("desi2@gmail.com");
+    expect(data.role).toBe("ADMIN");
+
+    expect(response.status).toBe(201);
   });
 
-  describe("Testing POST /users", () => {
-    test("POST Create a new user", async () => {
-      const user = {
-        email: "desi2@gmail.com",
-        role: "ADMIN",
-      };
-      const response = await request(app).post("/users").send(user);
-      const data = response.body;
-      expect(data.email).toBe("desi2@gmail.com");
-      expect(data.role).toBe("ADMIN");
-
-      expect(response.status).toBe(201);
-    });
-
-    test("POST Create a new user with empty email", async () => {
-      const user = {};
-      const response = await request(app).post("/users").send(user);
-      expect(response.status).toBe(500);
-    });
+  test("POST Create a new user with empty email", async () => {
+    const user = {};
+    const response = await request(app).post("/users").send(user);
+    expect(response.status).toBe(500);
   });
 });
 
@@ -39,7 +37,7 @@ describe("Testing PUT /users/:userid", () => {
     };
 
     // This is temporary till we create an endpoint to get a specific user
-    const users = await request(app).get("/users/all");
+    const users = await request(app).get("/users");
     const userid = users.body[1].id;
 
     const response = await request(app)
@@ -76,7 +74,7 @@ describe("Testing PUT /users/:userid", () => {
 //   })
 // });
 
-describe("Testing users search", () => {
+describe("Testing /users/search", () => {
   test("GET users with status=ACTIVE", async () => {
     const response = await request(app).get("/users/search?status=ACTIVE");
     expect(response.status).toBe(200);
