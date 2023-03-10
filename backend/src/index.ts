@@ -1,7 +1,6 @@
 import express, { Application } from "express";
 import bodyParser from "body-parser";
-import userRouter from "./user/views";
-import usersRouter from "./users/views";
+import userRouter from "./users/views";
 import swaggerUI from "swagger-ui-express";
 import spec from "../api-spec.json";
 
@@ -14,8 +13,7 @@ app.use("/api-docs", swaggerUI.serve, swaggerUI.setup(spec));
 /**
  * Sub-routers for our main router, we should have one sub-router per "entity" in the application
  */
-app.use("/user", userRouter);
-app.use("/users", usersRouter);
+app.use("/users", userRouter);
 
 // Root Url
 app.get("/", (req, res) => {
@@ -27,9 +25,6 @@ app.get("*", (req, res) => {
   res.send("You have reached a rounte not defined in this API");
 });
 
-app.post("/", (req, res) => {
-  res.send(req.body);
-});
 
 app.listen(process.env.PORT || 8000, async () => {
   console.log("✅ Server is up and running at http://localhost:8000");

@@ -1,8 +1,34 @@
-import { userRole, UserStatus } from "@prisma/client";
 import { Request, Response } from "express";
+import { userRole, UserStatus } from "@prisma/client";
 
 // We are using one connection to prisma client to prevent multiple connections
 import prisma from "../../client";
+
+/**
+ * Sign up a new user. User details are passed in request body.
+ * Request body includes:
+ * - email (string)
+ * @returns promise with user or error
+ */
+const createNewUser = async (req: Request, res: Response) => {
+  // #swagger.tags = ['User']
+  try {
+    const result = await prisma.user.create({
+      data: {
+        ...req.body,
+      },
+      include:{
+        profile: true,
+      }
+    });
+
+    res.status(201).json(result);
+  } catch (err: any) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+
 
 /**
  * Gets all Users in database and all data associated with each user
@@ -37,7 +63,7 @@ const getSearchedUser = async (req: Request, res: Response) => {
   // #swagger.tags = ['Users']
   try {
     const query = req.query;
-    console.log("query: " + JSON.stringify(req.query));
+
     const users = await prisma.user.findMany({
       where: {
         AND: [
@@ -60,6 +86,9 @@ const getSearchedUser = async (req: Request, res: Response) => {
         ],
 
       },
+      include:{
+        profile:true
+      }
 
     });
     res.status(200).json(users);
@@ -68,7 +97,10 @@ const getSearchedUser = async (req: Request, res: Response) => {
   }
 };
 
+
+
 export default {
+  createNewUser,
   getAllUsers,
   getSearchedUser
 };

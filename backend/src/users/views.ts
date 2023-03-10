@@ -1,12 +1,13 @@
 import { Router } from "express";
-import usersController from "./controllers";
+import userController from "./controllers";
 
-const usersRouter = Router();
+const userRouter = Router();
 
 /** User Specific Routes */
 
 // This approach is cleaner for us becuase we can easily add middle ware
-usersRouter.get("/all", usersController.getAllUsers);
-usersRouter.get("/search", usersController.getSearchedUser);
+userRouter.post("/signup", userController.createNewUser);
+userRouter.get("/all", userController.getAllUsers);
+userRouter.get("/search", userController.getSearchedUser);
 
-export default usersRouter;
+export default userRouter;
