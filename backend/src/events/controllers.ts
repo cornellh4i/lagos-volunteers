@@ -10,13 +10,13 @@ import prisma from "../../client";
 const getEvents = async (req: Request, res: Response) => {
   // #swagger.tags = ['Events']
   try {
-    const events= await prisma.event.findMany();
+    const events = await prisma.event.findMany();
     res.status(200).json(events);
   } catch (error) {
-    const result = (error as Error).message
+    const result = (error as Error).message;
     res.status(500).json({ result });
   }
-}
+};
 
 /**
  * Get all events with a start date after Date.now()
@@ -24,9 +24,9 @@ const getEvents = async (req: Request, res: Response) => {
  */
 const getUpcomingEvents = async (req: Request, res: Response) => {
   // #swagger.tags = ['Events']
-  const dateTime = new Date()
+  const dateTime = new Date();
   try {
-    const events= await prisma.event.findMany({
+    const events = await prisma.event.findMany({
       where: {
         startDate: {
           gt: dateTime,
@@ -35,36 +35,36 @@ const getUpcomingEvents = async (req: Request, res: Response) => {
     });
     res.status(200).json(events);
   } catch (error) {
-    const result = (error as Error).message
+    const result = (error as Error).message;
     res.status(500).json({ result });
   }
-}
+};
 
 /**
- * Get all events with a start date before Date.now() and an end date 
+ * Get all events with a start date before Date.now() and an end date
  * after Date.now()
  * @returns promise with all events or error
  */
 const getCurrentEvents = async (req: Request, res: Response) => {
   // #swagger.tags = ['Events']
-  const dateTime = new Date()
+  const dateTime = new Date();
   try {
-    const events=await prisma.event.findMany({
-      where:{
-        startDate:{
-          lt: dateTime
+    const events = await prisma.event.findMany({
+      where: {
+        startDate: {
+          lt: dateTime,
         },
-        endDate:{
-          gt: dateTime
+        endDate: {
+          gt: dateTime,
         },
       },
     });
     res.status(200).json(events);
   } catch (error) {
-    const result = (error as Error).message
+    const result = (error as Error).message;
     res.status(500).json({ result });
   }
-}
+};
 
 /**
  * Get all events all events with an end date before Date.now()
@@ -72,25 +72,25 @@ const getCurrentEvents = async (req: Request, res: Response) => {
  */
 const getPastEvents = async (req: Request, res: Response) => {
   // #swagger.tags = ['Events']
-  const dateTime = new Date()
+  const dateTime = new Date();
   try {
-    const events=await prisma.event.findMany({
-      where:{
-        endDate:{
-          lt: dateTime
+    const events = await prisma.event.findMany({
+      where: {
+        endDate: {
+          lt: dateTime,
         },
       },
     });
     res.status(200).json(events);
   } catch (error) {
-    const result = (error as Error).message
+    const result = (error as Error).message;
     res.status(500).json({ result });
   }
-}
+};
 
 export default {
   getEvents,
   getUpcomingEvents,
   getCurrentEvents,
-  getPastEvents
+  getPastEvents,
 };

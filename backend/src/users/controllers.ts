@@ -8,7 +8,7 @@ import prisma from "../../client";
  * Creates a new user with information specified in the request body.
  * Request body includes:
  * - Email (String)
- * - Role (userRole) 
+ * - Role (userRole)
  * - Profile (Profile)
  * - Verified (Boolean)
  * - Hours (Int)
@@ -26,7 +26,7 @@ const createUser = async (req: Request, res: Response) => {
       data: {
         ...req.body,
       },
-    })
+    });
 
     res.status(201).json(newUser);
   } catch (error: any) {
@@ -41,7 +41,7 @@ const createUser = async (req: Request, res: Response) => {
 const deleteUser = async (req: Request, res: Response) => {
   // #swagger.tags = ['Users']
   try {
-    const userID = req.params.userID
+    const userID = req.params.userID;
 
     const deleteUser = await prisma.user.delete({
       where: {
@@ -55,10 +55,10 @@ const deleteUser = async (req: Request, res: Response) => {
 };
 
 /**
- * Updates a user with information specified in the request body. 
+ * Updates a user with information specified in the request body.
  * Request body includes:
  * - Email (String)
- * - Role (userRole) 
+ * - Role (userRole)
  * - Profile (Profile)
  * - Verified (Boolean)
  * - Hours (Int)
@@ -72,16 +72,16 @@ const deleteUser = async (req: Request, res: Response) => {
 const updateUser = async (req: Request, res: Response) => {
   // #swagger.tags = ['Users']
   try {
-    const userID = req.params.userID
+    const userID = req.params.userID;
 
     const updatedUser = await prisma.user.update({
       where: {
-        id: userID
+        id: userID,
       },
       data: {
         ...req.body,
       },
-    })
+    });
 
     res.status(200).json(updatedUser);
   } catch (error: any) {
@@ -92,8 +92,8 @@ const updateUser = async (req: Request, res: Response) => {
 /**
  * Gets all Users in database and all data associated with each user
  * @returns promise with all users or error
- * 
- * 
+ *
+ *
  */
 
 const getAllUsers = async (req: Request, res: Response) => {
@@ -106,10 +106,10 @@ const getAllUsers = async (req: Request, res: Response) => {
   }
 };
 /**
- * returns promise with list of all users where [option] is [value], or. 
- * [option] corresponds to the columns in the User table. 
- * Search supports multiple queries 
- * The following options are supported: 
+ * returns promise with list of all users where [option] is [value], or.
+ * [option] corresponds to the columns in the User table.
+ * Search supports multiple queries
+ * The following options are supported:
  * email
  * role
  * firstName
@@ -127,28 +127,33 @@ const getSearchedUser = async (req: Request, res: Response) => {
       where: {
         AND: [
           {
-            email: Array.isArray(query.email) ? { in: query.email } : query.email,
+            email: Array.isArray(query.email)
+              ? { in: query.email }
+              : query.email,
             role: {
-              equals: query.role as userRole
+              equals: query.role as userRole,
             },
             hours: query.hours ? parseInt(query.hours as any) : undefined,
             status: {
-              equals: query.status as UserStatus
+              equals: query.status as UserStatus,
             },
             profile: {
-              firstName: Array.isArray(query.firstName) ? { in: query.firstName } : query.firstName,
-              lastName: Array.isArray(query.lastName) ? { in: query.lastName } : query.lastName,
-              nickname: Array.isArray(query.nickname) ? { in: query.nickname } : query.nickname,
-            }
-          }
-
+              firstName: Array.isArray(query.firstName)
+                ? { in: query.firstName }
+                : query.firstName,
+              lastName: Array.isArray(query.lastName)
+                ? { in: query.lastName }
+                : query.lastName,
+              nickname: Array.isArray(query.nickname)
+                ? { in: query.nickname }
+                : query.nickname,
+            },
+          },
         ],
-
       },
-      include:{
-        profile:true
-      }
-
+      include: {
+        profile: true,
+      },
     });
     res.status(200).json(users);
   } catch (error: any) {
@@ -156,12 +161,10 @@ const getSearchedUser = async (req: Request, res: Response) => {
   }
 };
 
-
-
 export default {
   createUser,
   deleteUser,
   updateUser,
   getAllUsers,
-  getSearchedUser
+  getSearchedUser,
 };
