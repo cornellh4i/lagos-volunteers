@@ -1,9 +1,10 @@
 import request from "supertest";
-import app from "../src/index";
+import app from "../src/server";
 
 
-describe("Testing get all users Endpoints", () => {
-  test("GET all users in DB", async () => {
+// Testing users endpoints
+describe("Testing Users Endpoints", () => {
+  test("Get all users in DB", async () => {
     const response = await request(app).get("/users");
     expect(response.status).toBe(200);
   });
@@ -71,12 +72,12 @@ describe("Testing users search", () => {
 describe("Testing user creation", () => {
   test("POST Create a new user", async () => {
     const user = {
-      email: "sule@gmail.com",
+      email: "desi@gmail.com",
       role: "ADMIN",
     };
     const response = await request(app).post("/users/signup").send(user);
     const data = response.body;
-    expect(data.email).toBe("sule@gmail.com");
+    expect(data.email).toBe("desi@gmail.com");
     expect(data.role).toBe("ADMIN");
 
     expect(response.status).toBe(201);
