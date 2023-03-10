@@ -23,8 +23,8 @@ const createNewUser = async (req: Request, res: Response) => {
     });
 
     res.status(201).json(result);
-  } catch (err: any) {
-    res.status(500).json({ error: err.message });
+  } catch (err) {
+    res.status(500).json({ error: (err as Error).message });
   }
 };
 
@@ -42,8 +42,8 @@ const getAllUsers = async (req: Request, res: Response) => {
   try {
     const users = await prisma.user.findMany();
     res.status(200).json(users);
-  } catch (error: any) {
-    res.status(500).json({ error: error.message });
+  } catch (error) {
+    res.status(500).json({ error: (error as Error).message });
   }
 };
 /**
@@ -93,7 +93,7 @@ const getSearchedUser = async (req: Request, res: Response) => {
     });
     res.status(200).json(users);
   } catch (error: any) {
-    res.status(500).json({ error: error.message });
+    res.status(500).json({ error: (error as Error).message });
   }
 };
 
