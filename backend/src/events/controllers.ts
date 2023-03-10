@@ -8,6 +8,7 @@ import prisma from "../../client";
  * @returns promise with all events or error
  */
 const getEvents = async (req: Request, res: Response) => {
+  // #swagger.tags = ['Events']
   try {
     const events= await prisma.event.findMany();
     res.status(200).json(events);
@@ -22,6 +23,7 @@ const getEvents = async (req: Request, res: Response) => {
  * @returns promise with all events or error
  */
 const getUpcomingEvents = async (req: Request, res: Response) => {
+  // #swagger.tags = ['Events']
   const dateTime = new Date()
   try {
     const events= await prisma.event.findMany({
@@ -44,6 +46,7 @@ const getUpcomingEvents = async (req: Request, res: Response) => {
  * @returns promise with all events or error
  */
 const getCurrentEvents = async (req: Request, res: Response) => {
+  // #swagger.tags = ['Events']
   const dateTime = new Date()
   try {
     const events=await prisma.event.findMany({
@@ -68,6 +71,7 @@ const getCurrentEvents = async (req: Request, res: Response) => {
  * @returns promise with all events or error
  */
 const getPastEvents = async (req: Request, res: Response) => {
+  // #swagger.tags = ['Events']
   const dateTime = new Date()
   try {
     const events=await prisma.event.findMany({

@@ -20,6 +20,7 @@ import prisma from "../../client";
  * @returns promise with user or error.
  */
 const createUser = async (req: Request, res: Response) => {
+  // #swagger.tags = ['Users']
   try {
     const newUser = await prisma.user.create({
       data: {
@@ -38,6 +39,7 @@ const createUser = async (req: Request, res: Response) => {
  * @returns promise with userID or error.
  */
 const deleteUser = async (req: Request, res: Response) => {
+  // #swagger.tags = ['Users']
   try {
     const userID = req.params.userID
 
@@ -68,6 +70,7 @@ const deleteUser = async (req: Request, res: Response) => {
  * @returns promise with userID or error.
  */
 const updateUser = async (req: Request, res: Response) => {
+  // #swagger.tags = ['Users']
   try {
     const userID = req.params.userID
 
