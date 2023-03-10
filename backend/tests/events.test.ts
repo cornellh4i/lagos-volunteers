@@ -22,6 +22,7 @@ describe("Testing Current Events Endpoints", () => {
     expect(response.status).toBe(200);
   });
 });
+
 describe("Testing Past Events Endpoints", () => {
   test("Get all past events in DB", async () => {
     const response = await request(app).get("/events/past");

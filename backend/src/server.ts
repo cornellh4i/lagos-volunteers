@@ -14,7 +14,7 @@ app.use("/api-docs", swaggerUI.serve, swaggerUI.setup(spec));
 /**
  * Sub-routers for our main router, we should have one sub-router per "entity" in the application
  */
-app.use("/user", userRouter);
+app.use("/users", userRouter);
 app.use("/events", eventRouter)
 
 // Root Url
