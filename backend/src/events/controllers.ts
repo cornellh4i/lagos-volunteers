@@ -1,5 +1,3 @@
-// import { Prisma } from "@prisma/client";
-// import { ExecException } from "child_process";
 import { Request, Response } from "express";
 
 // We are using one connection to prisma client to prevent multiple connections
