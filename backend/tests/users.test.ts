@@ -60,18 +60,19 @@ describe("Testing PUT /users/:userid", () => {
       role: "ADMIN",
       status: "ACTIVE",
       hours: 0,
-      profile: profile
+      profile: { create: profile }
     };
 
-    const users = await request(app).get("/users");
-    const userid = users.body[1].id;
+    const createdUser = await request(app).post("/users").send(user);
+    const userid = createdUser.body.id;
+
     const editProfile = {
       "firstName": "Arizona2",
       "lastName": "Tea2",
     }
 
     const response = await request(app)
-      .patch("/users/" + userid + "/profile")
+      .put("/users/" + userid + "/profile")
       .send(editProfile);
 
     const data = response.body;
@@ -87,23 +88,25 @@ describe("Testing PUT /users/:userid", () => {
     }
     const user = {
       email: "testeditpref@gmail.com",
-      preferences: preferences
+      preferences: { create: preferences }
     };
 
-    const users = await request(app).search("/users");
-    const userid = users.body[1].id;
+    const createdUser = await request(app).post("/users").send(user);
+    const userid = createdUser.body.id;
+
     const editPreferences = {
-      "sendEmailNotification": "false",
-      "sendPromotions": "true",
+      "sendEmailNotification": false,
+      "sendPromotions": true,
     }
 
     const response = await request(app)
-      .patch("/users/" + userid + "/preferences")
+      .put("/users/" + userid + "/preferences")
       .send(editPreferences);
 
     const data = response.body;
+
     expect(data.preferences.sendEmailNotification).toBe(false);
-    expect(data.preferences.sendEmailNotification).toBe(true);
+    expect(data.preferences.sendPromotions).toBe(true);
     expect(data.preferences.userId).toBe(userid);
     expect(response.status).toBe(200);
   });
@@ -113,25 +116,35 @@ describe("Testing PUT /users/:userid", () => {
 
 
 describe("Testing PATCH /users", () => {
+
   test("PATCH edit a user's status with an existing status", async () => {
+    // This is temporary till we create an endpoint to get a specific user
+    const users = await request(app).get("/users");
+    const userid = users.body[1].id;
     const response = await request(app)
-      .patch("/users/" + "cleuf7ta70000un78em3cb1wj" + "/status" + "INACTIVE")
+      .patch("/users/" + userid + "/status" + "/INACTIVE")
     const data = response.body;
-    expect(data.status).toBe(10);
+    expect(data.status).toBe("INACTIVE");
     expect(response.status).toBe(200);
   });
 
-  test("PATCH edit a user's status with an existing role", async () => {
+  test("PATCH edit a user's role with an existing role", async () => {
+    // This is temporary till we create an endpoint to get a specific user
+    const users = await request(app).get("/users");
+    const userid = users.body[1].id;
     const response = await request(app)
-      .patch("/users/" + "cleuf7ta70000un78em3cb1wj" + "/role" + "SUPERVISOR")
+      .patch("/users/" + userid + "/role" + "/SUPERVISOR")
     const data = response.body;
-    expect(data.rle).toBe(10);
+    expect(data.role).toBe("SUPERVISOR");
     expect(response.status).toBe(200);
   });
 
-  test("PATCH edit a user's status with an existing hours", async () => {
+  test("PATCH edit a user's hours with an existing hours", async () => {
+    // This is temporary till we create an endpoint to get a specific user
+    const users = await request(app).get("/users");
+    const userid = users.body[1].id;
     const response = await request(app)
-      .patch("/users/" + "cleuf7ta70000un78em3cb1wj" + "/hours" + "10")
+      .patch("/users/" + userid + "/hours" + "/10")
     const data = response.body;
     expect(data.hours).toBe(10);
     expect(response.status).toBe(200);

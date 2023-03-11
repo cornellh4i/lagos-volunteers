@@ -170,35 +170,20 @@ const getSearchedUser = async (req: Request, res: Response) => {
 
 const editProfile = async (req: Request, res: Response) => {
   // #swagger.tags = ['Users']
-
-  //localhost:8000/users/cleuf7ta70000un78em3cb1wj/profile/
-  //DELETE LATER: test id 
-  // cleuf7ta70000un78em3cb1wj
-  /**
-   * 
-   * {
-            "firstName": "A",
-            "lastName": "Smith",
-            "nickname": "Asmithy",
-            "imageURL": null,
-            "disciplinaryNotices": 0,
-            "userId": "cleuf7ta70000un78em3cb1wj"
-        }
-   */
   try {
     const userid = req.params.userid
-    console.log(JSON.stringify(req.params));
-    console.log(JSON.stringify(req.body));
     const users = await prisma.user.update({
       where: { id: userid },
       data: {
         profile: {
-          update:{
+          update: {
             ...req.body
-          }
-          , //do they need to input all fields if they want to update just one? 
+          },
         }
-      }
+      },
+      include: {
+        profile: true,
+      },
     });
     res.status(200).json(users);
   } catch (error) {
@@ -215,23 +200,20 @@ const editProfile = async (req: Request, res: Response) => {
 const editPreferences = async (req: Request, res: Response) => {
   // #swagger.tags = ['Users']
   const userid = req.params.userid
-  console.log(JSON.stringify(req.params));
-  console.log(JSON.stringify(req.body));
-  //DELETE LATER: test id 
-  // cleuf7ta70000un78em3cb1wj
 
-  
   try {
     const users = await prisma.user.update({
       where: { id: userid },
       data: {
         preferences: {
-          update:{
+          update: {
             ...req.body
           }
-           //do they need to input all fields if they want to update just one? 
         }
-      }
+      },
+      include: {
+        preferences: true,
+      },
     });
     res.status(200).json(users);
   } catch (error) {
