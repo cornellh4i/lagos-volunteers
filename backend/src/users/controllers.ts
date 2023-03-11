@@ -193,7 +193,10 @@ const editProfile = async (req: Request, res: Response) => {
       where: { id: userid },
       data: {
         profile: {
-          ...req.body, //do they need to input all fields if they want to update just one? 
+          update:{
+            ...req.body
+          }
+          , //do they need to input all fields if they want to update just one? 
         }
       }
     });
@@ -216,12 +219,17 @@ const editPreferences = async (req: Request, res: Response) => {
   console.log(JSON.stringify(req.body));
   //DELETE LATER: test id 
   // cleuf7ta70000un78em3cb1wj
+
+  
   try {
     const users = await prisma.user.update({
       where: { id: userid },
       data: {
         preferences: {
-          ...req.body, //do they need to input all fields if they want to update just one? 
+          update:{
+            ...req.body
+          }
+           //do they need to input all fields if they want to update just one? 
         }
       }
     });
