@@ -2,11 +2,11 @@ name: Jest CI
 
 on:
   push:
-    branches: ["main"]
-    paths: ["backend/**"]
+    branches: ['main']
+    paths: ['backend/**']
   pull_request:
-    branches: ["main"]
-    paths: ["backend/**"]
+    branches: ['main']
+    paths: ['backend/**']
 
 jobs:
   test:
@@ -17,19 +17,19 @@ jobs:
         # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
 
     services:
-        postgres:
-            image: postgres:latest
-            env:
-              POSTGRES_USER: postgres
-              POSTGRES_PASSWORD: postgres
-              POSTGRES_DB: mydb
-            ports:
-            - 5433:5432
-            options: >-
-              --health-cmd pg_isready
-              --health-interval 10s
-              --health-timeout 5s
-              --health-retries 5
+      postgres:
+        image: postgres:latest
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: mydb
+        ports:
+          - 5433:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
 
     steps:
       - name: Checkout repository code
@@ -39,7 +39,7 @@ jobs:
         with:
           cache-dependency-path: ./backend/yarn.lock
           node-version: ${{ matrix.node-version }}
-          cache: "yarn"
+          cache: 'yarn'
       - name: Setup Dotenv, Dependencies .
         working-directory: ./backend/
         run: |
@@ -52,11 +52,9 @@ jobs:
         run: |
           npx prisma generate
           npx prisma db push --preview-feature
-          yarn prisma db seed
 
       - name: Run Jest Tests
         working-directory: ./backend/
         env:
           DATABASE_URL: postgres://postgres:postgres@localhost:5433/mydb
         run: yarn test
-
