@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { Profile, userRole, UserStatus } from "@prisma/client";
+import { userRole, UserStatus } from "@prisma/client";
 
 // We are using one connection to prisma client to prevent multiple connections
 import prisma from "../../client";
@@ -285,7 +285,7 @@ const editHours = async (req: Request, res: Response) => {
         id: userid
       },
       data: {
-        hours: parseInt(hours as any)
+        hours: parseInt(hours)
       }
     });
     res.status(200).json(updatedUser);
