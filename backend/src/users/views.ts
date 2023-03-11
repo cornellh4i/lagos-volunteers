@@ -10,6 +10,11 @@ userRouter.post("/", userController.createUser);
 userRouter.delete("/:userID", userController.deleteUser);
 userRouter.put("/:userID", userController.updateUser);
 userRouter.get("/", userController.getAllUsers);
-userRouter.get("/search", userController.getSearchedUser);
+userRouter.get("/search", userController.getSearchedUser)
+userRouter.get("/:userID", userController.getUserByID)
+userRouter.get("/:userID/created", userController.getCreatedEvents)
+userRouter.get("/:userID/registered", userController.getRegisteredEvents)
+userRouter.get("/:userID/hours", userController.getHours)
+
 
 export default userRouter;

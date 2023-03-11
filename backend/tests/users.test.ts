@@ -135,3 +135,79 @@ describe("Testing /users/search", () => {
     expect(response.status).toBe(200);
   });
 });
+
+describe("Testing /users/:userID", () => {
+  test("GET same user after POST", async () => {
+    const user = {
+      email: "test@gmail.com",
+    };
+
+    const POSTresponse = await request(app).post("/users").send(user);
+    const userID = POSTresponse.body.id;
+
+    const GETresponse = await request(app).get("/users/" + userID);
+    const data = GETresponse.body;
+    expect(GETresponse.status).toBe(200);
+    expect(data.email).toBe("test@gmail.com");
+  });
+
+  test("GET null user", async () => {
+    const response = await request(app).get("/users/z");
+    expect(response.status).toBe(500);
+  });
+});
+
+
+describe("Testing /users/:userID/created", () => {
+  test("GET createdEvents of user with created events", async () => {
+    const POSTresponse = await request(app).get("/users/search?firstName=Prisma");
+    const userID = POSTresponse.body[0].id
+
+    const GETresponse = await request(app).get("/users/" + userID + "/created");
+    const data = GETresponse.body;
+    expect(GETresponse.status).toBe(200);
+    expect(data.length).toBe(6);
+
+  });
+
+  test("GET createdEvents of null user", async () => {
+    const response = await request(app).get("/users/z/created");
+    expect(response.status).toBe(500);
+  });
+});
+
+describe("Testing /users/:userID/registered", () => {
+  test("GET registeredEvents of user with registered events", async () => {
+    const POSTresponse = await request(app).get("/users/search?firstName=Alice");
+    const userID = POSTresponse.body[0].id
+
+    const GETresponse = await request(app).get("/users/" + userID + "/registered");
+    const data = GETresponse.body;
+    expect(GETresponse.status).toBe(200);
+    expect(data.length).toBe(1);
+
+  });
+
+  test("GET registeredEvents of null user", async () => {
+    const response = await request(app).get("/users/z/registered");
+    expect(response.status).toBe(500);
+  });
+});
+
+describe("Testing /users/:userID/hours", () => {
+  test("GET hours of user", async () => {
+    const POSTresponse = await request(app).get("/users/search?firstName=Prisma");
+    const userID = POSTresponse.body[0].id
+
+    const GETresponse = await request(app).get("/users/" + userID + "/hours");
+    const data = GETresponse.body;
+    expect(GETresponse.status).toBe(200);
+    expect(data).toBe(0);
+
+  });
+
+  test("GET hours of null user", async () => {
+    const response = await request(app).get("/users/z/hours");
+    expect(response.status).toBe(500);
+  });
+});

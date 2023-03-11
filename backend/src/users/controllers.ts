@@ -161,10 +161,120 @@ const getSearchedUser = async (req: Request, res: Response) => {
   }
 };
 
+/**
+ * Gets user by userID in database and all data associated with user
+ * @returns promise with user or error
+ *
+ *
+ */
+const getUserByID = async (req: Request, res: Response) => {
+  try {
+    const userID = req.params.userID;
+    const user = await prisma.user.findUnique({
+      where: {
+        id: userID,
+      },
+    });
+
+    if (user == null) {
+      throw Error("Null User")
+    }
+
+    res.status(200).json(user);
+  } catch (error) {
+    res.status(500).json({ error: (error as Error).message });
+  }
+};
+
+/**
+ * Gets all events created by the requested user in the database. 
+ * @returns promise with Event[] or error
+ *
+ *
+ */
+const getCreatedEvents = async (req: Request, res: Response) => {
+  try {
+    const userID = req.params.userID;
+    const user = await prisma.user.findUnique({
+      where: {
+        id: userID,
+      },
+      include: {
+        createdEvents: true
+      }
+    });
+
+    if (user == null) {
+      throw Error("Null User")
+    }
+
+    res.status(200).json(user.createdEvents);
+  } catch (error) {
+    res.status(500).json({ error: (error as Error).message });
+  }
+};
+
+/**
+ * Gets all events the requested user is registered in in the database. 
+ * @returns promise with EventEnrollment[] or error
+ *
+ *
+ */
+const getRegisteredEvents = async (req: Request, res: Response) => {
+  try {
+    const userID = req.params.userID;
+    const user = await prisma.user.findUnique({
+      where: {
+        id: userID,
+      },
+      include: {
+        events: true
+      }
+    });
+
+    if (user == null) {
+      throw Error("Null User")
+    }
+
+    res.status(200).json(user.events);
+  } catch (error) {
+    res.status(500).json({ error: (error as Error).message });
+  }
+};
+
+/**
+ * Gets registeredAt field in database of the requested user. 
+ * @returns promise with Int or error
+ *
+ *
+ */
+const getHours = async (req: Request, res: Response) => {
+  try {
+    const userID = req.params.userID;
+    const user = await prisma.user.findUnique({
+      where: {
+        id: userID,
+      },
+    });
+
+    if (user == null) {
+      throw Error("Null User")
+    }
+
+    res.status(200).json(user.hours);
+  } catch (error) {
+    res.status(500).json({ error: (error as Error).message });
+  }
+};
+
 export default {
   createUser,
   deleteUser,
   updateUser,
   getAllUsers,
   getSearchedUser,
+  getUserByID,
+  getCreatedEvents,
+  getRegisteredEvents,
+  getHours,
 };
