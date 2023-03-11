@@ -142,8 +142,8 @@ const getSearchedUser = async (req: Request, res: Response) => {
         ],
 
       },
-      include:{
-        profile:true
+      include: {
+        profile: true
       }
 
     });
@@ -153,6 +153,109 @@ const getSearchedUser = async (req: Request, res: Response) => {
   }
 };
 
+/**Updates a user profile with information specified in the request body. 
+* Request body includes:
+* - Profile (Profile)
+* @returns promise with userID or error.
+*/
+
+const editProfile = async (req: Request, res: Response) => {
+  // #swagger.tags = ['Users']
+  const userID = req.params.userID
+  console.log(JSON.stringify(req.params));
+  console.log(JSON.stringify(req.body));
+  //DELETE LATER: test id 
+  // cleuf7ta70000un78em3cb1wj
+  /**
+   * 
+   * {
+            "firstName": "A",
+            "lastName": "Smith",
+            "nickname": "Asmithy",
+            "imageURL": null,
+            "disciplinaryNotices": 0,
+            "userId": "cleuf7ta70000un78em3cb1wj"
+        }
+   */
+  console.log(req.params);
+
+  try {
+    const users = await prisma.user.update({
+      where: { id: userID },
+      data: {
+        profile: {
+          ...req.body, //do they need to input all fields if they want to update just one? 
+        }
+      }
+    });
+    res.status(200).json(users);
+  } catch (error) {
+    res.status(500).json({ error: (error as Error).message });
+  }
+}
+
+/**
+ * 
+ */
+const editPreferences = async (req: Request, res: Response) => {
+  // #swagger.tags = ['Users']
+  try {
+    const users = await prisma.user.findMany();
+    res.status(200).json(users);
+  } catch (error) {
+    res.status(500).json({ error: (error as Error).message });
+  }
+}
+
+/**
+ * 
+ */
+const editStatus = async (req: Request, res: Response) => {
+  // #swagger.tags = ['Users']
+  const userID = req.params.userID
+  const status = req.params.status
+  console.log(JSON.stringify(req.params));
+  try {
+    const users = await prisma.user.update({
+      where: {
+        id: userID
+      },
+      data: {
+        status: status as UserStatus
+      }
+    });
+    res.status(200).json(users);
+  } catch (error) {
+    res.status(500).json({ error: (error as Error).message });
+  }
+}
+
+/**
+ * 
+ */
+const editRole = async (req: Request, res: Response) => {
+  // #swagger.tags = ['Users']
+  try {
+    const users = await prisma.user.findMany();
+    res.status(200).json(users);
+  } catch (error) {
+    res.status(500).json({ error: (error as Error).message });
+  }
+}
+
+/**
+ * 
+ */
+const editHours = async (req: Request, res: Response) => {
+  // #swagger.tags = ['Users']
+  try {
+    const users = await prisma.user.findMany();
+    res.status(200).json(users);
+  } catch (error) {
+    res.status(500).json({ error: (error as Error).message });
+  }
+}
+
 
 
 export default {
@@ -160,5 +263,10 @@ export default {
   deleteUser,
   updateUser,
   getAllUsers,
-  getSearchedUser
+  getSearchedUser,
+  editProfile,
+  editPreferences,
+  editStatus,
+  editRole,
+  editHours
 };
