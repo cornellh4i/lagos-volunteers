@@ -47,12 +47,98 @@ describe("Testing PUT /users/:userid", () => {
     expect(data.email).toBe("asu284@cornell.edu");
     expect(response.status).toBe(200);
   });
-  test("Successfully update user", async () => {
+
+  test("edit a user's profile with an existing and not existing fields", async () => {
+    const profile = {
+      firstName: "Arizona",
+      nickname: "99cents",
+      imageURL: null,
+      disciplinaryNotices: 0
+    }
     const user = {
-      email: "asu284@cornell.edu",
+      email: "testeditprof@gmail.com",
+      role: "ADMIN",
+      status: "ACTIVE",
+      hours: 0,
+      profile: profile
     };
+
+    const users = await request(app).get("/users");
+    const userid = users.body[1].id;
+    const editProfile = {
+      "firstName": "Arizona2",
+      "lastName": "Tea2",
+    }
+
+    const response = await request(app)
+      .patch("/users/" + userid + "/profile")
+      .send(editProfile);
+
+    const data = response.body;
+    expect(data.profile.firstName).toBe("Arizona2");
+    expect(data.profile.lastName).toBe("Tea2");
+    expect(data.profile.nickname).toBe("99cents");
+    expect(response.status).toBe(200);
   });
+
+  test("edit a user's preferences with an existing and not existing fields", async () => {
+    const preferences = {
+      sendEmailNotification: true
+    }
+    const user = {
+      email: "testeditpref@gmail.com",
+      preferences: preferences
+    };
+
+    const users = await request(app).search("/users");
+    const userid = users.body[1].id;
+    const editPreferences = {
+      "sendEmailNotification": "false",
+      "sendPromotions": "true",
+    }
+
+    const response = await request(app)
+      .patch("/users/" + userid + "/preferences")
+      .send(editPreferences);
+
+    const data = response.body;
+    expect(data.preferences.sendEmailNotification).toBe(false);
+    expect(data.preferences.sendEmailNotification).toBe(true);
+    expect(data.preferences.userId).toBe(userid);
+    expect(response.status).toBe(200);
+  });
+
+
 });
+
+
+describe("Testing PATCH /users", () => {
+  test("PATCH edit a user's status with an existing status", async () => {
+    const response = await request(app)
+      .patch("/users/" + "cleuf7ta70000un78em3cb1wj" + "/status" + "INACTIVE")
+    const data = response.body;
+    expect(data.status).toBe(10);
+    expect(response.status).toBe(200);
+  });
+
+  test("PATCH edit a user's status with an existing role", async () => {
+    const response = await request(app)
+      .patch("/users/" + "cleuf7ta70000un78em3cb1wj" + "/role" + "SUPERVISOR")
+    const data = response.body;
+    expect(data.rle).toBe(10);
+    expect(response.status).toBe(200);
+  });
+
+  test("PATCH edit a user's status with an existing hours", async () => {
+    const response = await request(app)
+      .patch("/users/" + "cleuf7ta70000un78em3cb1wj" + "/hours" + "10")
+    const data = response.body;
+    expect(data.hours).toBe(10);
+    expect(response.status).toBe(200);
+  });
+
+});
+
 
 /**
  * Because of the relationships that exist in our database, deleting a
