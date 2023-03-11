@@ -2,6 +2,7 @@
 .env
 secrets/
 node_modules/
+.vscode
 
 
 # Optional npm cache directory
