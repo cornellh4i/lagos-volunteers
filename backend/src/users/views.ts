@@ -13,10 +13,10 @@ userRouter.get("/", userController.getAllUsers);
 userRouter.get("/search", userController.getSearchedUser);
 userRouter.put("/:userid/profile", userController.editProfile);
 userRouter.put("/:userid/preferences", userController.editPreferences);
-userRouter.patch("/:userid/:status", userController.editStatus);
-userRouter.patch("/:userid/:role", userController.editRole);
-userRouter.patch("/:userid/:hours", userController.editHours);
+userRouter.patch("/:userid/status/:status", userController.editStatus);
+userRouter.patch("/:userid/role/:role", userController.editRole);
+userRouter.patch("/:userid/hours/:hours", userController.editHours);
 
-//generalize the patch requests 
+// generalize the patch requests
 
 export default userRouter;

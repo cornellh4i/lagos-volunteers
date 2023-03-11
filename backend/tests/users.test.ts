@@ -47,6 +47,11 @@ describe("Testing PUT /users/:userid", () => {
     expect(data.email).toBe("asu284@cornell.edu");
     expect(response.status).toBe(200);
   });
+  test("Successfully update user", async () => {
+    const user = {
+      email: "asu284@cornell.edu",
+    };
+  });
 });
 
 /**

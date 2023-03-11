@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { userRole, UserStatus } from "@prisma/client";
+import { Profile, userRole, UserStatus } from "@prisma/client";
 
 // We are using one connection to prisma client to prevent multiple connections
 import prisma from "../../client";
@@ -161,17 +161,17 @@ const getSearchedUser = async (req: Request, res: Response) => {
   }
 };
 
-/**Updates a user profile with information specified in the request body. 
-* Request body includes:
-* - Profile (Profile)
-* @returns promise with userID or error.
-*/
+/**
+ * Updates a user profile with information specified in the request body. 
+ * Request body includes:
+ * - Profile (Profile)
+ * @returns promise with updated user or error.
+ */
 
 const editProfile = async (req: Request, res: Response) => {
   // #swagger.tags = ['Users']
-  const userID = req.params.userID
-  console.log(JSON.stringify(req.params));
-  console.log(JSON.stringify(req.body));
+
+  //localhost:8000/users/cleuf7ta70000un78em3cb1wj/profile/
   //DELETE LATER: test id 
   // cleuf7ta70000un78em3cb1wj
   /**
@@ -185,11 +185,12 @@ const editProfile = async (req: Request, res: Response) => {
             "userId": "cleuf7ta70000un78em3cb1wj"
         }
    */
-  console.log(req.params);
-
   try {
+    const userid = req.params.userid
+    console.log(JSON.stringify(req.params));
+    console.log(JSON.stringify(req.body));
     const users = await prisma.user.update({
-      where: { id: userID },
+      where: { id: userid },
       data: {
         profile: {
           ...req.body, //do they need to input all fields if they want to update just one? 
@@ -203,30 +204,46 @@ const editProfile = async (req: Request, res: Response) => {
 }
 
 /**
- * 
+ * Updates a user preferences with information specified in the request body. 
+ * Request body includes:
+ * - Preferences (UserPreferences)
+ * @returns promise with updated user or error.
  */
 const editPreferences = async (req: Request, res: Response) => {
   // #swagger.tags = ['Users']
+  const userid = req.params.userid
+  console.log(JSON.stringify(req.params));
+  console.log(JSON.stringify(req.body));
+  //DELETE LATER: test id 
+  // cleuf7ta70000un78em3cb1wj
   try {
-    const users = await prisma.user.findMany();
+    const users = await prisma.user.update({
+      where: { id: userid },
+      data: {
+        preferences: {
+          ...req.body, //do they need to input all fields if they want to update just one? 
+        }
+      }
+    });
     res.status(200).json(users);
   } catch (error) {
     res.status(500).json({ error: (error as Error).message });
   }
 }
 
-/**
- * 
- */
+/** 
+ * Updates a user's status with the specified role in the params. 
+ * @returns promise with user or error 
+*/
 const editStatus = async (req: Request, res: Response) => {
   // #swagger.tags = ['Users']
-  const userID = req.params.userID
+  const userid = req.params.userid
   const status = req.params.status
   console.log(JSON.stringify(req.params));
   try {
     const users = await prisma.user.update({
       where: {
-        id: userID
+        id: userid
       },
       data: {
         status: status as UserStatus
@@ -238,27 +255,50 @@ const editStatus = async (req: Request, res: Response) => {
   }
 }
 
-/**
- * 
- */
+/** 
+ * Updates a user's role with the specified role in the params. 
+ * @returns promise with user or error 
+*/
 const editRole = async (req: Request, res: Response) => {
   // #swagger.tags = ['Users']
+  const userid = req.params.userid
+  const role = req.params.role
+  console.log(JSON.stringify(req.params));
   try {
-    const users = await prisma.user.findMany();
+    const users = await prisma.user.update({
+      where: {
+        id: userid
+      },
+      data: {
+        role: role as userRole
+      }
+    });
     res.status(200).json(users);
   } catch (error) {
     res.status(500).json({ error: (error as Error).message });
   }
 }
 
-/**
- * 
- */
+/** 
+ * Updates a user's hours with the specified role in the params. 
+ * @returns promise with user or error 
+*/
 const editHours = async (req: Request, res: Response) => {
   // #swagger.tags = ['Users']
+
   try {
-    const users = await prisma.user.findMany();
-    res.status(200).json(users);
+    const userid = req.params.userid
+    const hours = req.params.hours
+    console.log(JSON.stringify(req.params));
+    const updatedUser = await prisma.user.update({
+      where: {
+        id: userid
+      },
+      data: {
+        hours: parseInt(hours as any)
+      }
+    });
+    res.status(200).json(updatedUser);
   } catch (error) {
     res.status(500).json({ error: (error as Error).message });
   }
