@@ -1,4 +1,4 @@
-import app from './server';
+import app from "./server";
 
 const server = app.listen(process.env.PORT || 8000);
 
