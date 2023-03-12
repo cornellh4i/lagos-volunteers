@@ -10,12 +10,12 @@ COPY yarn.lock .
 COPY package.json .
 COPY prisma ./prisma/
 
-COPY .env ./
 
 COPY . .
 
 RUN yarn install --only=production
 RUN npx prisma generate
+RUN npx prisma db push
 
 EXPOSE 8000
 CMD ["yarn", "backend"]
