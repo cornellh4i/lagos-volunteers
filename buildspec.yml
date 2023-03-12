@@ -1,0 +1,22 @@
+version: 0.2
+
+phases:
+    install:
+        runtime-versions:
+            docker: 18
+    pre_build:
+        commands:
+        - yarn install typescript --g
+        - yarn install --frozen-lockfile & yarn cache clean --force
+    build:
+        commands:
+        - tsc
+artifacts:
+    type: zip
+    files:
+        - package.json
+        - yarn.lock
+        - tsconfig.json
+        - Dockerrun.aws.json
+        - 'dist/**/*'
+        - Dockerfile

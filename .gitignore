@@ -1,42 +1,11 @@
-.DS_Store
+node_modules
+# Keep environment variables out of version control
 .env
-secrets/
+
+# Elastic Beanstalk Files
+.elasticbeanstalk/*
+!.elasticbeanstalk/*.cfg.yml
+!.elasticbeanstalk/*.global.yml
 node_modules/
-.vscode
 
-
-# Optional npm cache directory
-.npm
-
-# TypeScript cache
-*.tsbuildinfo
-
-# Optional eslint cache
-.eslintcache
-
-# Output of 'npm pack'
-*.tgz
-
-# dotenv environment variable files
-
-.env.development.local
-.env.test.local
-.env.production.local
-.env.local
-
-# Yarn Integrity file
-.yarn-integrity
-
-# Next.js build output
-.next
-out
-
-# Stores VSCode versions used for testing VSCode extensions
-.vscode-test
-
-# yarn v2
-.yarn/cache
-.yarn/unplugged
-.yarn/build-state.yml
-.yarn/install-state.gz
-.pnp.*
+dist/

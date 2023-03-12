@@ -1,99 +1,60 @@
-<!-- PROJECT LOGO -->
-<br />
-<div align="center">
-  <a href="https://github.com/github_username/repo_name">
-    <img src="/lfbi_logo.png" alt="Logo" width="200" height="80">
-  </a>
 
-<h3 align="center">Lagos Food Bank Initiative</h3>
+# Table of Contents
+- [Table of Contents](#table-of-contents)
+  - [Getting Started](#getting-started)
+  - [Swagger](#swagger)
+  - [Prisma](#prisma)
+  - [Using Docker](#using-docker)
 
-  <p align="center">
-    Lagos Food Bank Initiative is a non-profit organization that aims to reduce food waste and hunger in Lagos, Nigeria.
-    <br />    
-  </p>
-</div>
-
-
-
-<!-- TABLE OF CONTENTS -->
-<details>
-  <summary>Table of Contents</summary>
-  <ol>
-    <li>
-      <a href="#about-the-project">About The Project</a>
-      <ul>
-        <li><a href="#built-with">Built With</a></li>
-      </ul>
-    </li>
-    <li>
-      <a href="#getting-started">Getting Started</a>
-      <ul>
-        <li><a href="#prerequisites">Prerequisites</a></li>
-        <li><a href="#installation">Installation</a></li>
-      </ul>
-    </li>
-  </ol>
-</details>
-
-
-
-<!-- ABOUT THE PROJECT -->
-## About The Project
-This project aims to develop a volunteer management system for Lagos Food Bank Initiative. The system will allow volunteers to sign up for shifts, and for LFBI to manage volunteers and hours. 
-
-### Built With
-
-* [![Next][Next.js]][Next-url]
-* [![React][React.js]][React-url]
-* [![Express][Express.js]][Express-url]
-* [![Postresql][Prisma.io]][Prisma-url]
-
-<!-- GETTING STARTED -->
 ## Getting Started
 
+Start off by copying `.envtemplate` and renaming the copy to `.env`. Configure the node env and databse dev/prod URI's based on your current environment and secrets. See Prisma documentation for more information of database URL.
 
-> Folder structure 
+If you don't have yarn and/or node on your system, run `brew install yarn` if you have homebrew installed. Alternatively, if you already have node you can also run `sudo npm i -g yarn`.
 
-    .
-    ├── frontend      # Next.js client
-    ├── backend       # Express server
-    └── README.md
+Now, run `yarn install` to install all dependencies. Once that finishes, you're all set to run the backend!
 
-### Prerequisites
-* Nodejs
-* PostreSQL
-* Docker
+Simply use `yarn backend` to begin running the dev server locally, or `yarn build` to create a production build that can be run using `yarn start`
 
-### Installation
+This backend is centered around the MVC (model-view-controller) design pattern, intended to decouple code and reduce potential errors with the system.
 
-1. Clone the repo
-   ```sh
-   git clone https://github.com/cornellh4i/lagos-volunteers.git
-   ```
-2. Start the client
-   ```sh
-   cd frontend
-   yarn install
-   yarn run dev
-   ```
-3. Start the server
-   ```sh
-   cd backend
-   yarn install
-   yarn run backend
-   ```
+The backend also comes preconfigured with a jest test suite that will execute on PR creation. The jest suite is integrated with supertest and is located in `backend/tests` and can be run using `yarn test`. 
 
-> Note: See individual project files for more information on how to build and deploy the project.
+> Note: The backend is currently configured to run on port 8000. Ensure you kill this server before you run `yarn test` to avoid port conflicts.
+
+The backend is generally structured as follows:
+- `backend/src` -- contains all of the source code for the backend
+- `backend/prisma` -- contains all of the prisma schema and migration files
+- `backend/tests` -- contains all of the jest test suite
+
+In `backend/src` you will find the the initialization of express app, the routes, and the controllers. The controllers are where the bulk of the logic for the backend is located. The folder names are self-explanatory, and the files within them are named based on the route and controllers they are associated with.
+
+## Swagger 
+
+`backend/src` also contains swagger, which is currently configured to automically generate documentation for the backend. To view the documentation, run `yarn swagger` and then navigate to `localhost:8000/api-docs` in your browser. This step is important becuase it will auto-generate the swagger.json file that is used to generate the documentation.
+
+In order to structure our swagger documentation properly, ensure that you add the `#swagger.tags = ['name of section']` comment to the top of each function in the controller file. This will ensure that the swagger documentation is properly organized. For example, if you have a controller file that contains all of the routes for the `users` entity, you should add the following comment to the top of each method:
+```js
+// #swagger.tags = ['Users']
+```
+Swagger is useful for us because we can then import the swagger.json file into Postman and use it to generate a collection of requests that we can use to test our backend. To do this, simply import the api-docs.json file into Postman and it will automatically generate a collection of requests for you.
+
+## Prisma
+This backend makes use of Prisma, a database toolkit that allows us to easily create and manage our database schema. To learn more about Prisma, check out their <a href="https://www.prisma.io/docs/">documentation</a>. The documentation is really well written and easy to follow.
+
+The major components we are using are: 
+- Prisma Client -- a type-safe database client that allows us to easily query our database
+- Prisma Migrate -- a database migration tool that allows us to easily create and manage our database schema
+- Prisma Studio -- a GUI that allows us to easily view and edit our database schema
+
+The Prisma schema is located in `backend/prisma/schema.prisma`. This file contains all of the models and relationships between them. To learn more about the Prisma schema, check out <a href="https://www.prisma.io/docs/concepts/components/prisma-schema">this page</a> on the Prisma website.
+
+To create a new migration, run `npx prisma migrate dev --name <name of migration>`. This will create a new migration file in `backend/prisma/migrations`. To apply the migration to your database, run `yarn prisma migrate deploy`. To view the current state of the database, run `yarn prisma studio`.
+
+`backend/prisma/seed.ts` contains a script that will seed the database with some dummy data. To run this script, run `yarn prisma db seed`. 
 
 
-<!-- MARKDOWN LINKS & IMAGES -->
-<!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
-[Next.js]: https://img.shields.io/badge/next.js-000000?style=for-the-badge&logo=nextdotjs&logoColor=white
-[Next-url]: https://nextjs.org/
-[React.js]: https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB
-[React-url]: https://reactjs.org/
-[Prisma.io]: https://img.shields.io/badge/Prisma-3982CE?style=for-the-badge&logo=Prisma&logoColor=white
-[Express.js]: https://img.shields.io/badge/express.js-%23404d59.svg?style=for-the-badge&logo=express&logoColor=%2361DAFB
-[Express-url]: https://expressjs.com/
-[Prisma-url]: https://www.prisma.io/
+## Using Docker
+This backend can also be easily dockerized. Once you've created your env file, simply run `docker compose up -d` or `docker compose up` to start up the application (make sure the docker daemon is running).
 
+If this fails, try running `docker system prune`. The application should begin running at port 8000 on your local machine.

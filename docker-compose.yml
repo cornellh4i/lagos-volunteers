@@ -1,0 +1,13 @@
+version: "3.6"
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: volunteer-platform
+    env_file:
+      - .env
+    ports:
+      - "8000:8000"
+    restart: always
