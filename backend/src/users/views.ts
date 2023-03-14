@@ -1,17 +1,21 @@
 import { Router } from "express";
 import userController from "./controllers";
-import { auth } from "../middleware/auth"
+import { auth, authIfAdmin } from "../middleware/auth"
 const userRouter = Router();
 
 /** User Specific Routes */
 
 // This approach is cleaner for us becuase we can easily add middle ware
-userRouter.post("/", userController.createUser);
+// HERE IS A TYPESCRIPT COMPILER ERROR THAT WE DON'T KNOW HOW TO FIX :)
+//@ts-ignore
+userRouter.post("/", auth, userController.createUser);
 userRouter.delete("/:userID", userController.deleteUser);
 userRouter.put("/:userID", userController.updateUser);
 //@ts-ignore
-// HERE IS A TYPESCRIPT COMPILER ERROR THAT WE DON'T KNOW HOW TO FIX :)
 userRouter.get("/", auth, userController.getAllUsers);
-userRouter.get("/search", userController.getSearchedUser);
+//@ts-ignore
+userRouter.get("/search",auth, userController.getSearchedUser);
+//@ts-ignore
+userRouter.get("/:userID", userController.getUserByID);
 
 export default userRouter;

@@ -1,5 +1,8 @@
 import * as firebase from 'firebase-admin';
 import { NextFunction, Request, Response, RequestHandler } from 'express';
+import { UserRecord } from 'firebase-admin/lib/auth/user-record';
+import { userRole } from '@prisma/client';
+const { getAuth } = require("firebase-admin/auth");
 
 // declare module 'express' {
 //   interface Request {
@@ -19,7 +22,6 @@ const getAuthToken = (
   res: Response, 
   next: NextFunction
 ) => {
-  
   if (req.headers.authorization && req.headers.authorization.split(' ')[0] === 'Bearer') 
   {
     req.authToken = req.headers.authorization.split(' ')[1];
@@ -103,7 +105,8 @@ export const authIfAdmin = (
 ) => {
   getAuthToken(req, res, async () => {
     try {
-      const userInfo = await firebase.auth().verifyIdToken(req.authToken);
+      const { authToken } = req;
+      const userInfo = await firebase.auth().verifyIdToken(authToken);
       if (userInfo.admin === true) {
         req.authId = userInfo.uid;
         return next();
@@ -116,6 +119,41 @@ export const authIfAdmin = (
   })
 }
 
+
+export const createFirebaseUser = (
+  email:string,
+  password: string,
+  role: userRole
+)=>{
+  getAuth()
+  .createUser({
+    email: email,
+    password: password
+    
+  })
+  .then((userRecord: UserRecord) => {
+    // See the UserRecord reference doc for the contents of userRecord.
+    console.log('Successfully created new user:', userRecord.uid);
+    const customClaims = {
+      admin: false,
+      supervisor: false,
+      volunteer:true
+    };
+    if(role==userRole.ADMIN){
+      customClaims['admin']==true
+      customClaims['supervisor']==true
+    }
+    if(role==userRole.SUPERVISOR){
+      customClaims['supervisor']==true
+    }
+    getAuth().setCustomUserClaims(userRecord.uid, customClaims);
+  })
+  .catch((e:Error) => {
+    console.log('Error creating new user:', e);
+  });
+}
+
 export default{
-  auth
+  auth,
+  createFirebaseUser
 }
