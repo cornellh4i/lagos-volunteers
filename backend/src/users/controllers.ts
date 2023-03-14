@@ -161,10 +161,74 @@ const getSearchedUser = async (req: Request, res: Response) => {
   }
 };
 
+const getUserProfile = async (req: Request, res: Response) => {
+  try {
+    const userID = req.params.userID;
+    const users = await prisma.user.findUnique({
+      where: {
+        id: userID,  
+      }, 
+      include: {
+        profile: true, 
+      }, 
+    })
+    if (users == null) {
+      res.status(500).json({ error: "Invalid user"});
+    }
+    else {
+      res.status(200).json(users.profile);
+    }
+  }
+  catch (error: any){
+    res.status(500).json({ error: (error as Error).message}); 
+  }
+}
+
+const getUserRole = async (req: Request, res: Response) => {
+  try {
+    const userID = req.params.userID;
+    const users = await prisma.user.findUnique({
+      where: {
+        id: userID,  
+      }, 
+    })
+    if (users == null) {
+      res.status(500).json({ error: "Invalid user"});
+    }
+    else {
+      res.status(200).json(users.role);
+    }
+  }
+  catch (error: any){
+    res.status(500).json({ error: (error as Error).message}); 
+  }
+}
+
+const getUserPreferences = async (req: Request, res: Response) => {
+  try {
+    const userID = req.params.userID;
+    const users = await prisma.user.findUnique({
+      where: {
+        id: userID,  
+      }, 
+      include: {
+        preferences: true, 
+      }, 
+    })
+    res.status(200).json(users?.preferences);
+  }
+  catch (error: any){
+    res.status(500).json({ error: (error as Error).message}); 
+  }
+}
+
 export default {
   createUser,
   deleteUser,
   updateUser,
   getAllUsers,
   getSearchedUser,
+  getUserProfile, 
+  getUserRole, 
+  getUserPreferences, 
 };

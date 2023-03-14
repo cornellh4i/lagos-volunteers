@@ -1,3 +1,4 @@
+import { userRole } from "@prisma/client";
 import request from "supertest";
 import app from "../src/server";
 
@@ -135,3 +136,74 @@ describe("Testing /users/search", () => {
     expect(response.status).toBe(200);
   });
 });
+
+describe("Testing GET /users/:userid/profile", () => {
+
+  test("GET user's profile", async () => {
+    // This is temporary till we create an endpoint to get a specific user
+    const users = await request(app).get("/users");
+    const userid = users.body[0].id;
+
+    const response = await request(app)
+      .get("/users/" + userid + "/profile");
+    expect(response.status).toBe(200);
+  }); 
+
+  test("GET 2nd user's profile", async () => {
+    const user = {
+      email: "jdo583@cornell.edu",
+    };
+
+    const users = await request(app).get("/users");
+    const userid = users.body[1].id;
+
+    const response = await request(app)
+      .get("/users/" + userid + "/profile"); 
+    const data = response.body;
+    expect(response.status).toBe(200);
+  })
+}); 
+
+describe ("Testing GET /users/:userid/role", () => {
+  test ("GET supervisor user's role", async() => {
+    const users = await request(app).get("/users");
+    const userid = users.body[1].id;
+
+    const response = await request(app)
+      .get("/users/" + userid + "/role"); 
+    const data = response.body;
+    expect(response.status).toBe(200);
+  })
+
+  test ("GET user's default role", async() => {
+    const users = await request(app).get("/users");
+    const userid = users.body[0].id;
+
+    const response = await request(app)
+      .get("/users/" + userid + "/role");
+    const data = response.body;
+    expect(response.status).toBe(200);
+  })
+}); 
+
+describe ("Testing GET /users/:userid/preferences", () => {
+  test ("GET user's default preferences", async() => {
+    const users = await request(app).get("/users");
+    const userid = users.body[0].id;
+
+    const response = await request(app)
+      .get("/users/" + userid + "/preferences"); 
+    const data = response.body;
+    expect(response.status).toBe(200);
+  })
+
+  test ("GET user's non-default preferences", async() => {
+    const users = await request(app).get("/users");
+    const userid = users.body[1].id;
+
+    const response = await request(app)
+      .get("/users/" + userid + "/preferences"); 
+    const data = response.body;
+    expect(response.status).toBe(200);
+  })
+}); 
