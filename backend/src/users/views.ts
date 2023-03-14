@@ -14,5 +14,10 @@ userRouter.get("/search", userController.getSearchedUser);
 userRouter.get("/users/:userid/profile", userController.getUserProfile); 
 userRouter.get("/users/:userid/role", userController.getUserRole); 
 userRouter.get("/users/:userid/preferences", userController.getUserPreferences); 
+userRouter.get("/:userID", userController.getUserByID)
+userRouter.get("/:userID/created", userController.getCreatedEvents)
+userRouter.get("/:userID/registered", userController.getRegisteredEvents)
+userRouter.get("/:userID/hours", userController.getHours)
+
 
 export default userRouter;
