@@ -51,7 +51,22 @@ const createUser = async (req: Request, res: Response) => {
     const newUser = await prisma.user.create({
       data: {
         ...req.body,
+        profile:{
+          create:{
+            ...req.body.profile
+        }
       },
+        preferences:{
+          create:{
+            ...req.body.preferences
+        }
+      },
+      permissions:{
+        create:{
+          ...req.body.permissions
+      }
+    },
+    },
     });
     if(newUser.role){
       createFirebaseUser(newUser.email,"12345678",newUser.role);
