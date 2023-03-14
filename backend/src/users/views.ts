@@ -17,7 +17,5 @@ userRouter.put("/:userID", auth, userController.updateUser);
 userRouter.get("/", auth, userController.getAllUsers);
 //@ts-ignore
 userRouter.get("/search", auth, userController.getSearchedUser);
-//@ts-ignore
-userRouter.get("/:userID", auth, userController.getUserByID);
 
 export default userRouter;

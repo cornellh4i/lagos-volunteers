@@ -5,31 +5,6 @@ import { userRole, UserStatus } from "@prisma/client";
 import prisma from "../../client";
 
 /**
- * Gets user by userID in database and all data associated with user
- * credit: this code is written by daniel
- * @returns promise with user or error
- *
- */
-const getUserByID = async (req: Request, res: Response) => {
-  try {
-    const userID = req.params.userID;
-    const user = await prisma.user.findUnique({
-      where: {
-        id: userID,
-      },
-    });
-
-    if (user == null) {
-      throw Error("Null User")
-    }
-
-    res.status(200).json(user);
-  } catch (error) {
-    res.status(500).json({ error: (error as Error).message });
-  }
-};
-
-/**
  * Creates a new user with information specified in the request body.
  * Request body includes:
  * - Email (String)
@@ -207,5 +182,4 @@ export default {
   updateUser,
   getAllUsers,
   getSearchedUser,
-  getUserByID,
 };
