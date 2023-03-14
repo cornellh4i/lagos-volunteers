@@ -4,13 +4,6 @@ import { UserRecord } from 'firebase-admin/lib/auth/user-record';
 import { userRole } from '@prisma/client';
 const { getAuth } = require("firebase-admin/auth");
 
-// declare module 'express' {
-//   interface Request {
-//     authToken: string;
-//     authId: string;
-//   }
-// }
-
 export interface IGetAuthTokenRequest extends Request {
   authToken: string;
   authId: string;
@@ -65,6 +58,9 @@ export const authIfVolunteer = (
         req.authId = userInfo.uid;
         return next();
       }
+      return res.status(401).send({ 
+        error: 'You are not a volunteer to make this request' 
+      });
     } catch (e) {
       return res.status(401).send({ 
         error: 'You are not authorized to make this request' 
@@ -87,6 +83,9 @@ export const authIfSupervisor = (
         req.authId = userInfo.uid;
         return next();
       }
+      return res.status(401).send({ 
+        error: 'You are not a supervisor to make this request' 
+      });
     } catch (e) {
       return res.status(401).send({ 
         error: 'You are not authorized to make this request' 
@@ -111,6 +110,9 @@ export const authIfAdmin = (
         req.authId = userInfo.uid;
         return next();
       }
+      return res.status(401).send({ 
+        error: 'You are not an admin to make this request' 
+      });
     } catch (e) {
       return res.status(401).send({ 
         error: 'You are not authorized to make this request' 
@@ -119,7 +121,7 @@ export const authIfAdmin = (
   })
 }
 
-
+/** Create a firebase user and define the custom claims based on the role. */
 export const createFirebaseUser = (
   email:string,
   password: string,
@@ -129,7 +131,6 @@ export const createFirebaseUser = (
   .createUser({
     email: email,
     password: password
-    
   })
   .then((userRecord: UserRecord) => {
     // See the UserRecord reference doc for the contents of userRecord.

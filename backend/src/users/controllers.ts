@@ -1,6 +1,5 @@
 import { Request, Response } from "express";
 import { userRole, UserStatus } from "@prisma/client";
-import { createFirebaseUser } from "../middleware/auth"
 
 // We are using one connection to prisma client to prevent multiple connections
 import prisma from "../../client";
@@ -68,10 +67,6 @@ const createUser = async (req: Request, res: Response) => {
     },
     },
     });
-    if(newUser.role){
-      createFirebaseUser(newUser.email,"12345678",newUser.role);
-    }
-    createFirebaseUser(newUser.email,"12345678",userRole.VOLUNTEER);
     res.status(201).json(newUser);
 
   } catch (error: any) {

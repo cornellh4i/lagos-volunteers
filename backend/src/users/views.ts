@@ -1,6 +1,6 @@
 import { Router } from "express";
 import userController from "./controllers";
-import { auth, authIfAdmin } from "../middleware/auth"
+import { auth } from "../middleware/auth"
 const userRouter = Router();
 
 /** User Specific Routes */
@@ -9,13 +9,15 @@ const userRouter = Router();
 // HERE IS A TYPESCRIPT COMPILER ERROR THAT WE DON'T KNOW HOW TO FIX :)
 //@ts-ignore
 userRouter.post("/", auth, userController.createUser);
-userRouter.delete("/:userID", userController.deleteUser);
-userRouter.put("/:userID", userController.updateUser);
+//@ts-ignore
+userRouter.delete("/:userID", auth, userController.deleteUser);
+//@ts-ignore
+userRouter.put("/:userID", auth, userController.updateUser);
 //@ts-ignore
 userRouter.get("/", auth, userController.getAllUsers);
 //@ts-ignore
-userRouter.get("/search",auth, userController.getSearchedUser);
+userRouter.get("/search", auth, userController.getSearchedUser);
 //@ts-ignore
-userRouter.get("/:userID", userController.getUserByID);
+userRouter.get("/:userID", auth, userController.getUserByID);
 
 export default userRouter;
