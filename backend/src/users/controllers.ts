@@ -161,6 +161,11 @@ const getSearchedUser = async (req: Request, res: Response) => {
   }
 };
 
+/**
+ * Gets the specified user's profile
+ * @param userid 
+ * @returns the specified user's profile
+ */
 const getUserProfile = async (req: Request, res: Response) => {
   try {
     const userID = req.params.userID;
@@ -184,6 +189,11 @@ const getUserProfile = async (req: Request, res: Response) => {
   }
 }
 
+/**
+ * Gets the specified user's role
+ * @param userid 
+ * @returns the specified user's role
+ */
 const getUserRole = async (req: Request, res: Response) => {
   try {
     const userID = req.params.userID;
@@ -204,6 +214,11 @@ const getUserRole = async (req: Request, res: Response) => {
   }
 }
 
+/**
+ * Gets the specified user's preferences
+ * @param userid 
+ * @returns the specified user's preferences
+ */
 const getUserPreferences = async (req: Request, res: Response) => {
   try {
     const userID = req.params.userID;
