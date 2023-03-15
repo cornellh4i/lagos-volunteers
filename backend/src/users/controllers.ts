@@ -351,7 +351,7 @@ const getUserPreferences = async (req: Request, res: Response) => {
     });
 
     if (user == null) {
-      throw Error("Null User")
+      throw Error("Null Use")
     }
 
     res.status(200).json(user.preferences);
