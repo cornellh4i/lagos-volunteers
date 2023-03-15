@@ -51,17 +51,76 @@ const createUser = async (req: Request, res: Response) => {
 /**
  * Deletes specified user by userID.
  * @returns promise with userID or error.
+ * Deleting a user is little bit tricky because we have to delete all the records. Check back to this
  */
 const deleteUser = async (req: Request, res: Response) => {
   // #swagger.tags = ['Users']
   try {
     const userID = req.params.userID;
 
-    const deleteUser = await prisma.user.delete({
+    // First we check if the user records exist
+    const preferences = await prisma.userPreferences.findFirst({
+      where: {
+        userId: userID,
+      },
+    });
+    const profile = await prisma.profile.findFirst({
+      where: {
+        userId: userID,
+      },
+    });
+    const permission = await prisma.permission.findFirst({
+      where: {
+        userId: userID,
+      },
+    });
+    const events = await prisma.eventEnrollment.findMany({
+      where: {
+        userId: userID,
+      },
+    });
+
+    const user = await prisma.user.findFirst({
       where: {
         id: userID,
       },
     });
+
+    await Promise.all([
+      preferences &&
+        (await prisma.userPreferences.delete({
+          where: {
+            userId: userID,
+          },
+        })),
+
+      events &&
+        (await prisma.eventEnrollment.deleteMany({
+          where: {
+            userId: userID,
+          },
+        })),
+
+      profile &&
+        (await prisma.profile.delete({
+          where: {
+            userId: userID,
+          },
+        })),
+
+      permission &&
+        (await prisma.permission.delete({
+          where: {
+            userId: userID,
+          },
+        })),
+
+      await prisma.user.delete({
+        where: {
+          id: userID,
+        },
+      }),
+    ]);
     res.status(200).json(userID);
   } catch (error: any) {
     res.status(500).json({ error: error.message });
@@ -243,7 +302,7 @@ const editStatus = async (req: Request, res: Response) => {
   // #swagger.tags = ['Users']
   const userid = req.params.userid;
   const status = req.params.status;
-  console.log(JSON.stringify(req.params));
+
   try {
     const users = await prisma.user.update({
       where: {
@@ -267,7 +326,7 @@ const editRole = async (req: Request, res: Response) => {
   // #swagger.tags = ['Users']
   const userid = req.params.userid;
   const role = req.params.role;
-  console.log(JSON.stringify(req.params));
+
   try {
     const users = await prisma.user.update({
       where: {
@@ -293,7 +352,7 @@ const editHours = async (req: Request, res: Response) => {
   try {
     const userid = req.params.userid;
     const hours = req.params.hours;
-    console.log(JSON.stringify(req.params));
+
     const updatedUser = await prisma.user.update({
       where: {
         id: userid,

@@ -51,18 +51,17 @@ describe("Testing PUT /users/:userid", () => {
 
 describe("Testing PUT /users/:userid/profile", () => {
   test("edit a user's profile with an existing and not existing fields", async () => {
-    const profile = {
-      firstName: "Arizona",
-      nickname: "99cents",
-      imageURL: null,
-      disciplinaryNotices: 0,
-    };
     const user = {
       email: "testeditprof@gmail.com",
       role: "ADMIN",
       status: "ACTIVE",
       hours: 0,
-      profile: { create: profile },
+      profile: {
+        firstName: "Arizona",
+        nickname: "99cents",
+        imageURL: null,
+        disciplinaryNotices: 0,
+      },
     };
 
     const createdUser = await request(app).post("/users").send(user);
@@ -87,15 +86,15 @@ describe("Testing PUT /users/:userid/profile", () => {
 
 describe("Testing PUT /users/:userid/preferences", () => {
   test("edit a user's preferences with an existing and not existing fields", async () => {
-    const preferences = {
-      sendEmailNotification: true,
-    };
     const user = {
       email: "testeditpref@gmail.com",
-      preferences: { create: preferences },
+      preferences: {
+        sendEmailNotification: true,
+      },
     };
 
     const createdUser = await request(app).post("/users").send(user);
+
     const userid = createdUser.body.id;
 
     const editPreferences = {
@@ -150,24 +149,21 @@ describe("Testing PATCH /users/:userid/hours/:hours", () => {
  * configuration that needs to be done to delete a user. Will get back to this.
  */
 
-// describe ("Testing DELETE user",() => {
+describe("Testing DELETE user", () => {
+  test("Delete valid user", async () => {
+    // This is temporary till we create ann endpoint to get a specific user
+    const users = await request(app).get("/users");
+    const userid = users.body[0].id;
+    const response = await request(app).delete("/users/" + userid);
+    expect(response.status).toBe(200);
+  });
 
-//   test("Delete valid user", async () => {
-
-//     // This is temporary till we create ann endpoint to get a specific user
-//     const users  = await request(app).get("/users/all");
-//     const userid = users.body[0].id;
-//     const response = await request(app).delete("/users/"+ userid);
-//     console.log(response.error)
-//     expect(response.status).toBe(200);
-//   });
-
-//   test("Delete invalid user", async () => {
-//     const userid = -1
-//     const response = await request(app).delete("/users/" + userid);
-//     expect(response.status).toBe(500);
-//   })
-// });
+  test("Delete invalid user", async () => {
+    const userid = -1;
+    const response = await request(app).delete("/users/" + userid);
+    expect(response.status).toBe(500);
+  });
+});
 
 describe("Testing /users/search", () => {
   test("GET users with status=ACTIVE", async () => {
