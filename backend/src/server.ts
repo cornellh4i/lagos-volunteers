@@ -5,7 +5,6 @@ import eventRouter from "./events/views";
 import swaggerUI from "swagger-ui-express";
 import spec from "../api-spec.json";
 
-
 const app: Application = express();
 
 // Middleware to parse json request bodies
