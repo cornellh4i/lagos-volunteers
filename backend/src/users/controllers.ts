@@ -162,7 +162,7 @@ const getSearchedUser = async (req: Request, res: Response) => {
 };
 
 /**
- * Updates a user profile with information specified in the request body. 
+ * Updates a user profile with information specified in the request body.
  * Request body includes:
  * - Profile (Profile)
  * @returns promise with updated user or error.
@@ -171,15 +171,15 @@ const getSearchedUser = async (req: Request, res: Response) => {
 const editProfile = async (req: Request, res: Response) => {
   // #swagger.tags = ['Users']
   try {
-    const userid = req.params.userid
+    const userid = req.params.userid;
     const users = await prisma.user.update({
       where: { id: userid },
       data: {
         profile: {
           update: {
-            ...req.body
+            ...req.body,
           },
-        }
+        },
       },
       include: {
         profile: true,
@@ -189,17 +189,17 @@ const editProfile = async (req: Request, res: Response) => {
   } catch (error) {
     res.status(500).json({ error: (error as Error).message });
   }
-}
+};
 
 /**
- * Updates a user preferences with information specified in the request body. 
+ * Updates a user preferences with information specified in the request body.
  * Request body includes:
  * - Preferences (UserPreferences)
  * @returns promise with updated user or error.
  */
 const editPreferences = async (req: Request, res: Response) => {
   // #swagger.tags = ['Users']
-  const userid = req.params.userid
+  const userid = req.params.userid;
 
   try {
     const users = await prisma.user.update({
@@ -207,9 +207,9 @@ const editPreferences = async (req: Request, res: Response) => {
       data: {
         preferences: {
           update: {
-            ...req.body
-          }
-        }
+            ...req.body,
+          },
+        },
       },
       include: {
         preferences: true,
@@ -219,82 +219,80 @@ const editPreferences = async (req: Request, res: Response) => {
   } catch (error) {
     res.status(500).json({ error: (error as Error).message });
   }
-}
+};
 
-/** 
- * Updates a user's status with the specified role in the params. 
- * @returns promise with user or error 
-*/
+/**
+ * Updates a user's status with the specified role in the params.
+ * @returns promise with user or error
+ */
 const editStatus = async (req: Request, res: Response) => {
   // #swagger.tags = ['Users']
-  const userid = req.params.userid
-  const status = req.params.status
+  const userid = req.params.userid;
+  const status = req.params.status;
   console.log(JSON.stringify(req.params));
   try {
     const users = await prisma.user.update({
       where: {
-        id: userid
+        id: userid,
       },
       data: {
-        status: status as UserStatus
-      }
+        status: status as UserStatus,
+      },
     });
     res.status(200).json(users);
   } catch (error) {
     res.status(500).json({ error: (error as Error).message });
   }
-}
+};
 
-/** 
- * Updates a user's role with the specified role in the params. 
- * @returns promise with user or error 
-*/
+/**
+ * Updates a user's role with the specified role in the params.
+ * @returns promise with user or error
+ */
 const editRole = async (req: Request, res: Response) => {
   // #swagger.tags = ['Users']
-  const userid = req.params.userid
-  const role = req.params.role
+  const userid = req.params.userid;
+  const role = req.params.role;
   console.log(JSON.stringify(req.params));
   try {
     const users = await prisma.user.update({
       where: {
-        id: userid
+        id: userid,
       },
       data: {
-        role: role as userRole
-      }
+        role: role as userRole,
+      },
     });
     res.status(200).json(users);
   } catch (error) {
     res.status(500).json({ error: (error as Error).message });
   }
-}
+};
 
-/** 
- * Updates a user's hours with the specified role in the params. 
- * @returns promise with user or error 
-*/
+/**
+ * Updates a user's hours with the specified role in the params.
+ * @returns promise with user or error
+ */
 const editHours = async (req: Request, res: Response) => {
   // #swagger.tags = ['Users']
 
   try {
-    const userid = req.params.userid
-    const hours = req.params.hours
+    const userid = req.params.userid;
+    const hours = req.params.hours;
     console.log(JSON.stringify(req.params));
     const updatedUser = await prisma.user.update({
       where: {
-        id: userid
+        id: userid,
       },
       data: {
-        hours: parseInt(hours)
-      }
+        hours: parseInt(hours),
+      },
     });
     res.status(200).json(updatedUser);
   } catch (error) {
     res.status(500).json({ error: (error as Error).message });
   }
-}
-
-
+};
 
 export default {
   createUser,
@@ -306,5 +304,5 @@ export default {
   editPreferences,
   editStatus,
   editRole,
-  editHours
+  editHours,
 };
