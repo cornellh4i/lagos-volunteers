@@ -30,7 +30,7 @@ export const auth = (
   res: Response,
   next: NextFunction
 ) => {
-  getAuthToken(req, res, async () => {
+    getAuthToken(req, res, async () => {
     try {
       const { authToken } = req;
       const userInfo = await firebase.auth().verifyIdToken(authToken);
@@ -42,6 +42,7 @@ export const auth = (
       });
     }
   });
+
 };
 
 /** Authorizes a request if a token is present with the volunteer claim, 

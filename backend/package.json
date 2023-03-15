@@ -31,7 +31,7 @@
     "start": "ts-node -r dotenv/config src/index.ts",
     "backend": "nodemon -r dotenv/config src/index.ts",
     "build": "tsc",
-    "test": "prisma db seed && jest",
+    "test": "NODE_ENV=test prisma db seed && jest",
     "swagger": "ts-node -r dotenv/config src/swagger.ts"
   },
   "prisma": {
