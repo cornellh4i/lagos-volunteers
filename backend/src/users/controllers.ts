@@ -177,7 +177,7 @@ const getUserByID = async (req: Request, res: Response) => {
     });
 
     if (user == null) {
-      throw Error("Null User")
+      throw Error("Null User");
     }
 
     res.status(200).json(user);
@@ -187,7 +187,7 @@ const getUserByID = async (req: Request, res: Response) => {
 };
 
 /**
- * Gets all events created by the requested user in the database. 
+ * Gets all events created by the requested user in the database.
  * @returns promise with Event[] or error
  *
  *
@@ -200,12 +200,12 @@ const getCreatedEvents = async (req: Request, res: Response) => {
         id: userID,
       },
       include: {
-        createdEvents: true
-      }
+        createdEvents: true,
+      },
     });
 
     if (user == null) {
-      throw Error("Null User")
+      throw Error("Null User");
     }
 
     res.status(200).json(user.createdEvents);
@@ -215,7 +215,7 @@ const getCreatedEvents = async (req: Request, res: Response) => {
 };
 
 /**
- * Gets all events the requested user is registered in in the database. 
+ * Gets all events the requested user is registered in in the database.
  * @returns promise with EventEnrollment[] or error
  *
  *
@@ -228,12 +228,12 @@ const getRegisteredEvents = async (req: Request, res: Response) => {
         id: userID,
       },
       include: {
-        events: true
-      }
+        events: true,
+      },
     });
 
     if (user == null) {
-      throw Error("Null User")
+      throw Error("Null User");
     }
 
     res.status(200).json(user.events);
@@ -243,7 +243,7 @@ const getRegisteredEvents = async (req: Request, res: Response) => {
 };
 
 /**
- * Gets registeredAt field in database of the requested user. 
+ * Gets registeredAt field in database of the requested user.
  * @returns promise with Int or error
  *
  *
@@ -258,7 +258,7 @@ const getHours = async (req: Request, res: Response) => {
     });
 
     if (user == null) {
-      throw Error("Null User")
+      throw Error("Null User");
     }
 
     res.status(200).json(user.hours);
@@ -269,7 +269,7 @@ const getHours = async (req: Request, res: Response) => {
 
 /**
  * Gets the specified user's profile
- * @param userid 
+ * @param userid
  * @returns the specified user's profile
  */
 const getUserProfile = async (req: Request, res: Response) => {
@@ -277,27 +277,25 @@ const getUserProfile = async (req: Request, res: Response) => {
     const userID = req.params.userID;
     const users = await prisma.user.findUnique({
       where: {
-        id: userID,  
-      }, 
+        id: userID,
+      },
       include: {
-        profile: true, 
-      }, 
-    })
+        profile: true,
+      },
+    });
     if (users == null) {
-      res.status(500).json({ error: "Invalid user"});
-    }
-    else {
+      res.status(500).json({ error: "Invalid user" });
+    } else {
       res.status(200).json(users.profile);
     }
+  } catch (error: any) {
+    res.status(500).json({ error: (error as Error).message });
   }
-  catch (error: any){
-    res.status(500).json({ error: (error as Error).message}); 
-  }
-}
+};
 
 /**
  * Gets the specified user's role
- * @param userid 
+ * @param userid
  * @returns the specified user's role
  */
 const getUserRole = async (req: Request, res: Response) => {
@@ -305,24 +303,22 @@ const getUserRole = async (req: Request, res: Response) => {
     const userID = req.params.userID;
     const users = await prisma.user.findUnique({
       where: {
-        id: userID,  
-      }, 
-    })
+        id: userID,
+      },
+    });
     if (users == null) {
-      res.status(500).json({ error: "Invalid user"});
-    }
-    else {
+      res.status(500).json({ error: "Invalid user" });
+    } else {
       res.status(200).json(users.role);
     }
+  } catch (error: any) {
+    res.status(500).json({ error: (error as Error).message });
   }
-  catch (error: any){
-    res.status(500).json({ error: (error as Error).message}); 
-  }
-}
+};
 
 /**
  * Gets the specified user's preferences
- * @param userid 
+ * @param userid
  * @returns the specified user's preferences
  */
 const getUserPreferences = async (req: Request, res: Response) => {
@@ -330,18 +326,17 @@ const getUserPreferences = async (req: Request, res: Response) => {
     const userID = req.params.userID;
     const users = await prisma.user.findUnique({
       where: {
-        id: userID,  
-      }, 
+        id: userID,
+      },
       include: {
-        preferences: true, 
-      }, 
-    })
+        preferences: true,
+      },
+    });
     res.status(200).json(users?.preferences);
+  } catch (error: any) {
+    res.status(500).json({ error: (error as Error).message });
   }
-  catch (error: any){
-    res.status(500).json({ error: (error as Error).message}); 
-  }
-}
+};
 
 export default {
   createUser,
@@ -353,7 +348,7 @@ export default {
   getCreatedEvents,
   getRegisteredEvents,
   getHours,
-  getUserProfile, 
-  getUserRole, 
-  getUserPreferences, 
+  getUserProfile,
+  getUserRole,
+  getUserPreferences,
 };
