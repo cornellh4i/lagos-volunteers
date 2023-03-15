@@ -1,5 +1,5 @@
 import * as firebase from 'firebase-admin';
-import { NextFunction, Request, Response, RequestHandler } from 'express';
+import { NextFunction, Request, Response } from 'express';
 import { UserRecord } from 'firebase-admin/lib/auth/user-record';
 import { userRole } from '@prisma/client';
 const { getAuth } = require("firebase-admin/auth");
