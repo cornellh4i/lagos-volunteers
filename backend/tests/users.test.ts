@@ -156,7 +156,6 @@ describe("Testing GET /users/:userid/profile", () => {
     const userid = users.body[1].id;
 
     const response = await request(app).get("/users/" + userid + "/profile");
-    const data = response.body;
     expect(response.status).toBe(200);
   });
 });
@@ -167,7 +166,6 @@ describe("Testing GET /users/:userid/role", () => {
     const userid = users.body[1].id;
 
     const response = await request(app).get("/users/" + userid + "/role");
-    const data = response.body;
     expect(response.status).toBe(200);
   });
 
@@ -176,7 +174,6 @@ describe("Testing GET /users/:userid/role", () => {
     const userid = users.body[0].id;
 
     const response = await request(app).get("/users/" + userid + "/role");
-    const data = response.body;
     expect(response.status).toBe(200);
   });
 });
@@ -189,7 +186,6 @@ describe("Testing GET /users/:userid/preferences", () => {
     const response = await request(app).get(
       "/users/" + userid + "/preferences"
     );
-    const data = response.body;
     expect(response.status).toBe(200);
   });
 
@@ -216,15 +212,10 @@ describe("Testing GET /users/:userid/profile", () => {
   });
 
   test("GET 2nd user's profile", async () => {
-    const user = {
-      email: "jdo583@cornell.edu",
-    };
-
     const users = await request(app).get("/users");
     const userid = users.body[1].id;
 
     const response = await request(app).get("/users/" + userid + "/profile");
-    const data = response.body;
     expect(response.status).toBe(200);
   });
 });
@@ -235,7 +226,6 @@ describe("Testing GET /users/:userid/role", () => {
     const userid = users.body[1].id;
 
     const response = await request(app).get("/users/" + userid + "/role");
-    const data = response.body;
     expect(response.status).toBe(200);
   });
 
@@ -244,7 +234,6 @@ describe("Testing GET /users/:userid/role", () => {
     const userid = users.body[0].id;
 
     const response = await request(app).get("/users/" + userid + "/role");
-    const data = response.body;
     expect(response.status).toBe(200);
   });
 });
@@ -257,7 +246,6 @@ describe("Testing GET /users/:userid/preferences", () => {
     const response = await request(app).get(
       "/users/" + userid + "/preferences"
     );
-    const data = response.body;
     expect(response.status).toBe(200);
   });
 
@@ -268,7 +256,6 @@ describe("Testing GET /users/:userid/preferences", () => {
     const response = await request(app).get(
       "/users/" + userid + "/preferences"
     );
-    const data = response.body;
     expect(response.status).toBe(200);
   });
 });

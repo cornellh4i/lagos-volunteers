@@ -3,6 +3,7 @@ import { userRole, UserStatus } from "@prisma/client";
 
 // We are using one connection to prisma client to prevent multiple connections
 import prisma from "../../client";
+import { getEffectiveTypeParameterDeclarations } from "typescript";
 
 /**
  * Creates a new user with information specified in the request body.
@@ -239,7 +240,13 @@ const getRegisteredEvents = async (req: Request, res: Response) => {
       throw Error("Null User");
     }
 
-    res.status(200).json(user.events);
+    const eventArray: String[] = [];
+    for (let i = 0; i < user.events.length; i++) {
+      eventArray.push(user.events[i].eventId)
+
+    }
+
+    res.status(200).json(eventArray);
   } catch (error) {
     res.status(500).json({ error: (error as Error).message });
   }
@@ -280,7 +287,7 @@ const getUserProfile = async (req: Request, res: Response) => {
   // #swagger.tags = ['Users']
   try {
     const userID = req.params.userID;
-    const users = await prisma.user.findUnique({
+    const user = await prisma.user.findUnique({
       where: {
         id: userID,
       },
@@ -288,12 +295,14 @@ const getUserProfile = async (req: Request, res: Response) => {
         profile: true,
       },
     });
-    if (users == null) {
-      res.status(500).json({ error: "Invalid user" });
-    } else {
-      res.status(200).json(users.profile);
+
+    if (user == null) {
+      throw Error("Null User")
     }
-  } catch (error: any) {
+
+    res.status(200).json(user.profile);
+  }
+  catch (error: any) {
     res.status(500).json({ error: (error as Error).message });
   }
 };
@@ -307,16 +316,17 @@ const getUserRole = async (req: Request, res: Response) => {
   // #swagger.tags = ['Users']
   try {
     const userID = req.params.userID;
-    const users = await prisma.user.findUnique({
+    const user = await prisma.user.findUnique({
       where: {
         id: userID,
       },
     });
-    if (users == null) {
-      res.status(500).json({ error: "Invalid user" });
-    } else {
-      res.status(200).json(users.role);
+
+    if (user == null) {
+      throw Error("Null User")
     }
+
+    res.status(200).json(user.role);
   } catch (error: any) {
     res.status(500).json({ error: (error as Error).message });
   }
@@ -331,7 +341,7 @@ const getUserPreferences = async (req: Request, res: Response) => {
   // #swagger.tags = ['Users']
   try {
     const userID = req.params.userID;
-    const users = await prisma.user.findUnique({
+    const user = await prisma.user.findUnique({
       where: {
         id: userID,
       },
@@ -339,7 +349,12 @@ const getUserPreferences = async (req: Request, res: Response) => {
         preferences: true,
       },
     });
-    res.status(200).json(users?.preferences);
+
+    if (user == null) {
+      throw Error("Null User")
+    }
+
+    res.status(200).json(user.preferences);
   } catch (error: any) {
     res.status(500).json({ error: (error as Error).message });
   }
