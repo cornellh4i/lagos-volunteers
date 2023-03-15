@@ -168,6 +168,7 @@ const getSearchedUser = async (req: Request, res: Response) => {
  *
  */
 const getUserByID = async (req: Request, res: Response) => {
+  // #swagger.tags = ['Users']
   try {
     const userID = req.params.userID;
     const user = await prisma.user.findUnique({
@@ -193,6 +194,7 @@ const getUserByID = async (req: Request, res: Response) => {
  *
  */
 const getCreatedEvents = async (req: Request, res: Response) => {
+  // #swagger.tags = ['Users']
   try {
     const userID = req.params.userID;
     const user = await prisma.user.findUnique({
@@ -221,6 +223,7 @@ const getCreatedEvents = async (req: Request, res: Response) => {
  *
  */
 const getRegisteredEvents = async (req: Request, res: Response) => {
+  // #swagger.tags = ['Users']
   try {
     const userID = req.params.userID;
     const user = await prisma.user.findUnique({
@@ -249,6 +252,7 @@ const getRegisteredEvents = async (req: Request, res: Response) => {
  *
  */
 const getHours = async (req: Request, res: Response) => {
+  // #swagger.tags = ['Users']
   try {
     const userID = req.params.userID;
     const user = await prisma.user.findUnique({
@@ -273,6 +277,7 @@ const getHours = async (req: Request, res: Response) => {
  * @returns the specified user's profile
  */
 const getUserProfile = async (req: Request, res: Response) => {
+  // #swagger.tags = ['Users']
   try {
     const userID = req.params.userID;
     const users = await prisma.user.findUnique({
@@ -299,6 +304,7 @@ const getUserProfile = async (req: Request, res: Response) => {
  * @returns the specified user's role
  */
 const getUserRole = async (req: Request, res: Response) => {
+  // #swagger.tags = ['Users']
   try {
     const userID = req.params.userID;
     const users = await prisma.user.findUnique({
@@ -322,6 +328,7 @@ const getUserRole = async (req: Request, res: Response) => {
  * @returns the specified user's preferences
  */
 const getUserPreferences = async (req: Request, res: Response) => {
+  // #swagger.tags = ['Users']
   try {
     const userID = req.params.userID;
     const users = await prisma.user.findUnique({

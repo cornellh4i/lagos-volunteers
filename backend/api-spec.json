@@ -130,6 +130,9 @@
         }
       },
       "get": {
+        "tags": [
+          "Users"
+        ],
         "description": "",
         "parameters": [
           {
@@ -204,6 +207,9 @@
     },
     "/users/users/{userid}/profile": {
       "get": {
+        "tags": [
+          "Users"
+        ],
         "description": "",
         "parameters": [
           {
@@ -225,6 +231,9 @@
     },
     "/users/users/{userid}/role": {
       "get": {
+        "tags": [
+          "Users"
+        ],
         "description": "",
         "parameters": [
           {
@@ -246,6 +255,9 @@
     },
     "/users/users/{userid}/preferences": {
       "get": {
+        "tags": [
+          "Users"
+        ],
         "description": "",
         "parameters": [
           {
@@ -267,6 +279,9 @@
     },
     "/users/{userID}/created": {
       "get": {
+        "tags": [
+          "Users"
+        ],
         "description": "",
         "parameters": [
           {
@@ -288,6 +303,9 @@
     },
     "/users/{userID}/registered": {
       "get": {
+        "tags": [
+          "Users"
+        ],
         "description": "",
         "parameters": [
           {
@@ -309,6 +327,9 @@
     },
     "/users/{userID}/hours": {
       "get": {
+        "tags": [
+          "Users"
+        ],
         "description": "",
         "parameters": [
           {
