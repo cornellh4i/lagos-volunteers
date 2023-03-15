@@ -128,6 +128,28 @@
             "description": "Internal Server Error"
           }
         }
+      },
+      "get": {
+        "tags": [
+          "Users"
+        ],
+        "description": "",
+        "parameters": [
+          {
+            "name": "userID",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
       }
     },
     "/users/search": {
@@ -183,7 +205,7 @@
         }
       }
     },
-    "/users/{userid}/profile": {
+    "/users/{userID}/profile": {
       "get": {
         "tags": [
           "Users"
@@ -191,7 +213,7 @@
         "description": "",
         "parameters": [
           {
-            "name": "userid",
+            "name": "userID",
             "in": "path",
             "required": true,
             "type": "string"
@@ -207,7 +229,7 @@
         }
       }
     },
-    "/users/{userid}/role": {
+    "/users/{userID}/role": {
       "get": {
         "tags": [
           "Users"
@@ -215,7 +237,7 @@
         "description": "",
         "parameters": [
           {
-            "name": "userid",
+            "name": "userID",
             "in": "path",
             "required": true,
             "type": "string"
@@ -231,7 +253,7 @@
         }
       }
     },
-    "/users/{userid}/preferences": {
+    "/users/{userID}/preferences": {
       "get": {
         "tags": [
           "Users"
@@ -239,7 +261,7 @@
         "description": "",
         "parameters": [
           {
-            "name": "userid",
+            "name": "userID",
             "in": "path",
             "required": true,
             "type": "string"
@@ -255,7 +277,7 @@
         }
       }
     },
-    "/users/{userid}": {
+    "/users/{userID}/created": {
       "get": {
         "tags": [
           "Users"
@@ -263,7 +285,7 @@
         "description": "",
         "parameters": [
           {
-            "name": "userid",
+            "name": "userID",
             "in": "path",
             "required": true,
             "type": "string"
@@ -279,7 +301,7 @@
         }
       }
     },
-    "/users/{userid}/created": {
+    "/users/{userID}/registered": {
       "get": {
         "tags": [
           "Users"
@@ -287,7 +309,7 @@
         "description": "",
         "parameters": [
           {
-            "name": "userid",
+            "name": "userID",
             "in": "path",
             "required": true,
             "type": "string"
@@ -303,7 +325,7 @@
         }
       }
     },
-    "/users/{userid}/registered": {
+    "/users/{userID}/hours": {
       "get": {
         "tags": [
           "Users"
@@ -311,31 +333,7 @@
         "description": "",
         "parameters": [
           {
-            "name": "userid",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          },
-          "500": {
-            "description": "Internal Server Error"
-          }
-        }
-      }
-    },
-    "/users/{userid}/hours": {
-      "get": {
-        "tags": [
-          "Users"
-        ],
-        "description": "",
-        "parameters": [
-          {
-            "name": "userid",
+            "name": "userID",
             "in": "path",
             "required": true,
             "type": "string"
