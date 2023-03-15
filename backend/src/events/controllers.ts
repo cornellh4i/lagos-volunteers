@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import {EventMode, EventStatus} from "@prisma/client";
+import { EventMode, EventStatus } from "@prisma/client";
 
 // We are using one connection to prisma client to prevent multiple connections
 import prisma from "../../client";
@@ -28,7 +28,7 @@ const createEvent = async (req: Request, res: Response) => {
 
     res.status(201).json(newEvent);
   } catch (error: any) {
-    res.status(500).json({error : error.message });
+    res.status(500).json({ error: error.message });
   }
 };
 
@@ -66,7 +66,6 @@ const getEvents = async (req: Request, res: Response) => {
     res.status(500).json({ result });
   }
 };
-
 
 /**
  * Updates an event with information specified in the request body.
@@ -178,5 +177,5 @@ export default {
   updateEvent,
   getUpcomingEvents,
   getCurrentEvents,
-  getPastEvents
+  getPastEvents,
 };
