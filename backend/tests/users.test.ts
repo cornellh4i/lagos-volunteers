@@ -49,6 +49,101 @@ describe("Testing PUT /users/:userid", () => {
   });
 });
 
+describe("Testing PUT /users/:userid/profile", () => {
+  test("edit a user's profile with an existing and not existing fields", async () => {
+    const profile = {
+      firstName: "Arizona",
+      nickname: "99cents",
+      imageURL: null,
+      disciplinaryNotices: 0,
+    };
+    const user = {
+      email: "testeditprof@gmail.com",
+      role: "ADMIN",
+      status: "ACTIVE",
+      hours: 0,
+      profile: { create: profile },
+    };
+
+    const createdUser = await request(app).post("/users").send(user);
+    const userid = createdUser.body.id;
+
+    const editProfile = {
+      firstName: "Arizona2",
+      lastName: "Tea2",
+    };
+
+    const response = await request(app)
+      .put("/users/" + userid + "/profile")
+      .send(editProfile);
+
+    const data = response.body;
+    expect(data.profile.firstName).toBe("Arizona2");
+    expect(data.profile.lastName).toBe("Tea2");
+    expect(data.profile.nickname).toBe("99cents");
+    expect(response.status).toBe(200);
+  });
+});
+
+describe("Testing PUT /users/:userid/preferences", () => {
+  test("edit a user's preferences with an existing and not existing fields", async () => {
+    const preferences = {
+      sendEmailNotification: true,
+    };
+    const user = {
+      email: "testeditpref@gmail.com",
+      preferences: { create: preferences },
+    };
+
+    const createdUser = await request(app).post("/users").send(user);
+    const userid = createdUser.body.id;
+
+    const editPreferences = {
+      sendEmailNotification: false,
+      sendPromotions: true,
+    };
+
+    const response = await request(app)
+      .put("/users/" + userid + "/preferences")
+      .send(editPreferences);
+
+    const data = response.body;
+
+    expect(data.preferences.sendEmailNotification).toBe(false);
+    expect(data.preferences.sendPromotions).toBe(true);
+    expect(data.preferences.userId).toBe(userid);
+    expect(response.status).toBe(200);
+  });
+});
+
+describe("Testing PATCH /users/:userid/status/:status", () => {
+  test("PATCH edit a user's role with an existing role", async () => {
+    // This is temporary till we create an endpoint to get a specific user
+    const users = await request(app).get("/users");
+    const userid = users.body[1].id;
+    const response = await request(app).patch(
+      "/users/" + userid + "/role" + "/SUPERVISOR"
+    );
+    const data = response.body;
+    expect(data.role).toBe("SUPERVISOR");
+    expect(response.status).toBe(200);
+  });
+});
+
+describe("Testing PATCH /users/:userid/hours/:hours", () => {
+  test("PATCH edit a user's hours with an existing hours", async () => {
+    // This is temporary till we create an endpoint to get a specific user
+    const users = await request(app).get("/users");
+    const userid = users.body[1].id;
+    const response = await request(app).patch(
+      "/users/" + userid + "/hours" + "/10"
+    );
+    const data = response.body;
+    expect(data.hours).toBe(10);
+    expect(response.status).toBe(200);
+  });
+});
+
 /**
  * Because of the relationships that exist in our database, deleting a
  * user will also delete all of their associated data. But there is extra
