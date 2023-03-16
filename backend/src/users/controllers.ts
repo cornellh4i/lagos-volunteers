@@ -3,7 +3,6 @@ import { userRole, UserStatus } from "@prisma/client";
 
 // We are using one connection to prisma client to prevent multiple connections
 import prisma from "../../client";
-import { getEffectiveTypeParameterDeclarations } from "typescript";
 
 /**
  * Creates a new user with information specified in the request body.
@@ -240,10 +239,9 @@ const getRegisteredEvents = async (req: Request, res: Response) => {
       throw Error("Null User");
     }
 
-    const eventArray: String[] = [];
+    const eventArray: string[] = [];
     for (let i = 0; i < user.events.length; i++) {
-      eventArray.push(user.events[i].eventId)
-
+      eventArray.push(user.events[i].eventId);
     }
 
     res.status(200).json(eventArray);
@@ -297,12 +295,11 @@ const getUserProfile = async (req: Request, res: Response) => {
     });
 
     if (user == null) {
-      throw Error("Null User")
+      throw Error("Null User");
     }
 
     res.status(200).json(user.profile);
-  }
-  catch (error: any) {
+  } catch (error: any) {
     res.status(500).json({ error: (error as Error).message });
   }
 };
@@ -323,7 +320,7 @@ const getUserRole = async (req: Request, res: Response) => {
     });
 
     if (user == null) {
-      throw Error("Null User")
+      throw Error("Null User");
     }
 
     res.status(200).json(user.role);
@@ -351,7 +348,7 @@ const getUserPreferences = async (req: Request, res: Response) => {
     });
 
     if (user == null) {
-      throw Error("Null User")
+      throw Error("Null User");
     }
 
     res.status(200).json(user.preferences);
