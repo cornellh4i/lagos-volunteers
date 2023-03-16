@@ -25,9 +25,23 @@ const createUser = async (req: Request, res: Response) => {
     const newUser = await prisma.user.create({
       data: {
         ...req.body,
+        profile: {
+          create: {
+            ...req.body.profile,
+          },
+        },
+        preferences: {
+          create: {
+            ...req.body.preferences,
+          },
+        },
+        permissions: {
+          create: {
+            ...req.body.permissions,
+          },
+        },
       },
     });
-
     res.status(201).json(newUser);
   } catch (error: any) {
     res.status(500).json({ error: error.message });
@@ -37,17 +51,76 @@ const createUser = async (req: Request, res: Response) => {
 /**
  * Deletes specified user by userID.
  * @returns promise with userID or error.
+ * Deleting a user is little bit tricky because we have to delete all the records. Check back to this
  */
 const deleteUser = async (req: Request, res: Response) => {
   // #swagger.tags = ['Users']
   try {
     const userID = req.params.userID;
 
-    const deleteUser = await prisma.user.delete({
+    // First we check if the user records exist
+    const preferences = await prisma.userPreferences.findFirst({
+      where: {
+        userId: userID,
+      },
+    });
+    const profile = await prisma.profile.findFirst({
+      where: {
+        userId: userID,
+      },
+    });
+    const permission = await prisma.permission.findFirst({
+      where: {
+        userId: userID,
+      },
+    });
+    const events = await prisma.eventEnrollment.findMany({
+      where: {
+        userId: userID,
+      },
+    });
+
+    const user = await prisma.user.findFirst({
       where: {
         id: userID,
       },
     });
+
+    await Promise.all([
+      preferences &&
+        (await prisma.userPreferences.delete({
+          where: {
+            userId: userID,
+          },
+        })),
+
+      events &&
+        (await prisma.eventEnrollment.deleteMany({
+          where: {
+            userId: userID,
+          },
+        })),
+
+      profile &&
+        (await prisma.profile.delete({
+          where: {
+            userId: userID,
+          },
+        })),
+
+      permission &&
+        (await prisma.permission.delete({
+          where: {
+            userId: userID,
+          },
+        })),
+
+      await prisma.user.delete({
+        where: {
+          id: userID,
+        },
+      }),
+    ]);
     res.status(200).json(userID);
   } catch (error: any) {
     res.status(500).json({ error: error.message });
@@ -305,6 +378,36 @@ const getUserProfile = async (req: Request, res: Response) => {
 };
 
 /**
+ * Updates a user profile with information specified in the request body.
+ * Request body includes:
+ * - Profile (Profile)
+ * @returns promise with updated user or error.
+ */
+
+const editProfile = async (req: Request, res: Response) => {
+  // #swagger.tags = ['Users']
+  try {
+    const userid = req.params.userid;
+    const users = await prisma.user.update({
+      where: { id: userid },
+      data: {
+        profile: {
+          update: {
+            ...req.body,
+          },
+        },
+      },
+      include: {
+        profile: true,
+      },
+    });
+    res.status(200).json(users);
+  } catch (error) {
+    res.status(500).json({ error: (error as Error).message });
+  }
+};
+
+/**
  * Gets the specified user's role
  * @param userid
  * @returns the specified user's role
@@ -357,6 +460,109 @@ const getUserPreferences = async (req: Request, res: Response) => {
   }
 };
 
+/**
+ * Updates a user preferences with information specified in the request body.
+ * Request body includes:
+ * - Preferences (UserPreferences)
+ * @returns promise with updated user or error.
+ */
+const editPreferences = async (req: Request, res: Response) => {
+  // #swagger.tags = ['Users']
+  const userid = req.params.userid;
+
+  try {
+    const users = await prisma.user.update({
+      where: { id: userid },
+      data: {
+        preferences: {
+          update: {
+            ...req.body,
+          },
+        },
+      },
+      include: {
+        preferences: true,
+      },
+    });
+    res.status(200).json(users);
+  } catch (error) {
+    res.status(500).json({ error: (error as Error).message });
+  }
+};
+
+/**
+ * Updates a user's status with the specified role in the params.
+ * @returns promise with user or error
+ */
+const editStatus = async (req: Request, res: Response) => {
+  // #swagger.tags = ['Users']
+  const userid = req.params.userid;
+  const status = req.params.status;
+
+  try {
+    const users = await prisma.user.update({
+      where: {
+        id: userid,
+      },
+      data: {
+        status: status as UserStatus,
+      },
+    });
+    res.status(200).json(users);
+  } catch (error) {
+    res.status(500).json({ error: (error as Error).message });
+  }
+};
+
+/**
+ * Updates a user's role with the specified role in the params.
+ * @returns promise with user or error
+ */
+const editRole = async (req: Request, res: Response) => {
+  // #swagger.tags = ['Users']
+  const userid = req.params.userid;
+  const role = req.params.role;
+
+  try {
+    const users = await prisma.user.update({
+      where: {
+        id: userid,
+      },
+      data: {
+        role: role as userRole,
+      },
+    });
+    res.status(200).json(users);
+  } catch (error) {
+    res.status(500).json({ error: (error as Error).message });
+  }
+};
+
+/**
+ * Updates a user's hours with the specified role in the params.
+ * @returns promise with user or error
+ */
+const editHours = async (req: Request, res: Response) => {
+  // #swagger.tags = ['Users']
+
+  try {
+    const userid = req.params.userid;
+    const hours = req.params.hours;
+
+    const updatedUser = await prisma.user.update({
+      where: {
+        id: userid,
+      },
+      data: {
+        hours: parseInt(hours),
+      },
+    });
+    res.status(200).json(updatedUser);
+  } catch (error) {
+    res.status(500).json({ error: (error as Error).message });
+  }
+};
+
 export default {
   createUser,
   deleteUser,
@@ -370,4 +576,9 @@ export default {
   getUserProfile,
   getUserRole,
   getUserPreferences,
+  editProfile,
+  editPreferences,
+  editStatus,
+  editRole,
+  editHours,
 };
