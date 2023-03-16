@@ -235,6 +235,149 @@ const getSearchedUser = async (req: Request, res: Response) => {
 };
 
 /**
+ * Gets user by userID in database and all data associated with user
+ * @returns promise with user or error
+ *
+ *
+ */
+const getUserByID = async (req: Request, res: Response) => {
+  // #swagger.tags = ['Users']
+  try {
+    const userID = req.params.userID;
+    const user = await prisma.user.findUnique({
+      where: {
+        id: userID,
+      },
+    });
+
+    if (user == null) {
+      throw Error("Null User");
+    }
+
+    res.status(200).json(user);
+  } catch (error) {
+    res.status(500).json({ error: (error as Error).message });
+  }
+};
+
+/**
+ * Gets all events created by the requested user in the database.
+ * @returns promise with Event[] or error
+ *
+ *
+ */
+const getCreatedEvents = async (req: Request, res: Response) => {
+  // #swagger.tags = ['Users']
+  try {
+    const userID = req.params.userID;
+    const user = await prisma.user.findUnique({
+      where: {
+        id: userID,
+      },
+      include: {
+        createdEvents: true,
+      },
+    });
+
+    if (user == null) {
+      throw Error("Null User");
+    }
+
+    res.status(200).json(user.createdEvents);
+  } catch (error) {
+    res.status(500).json({ error: (error as Error).message });
+  }
+};
+
+/**
+ * Gets all events the requested user is registered in in the database.
+ * @returns promise with EventEnrollment[] or error
+ *
+ *
+ */
+const getRegisteredEvents = async (req: Request, res: Response) => {
+  // #swagger.tags = ['Users']
+  try {
+    const userID = req.params.userID;
+    const user = await prisma.user.findUnique({
+      where: {
+        id: userID,
+      },
+      include: {
+        events: true,
+      },
+    });
+
+    if (user == null) {
+      throw Error("Null User");
+    }
+
+    const eventArray: string[] = [];
+    for (let i = 0; i < user.events.length; i++) {
+      eventArray.push(user.events[i].eventId);
+    }
+
+    res.status(200).json(eventArray);
+  } catch (error) {
+    res.status(500).json({ error: (error as Error).message });
+  }
+};
+
+/**
+ * Gets registeredAt field in database of the requested user.
+ * @returns promise with Int or error
+ *
+ *
+ */
+const getHours = async (req: Request, res: Response) => {
+  // #swagger.tags = ['Users']
+  try {
+    const userID = req.params.userID;
+    const user = await prisma.user.findUnique({
+      where: {
+        id: userID,
+      },
+    });
+
+    if (user == null) {
+      throw Error("Null User");
+    }
+
+    res.status(200).json(user.hours);
+  } catch (error) {
+    res.status(500).json({ error: (error as Error).message });
+  }
+};
+
+/**
+ * Gets the specified user's profile
+ * @param userid
+ * @returns the specified user's profile
+ */
+const getUserProfile = async (req: Request, res: Response) => {
+  // #swagger.tags = ['Users']
+  try {
+    const userID = req.params.userID;
+    const user = await prisma.user.findUnique({
+      where: {
+        id: userID,
+      },
+      include: {
+        profile: true,
+      },
+    });
+
+    if (user == null) {
+      throw Error("Null User");
+    }
+
+    res.status(200).json(user.profile);
+  } catch (error: any) {
+    res.status(500).json({ error: (error as Error).message });
+  }
+};
+
+/**
  * Updates a user profile with information specified in the request body.
  * Request body includes:
  * - Profile (Profile)
@@ -260,6 +403,59 @@ const editProfile = async (req: Request, res: Response) => {
     });
     res.status(200).json(users);
   } catch (error) {
+    res.status(500).json({ error: (error as Error).message });
+  }
+};
+
+/**
+ * Gets the specified user's role
+ * @param userid
+ * @returns the specified user's role
+ */
+const getUserRole = async (req: Request, res: Response) => {
+  // #swagger.tags = ['Users']
+  try {
+    const userID = req.params.userID;
+    const user = await prisma.user.findUnique({
+      where: {
+        id: userID,
+      },
+    });
+
+    if (user == null) {
+      throw Error("Null User");
+    }
+
+    res.status(200).json(user.role);
+  } catch (error: any) {
+    res.status(500).json({ error: (error as Error).message });
+  }
+};
+
+/**
+ * Gets the specified user's preferences
+ * @param userid
+ * @returns the specified user's preferences
+ */
+const getUserPreferences = async (req: Request, res: Response) => {
+  // #swagger.tags = ['Users']
+  try {
+    const userID = req.params.userID;
+    const user = await prisma.user.findUnique({
+      where: {
+        id: userID,
+      },
+      include: {
+        preferences: true,
+      },
+    });
+
+    if (user == null) {
+      throw Error("Null User");
+    }
+
+    res.status(200).json(user.preferences);
+  } catch (error: any) {
     res.status(500).json({ error: (error as Error).message });
   }
 };
@@ -373,6 +569,13 @@ export default {
   updateUser,
   getAllUsers,
   getSearchedUser,
+  getUserByID,
+  getCreatedEvents,
+  getRegisteredEvents,
+  getHours,
+  getUserProfile,
+  getUserRole,
+  getUserPreferences,
   editProfile,
   editPreferences,
   editStatus,

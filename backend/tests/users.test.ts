@@ -1,3 +1,4 @@
+import { userRole } from "@prisma/client";
 import request from "supertest";
 import app from "../src/server";
 
@@ -143,28 +144,6 @@ describe("Testing PATCH /users/:userid/hours/:hours", () => {
   });
 });
 
-/**
- * Because of the relationships that exist in our database, deleting a
- * user will also delete all of their associated data. But there is extra
- * configuration that needs to be done to delete a user. Will get back to this.
- */
-
-describe("Testing DELETE user", () => {
-  test("Delete valid user", async () => {
-    // This is temporary till we create ann endpoint to get a specific user
-    const users = await request(app).get("/users");
-    const userid = users.body[0].id;
-    const response = await request(app).delete("/users/" + userid);
-    expect(response.status).toBe(200);
-  });
-
-  test("Delete invalid user", async () => {
-    const userid = -1;
-    const response = await request(app).delete("/users/" + userid);
-    expect(response.status).toBe(500);
-  });
-});
-
 describe("Testing /users/search", () => {
   test("GET users with status=ACTIVE", async () => {
     const response = await request(app).get("/users/search?status=ACTIVE");
@@ -224,5 +203,230 @@ describe("Testing /users/search", () => {
       expect(data[i].status).toBe("ACTIVE");
     }
     expect(response.status).toBe(200);
+  });
+});
+
+describe("Testing GET /users/:userid/profile", () => {
+  test("GET user's profile", async () => {
+    // This is temporary till we create an endpoint to get a specific user
+    const users = await request(app).get("/users");
+    const userid = users.body[0].id;
+
+    const response = await request(app).get("/users/" + userid + "/profile");
+    expect(response.status).toBe(200);
+  });
+
+  test("GET 2nd user's profile", async () => {
+    const user = {
+      email: "jdo583@cornell.edu",
+    };
+
+    const users = await request(app).get("/users");
+    const userid = users.body[1].id;
+
+    const response = await request(app).get("/users/" + userid + "/profile");
+    expect(response.status).toBe(200);
+  });
+});
+
+describe("Testing GET /users/:userid/role", () => {
+  test("GET supervisor user's role", async () => {
+    const users = await request(app).get("/users");
+    const userid = users.body[1].id;
+
+    const response = await request(app).get("/users/" + userid + "/role");
+    expect(response.status).toBe(200);
+  });
+
+  test("GET user's default role", async () => {
+    const users = await request(app).get("/users");
+    const userid = users.body[0].id;
+
+    const response = await request(app).get("/users/" + userid + "/role");
+    expect(response.status).toBe(200);
+  });
+});
+
+describe("Testing GET /users/:userid/preferences", () => {
+  test("GET user's default preferences", async () => {
+    const users = await request(app).get("/users");
+    const userid = users.body[0].id;
+
+    const response = await request(app).get(
+      "/users/" + userid + "/preferences"
+    );
+    expect(response.status).toBe(200);
+  });
+
+  test("GET user's non-default preferences", async () => {
+    const users = await request(app).get("/users");
+    const userid = users.body[1].id;
+
+    const response = await request(app).get(
+      "/users/" + userid + "/preferences"
+    );
+    const data = response.body;
+    expect(response.status).toBe(200);
+  });
+});
+
+describe("Testing GET /users/:userid/profile", () => {
+  test("GET user's profile", async () => {
+    // This is temporary till we create an endpoint to get a specific user
+    const users = await request(app).get("/users");
+    const userid = users.body[0].id;
+
+    const response = await request(app).get("/users/" + userid + "/profile");
+    expect(response.status).toBe(200);
+  });
+
+  test("GET 2nd user's profile", async () => {
+    const users = await request(app).get("/users");
+    const userid = users.body[1].id;
+
+    const response = await request(app).get("/users/" + userid + "/profile");
+    expect(response.status).toBe(200);
+  });
+});
+
+describe("Testing GET /users/:userid/role", () => {
+  test("GET supervisor user's role", async () => {
+    const users = await request(app).get("/users");
+    const userid = users.body[1].id;
+
+    const response = await request(app).get("/users/" + userid + "/role");
+    expect(response.status).toBe(200);
+  });
+
+  test("GET user's default role", async () => {
+    const users = await request(app).get("/users");
+    const userid = users.body[0].id;
+
+    const response = await request(app).get("/users/" + userid + "/role");
+    expect(response.status).toBe(200);
+  });
+});
+
+describe("Testing GET /users/:userid/preferences", () => {
+  test("GET user's default preferences", async () => {
+    const users = await request(app).get("/users");
+    const userid = users.body[0].id;
+
+    const response = await request(app).get(
+      "/users/" + userid + "/preferences"
+    );
+    expect(response.status).toBe(200);
+  });
+
+  test("GET user's non-default preferences", async () => {
+    const users = await request(app).get("/users");
+    const userid = users.body[1].id;
+
+    const response = await request(app).get(
+      "/users/" + userid + "/preferences"
+    );
+    expect(response.status).toBe(200);
+  });
+});
+
+describe("Testing /users/:userID", () => {
+  test("GET same user after POST", async () => {
+    const user = {
+      email: "test@gmail.com",
+    };
+
+    const POSTresponse = await request(app).post("/users").send(user);
+    const userID = POSTresponse.body.id;
+
+    const GETresponse = await request(app).get("/users/" + userID);
+    const data = GETresponse.body;
+    expect(GETresponse.status).toBe(200);
+    expect(data.email).toBe("test@gmail.com");
+  });
+
+  test("GET null user", async () => {
+    const response = await request(app).get("/users/z");
+    expect(response.status).toBe(500);
+  });
+});
+
+describe("Testing /users/:userID/created", () => {
+  test("GET createdEvents of user with created events", async () => {
+    const POSTresponse = await request(app).get(
+      "/users/search?firstName=Prisma"
+    );
+    const userID = POSTresponse.body[0].id;
+
+    const GETresponse = await request(app).get("/users/" + userID + "/created");
+    const data = GETresponse.body;
+    expect(GETresponse.status).toBe(200);
+    expect(data.length).toBe(6);
+  });
+
+  test("GET createdEvents of null user", async () => {
+    const response = await request(app).get("/users/z/created");
+    expect(response.status).toBe(500);
+  });
+});
+
+describe("Testing /users/:userID/registered", () => {
+  test("GET registeredEvents of user with registered events", async () => {
+    const POSTresponse = await request(app).get(
+      "/users/search?firstName=Alice"
+    );
+    const userID = POSTresponse.body[0].id;
+
+    const GETresponse = await request(app).get(
+      "/users/" + userID + "/registered"
+    );
+    const data = GETresponse.body;
+    expect(GETresponse.status).toBe(200);
+    expect(data.length).toBe(1);
+  });
+
+  test("GET registeredEvents of null user", async () => {
+    const response = await request(app).get("/users/z/registered");
+    expect(response.status).toBe(500);
+  });
+});
+
+describe("Testing /users/:userID/hours", () => {
+  test("GET hours of user", async () => {
+    const POSTresponse = await request(app).get(
+      "/users/search?firstName=Prisma"
+    );
+    const userID = POSTresponse.body[0].id;
+
+    const GETresponse = await request(app).get("/users/" + userID + "/hours");
+    const data = GETresponse.body;
+    expect(GETresponse.status).toBe(200);
+    expect(data).toBe(0);
+  });
+
+  test("GET hours of null user", async () => {
+    const response = await request(app).get("/users/z/hours");
+    expect(response.status).toBe(500);
+  });
+});
+
+/**
+ * Because of the relationships that exist in our database, deleting a
+ * user will also delete all of their associated data. But there is extra
+ * configuration that needs to be done to delete a user. Will get back to this.
+ */
+
+describe("Testing DELETE user", () => {
+  test("Delete valid user", async () => {
+    // This is temporary till we create ann endpoint to get a specific user
+    const users = await request(app).get("/users");
+    const userid = users.body[0].id;
+    const response = await request(app).delete("/users/" + userid);
+    expect(response.status).toBe(200);
+  });
+
+  test("Delete invalid user", async () => {
+    const userid = -1;
+    const response = await request(app).delete("/users/" + userid);
+    expect(response.status).toBe(500);
   });
 });
