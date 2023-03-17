@@ -175,7 +175,7 @@ async function main() {
   await prisma.profile.deleteMany({});
   await prisma.permission.deleteMany({});
   await prisma.user.deleteMany({});
-
+  
   for (const u of userData) {
     const user = await prisma.user.create({
       data: u,

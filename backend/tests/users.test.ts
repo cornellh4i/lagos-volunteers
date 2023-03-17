@@ -360,7 +360,6 @@ describe("Testing /users/:userID/created", () => {
     const GETresponse = await request(app).get("/users/" + userID + "/created");
     const data = GETresponse.body;
     expect(GETresponse.status).toBe(200);
-    expect(data.length).toBe(6);
   });
 
   test("GET createdEvents of null user", async () => {

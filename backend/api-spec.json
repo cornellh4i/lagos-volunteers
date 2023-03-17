@@ -487,6 +487,78 @@
         }
       }
     },
+    "/events/create/{userID}": {
+      "post": {
+        "tags": [
+          "Events"
+        ],
+        "description": "",
+        "parameters": [
+          {
+            "name": "userID",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Created"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/events/{eventID}": {
+      "put": {
+        "tags": [
+          "Events"
+        ],
+        "description": "",
+        "parameters": [
+          {
+            "name": "eventID",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/events/delete/{eventID}": {
+      "delete": {
+        "tags": [
+          "Events"
+        ],
+        "description": "",
+        "parameters": [
+          {
+            "name": "eventID",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
     "/events/": {
       "get": {
         "tags": [
