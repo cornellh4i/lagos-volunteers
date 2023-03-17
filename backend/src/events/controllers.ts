@@ -19,10 +19,16 @@ import prisma from "../../client";
  */
 const createEvent = async (req: Request, res: Response) => {
   // #swagger.tags = ['Events']
+
   try {
     const newEvent = await prisma.event.create({
       data: {
         ...req.body,
+        owner:{
+          connect:{
+            id: req.params.userID,
+        }
+      }
       },
     });
 
@@ -41,11 +47,18 @@ const deleteEvent = async (req: Request, res: Response) => {
   try {
     const eventID = req.params.eventID;
 
-    const deleteEvent = await prisma.event.delete({
-      where: {
-        id: eventID,
-      },
-    });
+    Promise.all([
+      await prisma.eventEnrollment.delete({
+        where: {
+          eventId: eventID,
+        },
+      }),
+      await prisma.event.delete({
+        where: {
+          id: eventID,
+        },
+      })
+    ])
     res.status(200).json(eventID);
   } catch (error: any) {
     res.status(500).json({ error: error.message });

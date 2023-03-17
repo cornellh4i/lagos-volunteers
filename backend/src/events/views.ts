@@ -5,9 +5,9 @@ const eventRouter = Router();
 
 /** Event Specific Routes */
 
-eventRouter.post("/", eventController.createEvent);
+eventRouter.post("/create/:userID", eventController.createEvent);
 eventRouter.put("/:eventID", eventController.updateEvent);
-eventRouter.delete("/:eventID", eventController.deleteEvent);
+eventRouter.delete("/delete/:eventID", eventController.deleteEvent);
 eventRouter.get("/", eventController.getEvents);
 eventRouter.get("/upcoming", eventController.getUpcomingEvents);
 eventRouter.get("/current", eventController.getCurrentEvents);
