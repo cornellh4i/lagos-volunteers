@@ -1,9 +1,13 @@
-import { Router } from "express";
+import { Router, RequestHandler } from "express";
 import eventController from "./controllers";
+import { auth } from "../middleware/auth";
 
 const eventRouter = Router();
 
-/** Event Specific Routes */
+// No provision for auth in test environment for now
+if (process.env.NODE_ENV !== "test") {
+  eventRouter.use(auth as RequestHandler);
+}
 
 eventRouter.post("/create/:userID", eventController.createEvent);
 eventRouter.put("/:eventID", eventController.updateEvent);

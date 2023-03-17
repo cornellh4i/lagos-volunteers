@@ -41,7 +41,7 @@ describe("Testing POST /events/create/:userID", () => {
       capacity: 10,
     };
     const users = await request(app).get("/users");
-    const response = await request(app).post(`/events/create/${users.body[0].id}`).send(event);
+    const response = await request(app).post(`/events/create/${users.body[1].id}`).send(event);
     const data = response.body;
     expect(data.name).toBe("Cool Event");
     expect(data.location).toBe("Hack Hall");
@@ -80,8 +80,9 @@ describe ("Testing DELETE event",() => {
   test("Delete valid event", async () => {
 
         const events  = await request(app).get("/events");
-        const eventid = events.body[0].id;
+        const eventid = events.body[1].id;
         const response = await request(app).delete("/events/delete/"+ eventid);
+        console.log(response.error);
         expect(response.status).toBe(200);
       });
 

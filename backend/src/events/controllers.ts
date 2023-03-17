@@ -47,8 +47,14 @@ const deleteEvent = async (req: Request, res: Response) => {
   try {
     const eventID = req.params.eventID;
 
+    const eventEnrollment = await prisma.eventEnrollment.findFirst({
+      where: {
+        eventId: eventID,
+      },
+    })
+
     Promise.all([
-      await prisma.eventEnrollment.delete({
+      eventEnrollment && await prisma.eventEnrollment.delete({
         where: {
           eventId: eventID,
         },
