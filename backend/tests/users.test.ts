@@ -432,7 +432,6 @@ describe("Testing DELETE user", () => {
 
 
 describe("Testing GET /users/pagination", () => {
-  
   test("Get 2 users after the second use", async () => {
     const users = await request(app).get("/users");
     const userid = users.body[1].id;
@@ -441,6 +440,7 @@ describe("Testing GET /users/pagination", () => {
     expect(response.status).toBe(200);
     expect(data.length).toBe(2);
   });
+  
   test("Get 10 users after the second use", async () => {
     // limit should be defaulted to 10
     const users = await request(app).get("/users");
