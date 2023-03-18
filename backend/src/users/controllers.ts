@@ -190,9 +190,9 @@ const getUsersPaginated = async (req: Request, res: Response) => {
   try {
     const query = req.query;
     const users = await prisma.user.findMany({
-      take: query.limit ? parseInt(query.limit as any) : 10,
+      take: query.limit ? parseInt(query.limit as string) : 10,
       cursor: {
-        id: query.after ? query.after as any : undefined,
+        id: query.after ? query.after as string : undefined,
       },
       orderBy: {
         id: "asc",
