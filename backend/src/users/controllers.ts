@@ -563,11 +563,40 @@ const editHours = async (req: Request, res: Response) => {
   }
 };
 
+/**
+ * Gets all Users in database with pagination
+ * @returns promise with all users or error
+ *
+ *
+ */
+const getUsersPaginated = async (req: Request, res: Response) => {
+  try {
+    var limit = 10
+    try{
+      limit = parseInt(req.params.limit)
+    }
+    catch (error) {}
+    const after = req.params.after
+    
+    const users = await prisma.user.findMany({
+      take: limit,
+      cursor: {
+        id: after,
+      }
+    }
+    );
+    res.status(200).json(users);
+  } catch (error) {
+    res.status(500).json({ error: (error as Error).message });
+  }
+};
+
 export default {
   createUser,
   deleteUser,
   updateUser,
   getAllUsers,
+  getUsersPaginated,
   getSearchedUser,
   getUserByID,
   getCreatedEvents,
@@ -580,5 +609,5 @@ export default {
   editPreferences,
   editStatus,
   editRole,
-  editHours,
+  editHours
 };

@@ -429,3 +429,11 @@ describe("Testing DELETE user", () => {
     expect(response.status).toBe(500);
   });
 });
+
+
+describe("Testing GET /users/pagination", () => {
+  test("Get 2 users after the second user", async () => {
+    const response = await request(app).get("/users/pagination?limit=2&after=clfedzhz80004haog9b3fetvs");
+    expect(response.status).toBe(200);
+  });
+});
