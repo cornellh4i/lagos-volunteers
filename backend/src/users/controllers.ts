@@ -3,6 +3,7 @@ import { userRole, UserStatus } from "@prisma/client";
 
 // We are using one connection to prisma client to prevent multiple connections
 import prisma from "../../client";
+import { SortOrder } from "mongoose";
 
 /**
  * Creates a new user with information specified in the request body.
@@ -88,32 +89,32 @@ const deleteUser = async (req: Request, res: Response) => {
 
     await Promise.all([
       preferences &&
-      (await prisma.userPreferences.delete({
-        where: {
-          userId: userID,
-        },
-      })),
+        (await prisma.userPreferences.delete({
+          where: {
+            userId: userID,
+          },
+        })),
 
       events &&
-      (await prisma.eventEnrollment.deleteMany({
-        where: {
-          userId: userID,
-        },
-      })),
+        (await prisma.eventEnrollment.deleteMany({
+          where: {
+            userId: userID,
+          },
+        })),
 
       profile &&
-      (await prisma.profile.delete({
-        where: {
-          userId: userID,
-        },
-      })),
+        (await prisma.profile.delete({
+          where: {
+            userId: userID,
+          },
+        })),
 
       permission &&
-      (await prisma.permission.delete({
-        where: {
-          userId: userID,
-        },
-      })),
+        (await prisma.permission.delete({
+          where: {
+            userId: userID,
+          },
+        })),
 
       await prisma.user.delete({
         where: {
@@ -564,24 +565,49 @@ const editHours = async (req: Request, res: Response) => {
 };
 
 /**
- * Returns sorted Users based on a key 
+ * Returns sorted Users based on a key
  * @returns promise with user or error
  */
 const getUsersSorted = async (req: Request, res: Response) => {
   // #swagger.tags = ['Users']
-  const userid = req.params.userid;
-  const role = req.params.role;
+  const query = req.query.sort as string;
+  const querySplit = query.split(":");
+  const key: String = querySplit[0];
+  const order = querySplit[1];
+
+  console.log(JSON.stringify(query));
+  console.log("key: " + key);
+  console.log("order: " + order);
 
   try {
-    const users = await prisma.user.findMany();
+    const users = await prisma.user.findMany({
+      select: {
+        email: key == "email" ? true : false,
+        hours: key == "hours" ? true : false,
+        profile: {
+          select: {
+            firstName: key == "firstName" ? true : false,
+            lastName: key == "lastName" ? true : false,
+          },
+        },
+      },
+
+      orderBy: [
+        {
+          email: order == "asc" ? "asc" : "desc",
+          hours: order == "asc" ? "asc" : "desc",
+          profile: {
+            firstName: order == "asc" ? "asc" : "desc",
+            lastName: order == "asc" ? "asc" : "desc",
+          },
+        },
+      ],
+    });
     res.status(200).json(users);
   } catch (error) {
     res.status(500).json({ error: (error as Error).message });
   }
 };
-
-
-
 
 export default {
   createUser,
