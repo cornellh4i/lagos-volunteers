@@ -189,6 +189,30 @@ const getPastEvents = async (req: Request, res: Response) => {
   }
 };
 
+
+/**
+ * Get all event info by eventID
+ * @returns promise with all event info or error
+ */
+const getEvent = async (req: Request, res: Response) => {
+  // #swagger.tags = ['Events']
+  try {
+    const eventID = req.params.eventID;
+
+    const event = await prisma.event.findUnique({
+      where: {
+        id: eventID,
+      }
+    });
+    res.status(200).json(event);
+  } catch (error) {
+    const result = (error as Error).message;
+    res.status(500).json({ result });
+  }
+};
+
+
+
 export default {
   createEvent,
   deleteEvent,
