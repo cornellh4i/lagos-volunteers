@@ -211,6 +211,9 @@ const getEvent = async (req: Request, res: Response) => {
   }
 };
 
+const deleteAttendee = async (req: Request, res: Response) => {
+
+}
 
 
 export default {
@@ -221,4 +224,5 @@ export default {
   getUpcomingEvents,
   getCurrentEvents,
   getPastEvents,
+  deleteAttendee
 };
