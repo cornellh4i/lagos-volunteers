@@ -432,8 +432,8 @@ describe("Testing DELETE user", () => {
 
 
 describe("Testing GET /users/pagination", () => {
-  test("Get 2 users after the second user", async () => {
-    const response = await request(app).get("/users/pagination?limit=2&after=clfedzhz80004haog9b3fetvs");
+  test("Get 2 users after the second use", async () => {
+    const response = await request(app).get("/users/pagination?limit=2&after=clf8p1emn0002hanas3kykcnf");
     expect(response.status).toBe(200);
   });
 });

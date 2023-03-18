@@ -571,18 +571,15 @@ const editHours = async (req: Request, res: Response) => {
  */
 const getUsersPaginated = async (req: Request, res: Response) => {
   try {
-    var limit = 10
-    try{
-      limit = parseInt(req.params.limit)
-    }
-    catch (error) {}
-    const after = req.params.after
-    
+    const query = req.query;
     const users = await prisma.user.findMany({
-      take: limit,
+      take: query.limit ? parseInt(query.limit as any) : 10,
       cursor: {
-        id: after,
-      }
+        id: query.after ? query.after as any : undefined,
+      },
+      orderBy: {
+        id: "asc",
+      },
     }
     );
     res.status(200).json(users);
