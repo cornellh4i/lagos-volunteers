@@ -16,6 +16,7 @@ userRouter.delete("/:userID", userController.deleteUser);
 userRouter.put("/:userID", userController.updateUser);
 userRouter.get("/", userController.getAllUsers);
 userRouter.get("/search", userController.getSearchedUser);
+userRouter.get("/sorting", userController.getUsersSorted);
 userRouter.get("/:userID/profile", userController.getUserProfile);
 userRouter.get("/:userID/role", userController.getUserRole);
 userRouter.get("/:userID/preferences", userController.getUserPreferences);
