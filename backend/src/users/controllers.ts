@@ -573,10 +573,6 @@ const getUsersSorted = async (req: Request, res: Response) => {
   const key: string = querySplit[0];
   const order = querySplit[1];
 
-  console.log(JSON.stringify(query));
-  console.log("key: " + key);
-  console.log("order: " + order);
-
   try {
     if (key == "email") {
       const users = await prisma.user.findMany({
