@@ -350,6 +350,31 @@ describe("Testing /users/:userID", () => {
   });
 });
 
+describe("Testing /users/sorting/", () => {
+  test("GET users sorted by firstName in ascending order", async () => {
+    const response = await request(app).get(
+      "/users/sorting?sort=firstName:asc"
+    );
+    expect(response.status).toBe(200);
+  });
+  test("GET users sorted by lastName in descending order", async () => {
+    const response = await request(app).get(
+      "/users/sorting?sort=firstName:desc"
+    );
+    expect(response.status).toBe(200);
+  });
+
+  test("GET users sorted by hours in descending order", async () => {
+    const response = await request(app).get("/users/sorting?sort=hours:desc");
+    expect(response.status).toBe(200);
+  });
+
+  test("GET users sorted by email in ascending order", async () => {
+    const response = await request(app).get("/users/sorting?sort=email:asc");
+    expect(response.status).toBe(200);
+  });
+});
+
 describe("Testing /users/:userID/created", () => {
   test("GET createdEvents of user with created events", async () => {
     const POSTresponse = await request(app).get(

@@ -565,7 +565,7 @@ const editHours = async (req: Request, res: Response) => {
 };
 
 /**
- * Returns sorted Users based on a key
+ * Returns sorted Users based on one key
  * @returns promise with user or error
  */
 const getUsersSorted = async (req: Request, res: Response) => {
@@ -580,30 +580,41 @@ const getUsersSorted = async (req: Request, res: Response) => {
   console.log("order: " + order);
 
   try {
-    const users = await prisma.user.findMany({
-      select: {
-        email: key == "email" ? true : false,
-        hours: key == "hours" ? true : false,
-        profile: {
-          select: {
-            firstName: key == "firstName" ? true : false,
-            lastName: key == "lastName" ? true : false,
-          },
-        },
-      },
-
-      orderBy: [
-        {
-          email: order == "asc" ? "asc" : "desc",
-          hours: order == "asc" ? "asc" : "desc",
+    if (key == "email") {
+      const users = await prisma.user.findMany({
+        orderBy: [{ email: order == "asc" ? "asc" : "desc" }],
+      });
+      res.status(200).json(users);
+    } else if (key == "hours") {
+      const users = await prisma.user.findMany({
+        orderBy: [{ hours: order == "asc" ? "asc" : "desc" }],
+      });
+      res.status(200).json(users);
+    } else if (key == "firstName") {
+      const users = await prisma.user.findMany({
+        orderBy: {
           profile: {
             firstName: order == "asc" ? "asc" : "desc",
+          },
+        },
+        include: {
+          profile: true,
+        },
+      });
+      res.status(200).json(users);
+    } else if (key == "lastName") {
+      const users = await prisma.user.findMany({
+        orderBy: {
+          profile: {
             lastName: order == "asc" ? "asc" : "desc",
           },
         },
-      ],
-    });
-    res.status(200).json(users);
+        include: {
+          profile: true,
+        },
+      });
+      res.status(200).json(users);
+    }
   } catch (error) {
     res.status(500).json({ error: (error as Error).message });
   }
