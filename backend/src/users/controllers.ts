@@ -3,8 +3,6 @@ import { userRole, UserStatus } from "@prisma/client";
 
 // We are using one connection to prisma client to prevent multiple connections
 import prisma from "../../client";
-import { SortOrder } from "mongoose";
-
 /**
  * Creates a new user with information specified in the request body.
  * Request body includes:
@@ -572,7 +570,7 @@ const getUsersSorted = async (req: Request, res: Response) => {
   // #swagger.tags = ['Users']
   const query = req.query.sort as string;
   const querySplit = query.split(":");
-  const key: String = querySplit[0];
+  const key: string = querySplit[0];
   const order = querySplit[1];
 
   console.log(JSON.stringify(query));
