@@ -3,6 +3,7 @@
 secrets/
 node_modules/
 .vscode
+/config
 
 
 # Optional npm cache directory
