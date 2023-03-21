@@ -189,7 +189,6 @@ const getPastEvents = async (req: Request, res: Response) => {
   }
 };
 
-
 /**
  * Get all event info by eventID
  * @returns promise with all event info or error
@@ -211,9 +210,156 @@ const getEvent = async (req: Request, res: Response) => {
   }
 };
 
-const deleteAttendee = async (req: Request, res: Response) => {
 
-}
+/**
+ * Gets all attendees registered for an event
+ * @returns promise with all attendees of the event or error
+ */
+
+const getAttendees = async (req: Request, res: Response) => {
+  //#swagger.tags = ['Events']
+  try {
+    const eventID = req.params.eventID;
+
+    const attendees = await prisma.eventEnrollment.findMany({
+      where: {
+        eventId: eventID
+      }
+    })
+    res.status(200).json(attendees);
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+
+/**
+ * Adds specified user to an event
+ * @returns promise with user or error
+ */
+
+const addAttendee = async (req: Request, res: Response) => {
+  //#swagger.tags = ['Events']
+  try {
+    const attendee = await prisma.eventEnrollment.create({
+      data: {
+        ...req.body,
+        eventId: {
+          connect: {
+            id: req.params.eventID,
+          }
+        },
+        userId: {
+          connect: {
+            id: req.params.userID,
+          }
+        }
+      }
+    });
+
+    res.status(200).json(attendee);
+  }
+  catch (error: any) {
+    res.status(500).json({ error: error.message })
+  }
+};
+
+
+
+const deleteAttendee = async (req: Request, res: Response) => {
+  try {
+    const eventID = req.params.eventID;
+    const userID = req.params.attendeeid;
+
+    const eventEnrollment = await prisma.event.findFirst({
+      where: {
+        id: eventID,
+      },
+    })
+
+    const attendee = await prisma.eventEnrollment.findFirst({
+      where: {
+        userId: userID,
+      }
+    })
+
+    Promise.all([
+      eventEnrollment && await prisma.eventEnrollment.delete({
+        where: {
+          eventId: eventID,
+          userId: userID, 
+        },
+      }),
+    ])
+    res.status(200).json(eventID);
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+const updateEventStatus = async(req: Request, res: Response) => {
+  try {
+    const eventID = req.params.eventID;
+    const eventStatus = req.body.status;
+
+    const updatedEvent = await prisma.event.update({
+      where: {
+        id: eventID,
+      },
+      data: {
+        status: eventStatus,
+        ...req.body
+      },
+    });
+
+    res.status(200).json(updatedEvent);
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+const updateEventOwner = async(req: Request, res: Response) => {
+  try {
+    const eventID = req.params.eventID;
+    //const eventStatus = req.params.status;
+    const eventOwner = req.body.owner;
+    const ownerID = req.params.ownerID;
+    //const eventStatus = req.params.status;
+
+    const updatedEvent = await prisma.event.update({
+      where: {
+        id: eventID,
+      },
+      data: {
+        owner: eventOwner,
+        ownerId: ownerID
+      },
+    });
+
+    res.status(200).json(updatedEvent);
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+const confirmUser = async(req: Request, res: Response) => {
+  try {
+    const eventID = req.params.eventID;
+    const userID = req.params.attendeeid
+
+    const updatedEvent = await prisma.eventEnrollment.update({
+      where: {
+        eventId: eventID,
+      },
+      data: {
+        showedUp: true,
+      },
+    });
+    res.status(200).json(updatedEvent);
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+}; 
 
 
 export default {
@@ -224,5 +370,10 @@ export default {
   getUpcomingEvents,
   getCurrentEvents,
   getPastEvents,
-  deleteAttendee
+  getEvent,
+  getAttendees,
+  deleteAttendee,
+  updateEventStatus,
+  updateEventOwner,
+  confirmUser
 };
