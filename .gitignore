@@ -4,6 +4,7 @@ secrets/
 node_modules/
 .vscode
 /config
+/frontend/src/config
 
 
 # Optional npm cache directory
