@@ -14,10 +14,6 @@ export default function Home() {
 		await signOutUser();
 	};
 
-	if (loading) {
-		return null;
-	}
-
 	if (!user) {
 		return <Login />;
 	}
