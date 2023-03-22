@@ -369,6 +369,7 @@ describe("Testing /users/sorting/", () => {
     expect(data[0].profile.firstName <= data[1].profile.firstName);
     expect(response.status).toBe(200);
   });
+  
   test("GET users sorted by lastName in descending order wkith null profiles", async () => {
     const response = await request(app).get(
       "/users/sorting?sort=firstName:desc"
