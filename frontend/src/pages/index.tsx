@@ -5,7 +5,7 @@ import { Inter } from "@next/font/google";
 import styles from "@/styles/Home.module.css";
 import { Button, Grid, Stack } from "@mui/material";
 import { useAuth } from "@/utils/AuthContext";
-import Login from "@/components/login";
+import Login from "@/components/Login";
 
 export default function Home() {
   const { user, loading, error, signOutUser } = useAuth();
