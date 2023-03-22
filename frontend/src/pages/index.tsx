@@ -7,7 +7,7 @@ import { Button, Grid, Stack } from "@mui/material";
 import { useAuth } from "@/utils/AuthContext";
 import Login from "@/components/Login";
 
-export default function Home() {
+const Home = () => {
   const { user, loading, error, signOutUser } = useAuth();
 
   const handleSignOut = async () => {
@@ -46,4 +46,6 @@ export default function Home() {
       </main>
     </>
   );
-}
+};
+
+export default Home;

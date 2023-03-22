@@ -24,7 +24,7 @@ export const theme = createTheme({
   },
 });
 
-export default function App({ Component, pageProps }: AppProps) {
+const App = ({ Component, pageProps }: AppProps) => {
   return (
     <StyledEngineProvider injectFirst>
       <ThemeProvider theme={theme}>
@@ -36,4 +36,6 @@ export default function App({ Component, pageProps }: AppProps) {
       </ThemeProvider>
     </StyledEngineProvider>
   );
-}
+};
+
+export default App;
