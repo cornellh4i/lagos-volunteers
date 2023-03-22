@@ -320,10 +320,8 @@ const updateEventStatus = async(req: Request, res: Response) => {
 
 const updateEventOwner = async(req: Request, res: Response) => {
   try {
-    const eventID = req.params.eventID;
-    //const eventStatus = req.params.status;
-    const eventOwner = req.body.owner;
-    const ownerID = req.params.ownerID;
+    const eventID = req.params.eventid;
+    const ownerId = req.params.ownerid
     //const eventStatus = req.params.status;
 
     const updatedEvent = await prisma.event.update({
@@ -331,8 +329,7 @@ const updateEventOwner = async(req: Request, res: Response) => {
         id: eventID,
       },
       data: {
-        owner: eventOwner,
-        ownerId: ownerID
+        ownerId: ownerId
       },
     });
 
@@ -372,6 +369,7 @@ export default {
   getPastEvents,
   getEvent,
   getAttendees,
+  addAttendee,
   deleteAttendee,
   updateEventStatus,
   updateEventOwner,

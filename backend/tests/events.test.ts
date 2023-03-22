@@ -183,23 +183,21 @@ describe ("Testing GET all attendees", () => {
   });*/
 
   describe("Testing PATCH /events/:eventid/owner/:ownerid", () => {
-    /*test("Change current owner", async () => {
+    test("Change current owner", async () => {
       const events = await request(app).get("/events");
       const eventID = events.body[1].id;
       const users = await request(app).get("/users");
       const userid = users.body[0].id;
       const response = await request(app).patch("/events/" + eventID + "/owner/" + userid); 
       expect(response.status).toBe(200);
-    });*/
+    });
 
     test("Change current owner", async () => {
       const events = await request(app).get("/events");
       const eventID = events.body[1].id;
-      const user = {
-        email: "desi2@gmail.com",
-        role: "ADMIN",
-      };
-      const response = await request(app).patch("/events/update/" + eventID + "/owner/" + user); 
+      const users = await request(app).get("/users");
+      const userid = users.body[0].id;
+      const response = await request(app).patch("/events/" + eventID + "/owner/" + userid); 
       console.log(response.error);
       expect(response.status).toBe(200);
     });
