@@ -203,7 +203,7 @@ const getEvent = async (req: Request, res: Response) => {
         id: eventID,
       }
     });
-    res.status(200).json(event);
+    res.status(200).json(eventID);
   } catch (error) {
     const result = (error as Error).message;
     res.status(500).json({ result });
@@ -223,7 +223,7 @@ const getAttendees = async (req: Request, res: Response) => {
 
     const attendees = await prisma.eventEnrollment.findMany({
       where: {
-        eventId: eventID
+        eventId: eventID,
       }
     })
     res.status(200).json(attendees);
@@ -240,18 +240,19 @@ const getAttendees = async (req: Request, res: Response) => {
 
 const addAttendee = async (req: Request, res: Response) => {
   //#swagger.tags = ['Events']
+ 
+
   try {
     const attendee = await prisma.eventEnrollment.create({
       data: {
-        ...req.body,
-        eventId: {
+        event: {
           connect: {
-            id: req.params.eventID,
+            id: req.params.eventid,
           }
         },
-        userId: {
+        user: {
           connect: {
-            id: req.params.userID,
+            id: req.params.attendeeid,
           }
         }
       }
@@ -260,6 +261,7 @@ const addAttendee = async (req: Request, res: Response) => {
     res.status(200).json(attendee);
   }
   catch (error: any) {
+    console.log(error)
     res.status(500).json({ error: error.message })
   }
 };
@@ -308,13 +310,13 @@ const updateEventStatus = async(req: Request, res: Response) => {
       },
       data: {
         status: eventStatus,
-        ...req.body
       },
     });
 
     res.status(200).json(updatedEvent);
-  } catch (error: any) {
-    res.status(500).json({ error: error.message });
+  } catch (error) {
+    const result = (error as Error).message;
+    res.status(500).json({ result });
   }
 };
 
@@ -322,7 +324,6 @@ const updateEventOwner = async(req: Request, res: Response) => {
   try {
     const eventID = req.params.eventid;
     const ownerId = req.params.ownerid
-    //const eventStatus = req.params.status;
 
     const updatedEvent = await prisma.event.update({
       where: {
@@ -341,12 +342,12 @@ const updateEventOwner = async(req: Request, res: Response) => {
 
 const confirmUser = async(req: Request, res: Response) => {
   try {
-    const eventID = req.params.eventID;
-    const userID = req.params.attendeeid
+    const eventID = req.params.eventid;
+    const userID = req.params.attendeeid;
 
     const updatedEvent = await prisma.eventEnrollment.update({
       where: {
-        eventId: eventID,
+        userId: userID,
       },
       data: {
         showedUp: true,

@@ -420,6 +420,7 @@ describe("Testing DELETE user", () => {
     const users = await request(app).get("/users");
     const userid = users.body[0].id;
     const response = await request(app).delete("/users/" + userid);
+    console.log(response.error)
     expect(response.status).toBe(200);
   });
 

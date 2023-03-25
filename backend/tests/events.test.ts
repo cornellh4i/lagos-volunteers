@@ -1,3 +1,4 @@
+import { EventStatus } from "@prisma/client";
 import { UserImportBuilder } from "firebase-admin/lib/auth/user-import-builder";
 import request from "supertest";
 import app from "../src/server";
@@ -95,19 +96,21 @@ describe ("Testing DELETE event",() => {
       })
 
 
-describe ("Testing GET event", () => {
+describe ("Testing GET event by eventID", () => {
   test("Get existing event", async () => {
 
     const events = await request(app).get("/events");
     const eventid = events.body[1].id;
-    const response = await request(app).get("/events/get/" + eventid);
+    const response = await request(app).get("/events/" + eventid);
+    console.log(response.error);
     expect(response.status).toBe(200);
   })
 
   test("Get non-existing event", async () => {
 
-    const eventid = "";
-    const response = await request(app).get("/events/get/" + eventid);
+    const eventid = -1;
+    const response = await request(app).get("/events/" + eventid);
+    console.log(response.error);
     expect(response.status).toBe(500);
   })
 })
@@ -116,103 +119,110 @@ describe ("Testing GET all attendees", () => {
   test("Get attendees for existing event", async () => {
 
     const events = await request(app).get("/events");
-    const eventid = events.body[1].id;
-    const response = await request(app).get("/events/get/attendees/" + eventid);
-    console.log(response.error);
+    const eventid = events.body[0].id;
+    const response = await request(app).get("/events/" + eventid + "/attendees");
     expect(response.status).toBe(200);
   })
+})
 
-  /*test("Get attendees for invalid event", async () => {
+  test("Get attendees for invalid event", async () => {
 
-    const eventid = -1;
-    const response = await request(app).get("/events/get/attendees/" + eventid);
+    const eventid = "";
+    const response = await request(app).get("/events/" + eventid + "/attendees");
     expect(response.status).toBe(500);
-  })*/
+  })
 
   describe ("Testing POST/events/:eventid/:attendeeid", () => {
     test("Add attendee for existing event", async () => {
 
       const events = await request(app).get("/events");
-      const eventID = events.body[1].eventid;
-      const attendeeid = events.body[1].userId;
-      //const userID = event.body[1].userID;
-      const response = await request(app).post("/events/" + eventID + "/attendees/" + attendeeid);
+      const users = await request(app).get("/users");
+      const eventID = events.body[1].id;
+      const attendeeid = users.body[1].id;
+      const response = await request(app).post("/events/" + eventID + "/"+ attendeeid);
+      console.log(response.error);
       expect(response.status).toBe(200);
     })
   })
 
-  /*describe("Testing DELETE /events/:eventid/attendees/:attendeeid", () => {
+  describe("Testing DELETE /events/:eventid/attendees/:attendeeid", () => {
     test("Delete an attendee", async () => {
-      /*const events = await request(app).get("/events");
-      const eventID = events.body[1].id;
-      const userID = events.body[0].userID;
-
       const events = await request(app).get("/events");
-      const event = events.body[1];
-      const eventID = events.body[1].id;
-      const userID = event.body[1].userId;
-
-      const response = await request(app).delete("/events/delete/" + eventID + "/attendees/" + userID);
-      console.log(response.error);
+      const attendees = await request(app).get("/users");
+      const eventid = events.body[1].id;
+      const attendeeid = attendees.body[0].id;
+      const response = await request(app).delete("/events/" + eventid + "/attendees/" + attendeeid);
       expect(response.status).toBe(200);
     });
 
     test("Delete an invalid attendee", async () => {
       const events = await request(app).get("/events");
-      const eventID = events.body[1].id;
-      const userID = events.body[0].userID;
+      const eventid = events.body[1].id;
+      const attendeeid = events.body[0].userID;
 
-      const response = await request(app).delete("/events/delete/" + eventID + "/attendees/" + userID);
+      const response = await request(app).delete("/events/" + eventid + "/attendees/" + attendeeid);
       expect(response.status).toBe(500);
     });
-  });*/
-/*
+  });
+
   describe("Testing PATCH /events/:eventid/status/:status", () => {
     test("Update event status to active", async () => {
       const events = await request(app).get("/events");
-      const eventID = events.body[1].id;
-      const response = await request(app).patch("/events/" + eventID + "/status/ACTIVE")
+      const eventid = events.body[0].id;
+      //let status: EventStatus = "ACTIVE";
+      const status = "ACTIVE";
+      //const status = events.body[1].status;
+      const response = await request(app).patch("/events/" + eventid + "/status/").send({status: "ACTIVE"});
       expect(response.status).toBe(200);
     });
-    test("Update event status to completed", async () => {
+    
+    test("Event status invalid", async () => {
       const events = await request(app).get("/events");
-      const eventID = events.body[1].id;
-      const response = await request(app).patch("/events/" + eventID + "/status/COMPLETED")
-      expect(response.status).toBe(200);
+      const eventid = events.body[0].id;
+      const status = null;
+      const response = await request(app).patch("/events/" + eventid + "/status/" + status);
+      expect(response.status).toBe(500);
     });
-  });*/
+  });
 
   describe("Testing PATCH /events/:eventid/owner/:ownerid", () => {
     test("Change current owner", async () => {
       const events = await request(app).get("/events");
-      const eventID = events.body[1].id;
+      const eventid = events.body[1].id;
       const users = await request(app).get("/users");
-      const userid = users.body[0].id;
-      const response = await request(app).patch("/events/" + eventID + "/owner/" + userid); 
+      const ownerid = users.body[0].id;
+      const response = await request(app).patch("/events/" + eventid + "/owner/" + ownerid); 
       expect(response.status).toBe(200);
     });
 
     test("Change current owner", async () => {
       const events = await request(app).get("/events");
-      const eventID = events.body[1].id;
+      const eventid = events.body[1].id;
       const users = await request(app).get("/users");
-      const userid = users.body[0].id;
-      const response = await request(app).patch("/events/" + eventID + "/owner/" + userid); 
+      const ownerid = users.body[0].id;
+      const response = await request(app).patch("/events/" + eventid + "/owner/" + ownerid); 
       console.log(response.error);
       expect(response.status).toBe(200);
     });
 
   });
 
-  /*
+  
   describe("Testing PATCH /events/:eventid/attendees/:attendeeid/confirm", () => {
     test("Update attendee as showed up", async () => {
       const events = await request(app).get("/events");
-      const eventID = events.body[1].id;
-      const users = await request(app).get("/users");
-      const userid = users.body[0].id;
-      const response = await request(app).patch("/events/" + eventID + "/attendees/" + userid + "/confirm"); 
+      const attendees = await request(app).get("/users");
+      const eventid = events.body[1].id;
+      const attendeeid = attendees.body[1].id;
+      const response = await request(app).patch("/events/" + eventid + "/attendees/" + attendeeid + "/confirm");
+      console.log(response.error);
       expect(response.status).toBe(200);
     });
-  }); */
-})
+    test("Invalid update attendee as showed up", async () => {
+      const attendees = await request(app).get("/users");
+      const attendeeid = attendees.body[0].id;
+      const response = await request(app).patch("/events/" + (-1) + "/attendees/" + attendeeid + "/confirm");
+      console.log(response.error);
+      expect(response.status).toBe(500);
+    });
+  });
