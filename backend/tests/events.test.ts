@@ -102,7 +102,6 @@ describe ("Testing GET event by eventID", () => {
     const events = await request(app).get("/events");
     const eventid = events.body[1].id;
     const response = await request(app).get("/events/" + eventid);
-    console.log(response.error);
     expect(response.status).toBe(200);
   })
 
@@ -110,8 +109,7 @@ describe ("Testing GET event by eventID", () => {
 
     const eventid = -1;
     const response = await request(app).get("/events/" + eventid);
-    console.log(response.error);
-    expect(response.status).toBe(500);
+    expect(response.body).toBe(null);
   })
 })
 
@@ -127,9 +125,10 @@ describe ("Testing GET all attendees", () => {
 
   test("Get attendees for invalid event", async () => {
 
-    const eventid = "";
+    const eventid = -1;
     const response = await request(app).get("/events/" + eventid + "/attendees");
-    expect(response.status).toBe(500);
+    console.log(response.body)
+    expect(response.body.length).toBe(0);
   })
 
   describe ("Testing POST/events/:eventid/:attendeeid", () => {
@@ -172,7 +171,8 @@ describe ("Testing GET all attendees", () => {
       //let status: EventStatus = "ACTIVE";
       const status = "ACTIVE";
       //const status = events.body[1].status;
-      const response = await request(app).patch("/events/" + eventid + "/status/").send({status: "ACTIVE"});
+      const response = await request(app).patch(`/events/${eventid}/status/${status}`)
+      console.log(response.error);
       expect(response.status).toBe(200);
     });
     
@@ -215,14 +215,12 @@ describe ("Testing GET all attendees", () => {
       const eventid = events.body[1].id;
       const attendeeid = attendees.body[1].id;
       const response = await request(app).patch("/events/" + eventid + "/attendees/" + attendeeid + "/confirm");
-      console.log(response.error);
       expect(response.status).toBe(200);
     });
     test("Invalid update attendee as showed up", async () => {
       const attendees = await request(app).get("/users");
       const attendeeid = attendees.body[0].id;
       const response = await request(app).patch("/events/" + (-1) + "/attendees/" + attendeeid + "/confirm");
-      console.log(response.error);
       expect(response.status).toBe(500);
     });
   });

@@ -196,14 +196,14 @@ const getPastEvents = async (req: Request, res: Response) => {
 const getEvent = async (req: Request, res: Response) => {
   // #swagger.tags = ['Events']
   try {
-    const eventID = req.params.eventID;
+    const eventID = req.params.eventid;
 
     const event = await prisma.event.findUnique({
       where: {
         id: eventID,
       }
     });
-    res.status(200).json(eventID);
+    res.status(200).json(event);
   } catch (error) {
     const result = (error as Error).message;
     res.status(500).json({ result });
@@ -219,11 +219,14 @@ const getEvent = async (req: Request, res: Response) => {
 const getAttendees = async (req: Request, res: Response) => {
   //#swagger.tags = ['Events']
   try {
-    const eventID = req.params.eventID;
+    const eventID = req.params.eventid;
 
     const attendees = await prisma.eventEnrollment.findMany({
       where: {
         eventId: eventID,
+      },
+      include:{
+        user: true
       }
     })
     res.status(200).json(attendees);
@@ -301,8 +304,8 @@ const deleteAttendee = async (req: Request, res: Response) => {
 
 const updateEventStatus = async(req: Request, res: Response) => {
   try {
-    const eventID = req.params.eventID;
-    const eventStatus = req.body.status;
+    const eventID = req.params.eventid;
+    const eventStatus = (req.params.status) as EventStatus;
 
     const updatedEvent = await prisma.event.update({
       where: {
@@ -339,6 +342,7 @@ const updateEventOwner = async(req: Request, res: Response) => {
     res.status(500).json({ error: error.message });
   }
 };
+
 
 const confirmUser = async(req: Request, res: Response) => {
   try {
