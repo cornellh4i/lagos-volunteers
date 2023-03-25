@@ -269,8 +269,10 @@ const addAttendee = async (req: Request, res: Response) => {
   }
 };
 
-
-
+/**
+ * Remove the specified user from the event
+ * @returns promise with eventid or error
+ */
 const deleteAttendee = async (req: Request, res: Response) => {
   try {
     const eventID = req.params.eventID;
@@ -302,6 +304,10 @@ const deleteAttendee = async (req: Request, res: Response) => {
   }
 };
 
+/**
+ * Update the event status
+ * @returns promise with event or error
+ */
 const updateEventStatus = async(req: Request, res: Response) => {
   try {
     const eventID = req.params.eventid;
@@ -323,6 +329,10 @@ const updateEventStatus = async(req: Request, res: Response) => {
   }
 };
 
+/**
+ * Update the event owner
+ * @returns promise with event or error
+ */
 const updateEventOwner = async(req: Request, res: Response) => {
   try {
     const eventID = req.params.eventid;
@@ -343,7 +353,10 @@ const updateEventOwner = async(req: Request, res: Response) => {
   }
 };
 
-
+/**
+ * Confirm the attendance of the specified user at the event
+ * @returns promise with event or error
+ */
 const confirmUser = async(req: Request, res: Response) => {
   try {
     const eventID = req.params.eventid;
