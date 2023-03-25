@@ -84,7 +84,6 @@ describe ("Testing DELETE event",() => {
         const events  = await request(app).get("/events");
         const eventid = events.body[1].id;
         const response = await request(app).delete("/events/delete/"+ eventid);
-        console.log(response.error);
         expect(response.status).toBe(200);
       });
 
@@ -127,7 +126,6 @@ describe ("Testing GET all attendees", () => {
 
     const eventid = -1;
     const response = await request(app).get("/events/" + eventid + "/attendees");
-    console.log(response.body)
     expect(response.body.length).toBe(0);
   })
 
@@ -139,7 +137,6 @@ describe ("Testing GET all attendees", () => {
       const eventID = events.body[1].id;
       const attendeeid = users.body[1].id;
       const response = await request(app).post("/events/" + eventID + "/"+ attendeeid);
-      console.log(response.error);
       expect(response.status).toBe(200);
     })
   })
@@ -168,11 +165,8 @@ describe ("Testing GET all attendees", () => {
     test("Update event status to active", async () => {
       const events = await request(app).get("/events");
       const eventid = events.body[0].id;
-      //let status: EventStatus = "ACTIVE";
       const status = "ACTIVE";
-      //const status = events.body[1].status;
       const response = await request(app).patch(`/events/${eventid}/status/${status}`)
-      console.log(response.error);
       expect(response.status).toBe(200);
     });
     
@@ -201,7 +195,6 @@ describe ("Testing GET all attendees", () => {
       const users = await request(app).get("/users");
       const ownerid = users.body[0].id;
       const response = await request(app).patch("/events/" + eventid + "/owner/" + ownerid); 
-      console.log(response.error);
       expect(response.status).toBe(200);
     });
 
