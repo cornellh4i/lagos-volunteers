@@ -1,8 +1,14 @@
-import React from "react"; 
+import React from "react";
+import Button from "@/components/Button";
 
-/**An About page */
+/** An About page */
 const About = () => {
-  return <>capybara capybara capybara capybara capybara</>
+  return (
+    <>
+      <Button />
+      Hello there
+    </>
+  );
 };
 
-export default About; 
+export default About;
