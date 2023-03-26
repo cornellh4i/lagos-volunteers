@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { userRole, UserStatus } from "@prisma/client";
+import { Prisma, userRole, UserStatus } from "@prisma/client";
 
 // We are using one connection to prisma client to prevent multiple connections
 import prisma from "../../client";
@@ -571,24 +571,24 @@ const getUsersSorted = async (req: Request, res: Response) => {
   const query = req.query.sort as string;
   const querySplit = query.split(":");
   const key: string = querySplit[0];
-  const order = querySplit[1];
+  const order = querySplit[1] as Prisma.SortOrder;
 
   try {
     if (key == "email") {
       const users = await prisma.user.findMany({
-        orderBy: [{ email: order == "asc" ? "asc" : "desc" }],
+        orderBy: [{ email: order }],
       });
       res.status(200).json(users);
     } else if (key == "hours") {
       const users = await prisma.user.findMany({
-        orderBy: [{ hours: order == "asc" ? "asc" : "desc" }],
+        orderBy: [{ hours: order}],
       });
       res.status(200).json(users);
     } else if (key == "firstName") {
       const users = await prisma.user.findMany({
         orderBy: {
           profile: {
-            firstName: order == "asc" ? "asc" : "desc",
+            firstName: order,
           },
         },
         include: {
@@ -600,7 +600,7 @@ const getUsersSorted = async (req: Request, res: Response) => {
       const users = await prisma.user.findMany({
         orderBy: {
           profile: {
-            lastName: order == "asc" ? "asc" : "desc",
+            lastName: order,
           },
         },
         include: {
