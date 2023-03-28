@@ -3,7 +3,8 @@ import { useRouter } from "next/router";
 
 /** A User Page */
 const User = () => {
-  const router = useRouter();
+  // const router = useRouter();
+  // const { userid } = router.query;
 
   const getCatFact = async () => {
     const response = await fetch("https://catfact.ninja/fact");
