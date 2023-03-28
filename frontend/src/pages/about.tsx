@@ -7,7 +7,9 @@ const About = () => {
     <>
       <Button text="hello" />
       Hello there
+  <div className="bg-black bg-opacity-10 bg-yellow-300 w-0.5 tracking-tighter">Hello</div>
     </>
+    
   );
 };
 
