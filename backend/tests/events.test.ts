@@ -82,7 +82,6 @@ describe ("Testing DELETE event",() => {
         const events  = await request(app).get("/events");
         const eventid = events.body[1].id;
         const response = await request(app).delete("/events/delete/"+ eventid);
-        console.log(response.error);
         expect(response.status).toBe(200);
       });
 

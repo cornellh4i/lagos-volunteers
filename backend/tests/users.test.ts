@@ -474,3 +474,23 @@ describe("Testing DELETE user", () => {
     expect(response.status).toBe(500);
   });
 });
+
+
+describe("Testing GET /users/pagination", () => {
+  test("Get 2 users after the second use", async () => {
+    const users = await request(app).get("/users");
+    const userid = users.body[1].id;
+    const response = await request(app).get("/users/pagination?limit=2&after=" + userid);
+    const data = response.body;
+    expect(response.status).toBe(200);
+    expect(data.length).toBe(2);
+  });
+  
+  test("Get 10 users after the second use", async () => {
+    // limit should be defaulted to 10
+    const users = await request(app).get("/users");
+    const userid = users.body[2].id;
+    const response = await request(app).get("/users/pagination?after=" + userid);
+    expect(response.status).toBe(200);
+  });
+});

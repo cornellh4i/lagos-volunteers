@@ -15,6 +15,7 @@ userRouter.post("/", userController.createUser);
 userRouter.delete("/:userID", userController.deleteUser);
 userRouter.put("/:userID", userController.updateUser);
 userRouter.get("/", userController.getAllUsers);
+userRouter.get("/pagination", userController.getUsersPaginated);
 userRouter.get("/search", userController.getSearchedUser);
 userRouter.get("/sorting", userController.getUsersSorted);
 userRouter.get("/:userID/profile", userController.getUserProfile);
@@ -29,7 +30,6 @@ userRouter.put("/:userid/preferences", userController.editPreferences);
 userRouter.patch("/:userid/status/:status", userController.editStatus);
 userRouter.patch("/:userid/role/:role", userController.editRole);
 userRouter.patch("/:userid/hours/:hours", userController.editHours);
-
 // generalize the patch requests
 
 export default userRouter;
