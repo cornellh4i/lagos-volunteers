@@ -167,13 +167,15 @@ describe ("Testing GET all attendees", () => {
       const eventid = events.body[0].id;
       const status = "ACTIVE";
       const response = await request(app).patch(`/events/${eventid}/status/${status}`)
+      const data = response.body
       expect(response.status).toBe(200);
+      expect(data.status).toBe("ACTIVE"); 
     });
     
     test("Event status invalid", async () => {
       const events = await request(app).get("/events");
       const eventid = events.body[0].id;
-      const status = null;
+      const status = "COMPLETE";
       const response = await request(app).patch("/events/" + eventid + "/status/" + status);
       expect(response.status).toBe(500);
     });
@@ -186,16 +188,18 @@ describe ("Testing GET all attendees", () => {
       const users = await request(app).get("/users");
       const ownerid = users.body[0].id;
       const response = await request(app).patch("/events/" + eventid + "/owner/" + ownerid); 
+      const data = response.body;
+      expect(data.ownerid).toBe("clfw74ia70000jsacl558b0ub");
       expect(response.status).toBe(200);
     });
 
-    test("Change current owner", async () => {
+    test("Change current owner to invalid", async () => {
       const events = await request(app).get("/events");
       const eventid = events.body[1].id;
       const users = await request(app).get("/users");
-      const ownerid = users.body[0].id;
+      const ownerid = users.body[-1];
       const response = await request(app).patch("/events/" + eventid + "/owner/" + ownerid); 
-      expect(response.status).toBe(200);
+      expect(response.status).toBe(500);
     });
 
   });
@@ -208,6 +212,8 @@ describe ("Testing GET all attendees", () => {
       const eventid = events.body[1].id;
       const attendeeid = attendees.body[1].id;
       const response = await request(app).patch("/events/" + eventid + "/attendees/" + attendeeid + "/confirm");
+      const data = response.body;
+      expect(data.showedUp).toBe(true); 
       expect(response.status).toBe(200);
     });
     test("Invalid update attendee as showed up", async () => {
