@@ -261,7 +261,7 @@ const addAttendee = async (req: Request, res: Response) => {
       }
     });
 
-    res.status(200).json(attendee);
+    res.status(200).json(attendee.userId);
   }
   catch (error: any) {
     console.log(error)
@@ -282,12 +282,6 @@ const deleteAttendee = async (req: Request, res: Response) => {
       where: {
         id: eventID,
       },
-    })
-
-    const attendee = await prisma.eventEnrollment.findFirst({
-      where: {
-        userId: userID,
-      }
     })
 
     Promise.all([

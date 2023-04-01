@@ -1,4 +1,4 @@
-import { EventStatus } from "@prisma/client";
+import { EventStatus, prisma } from "@prisma/client";
 import { UserImportBuilder } from "firebase-admin/lib/auth/user-import-builder";
 import request from "supertest";
 import app from "../src/server";
@@ -134,10 +134,22 @@ describe ("Testing GET all attendees", () => {
 
       const events = await request(app).get("/events");
       const users = await request(app).get("/users");
-      const eventID = events.body[1].id;
+      const eventid = events.body[1].id;
       const attendeeid = users.body[1].id;
-      const response = await request(app).post("/events/" + eventID + "/"+ attendeeid);
+
+
+      // const attendees = await request(app).get("/events/" + eventid + "/attendees/" + attendeeid);
+      // const data = attendees.body;
+      // expect(data.userId).toBe(users.body[1].id);
+
+      const response = await request(app).post("/events/" + eventid + "/"+ attendeeid);
+
+      // const numAttendees = (await attendees).listenerCount;
+      
       expect(response.status).toBe(200);
+      //console.log(events.body[1].getAttendees);
+      // expect(events.body[1].getAttendees).toContain(attendeeid);
+      // //expect(events.body[1]).toContain(attendee);*/
     })
   })
 
@@ -185,12 +197,13 @@ describe ("Testing GET all attendees", () => {
     test("Change current owner", async () => {
       const events = await request(app).get("/events");
       const eventid = events.body[1].id;
+      const event = events.body[1];
       const users = await request(app).get("/users");
-      const ownerid = users.body[0].id;
+      const ownerid = users.body[1].id;
       const response = await request(app).patch("/events/" + eventid + "/owner/" + ownerid); 
-      const data = response.body;
-      expect(data.ownerid).toBe("clfw74ia70000jsacl558b0ub");
+      const data = response.body
       expect(response.status).toBe(200);
+      expect(data.ownerId).toBe(users.body[1].id);
     });
 
     test("Change current owner to invalid", async () => {
