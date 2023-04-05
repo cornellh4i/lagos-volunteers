@@ -75,24 +75,6 @@ describe("Testing PUT /events/:eventid", () => {
   });
 });
 
-describe ("Testing DELETE event",() => {
-
-  test("Delete valid event", async () => {
-
-        const events  = await request(app).get("/events");
-        const eventid = events.body[1].id;
-        const response = await request(app).delete("/events/delete/"+ eventid);
-        expect(response.status).toBe(200);
-      });
-
-  test("Delete invalid event", async () => {
-         const eventid = -1
-         const response = await request(app).delete("/events/delete/" + eventid);
-         expect(response.status).toBe(500);
-       })
-      })
-
-
 describe ("Testing GET event by eventID", () => {
   test("Get existing event", async () => {
 
@@ -231,3 +213,25 @@ describe ("Testing GET all attendees", () => {
       expect(response.status).toBe(500);
     });
   });
+
+
+  // Note: Deleting an event still has to be extensively tested  
+  describe ("Testing DELETE event",() => {
+
+  test("Delete valid event", async () => {
+
+        const events  = await request(app).get("/events");
+        const eventid = events.body[2].id;
+        const response = await request(app).delete("/events/delete/"+ eventid);
+
+        expect(response.status).toBe(200);
+        const deletedEvent = await request(app).get("/events/" + eventid);
+        expect(deletedEvent.body).toBe(null);
+      });
+
+    test("Delete invalid event", async () => {
+          const eventid = -1
+          const response = await request(app).delete("/events/delete/" + eventid);
+          expect(response.status).toBe(500);
+        })
+        })

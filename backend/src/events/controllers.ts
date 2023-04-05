@@ -47,6 +47,7 @@ const deleteEvent = async (req: Request, res: Response) => {
   try {
     const eventID = req.params.eventID;
 
+
     await prisma.event.delete({
       where: {
         id: eventID,
@@ -54,8 +55,9 @@ const deleteEvent = async (req: Request, res: Response) => {
     });
   
     res.status(200).json(eventID);
-  } catch (error: any) {
-    res.status(500).json({ error: error.message });
+  } catch (error) {
+    const result = (error as Error).message;
+    res.status(500).json({result});
   }
 };
 
@@ -251,9 +253,9 @@ const addAttendee = async (req: Request, res: Response) => {
 
     res.status(200).json(attendee.userId);
   }
-  catch (error: any) {
-    console.log(error)
-    res.status(500).json({ error: error.message })
+  catch (error) {
+    const result = (error as Error).message;
+    res.status(500).json({result});
   }
 };
 
@@ -276,8 +278,9 @@ const deleteAttendee = async (req: Request, res: Response) => {
     }),
 
     res.status(200).json(eventID);
-  } catch (error: any) {
-    res.status(500).json({ error: error.message });
+  } catch (error) {
+    const result = (error as Error).message;
+    res.status(500).json({result});
   }
 };
 
@@ -325,8 +328,9 @@ const updateEventOwner = async(req: Request, res: Response) => {
     });
 
     res.status(200).json(updatedEvent);
-  } catch (error: any) {
-    res.status(500).json({ error: error.message });
+  } catch (error) {
+    const result = (error as Error).message;
+    res.status(500).json({result});
   }
 };
 
@@ -351,8 +355,9 @@ const confirmUser = async(req: Request, res: Response) => {
       },
     });
     res.status(200).json(updatedEvent);
-  } catch (error: any) {
-    res.status(500).json({ error: error.message });
+  } catch (error) {
+    const result = (error as Error).message;
+    res.status(500).json({result});
   }
 }; 
 

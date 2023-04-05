@@ -378,7 +378,6 @@ describe("Testing /users/:userID/registered", () => {
     const GETresponse = await request(app).get(
       "/users/" + userID + "/registered"
     );
-    const data = GETresponse.body;
     expect(GETresponse.status).toBe(200);
   });
 
