@@ -47,24 +47,12 @@ const deleteEvent = async (req: Request, res: Response) => {
   try {
     const eventID = req.params.eventID;
 
-    const eventEnrollment = await prisma.eventEnrollment.findFirst({
+    await prisma.event.delete({
       where: {
-        eventId: eventID,
+        id: eventID,
       },
-    })
-
-    Promise.all([
-      eventEnrollment && await prisma.eventEnrollment.delete({
-        where: {
-          eventId: eventID,
-        },
-      }),
-      await prisma.event.delete({
-        where: {
-          id: eventID,
-        },
-      })
-    ])
+    });
+  
     res.status(200).json(eventID);
   } catch (error: any) {
     res.status(500).json({ error: error.message });
@@ -275,23 +263,18 @@ const addAttendee = async (req: Request, res: Response) => {
  */
 const deleteAttendee = async (req: Request, res: Response) => {
   try {
-    const eventID = req.params.eventID;
+    const eventID = req.params.eventid;
     const userID = req.params.attendeeid;
 
-    const eventEnrollment = await prisma.event.findFirst({
+    await prisma.eventEnrollment.delete({
       where: {
-        id: eventID,
-      },
-    })
-
-    Promise.all([
-      eventEnrollment && await prisma.eventEnrollment.delete({
-        where: {
+        userId_eventId: {
+          userId: userID,
           eventId: eventID,
-          userId: userID, 
-        },
-      }),
-    ])
+        }
+      },
+    }),
+
     res.status(200).json(eventID);
   } catch (error: any) {
     res.status(500).json({ error: error.message });
@@ -358,7 +341,10 @@ const confirmUser = async(req: Request, res: Response) => {
 
     const updatedEvent = await prisma.eventEnrollment.update({
       where: {
-        userId: userID,
+        userId_eventId: {
+          userId: userID,
+          eventId: eventID,
+        }
       },
       data: {
         showedUp: true,
