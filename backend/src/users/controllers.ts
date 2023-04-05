@@ -1,9 +1,8 @@
 import { Request, Response } from "express";
-import { userRole, UserStatus } from "@prisma/client";
+import { Prisma, userRole, UserStatus } from "@prisma/client";
 
 // We are using one connection to prisma client to prevent multiple connections
 import prisma from "../../client";
-
 /**
  * Creates a new user with information specified in the request body.
  * Request body includes:
@@ -590,6 +589,57 @@ const editHours = async (req: Request, res: Response) => {
   }
 };
 
+/**
+ * Returns sorted Users based on one key
+ * @returns promise with user or error
+ */
+const getUsersSorted = async (req: Request, res: Response) => {
+  // #swagger.tags = ['Users']
+  const query = req.query.sort as string;
+  const querySplit = query.split(":");
+  const key: string = querySplit[0];
+  const order = querySplit[1] as Prisma.SortOrder;
+
+  try {
+    if (key == "email") {
+      const users = await prisma.user.findMany({
+        orderBy: [{ email: order }],
+      });
+      res.status(200).json(users);
+    } else if (key == "hours") {
+      const users = await prisma.user.findMany({
+        orderBy: [{ hours: order}],
+      });
+      res.status(200).json(users);
+    } else if (key == "firstName") {
+      const users = await prisma.user.findMany({
+        orderBy: {
+          profile: {
+            firstName: order,
+          },
+        },
+        include: {
+          profile: true,
+        },
+      });
+      res.status(200).json(users);
+    } else if (key == "lastName") {
+      const users = await prisma.user.findMany({
+        orderBy: {
+          profile: {
+            lastName: order,
+          },
+        },
+        include: {
+          profile: true,
+        },
+      });
+      res.status(200).json(users);
+    }
+  } catch (error) {
+    res.status(500).json({ error: (error as Error).message });
+  }
+};
 
 export default {
   createUser,
@@ -609,5 +659,6 @@ export default {
   editPreferences,
   editStatus,
   editRole,
-  editHours
+  editHours,
+  getUsersSorted,
 };

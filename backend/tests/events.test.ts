@@ -223,7 +223,6 @@ describe ("Testing GET all attendees", () => {
         const events  = await request(app).get("/events");
         const eventid = events.body[2].id;
         const response = await request(app).delete("/events/delete/"+ eventid);
-
         expect(response.status).toBe(200);
         const deletedEvent = await request(app).get("/events/" + eventid);
         expect(deletedEvent.body).toBe(null);
