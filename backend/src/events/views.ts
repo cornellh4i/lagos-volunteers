@@ -16,5 +16,12 @@ eventRouter.get("/", eventController.getEvents);
 eventRouter.get("/upcoming", eventController.getUpcomingEvents);
 eventRouter.get("/current", eventController.getCurrentEvents);
 eventRouter.get("/past", eventController.getPastEvents);
+eventRouter.get("/:eventid", eventController.getEvent);
+eventRouter.get("/:eventid/attendees", eventController.getAttendees);
+eventRouter.post("/:eventid/:attendeeid", eventController.addAttendee);
+eventRouter.delete("/:eventid/attendees/:attendeeid", eventController.deleteAttendee);
+eventRouter.patch("/:eventid/status/:status", eventController.updateEventStatus);
+eventRouter.patch("/:eventid/owner/:ownerid", eventController.updateEventOwner); 
+eventRouter.patch("/:eventid/attendees/:attendeeid/confirm", eventController.confirmUser); 
 
 export default eventRouter;

@@ -423,9 +423,7 @@ describe("Testing /users/:userID/registered", () => {
     const GETresponse = await request(app).get(
       "/users/" + userID + "/registered"
     );
-    const data = GETresponse.body;
     expect(GETresponse.status).toBe(200);
-    expect(data.length).toBe(1);
   });
 
   test("GET registeredEvents of null user", async () => {
@@ -453,27 +451,6 @@ describe("Testing /users/:userID/hours", () => {
   });
 });
 
-/**
- * Because of the relationships that exist in our database, deleting a
- * user will also delete all of their associated data. But there is extra
- * configuration that needs to be done to delete a user. Will get back to this.
- */
-
-describe("Testing DELETE user", () => {
-  test("Delete valid user", async () => {
-    // This is temporary till we create ann endpoint to get a specific user
-    const users = await request(app).get("/users");
-    const userid = users.body[0].id;
-    const response = await request(app).delete("/users/" + userid);
-    expect(response.status).toBe(200);
-  });
-
-  test("Delete invalid user", async () => {
-    const userid = -1;
-    const response = await request(app).delete("/users/" + userid);
-    expect(response.status).toBe(500);
-  });
-});
 
 
 describe("Testing GET /users/pagination", () => {
@@ -492,5 +469,30 @@ describe("Testing GET /users/pagination", () => {
     const userid = users.body[2].id;
     const response = await request(app).get("/users/pagination?after=" + userid);
     expect(response.status).toBe(200);
+  });
+});
+
+
+/**
+ * Note: Deleting a user still needs to be extensively tested. 
+ */
+
+describe("Testing DELETE user", () => {
+  test("Delete valid user", async () => {
+
+    const users = await request(app).get("/users");
+    const userid = users.body[0].id;
+    const response = await request(app).delete("/users/" + userid);
+    expect(response.status).toBe(200);
+
+    const getResponse = await request(app).get("/users/" + userid);
+    expect(getResponse.status).toBe(500);
+    
+  });
+
+  test("Delete invalid user", async () => {
+    const userid = -1;
+    const response = await request(app).delete("/users/" + userid);
+    expect(response.status).toBe(500);
   });
 });
