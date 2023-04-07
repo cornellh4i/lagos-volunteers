@@ -8,9 +8,9 @@ import { errorJson, successJson } from "../utils/jsonResponses";
 /** User Specific Routes */
 
 // No provision for auth in test environment for now
-// if (process.env.NODE_ENV !== "test") {
-//   userRouter.use(auth as RequestHandler);
-// }
+if (process.env.NODE_ENV !== "test") {
+  userRouter.use(auth as RequestHandler);
+}
 
 userRouter.post("/", async (req: Request, res: Response) => {
   // #swagger.tags = ['Users']
