@@ -41,15 +41,6 @@
             "description": "OK"
           }
         }
-      },
-      "post": {
-        "description": "",
-        "parameters": [],
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
       }
     },
     "/users/": {
@@ -79,8 +70,8 @@
           }
         ],
         "responses": {
-          "200": {
-            "description": "OK"
+          "201": {
+            "description": "Created"
           },
           "500": {
             "description": "Internal Server Error"
@@ -741,6 +732,9 @@
     },
     "/events/{eventid}/attendees/{attendeeid}": {
       "delete": {
+        "tags": [
+          "Events"
+        ],
         "description": "",
         "parameters": [
           {
@@ -768,6 +762,9 @@
     },
     "/events/{eventid}/status/{status}": {
       "patch": {
+        "tags": [
+          "Events"
+        ],
         "description": "",
         "parameters": [
           {
@@ -795,6 +792,9 @@
     },
     "/events/{eventid}/owner/{ownerid}": {
       "patch": {
+        "tags": [
+          "Events"
+        ],
         "description": "",
         "parameters": [
           {
@@ -822,6 +822,9 @@
     },
     "/events/{eventid}/attendees/{attendeeid}/confirm": {
       "patch": {
+        "tags": [
+          "Events"
+        ],
         "description": "",
         "parameters": [
           {
