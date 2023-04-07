@@ -17,6 +17,7 @@ userRouter.post("/", async (req: Request, res: Response) => {
   try {
     res
       .status(201)
+      // We expect an array of two elements, the first being the firebase user, the second being the user in the database
       .send(
         await userController.createUser(
           req.body,
@@ -26,6 +27,7 @@ userRouter.post("/", async (req: Request, res: Response) => {
         )
       );
   } catch (error) {
+    console.log(error);
     res.status(500).send(errorJson(error));
   }
 });
