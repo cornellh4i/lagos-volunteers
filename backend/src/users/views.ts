@@ -15,12 +15,11 @@ if (process.env.NODE_ENV !== "test") {
 userRouter.post("/", async (req: Request, res: Response) => {
   // #swagger.tags = ['Users']
 
-
   try {
     res
       .status(201)
       // We expect an array of two elements, the first being the firebase user, the second being the user in the database
-      // TODO: Set Custom claims as required. 
+      // TODO: Set Custom claims as required.
       .send(
         await userController.createUser(
           req.body,

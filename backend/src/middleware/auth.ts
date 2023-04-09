@@ -146,7 +146,6 @@ export const setVolunteerCustomClaims = async (email: string) => {
   return customToken;
 };
 
-
 export const updateFirebaseUserToSupervisor = async (email: string) => {
   const user = getAuth()
     .getUserByEmail(email)
