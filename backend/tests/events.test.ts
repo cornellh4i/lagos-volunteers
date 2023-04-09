@@ -30,7 +30,7 @@ describe("Testing GET /events/past", () => {
   });
 });
 
-describe("Testing POST /events/create/:userID", () => {
+describe("Testing POST /events/:eventID", () => {
   test("POST Create a new event", async () => {
     const event = {
       name: "Cool Event",
@@ -42,7 +42,7 @@ describe("Testing POST /events/create/:userID", () => {
     };
     const users = await request(app).get("/users");
     const response = await request(app)
-      .post(`/events/create/${users.body[1].id}`)
+      .post(`/events/${users.body[1].id}`)
       .send(event);
     const data = response.body;
     expect(data.name).toBe("Cool Event");
@@ -55,7 +55,7 @@ describe("Testing POST /events/create/:userID", () => {
     const event = {};
     const users = await request(app).get("/users");
     const response = await request(app)
-      .post(`/events/create/${users.body[0].id}`)
+      .post(`/events/${users.body[0].id}`)
       .send(event);
     expect(response.status).toBe(500);
   });

@@ -11,12 +11,12 @@ if (process.env.NODE_ENV !== "test") {
   eventRouter.use(auth as RequestHandler);
 }
 
-eventRouter.post("/create/:userID", async (req: Request, res: Response) => {
+eventRouter.post("/:eventID", async (req: Request, res: Response) => {
   // #swagger.tags = ['Events']
   try {
     res
       .status(201)
-      .send(await eventController.createEvent(req.params.userID, req));
+      .send(await eventController.createEvent(req.params.eventID, req));
   } catch (error) {
     res.status(500).send(errorJson(error));
   }
