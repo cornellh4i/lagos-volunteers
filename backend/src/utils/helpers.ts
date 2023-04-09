@@ -1,5 +1,5 @@
-import { Router, RequestHandler, Request, Response } from "express";
-import { errorJson, successJson } from "./jsonResponses";
+import { Response } from "express";
+import { errorJson } from "./jsonResponses";
 
 /**
  * Attempts the given controller and sends a success code or error code as necessary
@@ -9,7 +9,7 @@ import { errorJson, successJson } from "./jsonResponses";
 export const attempt = async (
   res: Response,
   successCode: number,
-  controller: () => Promise<any>
+  controller: () => Promise<unknown>
 ) => {
   try {
     res.status(successCode).send(await controller());
