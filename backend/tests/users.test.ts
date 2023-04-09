@@ -403,9 +403,9 @@ describe("Testing /users/:userID/created", () => {
     );
     const userID = POSTresponse.body[0].id;
 
-    const GETresponse = await request(app).get("/users/" + userID + "/created");
-    const data = GETresponse.body;
-    expect(GETresponse.status).toBe(200);
+    const response = await request(app).get("/users/" + userID + "/created");
+    const data = response.body;
+    expect(response.status).toBe(200);
   });
 
   test("GET createdEvents of null user", async () => {
@@ -478,11 +478,8 @@ describe("Testing GET /users/pagination", () => {
   });
 });
 
-/**
- * Note: Deleting a user still needs to be extensively tested.
- */
-
-describe("Testing DELETE user", () => {
+/** Note: Deleting a user still needs to be extensively tested. */
+describe("Testing DELETE /users/:userid", () => {
   test("Delete valid user", async () => {
     const users = await request(app).get("/users");
     const userid = users.body[0].id;
