@@ -127,6 +127,26 @@ export const authIfAdmin = (
  * Update a users customs claims
  */
 
+export const setVolunteerCustomClaims = async (email: string) => {
+  const user = getAuth()
+    .getUserByEmail(email)
+    .then((userRecord: UserRecord) => {
+      const customClaims = {
+        admin: false,
+        supervisor: false,
+        volunteer: true,
+      };
+      getAuth().setCustomUserClaims(userRecord.uid, customClaims);
+    })
+    .catch((e: Error) => {
+      console.log("Error creating new user:", e);
+    });
+
+  const customToken = getAuth().createCustomToken(user.uid);
+  return customToken;
+};
+
+
 export const updateFirebaseUserToSupervisor = async (email: string) => {
   const user = getAuth()
     .getUserByEmail(email)
@@ -171,6 +191,7 @@ export const updateFirebaseUserToAdmin = async (email: string) => {
 
 export default {
   auth,
+  setVolunteerCustomClaims,
   updateFirebaseUserToSupervisor,
   updateFirebaseUserToAdmin,
 };
