@@ -16,9 +16,8 @@ import prisma from "../../client";
  * @param Status (EventStatus)
  * @returns promise with event or error.
  */
-
-// weird typescript error here with the prisma event type
 const createEvent = async (userId: string, req: Request) => {
+  // weird typescript error here with the prisma event type
   return prisma.event.create({
     data: {
       ...req.body,
@@ -30,6 +29,7 @@ const createEvent = async (userId: string, req: Request) => {
     },
   });
 };
+
 /**
  * Deletes specified event by eventID.
  * @param eventID (String)
@@ -135,7 +135,6 @@ const getEvent = async (eventID: string) => {
  * @param eventID (String)
  * @returns promise with all attendees of the event or error
  */
-
 const getAttendees = async (eventID: string) => {
   return prisma.eventEnrollment.findMany({
     where: {
@@ -153,7 +152,6 @@ const getAttendees = async (eventID: string) => {
  * @param attendeeID (String) id of user to add to event
  * @returns promise with user or error
  */
-
 const addAttendee = async (eventID: string, userID: string) => {
   return await prisma.eventEnrollment.create({
     data: {
@@ -207,7 +205,7 @@ const updateEventStatus = async (eventID: string, status: string) => {
 
 /**
  * Update the event owner
- *  @param eventID (String)
+ * @param eventID (String)
  * @param ownerID (String) id of owner
  * @returns promise with event or error
  */

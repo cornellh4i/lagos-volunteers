@@ -14,7 +14,6 @@ import prisma from "../../client";
  * @param permissions : Permission (includes information about user permissions, etc) optional
  * @returns promise with user or error.
  */
-
 const createUser = async (
   user: User,
   profile?: Profile,
@@ -65,7 +64,6 @@ const updateUser = async (userID: string, user: User) => {
  * Gets all Users in database and all data associated with each user
  * @returns promise with all users or error
  */
-
 const getAllUsers = async () => {
   return prisma.user.findMany({});
 };
@@ -102,7 +100,6 @@ const getUsersPaginated = async (req: Request) => {
  * @param status status of user
  * @param req: Request paramters to get query used for search
  */
-
 const getSearchedUser = async (
   req: Request,
   email?: string,
@@ -232,7 +229,6 @@ const getUserProfile = async (userId: string) => {
  * @param userId: id of user to be updated
  * @returns promise with updated user or error.
  */
-
 const editProfile = async (userId: string, profile: Profile) => {
   return prisma.user.update({
     where: { id: userId },

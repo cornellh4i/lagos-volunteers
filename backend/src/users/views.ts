@@ -14,7 +14,6 @@ if (process.env.NODE_ENV !== "test") {
 
 userRouter.post("/", async (req: Request, res: Response) => {
   // #swagger.tags = ['Users']
-
   try {
     res
       .status(201)
@@ -33,6 +32,7 @@ userRouter.post("/", async (req: Request, res: Response) => {
     res.status(500).send(errorJson(error));
   }
 });
+
 userRouter.delete("/:userID", async (req: Request, res: Response) => {
   // #swagger.tags = ['Users']
   try {
@@ -212,6 +212,7 @@ userRouter.patch(
     }
   }
 );
+
 userRouter.patch("/:userid/role/:role", async (req: Request, res: Response) => {
   // #swagger.tags = ['Users']
   try {

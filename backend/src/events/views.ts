@@ -21,6 +21,7 @@ eventRouter.post("/create/:userID", async (req: Request, res: Response) => {
     res.status(500).send(errorJson(error));
   }
 });
+
 eventRouter.put("/:eventID", async (req: Request, res: Response) => {
   // #swagger.tags = ['Events']
   try {
@@ -31,6 +32,7 @@ eventRouter.put("/:eventID", async (req: Request, res: Response) => {
     res.status(500).send(errorJson(error));
   }
 });
+
 eventRouter.delete("/delete/:eventID", async (req: Request, res: Response) => {
   // #swagger.tags = ['Events']
   try {
@@ -114,6 +116,7 @@ eventRouter.post(
     }
   }
 );
+
 eventRouter.delete(
   "/:eventid/attendees/:attendeeid",
   async (req: Request, res: Response) => {
@@ -132,6 +135,7 @@ eventRouter.delete(
     }
   }
 );
+
 eventRouter.patch(
   "/:eventid/status/:status",
   async (req: Request, res: Response) => {
@@ -150,6 +154,7 @@ eventRouter.patch(
     }
   }
 );
+
 eventRouter.patch(
   "/:eventid/owner/:ownerid",
   async (req: Request, res: Response) => {

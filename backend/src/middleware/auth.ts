@@ -47,8 +47,10 @@ export const auth = (
   });
 };
 
-/** Authorizes a request if a token is present with the volunteer claim,
- *  returning an error otherwise. */
+/**
+ * Authorizes a request if a token is present with the volunteer claim,
+ * returning an error otherwise.
+ */
 export const authIfVolunteer = (
   req: IGetAuthTokenRequest,
   res: Response,
@@ -72,8 +74,10 @@ export const authIfVolunteer = (
   });
 };
 
-/** Authorizes a request if a token is present with the supervisor claim,
- *  returning an error otherwise. */
+/**
+ * Authorizes a request if a token is present with the supervisor claim,
+ * returning an error otherwise.
+ */
 export const authIfSupervisor = (
   req: IGetAuthTokenRequest,
   res: Response,
@@ -97,8 +101,10 @@ export const authIfSupervisor = (
   });
 };
 
-/** Authorizes a request if a token is present with the admin claim,
- *  returning an error otherwise. */
+/**
+ * Authorizes a request if a token is present with the admin claim,
+ * returning an error otherwise.
+ */
 export const authIfAdmin = (
   req: IGetAuthTokenRequest,
   res: Response,
@@ -124,9 +130,9 @@ export const authIfAdmin = (
 };
 
 /**
- * Update a users customs claims
+ * Sets a user's custom claim to a volunteer
+ * @param email is the user's email
  */
-
 export const setVolunteerCustomClaims = async (email: string) => {
   const user = getAuth()
     .getUserByEmail(email)
@@ -146,6 +152,10 @@ export const setVolunteerCustomClaims = async (email: string) => {
   return customToken;
 };
 
+/**
+ * Sets a user's custom claim to a supervisor
+ * @param email is the user's email
+ */
 export const updateFirebaseUserToSupervisor = async (email: string) => {
   const user = getAuth()
     .getUserByEmail(email)
@@ -166,9 +176,9 @@ export const updateFirebaseUserToSupervisor = async (email: string) => {
 };
 
 /**
- * Update a users customs claims
+ * Sets a user's custom claim to an admin
+ * @param email is the user's email
  */
-
 export const updateFirebaseUserToAdmin = async (email: string) => {
   const user = getAuth()
     .getUserByEmail(email)
