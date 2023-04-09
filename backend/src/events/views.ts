@@ -29,22 +29,22 @@ eventRouter.delete("/delete/:eventID", async (req: Request, res: Response) => {
 
 eventRouter.get("/", async (req: Request, res: Response) => {
   // #swagger.tags = ['Events']
-  attempt(res, 200, () => eventController.getEvents());
+  attempt(res, 200, eventController.getEvents);
 });
 
 eventRouter.get("/upcoming", async (req: Request, res: Response) => {
   // #swagger.tags = ['Events']
-  attempt(res, 200, () => eventController.getUpcomingEvents());
+  attempt(res, 200, eventController.getUpcomingEvents);
 });
 
 eventRouter.get("/current", async (req: Request, res: Response) => {
   // #swagger.tags = ['Events']
-  attempt(res, 200, () => eventController.getCurrentEvents());
+  attempt(res, 200, eventController.getCurrentEvents);
 });
 
 eventRouter.get("/past", async (req: Request, res: Response) => {
   // #swagger.tags = ['Events']
-  attempt(res, 200, () => eventController.getPastEvents());
+  attempt(res, 200, eventController.getPastEvents);
 });
 
 eventRouter.get("/:eventid", async (req: Request, res: Response) => {

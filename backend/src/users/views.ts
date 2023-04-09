@@ -36,7 +36,7 @@ userRouter.put("/:userID", async (req: Request, res: Response) => {
 
 userRouter.get("/", async (req: Request, res: Response) => {
   // #swagger.tags = ['Users']
-  attempt(res, 200, () => userController.getAllUsers());
+  attempt(res, 200, userController.getAllUsers);
 });
 
 userRouter.get("/pagination", async (req: Request, res: Response) => {
