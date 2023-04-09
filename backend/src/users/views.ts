@@ -1,7 +1,9 @@
-import { Router, RequestHandler } from "express";
+import { Router, RequestHandler, Request, Response } from "express";
 import userController from "./controllers";
 import { auth } from "../middleware/auth";
 const userRouter = Router();
+
+import { errorJson, successJson } from "../utils/jsonResponses";
 
 /** User Specific Routes */
 
@@ -10,26 +12,232 @@ if (process.env.NODE_ENV !== "test") {
   userRouter.use(auth as RequestHandler);
 }
 
-// This approach is cleaner for us becuase we can easily add middle ware
-userRouter.post("/", userController.createUser);
-userRouter.delete("/:userID", userController.deleteUser);
-userRouter.put("/:userID", userController.updateUser);
-userRouter.get("/", userController.getAllUsers);
-userRouter.get("/pagination", userController.getUsersPaginated);
-userRouter.get("/search", userController.getSearchedUser);
-userRouter.get("/sorting", userController.getUsersSorted);
-userRouter.get("/:userID/profile", userController.getUserProfile);
-userRouter.get("/:userID/role", userController.getUserRole);
-userRouter.get("/:userID/preferences", userController.getUserPreferences);
-userRouter.get("/:userID", userController.getUserByID);
-userRouter.get("/:userID/created", userController.getCreatedEvents);
-userRouter.get("/:userID/registered", userController.getRegisteredEvents);
-userRouter.get("/:userID/hours", userController.getHours);
-userRouter.put("/:userid/profile", userController.editProfile);
-userRouter.put("/:userid/preferences", userController.editPreferences);
-userRouter.patch("/:userid/status/:status", userController.editStatus);
-userRouter.patch("/:userid/role/:role", userController.editRole);
-userRouter.patch("/:userid/hours/:hours", userController.editHours);
-// generalize the patch requests
+userRouter.post("/", async (req: Request, res: Response) => {
+  // #swagger.tags = ['Users']
+  try {
+    res
+      .status(201)
+      // We expect an array of two elements, the first being the firebase user, the second being the user in the database
+      // TODO: Set Custom claims as required.
+      .send(
+        await userController.createUser(
+          req.body,
+          req.body.profile,
+          req.body.preferences,
+          req.body.permissions
+        )
+      );
+  } catch (error) {
+    console.log(error);
+    res.status(500).send(errorJson(error));
+  }
+});
+
+userRouter.delete("/:userID", async (req: Request, res: Response) => {
+  // #swagger.tags = ['Users']
+  try {
+    res.status(200).send(await userController.deleteUser(req.params.userID));
+  } catch (error) {
+    res.status(500).send(errorJson(error));
+  }
+});
+
+userRouter.put("/:userID", async (req: Request, res: Response) => {
+  // #swagger.tags = ['Users']
+  try {
+    res
+      .status(200)
+      .send(await userController.updateUser(req.params.userID, req.body));
+  } catch (error) {
+    res.status(500).send(errorJson(error));
+  }
+});
+
+userRouter.get("/", async (req: Request, res: Response) => {
+  // #swagger.tags = ['Users']
+  try {
+    res.status(200).send(await userController.getAllUsers());
+  } catch (error) {
+    res.status(500).send(errorJson(error));
+  }
+});
+
+userRouter.get("/pagination", async (req: Request, res: Response) => {
+  // #swagger.tags = ['Users']
+  try {
+    res.status(200).send(await userController.getUsersPaginated(req));
+  } catch (error) {
+    res.status(500).send(errorJson(error));
+  }
+});
+
+userRouter.get("/search", async (req: Request, res: Response) => {
+  // #swagger.tags = ['Users']
+  const { email, firstName, lastName, role, status, hours, nickname } =
+    req.body;
+  try {
+    res
+      .status(200)
+      .send(
+        await userController.getSearchedUser(
+          req,
+          email,
+          firstName,
+          lastName,
+          role,
+          status,
+          hours,
+          nickname
+        )
+      );
+  } catch (error) {
+    res.status(500).send(errorJson(error));
+  }
+});
+
+userRouter.get("/sorting", async (req: Request, res: Response) => {
+  // #swagger.tags = ['Users']
+  try {
+    res.status(200).send(await userController.getUsersSorted(req));
+  } catch (error) {
+    res.status(500).send(errorJson(error));
+  }
+});
+
+userRouter.get("/:userID/profile", async (req: Request, res: Response) => {
+  // #swagger.tags = ['Users']
+  try {
+    res
+      .status(200)
+      .send(await userController.getUserProfile(req.params.userID));
+  } catch (error) {
+    res.status(500).send(errorJson(error));
+  }
+});
+
+userRouter.get("/:userID/role", async (req: Request, res: Response) => {
+  // #swagger.tags = ['Users']
+  try {
+    res.status(200).send(await userController.getUserRole(req.params.userID));
+  } catch (error) {
+    res.status(500).send(errorJson(error));
+  }
+});
+
+userRouter.get("/:userID/preferences", async (req: Request, res: Response) => {
+  // #swagger.tags = ['Users']
+  try {
+    res
+      .status(200)
+      .send(await userController.getUserPreferences(req.params.userID));
+  } catch (error) {
+    res.status(500).send(errorJson(error));
+  }
+});
+
+userRouter.get("/:userID", async (req: Request, res: Response) => {
+  // #swagger.tags = ['Users']
+  try {
+    res.status(200).send(await userController.getUserByID(req.params.userID));
+  } catch (error) {
+    res.status(500).send(errorJson(error));
+  }
+});
+
+userRouter.get("/:userID/created", async (req: Request, res: Response) => {
+  // #swagger.tags = ['Users']
+  try {
+    res
+      .status(200)
+      .send(await userController.getCreatedEvents(req.params.userID));
+  } catch (error) {
+    res.status(500).send(errorJson(error));
+  }
+});
+
+userRouter.get("/:userID/registered", async (req: Request, res: Response) => {
+  // #swagger.tags = ['Users']
+  try {
+    res
+      .status(200)
+      .send(await userController.getRegisteredEvents(req.params.userID));
+  } catch (error) {
+    res.status(500).send(errorJson(error));
+  }
+});
+
+userRouter.get("/:userID/hours", async (req: Request, res: Response) => {
+  // #swagger.tags = ['Users']
+  try {
+    res.status(200).send(await userController.getHours(req.params.userID));
+  } catch (error) {
+    res.status(500).send(errorJson(error));
+  }
+});
+
+userRouter.put("/:userid/profile", async (req: Request, res: Response) => {
+  // #swagger.tags = ['Users']
+  try {
+    res
+      .status(200)
+      .send(await userController.editProfile(req.params.userid, req.body));
+  } catch (error) {
+    res.status(500).send(errorJson(error));
+  }
+});
+
+userRouter.put("/:userid/preferences", async (req: Request, res: Response) => {
+  // #swagger.tags = ['Users']
+  try {
+    res
+      .status(200)
+      .send(await userController.editPreferences(req.params.userid, req.body));
+  } catch (error) {
+    res.status(500).send(errorJson(error));
+  }
+});
+
+userRouter.patch(
+  "/:userid/status/:status",
+  async (req: Request, res: Response) => {
+    // #swagger.tags = ['Users']
+    try {
+      res
+        .status(200)
+        .send(
+          await userController.editStatus(req.params.userid, req.params.status)
+        );
+    } catch (error) {
+      res.status(500).send(errorJson(error));
+    }
+  }
+);
+
+userRouter.patch("/:userid/role/:role", async (req: Request, res: Response) => {
+  // #swagger.tags = ['Users']
+  try {
+    res
+      .status(200)
+      .send(await userController.editRole(req.params.userid, req.params.role));
+  } catch (error) {
+    res.status(500).send(errorJson(error));
+  }
+});
+
+userRouter.patch(
+  "/:userid/hours/:hours",
+  async (req: Request, res: Response) => {
+    // #swagger.tags = ['Users']
+    try {
+      res
+        .status(200)
+        .send(
+          await userController.editHours(req.params.userid, req.params.hours)
+        );
+    } catch (error) {
+      res.status(500).send(errorJson(error));
+    }
+  }
+);
 
 export default userRouter;

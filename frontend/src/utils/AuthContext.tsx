@@ -10,6 +10,7 @@ import { User, AuthError, signOut, signInWithCustomToken } from "firebase/auth";
 import {
   useAuthState,
   useSignInWithEmailAndPassword,
+  useCreateUserWithEmailAndPassword,
 } from "react-firebase-hooks/auth";
 
 // Define types for authentication context value
@@ -20,6 +21,7 @@ type AuthContextValue = {
   signInUser: (email: string, password: string) => Promise<void>;
   signOutUser: () => Promise<void>;
   signInUserWithCustomToken: (token: string) => Promise<void>;
+  createFirebaseUser: (email: string, password: string) => Promise<void>;
 };
 
 export const AuthContext = createContext<AuthContextValue>({
@@ -28,6 +30,7 @@ export const AuthContext = createContext<AuthContextValue>({
   signInUser: async () => {},
   signInUserWithCustomToken: async () => {},
   signOutUser: async () => {},
+  createFirebaseUser: async () => {},
 });
 
 // Define props type for authentication provider
@@ -42,6 +45,17 @@ export const useAuth = () => {
 export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [user, loading, error] = useAuthState(auth);
   const [signInWithEmailAndPassword] = useSignInWithEmailAndPassword(auth);
+  const [createUserWithEmailAndPassword] =
+    useCreateUserWithEmailAndPassword(auth);
+
+  const createFirebaseUser = async (email: string, password: string) => {
+    try {
+      await createUserWithEmailAndPassword(email, password);
+    } catch (error) {
+      //TODO: Handle Different Auth Errors
+      console.log(error);
+    }
+  };
 
   const signInUserWithCustomToken = async (token: string) => {
     try {
@@ -74,6 +88,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     signInUser,
     signOutUser,
     signInUserWithCustomToken,
+    createFirebaseUser,
   };
 
   return (

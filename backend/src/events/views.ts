@@ -1,6 +1,8 @@
-import { Router, RequestHandler } from "express";
+import { Router, RequestHandler, Request, Response } from "express";
 import eventController from "./controllers";
 import { auth } from "../middleware/auth";
+
+import { errorJson, successJson } from "../utils/jsonResponses";
 
 const eventRouter = Router();
 
@@ -9,19 +11,186 @@ if (process.env.NODE_ENV !== "test") {
   eventRouter.use(auth as RequestHandler);
 }
 
-eventRouter.post("/create/:userID", eventController.createEvent);
-eventRouter.put("/:eventID", eventController.updateEvent);
-eventRouter.delete("/delete/:eventID", eventController.deleteEvent);
-eventRouter.get("/", eventController.getEvents);
-eventRouter.get("/upcoming", eventController.getUpcomingEvents);
-eventRouter.get("/current", eventController.getCurrentEvents);
-eventRouter.get("/past", eventController.getPastEvents);
-eventRouter.get("/:eventid", eventController.getEvent);
-eventRouter.get("/:eventid/attendees", eventController.getAttendees);
-eventRouter.post("/:eventid/:attendeeid", eventController.addAttendee);
-eventRouter.delete("/:eventid/attendees/:attendeeid", eventController.deleteAttendee);
-eventRouter.patch("/:eventid/status/:status", eventController.updateEventStatus);
-eventRouter.patch("/:eventid/owner/:ownerid", eventController.updateEventOwner); 
-eventRouter.patch("/:eventid/attendees/:attendeeid/confirm", eventController.confirmUser); 
+eventRouter.post("/:eventID", async (req: Request, res: Response) => {
+  // #swagger.tags = ['Events']
+  try {
+    res
+      .status(201)
+      .send(await eventController.createEvent(req.params.eventID, req));
+  } catch (error) {
+    res.status(500).send(errorJson(error));
+  }
+});
+
+eventRouter.put("/:eventID", async (req: Request, res: Response) => {
+  // #swagger.tags = ['Events']
+  try {
+    res
+      .status(200)
+      .send(await eventController.updateEvent(req.params.eventID, req.body));
+  } catch (error) {
+    res.status(500).send(errorJson(error));
+  }
+});
+
+eventRouter.delete("/delete/:eventID", async (req: Request, res: Response) => {
+  // #swagger.tags = ['Events']
+  try {
+    res.status(200).send(await eventController.deleteEvent(req.params.eventID));
+  } catch (error) {
+    res.status(500).send(errorJson(error));
+  }
+});
+
+eventRouter.get("/", async (req: Request, res: Response) => {
+  // #swagger.tags = ['Events']
+  try {
+    res.status(200).send(await eventController.getEvents());
+  } catch (error) {
+    res.status(500).send(errorJson(error));
+  }
+});
+
+eventRouter.get("/upcoming", async (req: Request, res: Response) => {
+  // #swagger.tags = ['Events']
+  try {
+    res.status(200).send(await eventController.getUpcomingEvents());
+  } catch (error) {
+    res.status(500).send(errorJson(error));
+  }
+});
+
+eventRouter.get("/current", async (req: Request, res: Response) => {
+  // #swagger.tags = ['Events']
+  try {
+    res.status(200).send(await eventController.getCurrentEvents());
+  } catch (error) {
+    res.status(500).send(errorJson(error));
+  }
+});
+
+eventRouter.get("/past", async (req: Request, res: Response) => {
+  // #swagger.tags = ['Events']
+  try {
+    res.status(200).send(await eventController.getPastEvents());
+  } catch (error) {
+    res.status(500).send(errorJson(error));
+  }
+});
+
+eventRouter.get("/:eventid", async (req: Request, res: Response) => {
+  // #swagger.tags = ['Events']
+  try {
+    res.status(200).send(await eventController.getEvent(req.params.eventid));
+  } catch (error) {
+    res.status(500).send(errorJson(error));
+  }
+});
+
+eventRouter.get("/:eventid/attendees", async (req: Request, res: Response) => {
+  // #swagger.tags = ['Events']
+  try {
+    res
+      .status(200)
+      .send(await eventController.getAttendees(req.params.eventid));
+  } catch (error) {
+    res.status(500).send(errorJson(error));
+  }
+});
+
+eventRouter.post(
+  "/:eventid/:attendeeid",
+  async (req: Request, res: Response) => {
+    // #swagger.tags = ['Events']
+    try {
+      res
+        .status(200)
+        .send(
+          await eventController.addAttendee(
+            req.params.eventid,
+            req.params.attendeeid
+          )
+        );
+    } catch (error) {
+      res.status(500).send(errorJson(error));
+    }
+  }
+);
+
+eventRouter.delete(
+  "/:eventid/attendees/:attendeeid",
+  async (req: Request, res: Response) => {
+    // #swagger.tags = ['Events']
+    try {
+      res
+        .status(200)
+        .send(
+          await eventController.deleteAttendee(
+            req.params.eventid,
+            req.params.attendeeid
+          )
+        );
+    } catch (error) {
+      res.status(500).send(errorJson(error));
+    }
+  }
+);
+
+eventRouter.patch(
+  "/:eventid/status/:status",
+  async (req: Request, res: Response) => {
+    // #swagger.tags = ['Events']
+    try {
+      res
+        .status(200)
+        .send(
+          await eventController.updateEventStatus(
+            req.params.eventid,
+            req.params.status
+          )
+        );
+    } catch (error) {
+      res.status(500).send(errorJson(error));
+    }
+  }
+);
+
+eventRouter.patch(
+  "/:eventid/owner/:ownerid",
+  async (req: Request, res: Response) => {
+    // #swagger.tags = ['Events']
+    try {
+      res
+        .status(200)
+        .send(
+          await eventController.updateEventOwner(
+            req.params.eventid,
+            req.params.ownerid
+          )
+        );
+    } catch (error) {
+      res.status(500).send(errorJson(error));
+    }
+  }
+);
+
+eventRouter.patch(
+  "/:eventid/attendees/:attendeeid/confirm",
+  async (req: Request, res: Response) => {
+    // #swagger.tags = ['Events']
+    try {
+      res
+        .status(200)
+        .send(
+          await eventController.confirmUser(
+            req.params.eventid,
+            req.params.attendeeid
+          )
+        );
+    } catch (error) {
+      res.status(500).send(errorJson(error));
+    }
+  }
+);
 
 export default eventRouter;
