@@ -1,5 +1,5 @@
 import { Response } from "express";
-import { errorJson } from "./jsonResponses";
+import { errorJson, successJson } from "./jsonResponses";
 
 /**
  * Attempts the given controller and sends a success code or error code as necessary
@@ -12,7 +12,7 @@ export const attempt = async (
   controller: () => Promise<unknown>
 ) => {
   try {
-    res.status(successCode).send(await controller());
+    res.status(successCode).send(successJson(await controller()));
   } catch (error) {
     res.status(500).send(errorJson(error));
   }
