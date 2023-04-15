@@ -18,8 +18,16 @@ const LoginForm = () => {
     <div>
       Log In
       <div>
+        <TextField 
+          label="Email"
+          status=""
+          incorrectEntryText=""/>
       </div>
       <div>
+        <TextField 
+          label="Password"
+          status=""
+          incorrectEntryText=""/>
       </div>
       <div>
       Forgot Password?
