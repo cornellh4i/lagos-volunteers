@@ -10,61 +10,74 @@ const ProfileForm = () => {
       <div>
         <ProfileTemplate/>
       </div>
-      <div>
-        <TextField 
-          label="Email"
-          status=""
-          incorrectEntryText=""/>
-      </div>
-      <div>
-        <TextField 
-          label="First Name"
-          status=""
-          incorrectEntryText=""/>
-      </div>
-      <div>
-        <TextField 
-          label="Last Name"
-          status=""
-          incorrectEntryText=""/>
-      </div>
-      <div>
-        <TextField 
-          label="Preferred Name"
-          status=""
-          incorrectEntryText=""/>
-      </div>
-      <div>
-        <TextField 
-          label="Old Password"
-          status=""
-          incorrectEntryText=""/>
-      </div>
-      <div>
-        <TextField 
-          label="New Password"
-          status=""
-          incorrectEntryText=""/>
-      </div>
-      <div>
-        <TextField 
-          label="Confirm New Password"
-          status=""
-          incorrectEntryText=""/>
-      </div>
-      <div>
-        <CustomCheckbox 
-          label="Email Notifications"/>
-      </div>
-      <div>
-        <Button 
-          buttonText="Cancel"
-          buttonTextColor="#000000"
-          buttonColor="#808080"/>
-        <Button 
-          buttonText="Save Cahgnes"
-          buttonTextColor="#000000"
-          buttonColor="#D3D3D3"/>
+      <div className="space-y-4">
+        <div>
+          <TextField 
+            label="Email"
+            required={true}
+            status=""
+            incorrectEntryText=""/>
+        </div>
+        <div>
+          <TextField 
+            label="First name"
+            required={true}
+            status=""
+            incorrectEntryText=""/>
+        </div>
+        <div>
+          <TextField 
+            label="Last name"
+            required={true}
+            status=""
+            incorrectEntryText=""/>
+        </div>
+        <div>
+          <TextField 
+            label="Preferred name"
+            required={true}
+            status=""
+            incorrectEntryText=""/>
+        </div>
+        <div>
+          <TextField 
+            label="Old password"
+            required={true}
+            status=""
+            incorrectEntryText=""/>
+        </div>
+        <div>
+          <TextField 
+            label="New password"
+            required={true}
+            status=""
+            incorrectEntryText=""/>
+        </div>
+        <div>
+          <TextField 
+            label="Confirm new password"
+            required={true}
+            status=""
+            incorrectEntryText=""/>
+        </div>
+        <div>
+          <CustomCheckbox 
+            label="Email notifications"/>
+        </div>
+        <div className="flex md:space-x-4 grid sm:grid-cols-1 md:grid-cols-2">
+          <div className="sm:pb-4 md:pb-0">
+            <Button 
+              buttonText="Save Changes"
+              buttonTextColor="#000000"
+              buttonColor="#D3D3D3"/>
+          </div>
+          <div>
+            <Button 
+              buttonText="Cancel"
+              buttonTextColor="#000000"
+              buttonColor="#808080"/>
+          </div>
+        </div>
       </div>
     </div>
   );
