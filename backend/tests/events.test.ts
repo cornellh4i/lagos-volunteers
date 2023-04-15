@@ -170,10 +170,10 @@ describe("Testing POST /events/:eventid/:attendeeid", () => {
     const attendeeid_1 = users.body.data[1].id;
     const attendeeid_2 = users.body.data[2].id;
     const response = await request(app).post(
-      "/events/" + eventid + "/" + attendeeid_1
+      "/events/" + eventid + "/attendees/" + attendeeid_1
     );
     const response_too = await request(app).post(
-      "/events/" + eventid + "/" + attendeeid_2
+      "/events/" + eventid + "/attendees/" + attendeeid_2
     );
     expect(response.status).toBe(200);
     expect(response_too.status).toBe(200);
@@ -233,7 +233,7 @@ describe("Testing DELETE event", () => {
   test("Delete valid event", async () => {
     const events = await request(app).get("/events");
     const eventid = events.body.data[2].id;
-    const response = await request(app).delete("/events/delete/" + eventid);
+    const response = await request(app).delete("/events/" + eventid);
     expect(response.status).toBe(200);
     const deletedEvent = await request(app).get("/events/" + eventid);
     expect(deletedEvent.body.data).toEqual(null);
@@ -241,7 +241,7 @@ describe("Testing DELETE event", () => {
 
   test("Delete invalid event", async () => {
     const eventid = -1;
-    const response = await request(app).delete("/events/delete/" + eventid);
+    const response = await request(app).delete("/events/" + eventid);
     expect(response.status).toBe(500);
   });
 });

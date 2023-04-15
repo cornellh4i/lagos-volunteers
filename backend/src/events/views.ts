@@ -22,7 +22,7 @@ eventRouter.put("/:eventID", async (req: Request, res: Response) => {
   );
 });
 
-eventRouter.delete("/delete/:eventID", async (req: Request, res: Response) => {
+eventRouter.delete("/:eventID", async (req: Request, res: Response) => {
   // #swagger.tags = ['Events']
   attempt(res, 200, () => eventController.deleteEvent(req.params.eventID));
 });
@@ -58,7 +58,7 @@ eventRouter.get("/:eventid/attendees", async (req: Request, res: Response) => {
 });
 
 eventRouter.post(
-  "/:eventid/:attendeeid",
+  "/:eventid/attendees/:attendeeid",
   async (req: Request, res: Response) => {
     // #swagger.tags = ['Events']
     attempt(res, 200, () =>

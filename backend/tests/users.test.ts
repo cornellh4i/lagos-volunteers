@@ -458,7 +458,7 @@ describe("Testing /users/:userID/hours", () => {
 describe("Testing GET /users/pagination", () => {
   test("Get 2 users after the second use", async () => {
     const users = await request(app).get("/users");
-    const userid = users.body.data[1].id;
+    const userid = users.body.data[2].id;
     const response = await request(app).get(
       "/users/pagination?limit=2&after=" + userid
     );
