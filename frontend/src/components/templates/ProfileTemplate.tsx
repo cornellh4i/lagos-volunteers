@@ -18,8 +18,10 @@ const ProfileTemplate = ({name, start_date, hour, url, alt}:ProfileProps) => {
     <div>
       <Banner name={name} start_date={start_date} hour={hour} url={url} alt={alt}/>
     </div>
-    <div className = "p-8 bg-gray-400">
-      <ProfileForm/>
+    <div className="h-screen">
+      <div className = "bg-red-200 sm:place-content-center mx-3 md:ml-20 md:w-1/2 md: mb-19 md: h-5/6 md: mt-16 lg:ml-20 lg:w-1/2 lg: mb-19 lg: h-5/6 lg: mt-16">
+      {/* <ProfileForm/> */}Profile form
+      </div>
     </div>
   </>
   

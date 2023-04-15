@@ -19,8 +19,8 @@ const Avatar = ({url=FALLBACK_AVATAR_URL, alt=FALLBACK_AVATOR_ALT, name, start_d
   const [avatarSrc, setAvatarSrc] = useState(url)
   return (
     <>
-      <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-12 content-center">
-        <div className="font-sans col-span-2 place-self-center">
+      <div className="sm:flex">
+        <div className="flex justify-center">
           <img
             src={url}
             alt={alt}
@@ -28,7 +28,7 @@ const Avatar = ({url=FALLBACK_AVATAR_URL, alt=FALLBACK_AVATOR_ALT, name, start_d
             onError={() => setAvatarSrc(FALLBACK_AVATAR_URL)}
           />
         </div>
-        <div className="p-6 font-sans col-span-10 text-center lg:text-left">
+        <div className="p-6 font-sans text-center sm:text-left">
           <div className="text-3xl font-semibold">{name}</div>
           <div className="py-1">
             Volunteer since {start_date.toLocaleDateString("en-US")}
