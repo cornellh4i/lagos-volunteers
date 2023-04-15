@@ -19,37 +19,29 @@ const LoginForm = () => {
     <div className="">
       <div className="space-y-4">
         <div className="font-bold text-3xl"> Log In </div>
-        <div className="space-y-4">
-          <div><TextField label="Email" required={true} status="" incorrectEntryText=""/></div>
-          <div><TextField label="Password" required={true} status="" incorrectEntryText="" /></div>
-          <div className="grid grid-col-1 content-center">Forgot Password?</div>
-          <div className="width: 100%">
-            <Button
-              buttonText="Log In"
-              buttonTextColor="#000000"
-              buttonColor="#808080"/>
-          <div><Divider>or</Divider></div>
-      </div>
-        </div>  
-      </div>
-
-
-
-
-      <div>
-        <Button
-          buttonText="Sign up with Email"
-          buttonTextColor="#000000"
-          buttonColor="#D3D3D3"
-        />
-      </div>
-      <div>
-        <Button
-          buttonText="Continue with Google"
-          buttonTextColor="#000000"
-          buttonColor="#D3D3D3"
-        />
-      </div>
+        <div><TextField label="Email" required={true} status="" incorrectEntryText=""/></div>
+        <div><TextField label="Password" required={true} status="" incorrectEntryText="" /></div>
+        <div className="text-center">Forgot Password?</div>
+        <div>
+          <Button
+            buttonText="Log In"
+            buttonTextColor="#000000"
+            buttonColor="#808080"/>
+        </div>
+        <div><Divider>or</Divider></div>
+        <div>
+          <Button
+            buttonText="Sign up with Email"
+            buttonTextColor="#000000"
+            buttonColor="#D3D3D3"/>
+        </div>
+        <div>
+          <Button
+            buttonText="Continue with Google"
+            buttonTextColor="#000000"
+            buttonColor="#D3D3D3"/>
+        </div>
+      </div>  
     </div>
   );
 };
