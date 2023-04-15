@@ -22,7 +22,7 @@ const LoginForm = () => {
         <div>
           <div>
             <TextField
-              label="Email "
+              label="Email"
               required={true}
               status=""
               incorrectEntryText=""
