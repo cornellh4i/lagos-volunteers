@@ -6,8 +6,7 @@ import ProfileForm from "@/components/molecules/ProfileForm";
 
 /** A Signup page */
 const Signup = () => {
-  return (<ProfileForm></ProfileForm>
-  );
+  return <SignupForm></SignupForm>;
 };
 
 export default Signup;
