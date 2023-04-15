@@ -17,7 +17,7 @@ const LoginForm = () => {
 
   return (
     <div className="">
-      <div className="space-y-4">
+      <div className="space-y-4 ">
         <div className="font-bold text-3xl"> Log In </div>
         <div>
           <TextField
