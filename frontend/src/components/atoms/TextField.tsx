@@ -28,7 +28,7 @@ const CustomTextField = ({ label, status, incorrectEntryText }: Props) => {
     <ThemeProvider theme={theme}>
       <div> {label} </div>
       <TextField
-        // label={label}
+        //  label={label}
         helperText={status == "error" ? incorrectEntryText : ""}
       />
     </ThemeProvider>

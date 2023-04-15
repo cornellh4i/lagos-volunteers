@@ -21,7 +21,7 @@ const LoginForm = () => {
       <div className="space-y-8">
         <div>
           <div>
-            <TextField label="Email" status="" incorrectEntryText="" />
+            <TextField label="Email " status="" incorrectEntryText="" />
           </div>
         </div>
         <div>
