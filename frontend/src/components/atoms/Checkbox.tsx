@@ -11,7 +11,6 @@ const CustomCheckBox = (props: Props) => {
   return (
     <FormGroup>
       <FormControlLabel control={<Checkbox defaultChecked />} label={props.label} />
-      <FormControlLabel disabled control={<Checkbox />} label={props.label} />
     </FormGroup>
   );
   }
