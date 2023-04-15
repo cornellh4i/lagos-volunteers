@@ -22,7 +22,7 @@ const Avatar = ({url=FALLBACK_AVATAR_URL, alt=FALLBACK_AVATOR_ALT, name, start_d
       <div className="sm:flex">
         <div className="flex justify-center">
           <img
-            src={url}
+            src={avatarSrc}
             alt={alt}
             className="rounded-full w-32"
             onError={() => setAvatarSrc(FALLBACK_AVATAR_URL)}
