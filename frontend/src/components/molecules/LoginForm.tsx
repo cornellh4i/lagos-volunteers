@@ -17,30 +17,25 @@ const LoginForm = () => {
 
   return (
     <div className="">
-      <div className="font-bold text-lg"> Log In </div>
-      <div className="space-y-8">
-        <div>
-          <div>
-            <TextField label="Email " status="" incorrectEntryText="" />
-          </div>
-        </div>
-        <div>
-          <div>
-            <TextField label="Password" status="" incorrectEntryText="" />
-          </div>
-        </div>
+      <div className="space-y-4">
+        <div className="font-bold text-3xl"> Log In </div>
+        <div className="space-y-4">
+          <div><TextField label="Email " status="" incorrectEntryText=""/></div>
+          <div><TextField label="Password" status="" incorrectEntryText="" /></div>
+          <div className="grid grid-col-1 content-center">Forgot Password?</div>
+          <div className="width: 100%">
+            <Button
+              buttonText="Log In"
+              buttonTextColor="#000000"
+              buttonColor="#808080"/>
+          <div><Divider>or</Divider></div>
       </div>
-      <div>Forgot Password?</div>
-      <div className="width: 100%">
-        <Button
-          buttonText="Log In"
-          buttonTextColor="#000000"
-          buttonColor="#808080"
-        />
+        </div>  
       </div>
-      <div>
-        <Divider>or</Divider>
-      </div>
+
+
+
+
       <div>
         <Button
           buttonText="Sign up with Email"
