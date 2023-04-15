@@ -30,7 +30,13 @@ const LoginForm = () => {
           incorrectEntryText=""/>
       </div>
       <div>
-      Forgot Password?
+        Forgot Password?
+      </div>
+      <div>
+        <Button 
+          buttonText="Log In"
+          buttonTextColor="#000000"
+          buttonColor="#808080"/>
       </div>
     </div>
   );
