@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useAuth } from "@/utils/AuthContext";
-import Divider from '@mui/material/Divider';
+import Divider from "@mui/material/Divider";
 import Button from "../atoms/Button";
 import TextField from "../atoms/TextField";
 
@@ -16,45 +16,44 @@ const LoginForm = () => {
   };
 
   return (
-    <div>
-      Log In
-      <div>
-        <TextField 
-          label="Email"
-          status=""
-          incorrectEntryText=""/>
+    <div className="">
+      <div className="font-bold text-lg"> Log In </div>
+      <div className="space-y-8">
+        <div>
+          <div>
+            <TextField label="Email" status="" incorrectEntryText="" />
+          </div>
+        </div>
+        <div>
+          <div>
+            <TextField label="Password" status="" incorrectEntryText="" />
+          </div>
+        </div>
       </div>
-      <div>
-        <TextField 
-          label="Password"
-          status=""
-          incorrectEntryText=""/>
-      </div>
-      <div>
-        Forgot Password?
-      </div>
-      <div>
-        <Button 
+      <div>Forgot Password?</div>
+      <div className="width: 100%">
+        <Button
           buttonText="Log In"
           buttonTextColor="#000000"
-          buttonColor="#808080"/>
+          buttonColor="#808080"
+        />
       </div>
       <div>
-      <Divider>
-        or
-      </Divider>
+        <Divider>or</Divider>
       </div>
       <div>
-        <Button 
+        <Button
           buttonText="Sign up with Email"
           buttonTextColor="#000000"
-          buttonColor="#D3D3D3"/>
+          buttonColor="#D3D3D3"
+        />
       </div>
       <div>
-        <Button 
+        <Button
           buttonText="Continue with Google"
           buttonTextColor="#000000"
-          buttonColor="#D3D3D3"/>
+          buttonColor="#D3D3D3"
+        />
       </div>
     </div>
   );
