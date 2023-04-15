@@ -20,8 +20,8 @@ const LoginForm = () => {
       <div className="space-y-4">
         <div className="font-bold text-3xl"> Log In </div>
         <div className="space-y-4">
-          <div><TextField label="Email " status="" incorrectEntryText=""/></div>
-          <div><TextField label="Password" status="" incorrectEntryText="" /></div>
+          <div><TextField label="Email" required={true} status="" incorrectEntryText=""/></div>
+          <div><TextField label="Password" required={true} status="" incorrectEntryText="" /></div>
           <div className="grid grid-col-1 content-center">Forgot Password?</div>
           <div className="width: 100%">
             <Button

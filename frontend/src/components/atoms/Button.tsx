@@ -23,6 +23,7 @@ const CustomButton = (props: Props) => {
   return (
     <ThemeProvider theme={theme}>
       <Button
+        fullWidth={true}
         variant="contained"
         style={{
           backgroundColor: props.buttonColor,
