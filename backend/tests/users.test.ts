@@ -482,7 +482,7 @@ describe("Testing GET /users/pagination", () => {
 describe("Testing DELETE /users/:userid", () => {
   test("Delete valid user", async () => {
     const users = await request(app).get("/users");
-    const userid = users.body.data[1].id;
+    const userid = users.body.data[0].id;
     const response = await request(app).delete("/users/" + userid);
     expect(response.status).toBe(200);
 
