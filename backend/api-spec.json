@@ -247,12 +247,9 @@
           }
         ],
         "responses": {
-<<<<<<< Updated upstream
           "200": {
             "description": "OK"
           },
-=======
->>>>>>> Stashed changes
           "500": {
             "description": "Internal Server Error"
           }
