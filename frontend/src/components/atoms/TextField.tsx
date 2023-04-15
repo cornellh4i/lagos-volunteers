@@ -4,12 +4,12 @@ import { createTheme, ThemeProvider } from "@mui/material/styles";
 
 interface Props {
   label: string;
-  status: string; //error | required
+  required: boolean;
+  status: string; //error | ""
   //if required, have * next to entry ?
   //if error, display incorrect entry text
+  //onChange:
   incorrectEntryText: string;
-  //text: string;
-  //do we need other props?
 }
 
 const theme = createTheme({
@@ -23,12 +23,25 @@ const theme = createTheme({
   // },
 });
 /** A Button page */
-const CustomTextField = ({ label, status, incorrectEntryText }: Props) => {
+const CustomTextField = ({
+  label,
+  required,
+  status,
+  incorrectEntryText,
+}: //onChange
+Props) => {
   return (
     <ThemeProvider theme={theme}>
       <div> {label} </div>
       <TextField
         //  label={label}
+
+        size="small"
+        margin="dense"
+        fullWidth={true}
+        //onChange =
+        sx={{ borderRadius: 2, borderColor: "primary.main" }}
+        required={required}
         helperText={status == "error" ? incorrectEntryText : ""}
       />
     </ThemeProvider>

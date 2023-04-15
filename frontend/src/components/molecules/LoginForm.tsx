@@ -21,12 +21,22 @@ const LoginForm = () => {
       <div className="space-y-8">
         <div>
           <div>
-            <TextField label="Email " status="" incorrectEntryText="" />
+            <TextField
+              label="Email "
+              required={true}
+              status=""
+              incorrectEntryText=""
+            />
           </div>
         </div>
         <div>
           <div>
-            <TextField label="Password" status="" incorrectEntryText="" />
+            <TextField
+              label="Password"
+              status=""
+              required={true}
+              incorrectEntryText=""
+            />
           </div>
         </div>
       </div>
