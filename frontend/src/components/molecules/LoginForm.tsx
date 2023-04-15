@@ -1,11 +1,11 @@
-import React, { useState } from "react";
+import React from "react";
 import { useAuth } from "@/utils/AuthContext";
 import Divider from "@mui/material/Divider";
 import Button from "../atoms/Button";
 import TextField from "../atoms/TextField";
 
 const LoginForm = () => {
-  const { signInUser } = useAuth();
+  //const { signInUser } = useAuth();
 
   // const [email, setEmail] = useState("");
   // const [password, setPassword] = useState("");
