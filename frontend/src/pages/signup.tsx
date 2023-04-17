@@ -1,8 +1,11 @@
 import React from "react";
+import WelcomeTemplate from "./WelcomeTemplate";
 
 /** A Signup page */
 const Signup = () => {
-  return <>Hello there</>;
+  return <>
+  <WelcomeTemplate />
+  </>;
 };
 
 export default Signup;

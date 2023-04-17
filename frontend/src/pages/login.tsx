@@ -1,8 +1,11 @@
 import React from "react";
+import WelcomeTemplate from "./WelcomeTemplate";
 
 /** A Login page */
 const Login = () => {
-  return <>Hello there</>;
+  return <>
+  <WelcomeTemplate />
+  </>;
 };
 
 export default Login;
