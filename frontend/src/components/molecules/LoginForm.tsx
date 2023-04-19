@@ -35,7 +35,7 @@ const LoginForm = () => {
             incorrectEntryText=""
           />
         </div>
-        <div className="text-center">Forgot Password?</div>
+        <div className="text-center underline">Forgot Password?</div>
         <div>
           <Button
             buttonText="Log In"
