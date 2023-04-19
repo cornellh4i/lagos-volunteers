@@ -1,7 +1,6 @@
 import React from "react";
 import Banner from "../molecules/Banner";
 import NavBar from "../molecules/NavBar";
-import ProfileForm from "../molecules/ProfileForm";
 
 /** A ProfileTemplate page */
 type ProfileProps = {
