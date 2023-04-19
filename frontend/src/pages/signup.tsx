@@ -3,7 +3,7 @@ import SignupForm from "@/components/molecules/SignupForm";
 
 /** A Signup page */
 const Signup = () => {
-  return <SignupForm></SignupForm>;
+  return <SignupForm />;
 };
 
 export default Signup;

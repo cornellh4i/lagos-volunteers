@@ -3,7 +3,7 @@ import React from "react";
 
 /** A Login page */
 const Login = () => {
-  return <LoginForm></LoginForm>
+  return <LoginForm />;
 };
 
 export default Login;

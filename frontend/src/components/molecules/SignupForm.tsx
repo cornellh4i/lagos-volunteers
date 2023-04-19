@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useAuth } from "@/utils/AuthContext";
 import Button from "../atoms/Button";
 import TextField from "../atoms/TextField";
+import Link from "next/link";
 
 const SignupForm = () => {
   return (
@@ -63,7 +64,10 @@ const SignupForm = () => {
           buttonColor="#D3D3D3"
         />
       </div>
-      <div className="text-center">Have an account? Log-in</div>
+      <div className="justify-center flex flex-row">
+        <div className="">Have an account?&nbsp;</div>
+        <Link href="/login"> Log in</Link>
+      </div>
     </div>
   );
 };

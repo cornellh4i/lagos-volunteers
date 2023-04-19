@@ -14,7 +14,6 @@ const CustomButton = (props: Props) => {
       variant="contained"
       style={{
         backgroundColor: props.buttonColor,
-        fontFamily: "Inter", //NEED TO CHANGE, FONT AINT RIGHT D;
         color: props.buttonTextColor,
       }}
     >
