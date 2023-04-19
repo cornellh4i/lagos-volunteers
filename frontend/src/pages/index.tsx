@@ -6,6 +6,7 @@ import styles from "@/styles/Home.module.css";
 import { Button, Grid, Stack } from "@mui/material";
 import { useAuth } from "@/utils/AuthContext";
 import Login from "@/components/Login";
+import { BASE_URL } from "@/utils/constants";
 
 const Home = () => {
   const { user, loading, error, signOutUser } = useAuth();
@@ -17,6 +18,17 @@ const Home = () => {
   if (!user) {
     return <Login />;
   }
+
+  // Temporary fetch request to test if the backend is running
+  useEffect(() => {
+    try {
+      // Note how BASE_URL is imported from a constants file and type casted to a string
+      const url = BASE_URL as string;
+      fetch(url).then((data) => console.log(data));
+    } catch (error) {
+      console.log(error);
+    }
+  }, []);
 
   return (
     <>
