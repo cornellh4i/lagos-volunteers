@@ -22,15 +22,15 @@ userRouter.post("/", async (req: Request, res: Response) => {
   );
 });
 
-userRouter.delete("/:userID", async (req: Request, res: Response) => {
+userRouter.delete("/:userid", async (req: Request, res: Response) => {
   // #swagger.tags = ['Users']
-  attempt(res, 200, () => userController.deleteUser(req.params.userID));
+  attempt(res, 200, () => userController.deleteUser(req.params.userid));
 });
 
-userRouter.put("/:userID", async (req: Request, res: Response) => {
+userRouter.put("/:userid", async (req: Request, res: Response) => {
   // #swagger.tags = ['Users']
   attempt(res, 200, () =>
-    userController.updateUser(req.params.userID, req.body)
+    userController.updateUser(req.params.userid, req.body)
   );
 });
 
@@ -67,41 +67,41 @@ userRouter.get("/sorting", async (req: Request, res: Response) => {
   attempt(res, 200, () => userController.getUsersSorted(req));
 });
 
-userRouter.get("/:userID/profile", async (req: Request, res: Response) => {
+userRouter.get("/:userid/profile", async (req: Request, res: Response) => {
   // #swagger.tags = ['Users']
-  attempt(res, 200, () => userController.getUserProfile(req.params.userID));
+  attempt(res, 200, () => userController.getUserProfile(req.params.userid));
 });
 
-userRouter.get("/:userID/role", async (req: Request, res: Response) => {
+userRouter.get("/:userid/role", async (req: Request, res: Response) => {
   // #swagger.tags = ['Users']
-  attempt(res, 200, () => userController.getUserRole(req.params.userID));
+  attempt(res, 200, () => userController.getUserRole(req.params.userid));
 });
 
-userRouter.get("/:userID/preferences", async (req: Request, res: Response) => {
+userRouter.get("/:userid/preferences", async (req: Request, res: Response) => {
   // #swagger.tags = ['Users']
-  attempt(res, 200, () => userController.getUserPreferences(req.params.userID));
+  attempt(res, 200, () => userController.getUserPreferences(req.params.userid));
 });
 
-userRouter.get("/:userID", async (req: Request, res: Response) => {
+userRouter.get("/:userid", async (req: Request, res: Response) => {
   // #swagger.tags = ['Users']
-  attempt(res, 200, () => userController.getUserByID(req.params.userID));
+  attempt(res, 200, () => userController.getUserByID(req.params.userid));
 });
 
-userRouter.get("/:userID/created", async (req: Request, res: Response) => {
+userRouter.get("/:userid/created", async (req: Request, res: Response) => {
   // #swagger.tags = ['Users']
-  attempt(res, 200, () => userController.getCreatedEvents(req.params.userID));
+  attempt(res, 200, () => userController.getCreatedEvents(req.params.userid));
 });
 
-userRouter.get("/:userID/registered", async (req: Request, res: Response) => {
+userRouter.get("/:userid/registered", async (req: Request, res: Response) => {
   // #swagger.tags = ['Users']
   attempt(res, 200, () =>
-    userController.getRegisteredEvents(req.params.userID)
+    userController.getRegisteredEvents(req.params.userid)
   );
 });
 
-userRouter.get("/:userID/hours", async (req: Request, res: Response) => {
+userRouter.get("/:userid/hours", async (req: Request, res: Response) => {
   // #swagger.tags = ['Users']
-  attempt(res, 200, () => userController.getHours(req.params.userID));
+  attempt(res, 200, () => userController.getHours(req.params.userid));
 });
 
 userRouter.put("/:userid/profile", async (req: Request, res: Response) => {

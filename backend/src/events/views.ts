@@ -10,21 +10,21 @@ if (process.env.NODE_ENV !== "test") {
   eventRouter.use(auth as RequestHandler);
 }
 
-eventRouter.post("/:eventID", async (req: Request, res: Response) => {
+eventRouter.post("/:eventid", async (req: Request, res: Response) => {
   // #swagger.tags = ['Events']
-  attempt(res, 201, () => eventController.createEvent(req.params.eventID, req));
+  attempt(res, 201, () => eventController.createEvent(req.params.eventid, req));
 });
 
-eventRouter.put("/:eventID", async (req: Request, res: Response) => {
+eventRouter.put("/:eventid", async (req: Request, res: Response) => {
   // #swagger.tags = ['Events']
   attempt(res, 200, () =>
-    eventController.updateEvent(req.params.eventID, req.body)
+    eventController.updateEvent(req.params.eventid, req.body)
   );
 });
 
-eventRouter.delete("/:eventID", async (req: Request, res: Response) => {
+eventRouter.delete("/:eventid", async (req: Request, res: Response) => {
   // #swagger.tags = ['Events']
-  attempt(res, 200, () => eventController.deleteEvent(req.params.eventID));
+  attempt(res, 200, () => eventController.deleteEvent(req.params.eventid));
 });
 
 eventRouter.get("/", async (req: Request, res: Response) => {

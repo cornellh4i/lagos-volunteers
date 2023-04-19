@@ -80,7 +80,7 @@
         "responses": {}
       }
     },
-    "/users/{userID}": {
+    "/users/{userid}": {
       "delete": {
         "tags": [
           "Users"
@@ -88,7 +88,7 @@
         "description": "",
         "parameters": [
           {
-            "name": "userID",
+            "name": "userid",
             "in": "path",
             "required": true,
             "type": "string"
@@ -103,7 +103,7 @@
         "description": "",
         "parameters": [
           {
-            "name": "userID",
+            "name": "userid",
             "in": "path",
             "required": true,
             "type": "string"
@@ -118,7 +118,7 @@
         "description": "",
         "parameters": [
           {
-            "name": "userID",
+            "name": "userid",
             "in": "path",
             "required": true,
             "type": "string"
@@ -174,109 +174,22 @@
         "responses": {}
       }
     },
-    "/users/{userID}/profile": {
-      "get": {
-        "tags": [
-          "Users"
-        ],
-        "description": "",
-        "parameters": [
-          {
-            "name": "userID",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          }
-        ],
-        "responses": {}
-      }
-    },
-    "/users/{userID}/role": {
-      "get": {
-        "tags": [
-          "Users"
-        ],
-        "description": "",
-        "parameters": [
-          {
-            "name": "userID",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          }
-        ],
-        "responses": {}
-      }
-    },
-    "/users/{userID}/preferences": {
-      "get": {
-        "tags": [
-          "Users"
-        ],
-        "description": "",
-        "parameters": [
-          {
-            "name": "userID",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          }
-        ],
-        "responses": {}
-      }
-    },
-    "/users/{userID}/created": {
-      "get": {
-        "tags": [
-          "Users"
-        ],
-        "description": "",
-        "parameters": [
-          {
-            "name": "userID",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          }
-        ],
-        "responses": {}
-      }
-    },
-    "/users/{userID}/registered": {
-      "get": {
-        "tags": [
-          "Users"
-        ],
-        "description": "",
-        "parameters": [
-          {
-            "name": "userID",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          }
-        ],
-        "responses": {}
-      }
-    },
-    "/users/{userID}/hours": {
-      "get": {
-        "tags": [
-          "Users"
-        ],
-        "description": "",
-        "parameters": [
-          {
-            "name": "userID",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          }
-        ],
-        "responses": {}
-      }
-    },
     "/users/{userid}/profile": {
+      "get": {
+        "tags": [
+          "Users"
+        ],
+        "description": "",
+        "parameters": [
+          {
+            "name": "userid",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {}
+      },
       "put": {
         "tags": [
           "Users"
@@ -293,8 +206,91 @@
         "responses": {}
       }
     },
+    "/users/{userid}/role": {
+      "get": {
+        "tags": [
+          "Users"
+        ],
+        "description": "",
+        "parameters": [
+          {
+            "name": "userid",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {}
+      }
+    },
     "/users/{userid}/preferences": {
+      "get": {
+        "tags": [
+          "Users"
+        ],
+        "description": "",
+        "parameters": [
+          {
+            "name": "userid",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {}
+      },
       "put": {
+        "tags": [
+          "Users"
+        ],
+        "description": "",
+        "parameters": [
+          {
+            "name": "userid",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {}
+      }
+    },
+    "/users/{userid}/created": {
+      "get": {
+        "tags": [
+          "Users"
+        ],
+        "description": "",
+        "parameters": [
+          {
+            "name": "userid",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {}
+      }
+    },
+    "/users/{userid}/registered": {
+      "get": {
+        "tags": [
+          "Users"
+        ],
+        "description": "",
+        "parameters": [
+          {
+            "name": "userid",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {}
+      }
+    },
+    "/users/{userid}/hours": {
+      "get": {
         "tags": [
           "Users"
         ],
@@ -379,7 +375,7 @@
         "responses": {}
       }
     },
-    "/events/{eventID}": {
+    "/events/{eventid}": {
       "post": {
         "tags": [
           "Events"
@@ -387,7 +383,7 @@
         "description": "",
         "parameters": [
           {
-            "name": "eventID",
+            "name": "eventid",
             "in": "path",
             "required": true,
             "type": "string"
@@ -402,16 +398,14 @@
         "description": "",
         "parameters": [
           {
-            "name": "eventID",
+            "name": "eventid",
             "in": "path",
             "required": true,
             "type": "string"
           }
         ],
         "responses": {}
-      }
-    },
-    "/events/delete/{eventID}": {
+      },
       "delete": {
         "tags": [
           "Events"
@@ -419,7 +413,22 @@
         "description": "",
         "parameters": [
           {
-            "name": "eventID",
+            "name": "eventid",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {}
+      },
+      "get": {
+        "tags": [
+          "Events"
+        ],
+        "description": "",
+        "parameters": [
+          {
+            "name": "eventid",
             "in": "path",
             "required": true,
             "type": "string"
@@ -468,23 +477,6 @@
         "responses": {}
       }
     },
-    "/events/{eventid}": {
-      "get": {
-        "tags": [
-          "Events"
-        ],
-        "description": "",
-        "parameters": [
-          {
-            "name": "eventid",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          }
-        ],
-        "responses": {}
-      }
-    },
     "/events/{eventid}/attendees": {
       "get": {
         "tags": [
@@ -502,7 +494,7 @@
         "responses": {}
       }
     },
-    "/events/{eventid}/{attendeeid}": {
+    "/events/{eventid}/attendees/{attendeeid}": {
       "post": {
         "tags": [
           "Events"
@@ -523,9 +515,7 @@
           }
         ],
         "responses": {}
-      }
-    },
-    "/events/{eventid}/attendees/{attendeeid}": {
+      },
       "delete": {
         "tags": [
           "Events"
