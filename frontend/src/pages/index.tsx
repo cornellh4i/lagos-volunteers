@@ -21,15 +21,14 @@ const Home = () => {
 
   // Temporary fetch request to test if the backend is running
   useEffect(() => {
-    try{
+    try {
       // Note how BASE_URL is imported from a constants file and type casted to a string
-      const url = BASE_URL as string
-      fetch(url).then(data => console.log(data))
-    }catch(error){
-      console.log(error)
+      const url = BASE_URL as string;
+      fetch(url).then((data) => console.log(data));
+    } catch (error) {
+      console.log(error);
     }
   }, []);
-
 
   return (
     <>
