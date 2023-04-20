@@ -1,6 +1,8 @@
 import React from "react";
 
-/** A RadioButton page */
+/**
+ * A RadioButton component is a simple radio button
+ */
 const RadioButton = () => {
   return <>Hello there</>;
 };
