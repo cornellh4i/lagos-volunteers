@@ -20,7 +20,7 @@ const createEvent = async (userID: string, req: Request) => {
   // weird typescript error here with the prisma event type
   return prisma.event.create({
     data: {
-      ...req.body, 
+      ...req.body,
       owner: {
         connect: {
           id: userID,
