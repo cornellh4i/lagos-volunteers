@@ -9,7 +9,7 @@ type ProfileProps = {
   name: string;
   start_date: Date;
   hour: number;
-  form: React.ReactElement;
+  Form: React.ComponentType;
 };
 
 const ProfileTemplate = ({
@@ -18,7 +18,7 @@ const ProfileTemplate = ({
   hour,
   url,
   alt,
-  form,
+  Form,
 }: ProfileProps) => {
   return (
     <>
@@ -33,8 +33,9 @@ const ProfileTemplate = ({
         />
       </div>
       <div className="h-screen">
-        <div className="bg-red-200 sm:place-content-center mx-3 md:ml-20 md:w-1/2 md: mb-19 md: h-5/6 md: mt-16 lg:ml-20 lg:w-1/2 lg: mb-19 lg: h-5/6 lg: mt-16">
-          {form}
+        {/* Add bg-red-200 to see background */}
+        <div className="sm:place-content-center mx-3 md:ml-20 md:w-1/2 md: mb-19 md: h-5/6 md: mt-16 lg:ml-20 lg:w-1/2 lg: mb-19 lg: h-5/6 lg: mt-16">
+          <Form />
         </div>
       </div>
     </>

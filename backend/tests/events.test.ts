@@ -30,7 +30,7 @@ describe("Testing GET /events/past", () => {
   });
 });
 
-describe("Testing POST /events/:eventID", () => {
+describe("Testing POST /events/:userid", () => {
   test("POST Create a new event", async () => {
     const event = {
       name: "Cool Event",

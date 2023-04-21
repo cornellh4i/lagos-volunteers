@@ -2,14 +2,10 @@ import React from "react";
 import Button from "../atoms/Button";
 import TextField from "../atoms/TextField";
 import CustomCheckbox from "../atoms/Checkbox";
-import ProfileTemplate from "../templates/ProfileTemplate";
 
 const ProfileForm = () => {
   return (
     <div>
-      <div>
-        <ProfileTemplate />
-      </div>
       <div className="space-y-4">
         <div>
           <TextField

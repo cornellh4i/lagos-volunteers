@@ -16,14 +16,14 @@ import prisma from "../../client";
  * @param Status (EventStatus)
  * @returns promise with event or error.
  */
-const createEvent = async (eventID: string, req: Request) => {
+const createEvent = async (userID: string, req: Request) => {
   // weird typescript error here with the prisma event type
   return prisma.event.create({
     data: {
       ...req.body,
       owner: {
         connect: {
-          id: eventID,
+          id: userID,
         },
       },
     },
