@@ -24,11 +24,7 @@ app.get("/", (req, res) => {
 
 // Default route for endpoints not defined
 app.get("*", (req, res) => {
-  res.send("You have reached a rounte not defined in this API");
-});
-
-app.post("/", (req, res) => {
-  res.send(req.body);
+  res.send("You have reached a route not defined in this API");
 });
 
 export default app;

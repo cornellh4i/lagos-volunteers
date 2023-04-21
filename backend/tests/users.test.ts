@@ -346,7 +346,8 @@ describe("Testing /users/:userID", () => {
 
   test("GET null user", async () => {
     const response = await request(app).get("/users/z");
-    expect(response.status).toBe(500);
+    expect(response.status).toBe(200);
+    expect(response.body).toEqual({});
   });
 });
 
@@ -369,7 +370,7 @@ describe("Testing /users/sorting/", () => {
     expect(data[0].profile.firstName <= data[1].profile.firstName);
     expect(response.status).toBe(200);
   });
-  
+
   test("GET users sorted by lastName in descending order wkith null profiles", async () => {
     const response = await request(app).get(
       "/users/sorting?sort=firstName:desc"
@@ -402,14 +403,15 @@ describe("Testing /users/:userID/created", () => {
     );
     const userID = POSTresponse.body[0].id;
 
-    const GETresponse = await request(app).get("/users/" + userID + "/created");
-    const data = GETresponse.body;
-    expect(GETresponse.status).toBe(200);
+    const response = await request(app).get("/users/" + userID + "/created");
+    const data = response.body;
+    expect(response.status).toBe(200);
   });
 
   test("GET createdEvents of null user", async () => {
     const response = await request(app).get("/users/z/created");
-    expect(response.status).toBe(500);
+    expect(response.status).toBe(200);
+    expect(response.body).toEqual({});
   });
 });
 
@@ -428,7 +430,8 @@ describe("Testing /users/:userID/registered", () => {
 
   test("GET registeredEvents of null user", async () => {
     const response = await request(app).get("/users/z/registered");
-    expect(response.status).toBe(500);
+    expect(response.status).toBe(200);
+    expect(response.body).toEqual({});
   });
 });
 
@@ -442,52 +445,50 @@ describe("Testing /users/:userID/hours", () => {
     const GETresponse = await request(app).get("/users/" + userID + "/hours");
     const data = GETresponse.body;
     expect(GETresponse.status).toBe(200);
-    expect(data).toBe(0);
+    expect(data.hours).toBe(0);
   });
 
   test("GET hours of null user", async () => {
     const response = await request(app).get("/users/z/hours");
-    expect(response.status).toBe(500);
+    expect(response.status).toBe(200);
+    expect(response.body).toEqual({});
   });
 });
-
-
 
 describe("Testing GET /users/pagination", () => {
   test("Get 2 users after the second use", async () => {
     const users = await request(app).get("/users");
     const userid = users.body[1].id;
-    const response = await request(app).get("/users/pagination?limit=2&after=" + userid);
+    const response = await request(app).get(
+      "/users/pagination?limit=2&after=" + userid
+    );
     const data = response.body;
     expect(response.status).toBe(200);
     expect(data.length).toBe(2);
   });
-  
+
   test("Get 10 users after the second use", async () => {
     // limit should be defaulted to 10
     const users = await request(app).get("/users");
     const userid = users.body[2].id;
-    const response = await request(app).get("/users/pagination?after=" + userid);
+    const response = await request(app).get(
+      "/users/pagination?after=" + userid
+    );
     expect(response.status).toBe(200);
   });
 });
 
-
-/**
- * Note: Deleting a user still needs to be extensively tested. 
- */
-
-describe("Testing DELETE user", () => {
+/** Note: Deleting a user still needs to be extensively tested. */
+describe("Testing DELETE /users/:userid", () => {
   test("Delete valid user", async () => {
-
     const users = await request(app).get("/users");
     const userid = users.body[0].id;
     const response = await request(app).delete("/users/" + userid);
     expect(response.status).toBe(200);
 
     const getResponse = await request(app).get("/users/" + userid);
-    expect(getResponse.status).toBe(500);
-    
+    expect(getResponse.status).toBe(200);
+    expect(getResponse.body).toEqual({});
   });
 
   test("Delete invalid user", async () => {
