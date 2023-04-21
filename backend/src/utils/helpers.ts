@@ -13,7 +13,7 @@ export const attempt = async (
 ) => {
   try {
     res.status(successCode).send(successJson(await controller()));
-  } catch (error) {
-    res.status(500).send(errorJson(error));
+  } catch (error: any) {
+    res.status(500).send(errorJson(error.message));
   }
 };
