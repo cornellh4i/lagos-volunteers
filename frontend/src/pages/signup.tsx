@@ -1,8 +1,9 @@
 import React from "react";
+import SignupForm from "@/components/molecules/SignupForm";
 
 /** A Signup page */
 const Signup = () => {
-  return <>Hello there</>;
+  return <SignupForm />;
 };
 
 export default Signup;
