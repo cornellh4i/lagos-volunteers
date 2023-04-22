@@ -18,9 +18,30 @@ import prisma from "../../client";
  */
 const createEvent = async (userID: string, req: Request) => {
   // weird typescript error here with the prisma event type
+  const {
+    name,
+    subtitle,
+    location,
+    description,
+    startDate,
+    endDate,
+    mode,
+    status,
+    capacity,
+    tags,
+  } = req.body;
   return prisma.event.create({
     data: {
-      ...req.body, 
+      name,
+      subtitle,
+      location,
+      description,
+      startDate,
+      endDate,
+      mode,
+      status,
+      capacity,
+      tags,
       owner: {
         connect: {
           id: userID,

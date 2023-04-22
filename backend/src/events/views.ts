@@ -12,9 +12,9 @@ if (process.env.NODE_ENV !== "test") {
   eventRouter.use(auth as RequestHandler);
 }
 
-eventRouter.post("/:userid", async (req: Request, res: Response) => {
+eventRouter.post("/", async (req: Request, res: Response) => {
   // #swagger.tags = ['Events']
-  attempt(res, 201, () => eventController.createEvent(req.params.userid, req));
+  attempt(res, 201, () => eventController.createEvent(req.body.userid, req));
 });
 
 eventRouter.put("/:eventid", async (req: Request, res: Response) => {
