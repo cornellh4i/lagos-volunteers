@@ -3,6 +3,7 @@ import React from "react";
 import Divider from "@mui/material/Divider";
 import Button from "../atoms/Button";
 import TextField from "../atoms/TextField";
+import Link from "next/link";
 
 const LoginForm = () => {
   //const { signInUser } = useAuth();
@@ -35,7 +36,9 @@ const LoginForm = () => {
             incorrectEntryText=""
           />
         </div>
-        <div className="text-center underline">Forgot Password?</div>
+        <div className="justify-center flex flex-row text-sm">
+          <Link href="/password/forgot">Forgot password?</Link>
+        </div>
         <div>
           <Button
             buttonText="Log In"
