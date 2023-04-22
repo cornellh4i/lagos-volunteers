@@ -165,12 +165,12 @@ describe("Testing POST /events/:eventid/:attendeeid", () => {
     const eventid = events.body.data[1].id;
     const attendeeid_1 = users.body.data[1].id;
     const attendeeid_2 = users.body.data[2].id;
-    const response = await request(app).post(
-      "/events/" + eventid + "/attendees/" + attendeeid_1
-    );
-    const response_too = await request(app).post(
-      "/events/" + eventid + "/attendees/" + attendeeid_2
-    );
+    const response = await request(app)
+      .post("/events/" + eventid + "/attendees")
+      .send({ attendeeid: attendeeid_1 });
+    const response_too = await request(app)
+      .post("/events/" + eventid + "/attendees")
+      .send({ attendeeid: attendeeid_2 });
     expect(response.status).toBe(200);
     expect(response_too.status).toBe(200);
   });
