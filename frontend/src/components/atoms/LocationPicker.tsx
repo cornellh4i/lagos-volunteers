@@ -1,11 +1,40 @@
 import React from "react";
+import Autocomplete from "@mui/material/Autocomplete";
+import CustomTextField from "./TextField";
+import { TextField } from "@mui/material";
+
+interface Props {
+  label: string;
+}
 
 /**
  * A LocationPicker component is an input field that allows selecting a specific
  * geographic location with autocomplete
  */
-const LocationPicker = () => {
-  return <>Hello there</>;
+const LocationPicker = ({ label }: Props) => {
+  return (
+    <div>
+      <div> {label} </div>
+      <Autocomplete
+        disablePortal
+        options={LocationOptions}
+        sx={{
+          borderRadius: 2,
+          borderColor: "primary.main",
+          size: "small",
+          margin: "dense",
+        }}
+        renderInput={(params) => <TextField {...params} />}
+      />
+    </div>
+  );
 };
 
+const LocationOptions = [
+  { label: "location1" },
+  { label: "location2" },
+  { label: "location3" },
+  { label: "location4" },
+  { label: "location5" },
+];
 export default LocationPicker;

@@ -16,7 +16,10 @@ const CustomDatePicker = ({ label }: Props) => {
     <div>
       <div> {label} </div>
       <LocalizationProvider dateAdapter={AdapterDayjs}>
-        <DatePicker label="" />
+        <DatePicker
+          label=""
+          sx={{ borderRadius: 2, borderColor: "primary.main" }}
+        />
       </LocalizationProvider>
     </div>
   );

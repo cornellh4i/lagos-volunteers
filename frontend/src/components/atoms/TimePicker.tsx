@@ -15,7 +15,16 @@ const CustomTimePicker = ({ label }: Props) => {
     <div>
       <div> {label} </div>
       <LocalizationProvider dateAdapter={AdapterDayjs}>
-        <TimePicker label="" data-mdb-toggle="timepicker" />
+        <TimePicker
+          label=""
+          data-mdb-toggle="timepicker"
+          sx={{
+            borderRadius: 2,
+            borderColor: "primary.main",
+            size: "small",
+            margin: "dense",
+          }}
+        />
       </LocalizationProvider>
     </div>
   );
