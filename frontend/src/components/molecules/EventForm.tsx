@@ -3,6 +3,7 @@ import DatePicker from "../atoms/DatePicker";
 import TimePicker from "../atoms/TimePicker";
 import LocationPicker from "../atoms/LocationPicker";
 import Upload from "../atoms/Upload";
+import MultilineTextField from "../atoms/MultilineTextField";
 
 /** An EventForm page */
 const EventForm = () => {
@@ -25,6 +26,7 @@ const EventForm = () => {
         <div> Location </div>
         <div> INSERT Radio button </div>
         <LocationPicker label="" />
+        <MultilineTextField label="Event Description" required={true} status="" incorrectEntryText=""/>
         <Upload />
       </div>
     </div>
