@@ -2,6 +2,7 @@ import React from "react";
 import DatePicker from "../atoms/DatePicker";
 import TimePicker from "../atoms/TimePicker";
 import LocationPicker from "../atoms/LocationPicker";
+import Upload from "../atoms/Upload";
 
 /** An EventForm page */
 const EventForm = () => {
@@ -24,6 +25,7 @@ const EventForm = () => {
         <div> Location </div>
         <div> INSERT Radio button </div>
         <LocationPicker label="" />
+        <Upload />
       </div>
     </div>
   );
