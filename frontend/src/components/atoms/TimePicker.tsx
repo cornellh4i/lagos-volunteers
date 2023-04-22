@@ -23,6 +23,7 @@ const CustomTimePicker = ({ label }: Props) => {
             borderColor: "primary.main",
             size: "small",
             margin: "dense",
+            width: 1,
           }}
         />
       </LocalizationProvider>
