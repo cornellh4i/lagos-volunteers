@@ -1,14 +1,8 @@
 import React from "react";
-import EventForm from "@/components/molecules/EventForm";
 
 /** A CreateEvent page */
 const CreateEvent = () => {
-  console.log("here");
-  return (
-    <div>
-      <EventForm />
-    </div>
-  );
+  return <>Hello there</>;
 };
 
 export default CreateEvent;
