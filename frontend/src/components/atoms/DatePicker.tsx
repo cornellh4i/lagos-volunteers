@@ -5,7 +5,7 @@ import React from "react";
  * date through a calendar popup
  */
 const DatePicker = () => {
-  return <>Hello there</>;
+  return <>Date Picker</>;
 };
 
 export default DatePicker;
