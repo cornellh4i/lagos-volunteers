@@ -1,4 +1,7 @@
 import React from "react";
+import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 
 interface Props {
   label: string;
@@ -8,13 +11,15 @@ interface Props {
  * A DatePicker component is an input field that allows selecting a specific
  * date through a calendar popup
  */
-const DatePicker = ({ label }: Props) => {
+const CustomDatePicker = ({ label }: Props) => {
   return (
     <div>
       <div> {label} </div>
-      <DatePicker label={""} />
+      <LocalizationProvider dateAdapter={AdapterDayjs}>
+        <DatePicker label="" />
+      </LocalizationProvider>
     </div>
   );
 };
 
-export default DatePicker;
+export default CustomDatePicker;
