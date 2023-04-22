@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Button, Snackbar } from "@mui/material";
+import { Snackbar } from "@mui/material";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import IconButton from "@mui/material/IconButton";
 

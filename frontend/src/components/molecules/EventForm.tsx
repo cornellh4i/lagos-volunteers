@@ -1,7 +1,6 @@
 import React from "react";
 import DatePicker from "../atoms/DatePicker";
 import TimePicker from "../atoms/TimePicker";
-import LocationPicker from "../atoms/LocationPicker";
 import Upload from "../atoms/Upload";
 import MultilineTextField from "../atoms/MultilineTextField";
 import RadioButton from "../atoms/RadioButton";
