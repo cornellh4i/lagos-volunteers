@@ -8,6 +8,15 @@ describe("Testing GET /users", () => {
     const response = await request(app).get("/users");
     expect(response.status).toBe(200);
   });
+
+  // Since adding sorting and filtering, we need to test for all possible combinations
+  test("Get all users in DB with sorting and pagination", async () => {
+    const response = await request(app).get(
+      "/users?sort=email&order=asc&limit=2&after=grace@hey.com"
+    );
+    expect(response.body.data.length).toBe(2);
+    expect(response.status).toBe(200);
+  });
 });
 
 describe("Testing POST /users", () => {
@@ -353,28 +362,22 @@ describe("Testing /users/:userID", () => {
 
 describe("Testing /users/sorting/", () => {
   test("GET users sorted by firstName in ascending order with null profiles", async () => {
-    const response = await request(app).get(
-      "/users/sorting?sort=firstName:asc"
-    );
+    const response = await request(app).get("/users/?sort=firstName&asc");
     const data = response.body.data;
     expect(data[0].profile.firstName >= data[1].profile.firstName);
     expect(response.status).toBe(200);
   });
 
   test("GET users sorted by firstName in descending order with null profiles", async () => {
-    const response = await request(app).get(
-      "/users/sorting?sort=firstName:desc"
-    );
+    const response = await request(app).get("/users/?sort=firstName&desc");
     const data = response.body.data;
     expect(data[0].profile == null); //any null profiles should show up first
     expect(data[0].profile.firstName <= data[1].profile.firstName);
     expect(response.status).toBe(200);
   });
 
-  test("GET users sorted by lastName in descending order wkith null profiles", async () => {
-    const response = await request(app).get(
-      "/users/sorting?sort=firstName:desc"
-    );
+  test("GET users sorted by lastName in descending order with null profiles", async () => {
+    const response = await request(app).get("/users/?sort=firstName&desc");
     const data = response.body.data;
     expect(data[0].profile == null); //any null profiles should show up first
     expect(data[0].profile.lastName <= data[1].profile.lastName);
@@ -382,14 +385,14 @@ describe("Testing /users/sorting/", () => {
   });
 
   test("GET users sorted by hours in descending order", async () => {
-    const response = await request(app).get("/users/sorting?sort=hours:desc");
+    const response = await request(app).get("/users/?sort=hours&desc");
     const data = response.body.data;
     expect(data[0].hours <= data[1].hours);
     expect(response.status).toBe(200);
   });
 
   test("GET users sorted by email in ascending order", async () => {
-    const response = await request(app).get("/users/sorting?sort=email:asc");
+    const response = await request(app).get("/users/?sort=email&asc");
     const data = response.body.data;
     expect(data[0].email <= data[1].email);
     expect(response.status).toBe(200);
@@ -459,9 +462,7 @@ describe("Testing GET /users/pagination", () => {
   test("Get 2 users after the second use", async () => {
     const users = await request(app).get("/users");
     const userid = users.body.data[2].id;
-    const response = await request(app).get(
-      "/users/pagination?limit=2&after=" + userid
-    );
+    const response = await request(app).get("/users/?limit=2&after=" + userid);
     const data = response.body.data;
     expect(response.status).toBe(200);
     expect(data.length).toBe(2);

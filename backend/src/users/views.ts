@@ -6,9 +6,9 @@ const userRouter = Router();
 import { attempt } from "../utils/helpers";
 
 // No provision for auth in test environment for now
-if (process.env.NODE_ENV !== "test") {
-  userRouter.use(auth as RequestHandler);
-}
+// if (process.env.NODE_ENV !== "test") {
+//   userRouter.use(auth as RequestHandler);
+// }
 
 userRouter.post("/", async (req: Request, res: Response) => {
   // #swagger.tags = ['Users']
@@ -36,7 +36,7 @@ userRouter.put("/:userid", async (req: Request, res: Response) => {
 
 userRouter.get("/", async (req: Request, res: Response) => {
   // #swagger.tags = ['Users']
-  attempt(res, 200, userController.getAllUsers);
+  attempt(res, 200, () => userController.getAllUsers(req));
 });
 
 userRouter.get("/pagination", async (req: Request, res: Response) => {

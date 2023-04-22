@@ -64,8 +64,130 @@ const updateUser = async (userID: string, user: User) => {
  * Gets all Users in database and all data associated with each user
  * @returns promise with all users or error
  */
-const getAllUsers = async () => {
-  return prisma.user.findMany({});
+const getAllUsers = async (req: Request) => {
+  const { sort, order = "asc", limit, after } = req.query;
+
+  const count = await prisma.user.count();
+
+  // Since we are using cursor based pagination, if we don't have 'after',
+  // we will return all users just based on sort and order. This is because in the case a cursor is not provided,
+  // the fallback is an empty sting
+  if (!after) {
+    if (
+      sort == "email" ||
+      sort == "role" ||
+      sort == "status" ||
+      sort == "hours"
+    ) {
+      return prisma.user.findMany({
+        take: limit ? parseInt(limit as string) : count,
+        orderBy: { [sort as string]: order },
+      });
+    } else if (sort == "firstName" || sort == "lastName") {
+      return prisma.user.findMany({
+        take: limit ? parseInt(limit as string) : count,
+        orderBy: {
+          profile: {
+            [sort as string]: order,
+          },
+        },
+        include: {
+          profile: true,
+        },
+      });
+    } else {
+      return prisma.user.findMany({
+        take: limit ? parseInt(limit as string) : count,
+        orderBy: {
+          id: "asc",
+        },
+      });
+    }
+  } else {
+    if (
+      sort == "email" ||
+      sort == "role" ||
+      sort == "status" ||
+      sort == "hours"
+    ) {
+      return prisma.user.findMany({
+        take: limit ? parseInt(limit as string) : count,
+        cursor: {
+          [sort as string]: after as string,
+        },
+        orderBy: { [sort as string]: order },
+      });
+    } else if (sort == "firstName" || sort == "lastName") {
+      return prisma.user.findMany({
+        take: limit ? parseInt(limit as string) : count,
+        cursor: {
+          [sort as string]: after as string,
+        },
+        orderBy: {
+          profile: {
+            [sort as string]: order,
+          },
+        },
+        include: {
+          profile: true,
+        },
+      });
+    } else {
+      return prisma.user.findMany({
+        take: limit ? parseInt(limit as string) : count,
+        cursor: {
+          id: after as string,
+        },
+        orderBy: {
+          id: "asc",
+        },
+      });
+    }
+  }
+};
+
+/**
+ * Returns sorted Users based on one key
+ * @param req: Request parameter
+ * @returns promise with user or error
+ */
+const getUsersSorted = async (req: Request) => {
+  const query = req.query.sort as string;
+  const querySplit = query.split(":");
+  const key: string = querySplit[0];
+  const order = querySplit[1] as Prisma.SortOrder;
+
+  if (key == "email") {
+    return prisma.user.findMany({
+      orderBy: [{ email: order }],
+    });
+  } else if (key == "hours") {
+    return prisma.user.findMany({
+      orderBy: [{ hours: order }],
+    });
+  } else if (key == "firstName") {
+    return prisma.user.findMany({
+      orderBy: {
+        profile: {
+          firstName: order,
+        },
+      },
+      include: {
+        profile: true,
+      },
+    });
+  } else if (key == "lastName") {
+    return prisma.user.findMany({
+      orderBy: {
+        profile: {
+          lastName: order,
+        },
+      },
+      include: {
+        profile: true,
+      },
+    });
+  }
 };
 
 /**
@@ -351,50 +473,6 @@ const editHours = async (userId: string, hours: string) => {
       hours: parseInt(hours),
     },
   });
-};
-
-/**
- * Returns sorted Users based on one key
- * @param req: Request parameter
- * @returns promise with user or error
- */
-const getUsersSorted = async (req: Request) => {
-  const query = req.query.sort as string;
-  const querySplit = query.split(":");
-  const key: string = querySplit[0];
-  const order = querySplit[1] as Prisma.SortOrder;
-
-  if (key == "email") {
-    return prisma.user.findMany({
-      orderBy: [{ email: order }],
-    });
-  } else if (key == "hours") {
-    return prisma.user.findMany({
-      orderBy: [{ hours: order }],
-    });
-  } else if (key == "firstName") {
-    return prisma.user.findMany({
-      orderBy: {
-        profile: {
-          firstName: order,
-        },
-      },
-      include: {
-        profile: true,
-      },
-    });
-  } else if (key == "lastName") {
-    return prisma.user.findMany({
-      orderBy: {
-        profile: {
-          lastName: order,
-        },
-      },
-      include: {
-        profile: true,
-      },
-    });
-  }
 };
 
 /**
