@@ -25,7 +25,7 @@ const EventForm = () => {
           <TimePicker label="End Time" />
         </div>
         <RadioButton label="Location" />
-        <LocationPicker label="" />
+        {/* <LocationPicker label="" /> */}
         <MultilineTextField
           label="Event Description"
           required={true}
