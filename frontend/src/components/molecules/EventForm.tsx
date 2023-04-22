@@ -6,6 +6,7 @@ import Upload from "../atoms/Upload";
 import MultilineTextField from "../atoms/MultilineTextField";
 import RadioButton from "../atoms/RadioButton";
 import Button from "../atoms/Button";
+import TextCopy from "../atoms/TextCopy";
 
 interface Props {
   eventType: string; //create or edit
@@ -36,7 +37,8 @@ const EventForm = ({ eventType }: Props) => {
           status=""
           incorrectEntryText=""
         />
-        <Upload />
+        <Upload label="Event Image"/>
+        <TextCopy label="RSVP Link Image" text="www.lagos/event/rsvp.com"/>
         <div>
           {eventType == "create" ? (
             <div className="grid sm:grid-cols-1 md:grid-cols-4 gap-4">
