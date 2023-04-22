@@ -58,7 +58,7 @@ const SignupForm = () => {
       </div>
       <div>
         <Button
-          buttonText="Continue with Google"
+          buttonText="Continue with  Google"
           buttonTextColor="#000000"
           buttonColor="#D3D3D3"
         />
