@@ -16,7 +16,10 @@ interface Props {
 const EventForm = ({ eventType }: Props) => {
   return (
     <div className="space-y-4">
-      <div className="font-bold text-3xl"> Create Event </div>
+      <div className="font-bold text-3xl">
+        {" "}
+        {eventType == "create" ? "Create Event" : "Edit Event "}{" "}
+      </div>
       <div className="grid sm:grid-cols-2  sm:col-span-2  md:col-span-1">
         <TextField
           label="Event Name"
@@ -38,7 +41,14 @@ const EventForm = ({ eventType }: Props) => {
         <TimePicker label="End Time" />
       </div>
       <RadioButton label="Location" />
-      {/* <LocationPicker label="" /> */}
+      <div className="grid sm:grid-cols-2  sm:col-span-2  md:col-span-1">
+        <TextField
+          label="Volunteer Sign Up Cap"
+          required={true}
+          status=""
+          incorrectEntryText=""
+        />
+      </div>
       <MultilineTextField
         label="Event Description"
         required={true}
