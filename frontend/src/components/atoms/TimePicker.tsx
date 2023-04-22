@@ -25,6 +25,7 @@ const CustomTimePicker = ({ label }: Props) => {
             margin: "dense",
             width: 1,
           }}
+          slotProps={{ textField: { size: "small" } }}
         />
       </LocalizationProvider>
     </div>

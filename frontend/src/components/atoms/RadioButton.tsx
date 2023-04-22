@@ -5,6 +5,7 @@ import FormControlLabel from "@mui/material/FormControlLabel";
 import FormControl from "@mui/material/FormControl";
 import FormLabel from "@mui/material/FormLabel";
 import LocationPicker from "./LocationPicker";
+import { Typography } from "@mui/material";
 
 interface Props {
   label: string;
@@ -33,13 +34,13 @@ const RadioButton = ({ label }: Props) => {
           <FormControlLabel
             value="Virtual"
             control={<Radio />}
-            label="Virtual"
+            label={<Typography sx={{ fontSize: 15 }}>Virtual</Typography>}
             onClick={(e) => radioHandler(0)}
           />
           <FormControlLabel
             value="In-Person"
             control={<Radio />}
-            label="In-Person"
+            label={<Typography sx={{ fontSize: 15 }}>In-Person</Typography>}
             onClick={(e) => radioHandler(1)}
           />
         </RadioGroup>
