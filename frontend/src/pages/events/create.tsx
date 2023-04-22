@@ -5,7 +5,7 @@ import EventForm from "@/components/molecules/EventForm";
 const CreateEvent = () => {
   return (
     <div>
-      <EventForm />
+      <EventForm eventType="edit" />
     </div>
   );
 };

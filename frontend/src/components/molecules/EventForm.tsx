@@ -5,9 +5,13 @@ import LocationPicker from "../atoms/LocationPicker";
 import Upload from "../atoms/Upload";
 import MultilineTextField from "../atoms/MultilineTextField";
 import RadioButton from "../atoms/RadioButton";
+import Button from "../atoms/Button";
 
+interface Props {
+  eventType: string; //create or edit
+}
 /** An EventForm page */
-const EventForm = () => {
+const EventForm = ({ eventType }: Props) => {
   return (
     <div className="">
       <div className="space-y-4 ">
@@ -33,6 +37,50 @@ const EventForm = () => {
           incorrectEntryText=""
         />
         <Upload />
+        <div>
+          {eventType == "create" ? (
+            <div className="grid sm:grid-cols-1 md:grid-cols-4 gap-4">
+              <div className="sm:col-start-1 sm:col-span-1 md:col-start-3 md:col-span-1">
+                <Button
+                  buttonText="Cancel"
+                  buttonTextColor="#000000"
+                  buttonColor="#D3D3D3"
+                />
+              </div>
+              <div className="sm:col-start-1 sm:col-span-1 md:col-start-4 md:col-span-1">
+                <Button
+                  buttonText="Create"
+                  buttonTextColor="#000000"
+                  buttonColor="#808080"
+                />
+              </div>
+            </div>
+          ) : (
+            <div className="grid sm:grid-cols-1 md:grid-cols-6 gap-4">
+              <div className="sm:col-start-1 sm:col-span-1 md:col-start-4 md:col-span-1">
+                <Button
+                  buttonText="Cancel"
+                  buttonTextColor="#000000"
+                  buttonColor="#D3D3D3"
+                />
+              </div>
+              <div className="sm:col-start-1 sm:col-span-1 md:col-start-5 md:col-span-1">
+                <Button
+                  buttonText="Cancel Event"
+                  buttonTextColor="#000000"
+                  buttonColor="#D3D3D3"
+                />
+              </div>
+              <div className="sm:col-start-1 sm:col-span-1 md:col-start-6 md:col-span-1">
+                <Button
+                  buttonText="Save Changes"
+                  buttonTextColor="#000000"
+                  buttonColor="#808080"
+                />
+              </div>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );
