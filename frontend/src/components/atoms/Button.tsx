@@ -5,6 +5,7 @@ interface Props {
   buttonText: string;
   buttonTextColor: string;
   buttonColor: string;
+  buttonAction: ()=>void;
 }
 /** A Button page */
 const CustomButton = (props: Props) => {
@@ -16,6 +17,7 @@ const CustomButton = (props: Props) => {
         backgroundColor: props.buttonColor,
         color: props.buttonTextColor,
       }}
+      onClick={props.buttonAction}
     >
       {props.buttonText}
     </Button>
