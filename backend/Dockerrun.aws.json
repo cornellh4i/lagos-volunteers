@@ -1,0 +1,14 @@
+{
+    "AWSEBDockerrunVersion":"1",
+    "Image":{
+        "Name":"lagosfoodbank/volunteer-platform",
+        "Update": "true"
+    },
+
+    "Ports":[
+        {
+            "ContainerPort":8000,
+            "HostPort":8000
+        }
+    ]
+}

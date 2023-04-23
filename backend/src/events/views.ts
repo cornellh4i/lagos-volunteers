@@ -3,8 +3,6 @@ import eventController from "./controllers";
 import { auth } from "../middleware/auth";
 import { attempt } from "../utils/helpers";
 
-import { errorJson, successJson } from "../utils/jsonResponses";
-
 const eventRouter = Router();
 
 // No provision for auth in test environment for now

@@ -1,5 +1,7 @@
 .DS_Store
 .env
+.env.production
+.env.db
 secrets/
 node_modules/
 .vscode

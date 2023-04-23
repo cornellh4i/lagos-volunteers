@@ -6,26 +6,6 @@ services:
       context: .
       dockerfile: Dockerfile
     env_file:
-      - .env
+      - .env.production
     ports:
       - "8000:8000"
-    depends_on:
-      - postgres
-    restart:
-        always
-
-  postgres:
-    image: postgres:latest
-    container_name: postgres
-    environment:
-        - POSTGRES_USER=postgres
-        - POSTGRES_PASSWORD=postgres
-        - POSTGRES_DB=mydb
-    ports:
-      - "5433:5432"
-    volumes:
-      - db_data:/var/lib/postgresql/data/
-    restart: unless-stopped
-
-volumes:
-    db_data:
