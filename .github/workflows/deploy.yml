@@ -42,9 +42,9 @@ jobs:
       with:
         aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID}}
         aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        application_name:
-        environment_name:
-        version_label:
+        application_name: Lagos Foodbank Server
+        environment_name: Lagosfoodbankserver-env
+        version_label: "lagos-foodbank-server-${{ steps.format-time.outputs.replaced }}"
         region: us-east-2
         deployment_package: ./backend/Dockerrun.aws.json
 
