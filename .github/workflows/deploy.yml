@@ -1,0 +1,55 @@
+name: Docker Image CI
+
+on:
+  push:
+    branches: ['main']
+    paths: ['backend/**']
+
+
+jobs:
+
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Docker Login
+      uses: docker/login-action@v1.8.0
+      with:
+        username: ${{secrets.DOCKER_HUB_USERNAME}}
+        password: ${{secrets.DOCKER_HUB_ACCESS_TOKEN}}
+        logout: true
+    - name: Build and tag server image
+      run: docker build -t lagosfoodbank/volunteer-platform -f ./backend/Dockerfile ./backend
+      run: docker tag lagosfoodbank/volunteer-platform lagosfoodbank/volunteer-platform:latest
+    - name: Push to dockerhub
+      run: docker push lagosfoodbank/volunteer-platform
+    
+    - name: Get timestamp
+      uses: gerred/actions/current-time@master
+      id: current-time
+
+    - name: Run string replace
+      uses: frabert/replace-string-action@master
+      id: format-time
+      with:
+        pattern: '[:\.]+'
+        string: "${{ steps.current-time.outputs.time }}"
+        replace-with: '-'
+        flags: 'g'
+
+    - name: Deploy to Elastic Beanstalk
+      uses: einaregilsson/beanstalk-deploy@v14
+      with:
+        aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID}}
+        aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        application_name:
+        environment_name:
+        version_label:
+        region: us-east-2
+        deployment_package: ./backend/Dockerrun.aws.json
+
+
+
+
+
+
