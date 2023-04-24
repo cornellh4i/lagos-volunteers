@@ -375,7 +375,7 @@
         "responses": {}
       }
     },
-    "/events/{eventid}": {
+    "/events/{userid}": {
       "post": {
         "tags": [
           "Events"
@@ -383,14 +383,16 @@
         "description": "",
         "parameters": [
           {
-            "name": "eventid",
+            "name": "userid",
             "in": "path",
             "required": true,
             "type": "string"
           }
         ],
         "responses": {}
-      },
+      }
+    },
+    "/events/{eventid}": {
       "put": {
         "tags": [
           "Events"
@@ -605,204 +607,6 @@
           }
         ],
         "responses": {}
-      }
-    },
-    "/events/{eventid}": {
-      "get": {
-        "tags": [
-          "Events"
-        ],
-        "description": "",
-        "parameters": [
-          {
-            "name": "eventid",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          },
-          "500": {
-            "description": "Internal Server Error"
-          }
-        }
-      }
-    },
-    "/events/{eventid}/attendees": {
-      "get": {
-        "tags": [
-          "Events"
-        ],
-        "description": "",
-        "parameters": [
-          {
-            "name": "eventid",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          },
-          "500": {
-            "description": "Internal Server Error"
-          }
-        }
-      }
-    },
-    "/events/{eventid}/{attendeeid}": {
-      "post": {
-        "tags": [
-          "Events"
-        ],
-        "description": "",
-        "parameters": [
-          {
-            "name": "eventid",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "name": "attendeeid",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          },
-          "500": {
-            "description": "Internal Server Error"
-          }
-        }
-      }
-    },
-    "/events/{eventid}/attendees/{attendeeid}": {
-      "delete": {
-        "tags": [
-          "Events"
-        ],
-        "description": "",
-        "parameters": [
-          {
-            "name": "eventid",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "name": "attendeeid",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          },
-          "500": {
-            "description": "Internal Server Error"
-          }
-        }
-      }
-    },
-    "/events/{eventid}/status/{status}": {
-      "patch": {
-        "tags": [
-          "Events"
-        ],
-        "description": "",
-        "parameters": [
-          {
-            "name": "eventid",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "name": "status",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          },
-          "500": {
-            "description": "Internal Server Error"
-          }
-        }
-      }
-    },
-    "/events/{eventid}/owner/{ownerid}": {
-      "patch": {
-        "tags": [
-          "Events"
-        ],
-        "description": "",
-        "parameters": [
-          {
-            "name": "eventid",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "name": "ownerid",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          },
-          "500": {
-            "description": "Internal Server Error"
-          }
-        }
-      }
-    },
-    "/events/{eventid}/attendees/{attendeeid}/confirm": {
-      "patch": {
-        "tags": [
-          "Events"
-        ],
-        "description": "",
-        "parameters": [
-          {
-            "name": "eventid",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "name": "attendeeid",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          },
-          "500": {
-            "description": "Internal Server Error"
-          }
-        }
       }
     }
   }
