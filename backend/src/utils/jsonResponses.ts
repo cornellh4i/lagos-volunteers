@@ -5,7 +5,7 @@ export const successJson = (data: any) => {
   };
 };
 
-export const errorJson = (error: any) => {
+export const errorJson = (error: Error) => {
   return {
     success: false,
     error: error,

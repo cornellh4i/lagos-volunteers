@@ -17,7 +17,7 @@ describe("Testing POST /users", () => {
       role: "ADMIN",
     };
     const response = await request(app).post("/users").send(user);
-    const data = response.body;
+    const data = response.body.data;
     expect(data.email).toBe("desi2@gmail.com");
     expect(data.role).toBe("ADMIN");
 
@@ -39,12 +39,12 @@ describe("Testing PUT /users/:userid", () => {
 
     // This is temporary till we create an endpoint to get a specific user
     const users = await request(app).get("/users");
-    const userid = users.body[1].id;
+    const userid = users.body.data[1].id;
 
     const response = await request(app)
       .put("/users/" + userid)
       .send(user);
-    const data = response.body;
+    const data = response.body.data;
     expect(data.email).toBe("asu284@cornell.edu");
     expect(response.status).toBe(200);
   });
@@ -66,7 +66,7 @@ describe("Testing PUT /users/:userid/profile", () => {
     };
 
     const createdUser = await request(app).post("/users").send(user);
-    const userid = createdUser.body.id;
+    const userid = createdUser.body.data.id;
 
     const editProfile = {
       firstName: "Arizona2",
@@ -77,7 +77,7 @@ describe("Testing PUT /users/:userid/profile", () => {
       .put("/users/" + userid + "/profile")
       .send(editProfile);
 
-    const data = response.body;
+    const data = response.body.data;
     expect(data.profile.firstName).toBe("Arizona2");
     expect(data.profile.lastName).toBe("Tea2");
     expect(data.profile.nickname).toBe("99cents");
@@ -96,7 +96,7 @@ describe("Testing PUT /users/:userid/preferences", () => {
 
     const createdUser = await request(app).post("/users").send(user);
 
-    const userid = createdUser.body.id;
+    const userid = createdUser.body.data.id;
 
     const editPreferences = {
       sendEmailNotification: false,
@@ -107,7 +107,7 @@ describe("Testing PUT /users/:userid/preferences", () => {
       .put("/users/" + userid + "/preferences")
       .send(editPreferences);
 
-    const data = response.body;
+    const data = response.body.data;
 
     expect(data.preferences.sendEmailNotification).toBe(false);
     expect(data.preferences.sendPromotions).toBe(true);
@@ -120,11 +120,11 @@ describe("Testing PATCH /users/:userid/status/:status", () => {
   test("PATCH edit a user's role with an existing role", async () => {
     // This is temporary till we create an endpoint to get a specific user
     const users = await request(app).get("/users");
-    const userid = users.body[1].id;
+    const userid = users.body.data[1].id;
     const response = await request(app).patch(
       "/users/" + userid + "/role" + "/SUPERVISOR"
     );
-    const data = response.body;
+    const data = response.body.data;
     expect(data.role).toBe("SUPERVISOR");
     expect(response.status).toBe(200);
   });
@@ -134,11 +134,11 @@ describe("Testing PATCH /users/:userid/hours/:hours", () => {
   test("PATCH edit a user's hours with an existing hours", async () => {
     // This is temporary till we create an endpoint to get a specific user
     const users = await request(app).get("/users");
-    const userid = users.body[1].id;
+    const userid = users.body.data[1].id;
     const response = await request(app).patch(
       "/users/" + userid + "/hours" + "/10"
     );
-    const data = response.body;
+    const data = response.body.data;
     expect(data.hours).toBe(10);
     expect(response.status).toBe(200);
   });
@@ -152,7 +152,7 @@ describe("Testing /users/search", () => {
 
   test("GET users with firstName=Alice", async () => {
     const response = await request(app).get("/users/search?firstName=Alice");
-    const data = response.body;
+    const data = response.body.data;
     for (let i = 0; i < data.length; i++) {
       expect(data[i].profile.firstName).toBe("Alice");
     }
@@ -161,7 +161,7 @@ describe("Testing /users/search", () => {
 
   test("GET users with role=ADMIN", async () => {
     const response = await request(app).get("/users/search?role=ADMIN");
-    const data = response.body;
+    const data = response.body.data;
     for (let i = 0; i < data.length; i++) {
       expect(data[i].role).toBe("ADMIN");
     }
@@ -170,7 +170,7 @@ describe("Testing /users/search", () => {
 
   test("GET users with hours=0", async () => {
     const response = await request(app).get("/users/search?hours=0");
-    const data = response.body;
+    const data = response.body.data;
     for (let i = 0; i < data.length; i++) {
       expect(data[i].hours).toBe(0);
     }
@@ -182,7 +182,7 @@ describe("Testing /users/search", () => {
     const response = await request(app).get(
       "/users/search?hours=0&firstName=Alice"
     );
-    const data = response.body;
+    const data = response.body.data;
 
     for (let i = 0; i < data.length; i++) {
       expect(data[i].hours).toBe(0);
@@ -195,7 +195,7 @@ describe("Testing /users/search", () => {
     const response = await request(app).get(
       "/users/search?hours=0&firstName=Alice&status=ACTIVE"
     );
-    const data = response.body;
+    const data = response.body.data;
 
     for (let i = 0; i < data.length; i++) {
       expect(data[i].hours).toBe(0);
@@ -210,7 +210,7 @@ describe("Testing GET /users/:userid/profile", () => {
   test("GET user's profile", async () => {
     // This is temporary till we create an endpoint to get a specific user
     const users = await request(app).get("/users");
-    const userid = users.body[0].id;
+    const userid = users.body.data[0].id;
 
     const response = await request(app).get("/users/" + userid + "/profile");
     expect(response.status).toBe(200);
@@ -222,7 +222,7 @@ describe("Testing GET /users/:userid/profile", () => {
     };
 
     const users = await request(app).get("/users");
-    const userid = users.body[1].id;
+    const userid = users.body.data[1].id;
 
     const response = await request(app).get("/users/" + userid + "/profile");
     expect(response.status).toBe(200);
@@ -232,7 +232,7 @@ describe("Testing GET /users/:userid/profile", () => {
 describe("Testing GET /users/:userid/role", () => {
   test("GET supervisor user's role", async () => {
     const users = await request(app).get("/users");
-    const userid = users.body[1].id;
+    const userid = users.body.data[1].id;
 
     const response = await request(app).get("/users/" + userid + "/role");
     expect(response.status).toBe(200);
@@ -240,7 +240,7 @@ describe("Testing GET /users/:userid/role", () => {
 
   test("GET user's default role", async () => {
     const users = await request(app).get("/users");
-    const userid = users.body[0].id;
+    const userid = users.body.data[0].id;
 
     const response = await request(app).get("/users/" + userid + "/role");
     expect(response.status).toBe(200);
@@ -250,7 +250,7 @@ describe("Testing GET /users/:userid/role", () => {
 describe("Testing GET /users/:userid/preferences", () => {
   test("GET user's default preferences", async () => {
     const users = await request(app).get("/users");
-    const userid = users.body[0].id;
+    const userid = users.body.data[0].id;
 
     const response = await request(app).get(
       "/users/" + userid + "/preferences"
@@ -260,12 +260,12 @@ describe("Testing GET /users/:userid/preferences", () => {
 
   test("GET user's non-default preferences", async () => {
     const users = await request(app).get("/users");
-    const userid = users.body[1].id;
+    const userid = users.body.data[1].id;
 
     const response = await request(app).get(
       "/users/" + userid + "/preferences"
     );
-    const data = response.body;
+    const data = response.body.data;
     expect(response.status).toBe(200);
   });
 });
@@ -274,7 +274,7 @@ describe("Testing GET /users/:userid/profile", () => {
   test("GET user's profile", async () => {
     // This is temporary till we create an endpoint to get a specific user
     const users = await request(app).get("/users");
-    const userid = users.body[0].id;
+    const userid = users.body.data[0].id;
 
     const response = await request(app).get("/users/" + userid + "/profile");
     expect(response.status).toBe(200);
@@ -282,7 +282,7 @@ describe("Testing GET /users/:userid/profile", () => {
 
   test("GET 2nd user's profile", async () => {
     const users = await request(app).get("/users");
-    const userid = users.body[1].id;
+    const userid = users.body.data[1].id;
 
     const response = await request(app).get("/users/" + userid + "/profile");
     expect(response.status).toBe(200);
@@ -292,7 +292,7 @@ describe("Testing GET /users/:userid/profile", () => {
 describe("Testing GET /users/:userid/role", () => {
   test("GET supervisor user's role", async () => {
     const users = await request(app).get("/users");
-    const userid = users.body[1].id;
+    const userid = users.body.data[1].id;
 
     const response = await request(app).get("/users/" + userid + "/role");
     expect(response.status).toBe(200);
@@ -300,7 +300,7 @@ describe("Testing GET /users/:userid/role", () => {
 
   test("GET user's default role", async () => {
     const users = await request(app).get("/users");
-    const userid = users.body[0].id;
+    const userid = users.body.data[0].id;
 
     const response = await request(app).get("/users/" + userid + "/role");
     expect(response.status).toBe(200);
@@ -310,7 +310,7 @@ describe("Testing GET /users/:userid/role", () => {
 describe("Testing GET /users/:userid/preferences", () => {
   test("GET user's default preferences", async () => {
     const users = await request(app).get("/users");
-    const userid = users.body[0].id;
+    const userid = users.body.data[0].id;
 
     const response = await request(app).get(
       "/users/" + userid + "/preferences"
@@ -320,7 +320,7 @@ describe("Testing GET /users/:userid/preferences", () => {
 
   test("GET user's non-default preferences", async () => {
     const users = await request(app).get("/users");
-    const userid = users.body[1].id;
+    const userid = users.body.data[1].id;
 
     const response = await request(app).get(
       "/users/" + userid + "/preferences"
@@ -336,10 +336,10 @@ describe("Testing /users/:userID", () => {
     };
 
     const POSTresponse = await request(app).post("/users").send(user);
-    const userID = POSTresponse.body.id;
+    const userID = POSTresponse.body.data.id;
 
     const GETresponse = await request(app).get("/users/" + userID);
-    const data = GETresponse.body;
+    const data = GETresponse.body.data;
     expect(GETresponse.status).toBe(200);
     expect(data.email).toBe("test@gmail.com");
   });
@@ -347,7 +347,7 @@ describe("Testing /users/:userID", () => {
   test("GET null user", async () => {
     const response = await request(app).get("/users/z");
     expect(response.status).toBe(200);
-    expect(response.body).toEqual({});
+    expect(response.body.data).toEqual(null);
   });
 });
 
@@ -356,7 +356,7 @@ describe("Testing /users/sorting/", () => {
     const response = await request(app).get(
       "/users/sorting?sort=firstName:asc"
     );
-    const data = response.body;
+    const data = response.body.data;
     expect(data[0].profile.firstName >= data[1].profile.firstName);
     expect(response.status).toBe(200);
   });
@@ -365,7 +365,7 @@ describe("Testing /users/sorting/", () => {
     const response = await request(app).get(
       "/users/sorting?sort=firstName:desc"
     );
-    const data = response.body;
+    const data = response.body.data;
     expect(data[0].profile == null); //any null profiles should show up first
     expect(data[0].profile.firstName <= data[1].profile.firstName);
     expect(response.status).toBe(200);
@@ -375,7 +375,7 @@ describe("Testing /users/sorting/", () => {
     const response = await request(app).get(
       "/users/sorting?sort=firstName:desc"
     );
-    const data = response.body;
+    const data = response.body.data;
     expect(data[0].profile == null); //any null profiles should show up first
     expect(data[0].profile.lastName <= data[1].profile.lastName);
     expect(response.status).toBe(200);
@@ -383,14 +383,14 @@ describe("Testing /users/sorting/", () => {
 
   test("GET users sorted by hours in descending order", async () => {
     const response = await request(app).get("/users/sorting?sort=hours:desc");
-    const data = response.body;
+    const data = response.body.data;
     expect(data[0].hours <= data[1].hours);
     expect(response.status).toBe(200);
   });
 
   test("GET users sorted by email in ascending order", async () => {
     const response = await request(app).get("/users/sorting?sort=email:asc");
-    const data = response.body;
+    const data = response.body.data;
     expect(data[0].email <= data[1].email);
     expect(response.status).toBe(200);
   });
@@ -401,17 +401,17 @@ describe("Testing /users/:userID/created", () => {
     const POSTresponse = await request(app).get(
       "/users/search?firstName=Prisma"
     );
-    const userID = POSTresponse.body[0].id;
+    const userID = POSTresponse.body.data[0].id;
 
     const response = await request(app).get("/users/" + userID + "/created");
-    const data = response.body;
+    const data = response.body.data;
     expect(response.status).toBe(200);
   });
 
   test("GET createdEvents of null user", async () => {
     const response = await request(app).get("/users/z/created");
     expect(response.status).toBe(200);
-    expect(response.body).toEqual({});
+    expect(response.body.data).toEqual(null);
   });
 });
 
@@ -420,7 +420,7 @@ describe("Testing /users/:userID/registered", () => {
     const POSTresponse = await request(app).get(
       "/users/search?firstName=Alice"
     );
-    const userID = POSTresponse.body[0].id;
+    const userID = POSTresponse.body.data[0].id;
 
     const GETresponse = await request(app).get(
       "/users/" + userID + "/registered"
@@ -431,7 +431,7 @@ describe("Testing /users/:userID/registered", () => {
   test("GET registeredEvents of null user", async () => {
     const response = await request(app).get("/users/z/registered");
     expect(response.status).toBe(200);
-    expect(response.body).toEqual({});
+    expect(response.body.data).toEqual(null);
   });
 });
 
@@ -440,10 +440,10 @@ describe("Testing /users/:userID/hours", () => {
     const POSTresponse = await request(app).get(
       "/users/search?firstName=Prisma"
     );
-    const userID = POSTresponse.body[0].id;
+    const userID = POSTresponse.body.data[0].id;
 
     const GETresponse = await request(app).get("/users/" + userID + "/hours");
-    const data = GETresponse.body;
+    const data = GETresponse.body.data;
     expect(GETresponse.status).toBe(200);
     expect(data.hours).toBe(0);
   });
@@ -451,18 +451,18 @@ describe("Testing /users/:userID/hours", () => {
   test("GET hours of null user", async () => {
     const response = await request(app).get("/users/z/hours");
     expect(response.status).toBe(200);
-    expect(response.body).toEqual({});
+    expect(response.body.data).toEqual(null);
   });
 });
 
 describe("Testing GET /users/pagination", () => {
   test("Get 2 users after the second use", async () => {
     const users = await request(app).get("/users");
-    const userid = users.body[1].id;
+    const userid = users.body.data[2].id;
     const response = await request(app).get(
       "/users/pagination?limit=2&after=" + userid
     );
-    const data = response.body;
+    const data = response.body.data;
     expect(response.status).toBe(200);
     expect(data.length).toBe(2);
   });
@@ -470,7 +470,7 @@ describe("Testing GET /users/pagination", () => {
   test("Get 10 users after the second use", async () => {
     // limit should be defaulted to 10
     const users = await request(app).get("/users");
-    const userid = users.body[2].id;
+    const userid = users.body.data[2].id;
     const response = await request(app).get(
       "/users/pagination?after=" + userid
     );
@@ -482,13 +482,13 @@ describe("Testing GET /users/pagination", () => {
 describe("Testing DELETE /users/:userid", () => {
   test("Delete valid user", async () => {
     const users = await request(app).get("/users");
-    const userid = users.body[0].id;
+    const userid = users.body.data[0].id;
     const response = await request(app).delete("/users/" + userid);
     expect(response.status).toBe(200);
 
     const getResponse = await request(app).get("/users/" + userid);
     expect(getResponse.status).toBe(200);
-    expect(getResponse.body).toEqual({});
+    expect(getResponse.body.data).toEqual(null);
   });
 
   test("Delete invalid user", async () => {
