@@ -1,10 +1,11 @@
 import React from "react";
-import WelcomeTemplate from "./WelcomeTemplate";
+import WelcomeTemplate from "@/components/templates/WelcomeTemplate";
+import LoginForm from "@/components/molecules/LoginForm";
 
 /** A Login page */
 const Login = () => {
   return <>
-  <WelcomeTemplate />
+  <WelcomeTemplate Form={LoginForm}/>
   </>;
 };
 
