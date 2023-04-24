@@ -23,6 +23,7 @@ const LocationPicker = ({ label }: Props) => {
           size: "small",
           margin: "dense",
         }}
+        size="small"
         renderInput={(params) => <TextField {...params} />}
       />
     </div>
