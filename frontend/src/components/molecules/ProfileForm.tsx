@@ -6,6 +6,8 @@ import CustomCheckbox from "../atoms/Checkbox";
 import { useAuth } from '@/utils/AuthContext';
 import { BASE_URL } from '@/utils/constants';
 import { auth } from '@/utils/firebase';
+import { updateEmail } from "firebase/auth";
+
 
 const ProfileForm = () => {
   const { user, loading, error, signOutUser } = useAuth();
@@ -39,16 +41,17 @@ const ProfileForm = () => {
   const handleSubmit  = async () => {
     try {
 			const url = BASE_URL as string;
-      const userid = userDetails['data'][0]['id'];
-      const date = new Date();
+      const userid = userDetails['data'][0]['profile']['userId'];
+      // const date = new Date();
       const body = {
         // email: userDetails['data'][0]['email'],
-        // firstName: userDetails['data'][0]['profile']['firstName'],
-        // lastName: userDetails['data'][0]['profile']['lastName'],
-        // nickname: userDetails['data'][0]['profile']['nickname'],
-        updatedAt: date
+        firstName: userDetails['data'][0]['profile']['firstName'],
+        lastName: userDetails['data'][0]['profile']['lastName'],
+        nickname: userDetails['data'][0]['profile']['nickname'],
       };
-      const fetchUrl = `${url}/users/`+ userid;
+      console.log(userDetails['data'][0]['profile']['firstName'])
+      console.log(userDetails['data'][0]['profile']['lastName'])
+      const fetchUrl = `${url}/users/`+ userid + `/profile`;
       const userToken = await auth.currentUser?.getIdToken();
 			const response = await fetch(fetchUrl, {
 				method: 'PUT',
@@ -70,8 +73,9 @@ const ProfileForm = () => {
 
 	const handleChange = (e: React.ChangeEvent<HTMLInputElement>, field:string) => {
 		const value = e.target.value
-    userDetails['data'][0][field]=value
+    userDetails['data'][0]['profile'][field]=value
     setUserDetails(userDetails)
+    // console.log(userDetails['data'][0] )
 	}
 
   return (
