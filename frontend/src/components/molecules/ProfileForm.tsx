@@ -39,9 +39,11 @@ const ProfileForm = () => {
     location.replace("/events");
   };
 
-	const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+	const handleChange = (e: React.ChangeEvent<HTMLInputElement>, field:string) => {
 		const value = e.target.value
-    console.log(value)
+    userDetails['data'][0][field]=value
+    setUserDetails(userDetails)
+    console.log(userDetails)
 	}
 
   return (
@@ -56,16 +58,17 @@ const ProfileForm = () => {
             label="Email"
             required={true}
             status=""
-            handleChange = {handleChange}
+            handleChange = {(e)=>handleChange(e,'email')}
             incorrectEntryText=""
             inputText= {userDetails['data'][0]['email']}
           />
         </div>
-        {/* <div>
+        <div>
           <TextField
             label="First name"
             required={true}
             status=""
+            handleChange = {(e)=>handleChange(e,'firstName')}
             incorrectEntryText=""
             inputText = {userDetails['data'][0]['profile']['firstName']}
           />
@@ -75,6 +78,7 @@ const ProfileForm = () => {
             label="Last name"
             required={true}
             status=""
+            handleChange = {(e)=>handleChange(e,'lastName')}
             incorrectEntryText=""
             inputText= {userDetails['data'][0]['profile']['lastName']}
           />
@@ -84,6 +88,7 @@ const ProfileForm = () => {
             label="Preferred name"
             required={true}
             status=""
+            handleChange = {(e)=>handleChange(e,'nickname')}
             incorrectEntryText=""
             inputText={userDetails['data'][0]['profile']['nickname']}
           />
@@ -114,7 +119,7 @@ const ProfileForm = () => {
             incorrectEntryText=""
             inputText=""
           /> 
-        </div> */}
+        </div>
         <div>
           <CustomCheckbox label="Email notifications" />
         </div>

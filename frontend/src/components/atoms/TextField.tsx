@@ -8,7 +8,7 @@ interface Props {
   status: string;
   incorrectEntryText: string;
   inputText: string;
-  handleChange: (e:React.ChangeEvent<HTMLInputElement>)=>void;
+  handleChange?: (e:React.ChangeEvent<HTMLInputElement>)=>void;
 }
 
 
