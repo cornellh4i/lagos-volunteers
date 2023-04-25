@@ -6,6 +6,7 @@ interface Props {
   required: boolean;
   status: string;
   incorrectEntryText: string;
+  handleChange : (e: any) => void
 }
 
 /** A Button page */
@@ -14,6 +15,7 @@ const CustomTextField = ({
   required,
   status,
   incorrectEntryText,
+  handleChange
 }: Props) => {
   return (
     <div>
@@ -25,6 +27,7 @@ const CustomTextField = ({
         sx={{ borderRadius: 2, borderColor: "primary.main" }}
         required={required}
         helperText={status == "error" ? incorrectEntryText : ""}
+        onChange={handleChange}
       />
     </div>
   );
