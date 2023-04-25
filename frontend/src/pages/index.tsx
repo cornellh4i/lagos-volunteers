@@ -13,6 +13,7 @@ const Home = () => {
 	const { user, loading, error, signOutUser } = useAuth();
 	const [userDetails, setUserDetails] = useState<any>(null);
 
+
 	const handleSignOut = async () => {
 		await signOutUser();
 	};
@@ -32,6 +33,7 @@ const Home = () => {
 			});
 			const data = await response.json();
 			setUserDetails(data);
+      console.log("data")
 		} catch (error) {
 			console.log(error);
 		}
