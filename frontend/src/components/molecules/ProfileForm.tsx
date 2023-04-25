@@ -39,10 +39,6 @@ const ProfileForm = () => {
     location.replace("/events");
   };
 
-  const handleSignOut = async () => {
-		await signOutUser();
-	};
-
 	const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		const value = e.target.value
     console.log(value)

@@ -39,10 +39,6 @@ const Home = () => {
 		}
 	};
 
-	if (!user) {
-		return <Login />;
-	}
-
 	// Temporary fetch request to test if the backend is running
 	useEffect(() => {
 		try {
@@ -53,6 +49,10 @@ const Home = () => {
 			console.log(error);
 		}
 	}, []);
+
+	if (!user) {
+		return <Login />;
+	}
 
 	return (
 		<>
