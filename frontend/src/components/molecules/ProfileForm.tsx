@@ -14,6 +14,7 @@ const ProfileForm = () => {
   useEffect(()=>{
     fetchUserDetails();
   }, [])
+  
 
 	const fetchUserDetails = async () => {
 		try {
@@ -35,6 +36,34 @@ const ProfileForm = () => {
 		}
 	};
 
+  const handleSubmit  = async () => {
+    try {
+			const url = BASE_URL as string;
+      const userid = userDetails['data'][0]['id'];
+      const date = new Date();
+      const body = {
+        // email: userDetails['data'][0]['email'],
+        // firstName: userDetails['data'][0]['profile']['firstName'],
+        // lastName: userDetails['data'][0]['profile']['lastName'],
+        // nickname: userDetails['data'][0]['profile']['nickname'],
+        updatedAt: date
+      };
+      const fetchUrl = `${url}/users/`+ userid;
+      const userToken = await auth.currentUser?.getIdToken();
+			const response = await fetch(fetchUrl, {
+				method: 'PUT',
+				headers: {
+					Authorization: `Bearer ${userToken}`,
+				},
+        body: JSON.stringify(body)
+			});
+			const data = await response.json();
+			console.log(data);
+		} catch (error) {
+			console.log(error);
+		}
+	};
+
   const handleCancel = () => {
     location.replace("/events");
   };
@@ -43,7 +72,6 @@ const ProfileForm = () => {
 		const value = e.target.value
     userDetails['data'][0][field]=value
     setUserDetails(userDetails)
-    console.log(userDetails)
 	}
 
   return (
@@ -129,7 +157,7 @@ const ProfileForm = () => {
               buttonText="Save Changes"
               buttonTextColor="#000000"
               buttonColor="#D3D3D3"
-              buttonAction={()=>{alert("clicked save")}}
+              buttonAction={handleSubmit}
             />
           </div>
           <div>
