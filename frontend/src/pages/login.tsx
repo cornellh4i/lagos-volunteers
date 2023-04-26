@@ -4,9 +4,11 @@ import WelcomeTemplate from "@/components/templates/WelcomeTemplate";
 
 /** A Login page */
 const Login = () => {
-  return <>
-  <WelcomeTemplate Form={LoginForm}/>
-  </>;
+  return (
+    <>
+      <WelcomeTemplate Form={LoginForm} />
+    </>
+  );
 };
 
 export default Login;

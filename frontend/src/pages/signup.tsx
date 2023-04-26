@@ -4,9 +4,11 @@ import SignupForm from "@/components/molecules/SignupForm";
 
 /** A Signup page */
 const Signup = () => {
-  return <>
-  <WelcomeTemplate Form={SignupForm}/>
-  </>;
+  return (
+    <>
+      <WelcomeTemplate Form={SignupForm} />
+    </>
+  );
 };
 
 export default Signup;
