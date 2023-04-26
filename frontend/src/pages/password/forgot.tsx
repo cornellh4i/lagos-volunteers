@@ -3,7 +3,7 @@ import React from "react";
 
 /** A ForgotPassword page */
 const ForgotPassword = () => {
-  return <ForgotPasswordForm/>
+  return <ForgotPasswordForm />;
 };
 
 export default ForgotPassword;
