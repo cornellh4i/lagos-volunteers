@@ -1,7 +1,5 @@
 import React from "react";
 import NavBar from "@/components/molecules/NavBar";
-import { EmailAndPasswordActionHook } from "react-firebase-hooks/auth";
-import { EmailAuthCredential } from "firebase/auth";
 
 /** A WelcomeTemplate page */
 type WelcomeProps = {
