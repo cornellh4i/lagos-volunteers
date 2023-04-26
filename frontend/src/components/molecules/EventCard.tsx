@@ -14,7 +14,7 @@ type EventCardProps = {
  * buttons are as follows:
  *
  * Volunteers:
- *   Main action button: Cancel RSVP (directs to View Event Details page)
+ *   Main action button: Register if not registered, else Cancel Registration
  *
  * Supervisors:
  *   Main action button: Publish Event if draft, else Manage Attendees
