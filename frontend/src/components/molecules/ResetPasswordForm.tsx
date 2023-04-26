@@ -7,7 +7,7 @@ import Link from "next/link";
 const ResetPassword = () => {
   return (
     <div className="space-y-4">
-      <div className="text-3xl">Reset Password</div>
+      <div className="font-bold text-3xl">Reset Password</div>
       <div className="text-sm">
         Password should meet the following requirements:
         <ul className="m-0 px-4">
