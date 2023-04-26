@@ -2,9 +2,10 @@ import React, {useEffect, useState} from "react";
 import Button from "../atoms/Button";
 import TextField from "../atoms/TextField";
 import Link from "next/link";
-import { useAuth } from "@/utils/AuthContext";
+import { useAuth } from '@/utils/AuthContext';
+import { auth } from '@/utils/firebase';
 import { BASE_URL } from "@/utils/constants";
-import { useNavigate } from "react-router-dom";
+//import { useNavigate } from "react-router-dom";
 
 
 const SignupForm = () => {
@@ -17,7 +18,7 @@ const SignupForm = () => {
   const [confirmPasswordError, setConfirmPasswordError] = useState("")
   const [passwordError, setPasswordError] = useState("")
   const [emailError, setEmailError] = useState("")
-  const navigate = useNavigate();
+  //const navigate = useNavigate();
 
   const handleCreateUser = async () => {
       console.log(email)
@@ -38,20 +39,16 @@ const SignupForm = () => {
       setConfirmPasswordError("")
     }
     else {
+      const userToken = await auth.currentUser?.getIdToken();
       const url = `${BASE_URL}/users/`;
       const requestOptions = {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${userToken}`, }, 
         body: JSON.stringify({email: email, profile: {firstName: firstName, lastName: lastName }})
     };
 
-    Promise.all([fetch(url,requestOptions).then((response) => response.json()).then((data) => fetch(`${url}/users/search/?email=${data.user.email}`, {
-      method: 'GET',
-      headers: {
-        Authorization: `Bearer ${data.token}`,
-      },
-    }).then((userDetails) => console.log(userDetails.json()))),createFirebaseUser(email,password)])
-    navigate("/login")
+    Promise.all([fetch(url,requestOptions),createFirebaseUser(email,password)])
+    //navigate("/login")
     }
   };
 
