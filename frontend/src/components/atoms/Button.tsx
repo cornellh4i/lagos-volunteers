@@ -5,7 +5,7 @@ interface Props {
   buttonText: string;
   buttonTextColor: string;
   buttonColor: string;
-  handleClick: (e: any) => void
+  handleClick: (e: any) => void;
 }
 /** A Button page */
 const CustomButton = (props: Props) => {

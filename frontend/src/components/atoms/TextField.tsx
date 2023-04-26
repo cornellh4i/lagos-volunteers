@@ -6,7 +6,7 @@ interface Props {
   required: boolean;
   status: string;
   incorrectEntryText: string;
-  handleChange : (e: any) => void
+  handleChange: (e: any) => void;
 }
 
 /** A Button page */
@@ -15,7 +15,7 @@ const CustomTextField = ({
   required,
   status,
   incorrectEntryText,
-  handleChange
+  handleChange,
 }: Props) => {
   return (
     <div>
