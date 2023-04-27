@@ -1,0 +1,15 @@
+import React from "react";
+
+type ModalProps = {
+  open: boolean;
+  body: React.ReactElement;
+};
+
+/**
+ * A Modal component is a styled modal that takes in a body component
+ */
+const Modal = ({ body }: ModalProps) => {
+  return <>Hello there</>;
+};
+
+export default Modal;
