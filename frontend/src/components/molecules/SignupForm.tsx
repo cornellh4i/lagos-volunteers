@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react";
+import React, {useState} from "react";
 import Button from "../atoms/Button";
 import TextField from "../atoms/TextField";
 import Link from "next/link";
@@ -6,7 +6,6 @@ import { useAuth } from '@/utils/AuthContext';
 import { auth } from '@/utils/firebase';
 import { BASE_URL } from "@/utils/constants";
 //import { useNavigate } from "react-router-dom";
-
 
 const SignupForm = () => {
   const { createFirebaseUser } = useAuth();
