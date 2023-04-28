@@ -13,6 +13,7 @@
     "@emotion/styled": "^11.10.6",
     "@mui/icons-material": "^5.11.16",
     "@mui/material": "^5.11.13",
+    "@mui/x-data-grid": "^6.2.1",
     "@mui/x-date-pickers": "^6.2.1",
     "@next/font": "13.1.6",
     "@types/node": "18.11.19",
