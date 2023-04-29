@@ -19,7 +19,7 @@ const TabContainer = ({
   panels,
   rightAlignedComponent,
 }: TabContainerProps) => {
-  return <>Hello {panels[0]}</>;
+  return <>Hello {panels[1]}</>;
 };
 
 export default TabContainer;
