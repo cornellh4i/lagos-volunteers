@@ -1,14 +1,14 @@
 import { Router, RequestHandler, Request, Response } from "express";
 import userController from "./controllers";
-import { auth } from "../middleware/auth";
+import { auth, setVolunteerCustomClaims } from "../middleware/auth";
 const userRouter = Router();
 
 import { attempt } from "../utils/helpers";
 
 // No provision for auth in test environment for now
-if (process.env.NODE_ENV !== "test") {
-  userRouter.use(auth as RequestHandler);
-}
+// if (process.env.NODE_ENV !== "test") {
+//   userRouter.use(auth as RequestHandler);
+// }
 
 userRouter.post("/", async (req: Request, res: Response) => {
   // #swagger.tags = ['Users']
@@ -20,6 +20,11 @@ userRouter.post("/", async (req: Request, res: Response) => {
       req.body.permissions
     )
   );
+  try{
+    await setVolunteerCustomClaims(req.body.email);
+  }catch(e){
+    console.log(e);
+  }
 });
 
 userRouter.delete("/:userid", async (req: Request, res: Response) => {

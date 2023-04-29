@@ -1,8 +1,9 @@
+import ForgotPasswordForm from "@/components/molecules/ForgotPasswordForm";
 import React from "react";
 
 /** A ForgotPassword page */
 const ForgotPassword = () => {
-  return <>Hello there</>;
+  return <ForgotPasswordForm />;
 };
 
 export default ForgotPassword;

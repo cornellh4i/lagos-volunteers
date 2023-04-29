@@ -20,35 +20,25 @@ const SignupForm = () => {
   //const navigate = useNavigate();
 
   const handleCreateUser = async () => {
-      console.log(email)
-      console.log(password)
-    if (password != confirmPassword){
-      setConfirmPasswordError("Passwords do not match.")
-      setPasswordError("")
-      setEmailError("")
-    }
-    else if(password == ""){
-      setPasswordError("Password cannot be empty.")
-      setEmailError("")
-      setConfirmPasswordError("")
-    }
-    else if(!(email.includes("@") || email.includes("."))){
-      setEmailError("Please enter a valid email.")
-      setPasswordError("")
-      setConfirmPasswordError("")
-    }
-    else {
+
       const userToken = await auth.currentUser?.getIdToken();
       const url = `${BASE_URL}/users/`;
+      const data = {email: email, profile: {firstName: firstName, lastName: lastName }}
+  
       const requestOptions = {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${userToken}`, }, 
-        body: JSON.stringify({email: email, profile: {firstName: firstName, lastName: lastName }})
+        body: JSON.stringify(data)
     };
 
-    Promise.all([fetch(url,requestOptions),createFirebaseUser(email,password)])
+    const result = await createFirebaseUser(email,password).then(()=>fetch(url,requestOptions)).catch((error)=>console.log(error))
+    const checkClaims = (await auth.currentUser?.getIdTokenResult())?.claims
+    console.log(checkClaims)
+
+    // const result = await Promise.all([fetch(url,requestOptions),createFirebaseUser(email,password)])
+    console.log(result) 
     //navigate("/login")
-    }
+
   };
 
   return (

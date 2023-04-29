@@ -138,18 +138,15 @@ export const setVolunteerCustomClaims = async (email: string) => {
     .getUserByEmail(email)
     .then((userRecord: UserRecord) => {
       const customClaims = {
-        admin: false,
-        supervisor: false,
-        volunteer: true,
+        "admin": false,
+        "supervisor": false,
+        "volunteer": true,
       };
       getAuth().setCustomUserClaims(userRecord.uid, customClaims);
     })
     .catch((e: Error) => {
       console.log("Error creating new user:", e);
     });
-
-  const customToken = getAuth().createCustomToken(user.uid);
-  return customToken;
 };
 
 /**
@@ -170,9 +167,6 @@ export const updateFirebaseUserToSupervisor = async (email: string) => {
     .catch((e: Error) => {
       console.log("Error creating new user:", e);
     });
-
-  const customToken = getAuth().createCustomToken(user.uid);
-  return customToken;
 };
 
 /**
@@ -193,9 +187,6 @@ export const updateFirebaseUserToAdmin = async (email: string) => {
     .catch((e: Error) => {
       console.log("Error creating new user:", e);
     });
-
-  const customToken = getAuth().createCustomToken(user.uid);
-  return customToken;
 };
 
 export default {

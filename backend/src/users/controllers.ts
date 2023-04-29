@@ -41,8 +41,8 @@ const createUser = async (
       },
     },
   });
-  const token = setVolunteerCustomClaims(user.email)
-  return {user: theUser,token: token};
+  //const token = setVolunteerCustomClaims((await theUser).email)
+  return user
 };
 
 /**
