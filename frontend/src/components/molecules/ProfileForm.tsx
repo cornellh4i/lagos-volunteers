@@ -44,10 +44,12 @@ const ProfileForm = () => {
       const userid = userDetails['data'][0]['profile']['userId'];
       // const date = new Date();
       const body = {
+        firstName: "Arizona2",
+        lastName: "Tea2"
         // email: userDetails['data'][0]['email'],
-        firstName: userDetails['data'][0]['profile']['firstName'],
-        lastName: userDetails['data'][0]['profile']['lastName'],
-        nickname: userDetails['data'][0]['profile']['nickname'],
+        // firstName: userDetails['data'][0]['profile']['firstName'],
+        // lastName: userDetails['data'][0]['profile']['lastName'],
+        // nickname: userDetails['data'][0]['profile']['nickname'],
       };
       console.log(userDetails['data'][0]['profile']['firstName'])
       console.log(userDetails['data'][0]['profile']['lastName'])
