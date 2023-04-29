@@ -5,11 +5,6 @@ const userRouter = Router();
 
 import { attempt } from "../utils/helpers";
 
-//No provision for auth in test environment for now
-// if (process.env.NODE_ENV !== "test") {
-//   userRouter.use(auth as RequestHandler);
-// }
-
 let useAuth: RequestHandler;
 
 process.env.NODE_ENV === "test"

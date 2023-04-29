@@ -21,7 +21,7 @@ const createUser = async (
   preferences?: UserPreferences,
   permissions?: Permission
 ) => {
-  const theUser = prisma.user.create({
+  return prisma.user.create({
     data: {
       ...user,
       profile: {
@@ -41,8 +41,6 @@ const createUser = async (
       },
     },
   });
-  //const token = setVolunteerCustomClaims((await theUser).email)
-  return user
 };
 
 /**
