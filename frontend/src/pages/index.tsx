@@ -20,7 +20,7 @@ const Home = () => {
 	const fetchUserDetails = async () => {
 		try {
 			const url = BASE_URL as string;
-			const fetchUrl = `${url}/users/search/?email=${user?.email}`; // Note that this is bound to change based on a fix we are making to the backend
+			const fetchUrl = `${url}/users/search/?email=asu284@cornell.edu`; // Note that this is bound to change based on a fix we are making to the backend
 
 			// Get the user's token. Notice that auth is imported from firebase file
 			const userToken = await auth.currentUser?.getIdToken();
@@ -31,6 +31,7 @@ const Home = () => {
 				},
 			});
 			const data = await response.json();
+			console.log(data)
 			setUserDetails(data);
 		} catch (error) {
 			console.log(error);

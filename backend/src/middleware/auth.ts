@@ -47,6 +47,14 @@ export const auth = (
   });
 };
 
+export const NoAuth = (
+  req: IGetAuthTokenRequest,
+  res: Response,
+  next: NextFunction
+) => {
+  next();
+};
+
 /**
  * Authorizes a request if a token is present with the volunteer claim,
  * returning an error otherwise.
