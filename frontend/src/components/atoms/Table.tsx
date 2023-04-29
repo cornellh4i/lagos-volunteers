@@ -12,7 +12,7 @@ type TableProps = {
  * A Table component
  */
 const Table = ({ columns, rows }: TableProps) => {
-  return <DataGrid columns={columns} rows={rows}/>;
+  return <DataGrid columns={columns} rows={rows} />;
 };
 
 export default Table;
