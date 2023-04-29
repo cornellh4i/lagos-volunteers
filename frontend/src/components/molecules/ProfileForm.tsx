@@ -44,12 +44,10 @@ const ProfileForm = () => {
       const userid = userDetails['data'][0]['profile']['userId'];
       // const date = new Date();
       const body = {
-        firstName: "Arizona2",
-        lastName: "Tea2"
         // email: userDetails['data'][0]['email'],
-        // firstName: userDetails['data'][0]['profile']['firstName'],
-        // lastName: userDetails['data'][0]['profile']['lastName'],
-        // nickname: userDetails['data'][0]['profile']['nickname'],
+        firstName: userDetails['data'][0]['profile']['firstName'],
+        lastName: userDetails['data'][0]['profile']['lastName'],
+        nickname: userDetails['data'][0]['profile']['nickname'],
       };
       console.log(userDetails['data'][0]['profile']['firstName'])
       console.log(userDetails['data'][0]['profile']['lastName'])
@@ -59,6 +57,7 @@ const ProfileForm = () => {
 				method: 'PUT',
 				headers: {
 					Authorization: `Bearer ${userToken}`,
+          "Content-Type": "application/json"
 				},
         body: JSON.stringify(body)
 			});
@@ -77,7 +76,6 @@ const ProfileForm = () => {
 		const value = e.target.value
     userDetails['data'][0]['profile'][field]=value
     setUserDetails(userDetails)
-    // console.log(userDetails['data'][0] )
 	}
 
   return (
