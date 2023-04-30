@@ -1,117 +1,116 @@
-import React, {useState} from "react";
-import Button from "../atoms/Button";
-import TextField from "../atoms/TextField";
-import Link from "next/link";
+import React, { useState, useEffect } from 'react';
+import Button from '../atoms/Button';
+import TextField from '../atoms/TextField';
+import Link from 'next/link';
 import { useAuth } from '@/utils/AuthContext';
 import { auth } from '@/utils/firebase';
-import { BASE_URL } from "@/utils/constants";
-//import { useNavigate } from "react-router-dom";
+import { BASE_URL } from '@/utils/constants';
+import { useForm, SubmitHandler } from 'react-hook-form';
+
+type FormValues = {
+	firstName: string;
+	lastName: string;
+	email: string;
+	password: string;
+	confirmPassword: string;
+};
 
 const SignupForm = () => {
-  const { createFirebaseUser } = useAuth();
-  const [email,setEmail] = useState("")
-  const [password,setPassword] = useState("")
-  const [confirmPassword,setConfirmPassword] = useState("")
-  const [firstName, setFirstName] = useState("")
-  const [lastName, setLastName] = useState("")
-  const [confirmPasswordError, setConfirmPasswordError] = useState("")
-  const [passwordError, setPasswordError] = useState("")
-  const [emailError, setEmailError] = useState("")
-  //const navigate = useNavigate();
+	const { createFirebaseUser } = useAuth();
 
-  const handleCreateUser = async () => {
+	//const navigate = useNavigate();
+	const {
+		register,
+		handleSubmit,
+		watch,
+		formState: { errors },
+	} = useForm<FormValues>();
 
-      const userToken = await auth.currentUser?.getIdToken();
-      const url = `${BASE_URL}/users/`;
-      const data = {email: email, profile: {firstName: firstName, lastName: lastName }}
-  
-      const requestOptions = {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${userToken}`, }, 
-        body: JSON.stringify(data)
-    };
+	const handleSubmitUser: SubmitHandler<FormValues> = async (data) => {
+		const { firstName, lastName, email, password } = data;
+	};
 
-    const result = await createFirebaseUser(email,password).then(()=>fetch(url,requestOptions)).catch((error)=>console.log(error))
-    const checkClaims = (await auth.currentUser?.getIdTokenResult())?.claims
-    console.log(checkClaims)
-
-    // const result = await Promise.all([fetch(url,requestOptions),createFirebaseUser(email,password)])
-    console.log(result) 
-    //navigate("/login")
-
-  };
-
-  return (
-    <div className="space-y-4">
-      <div className="font-bold text-3xl">Sign Up</div>
-      <div>
-        <TextField
-          label="Email*"
-          required={true}
-          status=""
-          incorrectEntryText={emailError}
-          setTextInput={setEmail}
-        />
-      </div>
-      <div className="flex md:space-x-4 grid sm:grid-cols-1 md:grid-cols-2 ">
-        <div className="sm:pb-4 md:pb-0">
-          <TextField
-            label="First Name*"
-            required={true}
-            status=""
-            incorrectEntryText=""
-            setTextInput={setFirstName}
-          />
-        </div>
-        <div>
-          <TextField
-            label="Last Name*"
-            required={true}
-            status=""
-            incorrectEntryText=""
-            setTextInput={setLastName}
-          />
-        </div>
-      </div>
-      <div>
-        <TextField
-          label="Password*"
-          status=""
-          required={true}
-          incorrectEntryText={passwordError}
-          setTextInput={setPassword}
-        />
-      </div>
-      <div>
-        <TextField
-          label="Confirm Password*"
-          status=""
-          required={true}
-          incorrectEntryText={confirmPasswordError}
-          setTextInput={setConfirmPassword}
-        />
-      </div>
-      <div>
-        <Button
-          buttonText="Continue"
-          buttonTextColor="#000000"
-          buttonColor="#808080"
-          onClick={handleCreateUser}
-        />
-      </div>
-      <div>
-        <Button
-          buttonText="Continue with Google"
-          buttonTextColor="#000000"
-          buttonColor="#D3D3D3"
-        />
-      </div>
-      <div className="justify-center flex flex-row">
-        <div className="">Have an account?&nbsp;</div>
-        <Link href="/login"> Log in</Link>
-      </div>
-    </div>
-  );
+	return (
+		<form onSubmit={handleSubmit(handleSubmitUser)} className='space-y-4'>
+			<div className='font-bold text-3xl'>Sign Up</div>
+			<div>
+				<TextField
+					requiredMessage={errors.email ? 'Required' : undefined}
+					name='email'
+					type='email'
+					register={register}
+					label='Email *'
+					required={true}
+				/>
+			</div>
+			<div className='grid md:space-x-4 sm:grid-cols-1 md:grid-cols-2 '>
+				<div className='sm:pb-4 md:pb-0'>
+					<TextField
+						requiredMessage={errors.firstName ? 'Required' : undefined}
+						name='firstName'
+						register={register}
+						label='First Name *'
+						required={true}
+					/>
+				</div>
+				<div>
+					<TextField
+						requiredMessage={errors.lastName ? 'Required' : undefined}
+						name='lastName'
+						register={register}
+						label='Last Name *'
+						required={true}
+					/>
+				</div>
+			</div>
+			<div>
+				<TextField
+					requiredMessage={errors.password ? 'Required' : undefined}
+					type='password'
+					name='password'
+					register={register}
+					label='Password *'
+					required={true}
+				/>
+			</div>
+			<div>
+				<TextField
+					type='password'
+					requiredMessage={
+						errors.confirmPassword
+							? 'Required'
+							: watch('password') != watch('confirmPassword')
+							? 'Passwords do not match'
+							: undefined
+					}
+					name='confirmPassword'
+					register={register}
+					label='Confirm Password *'
+					required={true}
+				/>
+			</div>
+			<div>
+				<Button
+					buttonText='Continue'
+					buttonTextColor='#000000'
+					buttonColor='#808080'
+					type='submit'
+				/>
+			</div>
+			<div>
+				<Button
+					buttonText='Continue with Google'
+					type='submit'
+					buttonTextColor='#000000'
+					buttonColor='#D3D3D3'
+				/>
+			</div>
+			<div className='justify-center flex flex-row'>
+				<div className=''>Have an account?&nbsp;</div>
+				<Link href='/login'> Log in</Link>
+			</div>
+		</form>
+	);
 };
 
 export default SignupForm;

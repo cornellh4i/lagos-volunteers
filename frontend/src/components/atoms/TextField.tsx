@@ -1,46 +1,41 @@
-import React, {useEffect} from "react";
-import { TextField } from "@mui/material";
+import React, { useEffect } from 'react';
+import { TextField } from '@mui/material';
+import { RegisterOptions, UseFormRegisterReturn } from 'react-hook-form';
 
 interface Props {
-  label: string;
-  required: boolean;
-  status: string;
-  incorrectEntryText: string;
-  setTextInput?: React.Dispatch<React.SetStateAction<string>>
-
+	label: string;
+	name: string;
+	required?: boolean;
+	type?: string;
+	requiredMessage?: string;
+	register: (name: any, options?: RegisterOptions) => UseFormRegisterReturn;
 }
 
 const CustomTextField = ({
-  label,
-  required,
-  status,
-  incorrectEntryText,
-  setTextInput
+	label,
+	name,
+	required,
+	type = 'text',
+	requiredMessage = '',
+	register,
 }: Props) => {
-
-  const handleTextInputChange = (event : any) => {
-    if(setTextInput != undefined){
-      setTextInput(event.target.value);
-      console.log(event.target.value)
-    }
-  };
-
-  useEffect(() => {}, [incorrectEntryText]);
-
-  return (
-    <div>
-      <div> {label+" "+incorrectEntryText} </div>
-      <TextField
-        size="small"
-        margin="dense"
-        fullWidth={true}
-        sx={{ borderRadius: 2, borderColor: "primary.main" }}
-        required={required}
-        helperText={status == "error" ? incorrectEntryText : ""}
-        onChange={handleTextInputChange}
-      />
-    </div>
-  );
+	return (
+		<div>
+			<div>
+				{label} <span className='text-red-500'>{requiredMessage}</span>
+			</div>
+			<TextField
+				type={type}
+				size='small'
+				margin='dense'
+				fullWidth={true}
+				{...register(name, {
+					required: required,
+				})}
+				sx={{ borderRadius: 2, borderColor: 'primary.main' }}
+			/>
+		</div>
+	);
 };
 
 export default CustomTextField;
