@@ -18,7 +18,6 @@ type FormValues = {
 const SignupForm = () => {
 	const { createFirebaseUser } = useAuth();
 
-	//const navigate = useNavigate();
 	const {
 		register,
 		handleSubmit,
