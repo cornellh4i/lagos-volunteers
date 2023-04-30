@@ -20,7 +20,12 @@ const PastEvents = () => {
       headerName: "Role",
       width: 200,
       renderCell: (params) => {
-        return <Chip text={params.value} />;
+        return (
+          <Chip
+            color={params.value == "Supervisor" ? "primary" : "success"}
+            label={params.value}
+          />
+        );
       },
     },
     {
