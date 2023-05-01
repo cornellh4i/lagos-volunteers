@@ -1,11 +1,12 @@
 import React from "react";
 import EventForm from "@/components/molecules/EventForm";
+import CenteredTemplate from "@/components/templates/CenteredTemplate";
 
 /** A CreateEvent page */
 const CreateEvent = () => {
   return (
     <div>
-      <EventForm eventType="create" />
+      <CenteredTemplate Form={<EventForm eventType="create"/> }/>
     </div>
   );
 };
