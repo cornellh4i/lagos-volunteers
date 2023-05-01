@@ -8,7 +8,7 @@ type CenteredTemplateProps = {
 
 const CenteredTemplate = ({ body }: CenteredTemplateProps) => {
   return (
-    <div className="flex flex-col h-screen">
+    <div className="h-screen">
       <NavBar />
       <div className="max-w-3xl mx-auto py-10 px-10">{body}</div>
     </div>
