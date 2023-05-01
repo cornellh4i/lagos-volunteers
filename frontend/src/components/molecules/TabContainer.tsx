@@ -1,7 +1,7 @@
 import React from "react";
 import Box from "@mui/material/Box";
-import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
+import DropdownSelect from "../atoms/DropdownSelect";
 import { TabPanel, TabContext, TabList } from "@mui/lab";
 
 type TabContainerProps = {
@@ -40,11 +40,22 @@ const TabContainer = ({
   rightAlignedComponent,
 }: TabContainerProps) => {
   // return <>Hello {panels[0]}</>;
+  const [width, setWidth] = React.useState(window.innerWidth);
+  const breakpoint = 625;
+  React.useEffect(() => {
+    /* Inside of a "useEffect" hook add an event listener that updates
+       the "width" state variable when the window size changes */
+    window.addEventListener("resize", () => setWidth(window.innerWidth));
+
+    /* passing an empty array as the dependencies of the effect will cause this
+       effect to only run when the component mounts, and not each time it updates.
+       We only want the listener to be added once */
+  }, []);
   const [value, setValue] = React.useState("1");
   const handleChange = (event: React.SyntheticEvent, newValue: string) => {
     setValue(newValue);
   };
-  return (
+  return width > breakpoint ? (
     <Box sx={{ width: "100%" }}>
       <TabContext value={value}>
         <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
@@ -69,6 +80,12 @@ const TabContainer = ({
         ))} */}
       </TabContext>
     </Box>
+  ) : (
+    <DropdownSelect
+      tabs={tabs}
+      panels={panels}
+      topAlignedComponent={<div>Hello world</div>}
+    />
   );
 };
 
