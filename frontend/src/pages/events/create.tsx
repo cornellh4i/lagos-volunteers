@@ -4,11 +4,7 @@ import CenteredTemplate from "@/components/templates/CenteredTemplate";
 
 /** A CreateEvent page */
 const CreateEvent = () => {
-  return (
-    <div>
-      <CenteredTemplate Form={<EventForm eventType="create"/> }/>
-    </div>
-  );
+  return <CenteredTemplate body={<EventForm eventType="create" />} />;
 };
 
 export default CreateEvent;

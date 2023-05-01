@@ -2,23 +2,18 @@ import React from "react";
 import NavBar from "@/components/molecules/NavBar";
 
 /** A CenteredTemplate page */
-type CenteredProps = {
-  Form: JSX.Element;
-} 
+type CenteredTemplateProps = {
+  body: React.ReactElement;
+};
 
-
-const CenteredTemplate = ( { Form }: CenteredProps) => {
+const CenteredTemplate = ({ body }: CenteredTemplateProps) => {
   return (
     <div className="flex flex-col h-screen">
-      <div>
-        <NavBar />
+      <NavBar />
+      <div className="flex items-center justify-center bg-white">
+        <div className="w-full sm:px-32 sm:py-10 px-16 py-10">{body}</div>
       </div>
-        <div className="flex items-center justify-center bg-white">
-          <div className="w-full sm:px-32 sm:py-10 px-16 py-10">
-            {Form}
-          </div>
-        </div>
-      </div>
+    </div>
   );
 };
 

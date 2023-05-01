@@ -7,11 +7,7 @@ import CenteredTemplate from "@/components/templates/CenteredTemplate";
 const EditEvent = () => {
   const router = useRouter();
   const { eventid } = router.query;
- return( <div>
-    <CenteredTemplate Form={<EventForm eventType="edit"/> }/>
-    <p>{eventid}</p>
-  </div>
-  );
+  return <CenteredTemplate body={<EventForm eventType="edit" />} />;
 };
 
 export default EditEvent;
