@@ -10,7 +10,7 @@ const CenteredTemplate = ({ body }: CenteredTemplateProps) => {
   return (
     <div className="flex flex-col h-screen">
       <NavBar />
-      <div className="flex items-center justify-center bg-white">
+      <div className="flex items-center justify-center">
         <div className="w-full sm:px-32 sm:py-10 px-16 py-10">{body}</div>
       </div>
     </div>
