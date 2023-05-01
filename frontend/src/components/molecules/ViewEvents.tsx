@@ -1,5 +1,5 @@
 import React from "react";
-import TabContainer from "@/components/molecules/TabContainer";
+import TabContainer from "./TabContainer";
 
 const UpcomingEvents = () => {
   return <>Hello upcoming</>;
