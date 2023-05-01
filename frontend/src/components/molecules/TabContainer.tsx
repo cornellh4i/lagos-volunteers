@@ -2,7 +2,7 @@ import React from "react";
 import Box from "@mui/material/Box";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
-import { TabPanel } from "@mui/lab";
+import { TabPanel, TabContext, TabList } from "@mui/lab";
 
 type TabContainerProps = {
   /** A list of tab labels in order */
@@ -40,22 +40,34 @@ const TabContainer = ({
   rightAlignedComponent,
 }: TabContainerProps) => {
   // return <>Hello {panels[0]}</>;
-  const [value, setValue] = React.useState(0);
-  const handleChange = (event: React.SyntheticEvent, newValue: number) => {
+  const [value, setValue] = React.useState("1");
+  const handleChange = (event: React.SyntheticEvent, newValue: string) => {
     setValue(newValue);
   };
   return (
     <Box sx={{ width: "100%" }}>
-      <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
-        <Tabs value={value} onChange={handleChange} aria-label="nav tabs">
-          {tabs.map((tab, i) => (
-            <>
-              <LinkTab label={tab} />
-              <TabPanel value={i}>{panels[i]}</TabPanel>
-            </>
-          ))}
-        </Tabs>
-      </Box>
+      <TabContext value={value}>
+        <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
+          <TabList value={value} onChange={handleChange} aria-label="nav tabs">
+            <Tab label={tabs[0]} value="1" />
+            <Tab label={tabs[1]} value="2" />
+            <Tab label={tabs[2]} value="3" />
+            {/* {tabs.map((tab, i) => (
+              <>
+                <Tab label={tab} value={i.toString()} />
+              </>
+            ))} */}
+          </TabList>
+          <TabPanel value="1">{panels[0]}</TabPanel>
+          <TabPanel value="2">{panels[1]}</TabPanel>
+          <TabPanel value="3">{panels[2]}</TabPanel>
+        </Box>
+        {/* {panels.map((panel, i) => (
+          <>
+            <TabPanel value={i.toString()}>{panel}</TabPanel>
+          </>
+        ))} */}
+      </TabContext>
     </Box>
   );
 };
