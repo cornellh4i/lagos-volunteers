@@ -1,13 +1,10 @@
 import React from "react";
-import Button from "./Button";
 import {
   FormControl,
-  InputLabel,
   MenuItem,
   Select,
   SelectChangeEvent,
 } from "@mui/material";
-import Box from "@mui/material/Box";
 
 type DropdownSelectProps = {
   /** A list of tab labels in order */
@@ -33,13 +30,8 @@ const DropdownSelect = ({
   return (
     <div>
       <FormControl variant="standard" sx={{ m: 1, minWidth: "100%" }}>
-        {/* <InputLabel id="demo-simple-select-standard-label">Drafts</InputLabel> */}
         <div className="grid grid-cols-1 flex space-y-4">
-          <Button
-            buttonText="Create New Event"
-            buttonTextColor="#000000"
-            buttonColor="#808080"
-          />
+          {topAlignedComponent}
           <Select
             labelId="demo-simple-select-standard-label"
             id="demo-simple-select-standard"
@@ -53,15 +45,11 @@ const DropdownSelect = ({
                   padding: 0,
                   borderRadius: 2,
                 },
-                // dense: true,
               },
               PaperProps: {
                 elevation: 4,
                 sx: {
                   borderRadius: 2,
-                  // "& .MuiMenuItem-root": {
-                  //   padding: 2,
-                  // },
                 },
               },
               anchorOrigin: {
