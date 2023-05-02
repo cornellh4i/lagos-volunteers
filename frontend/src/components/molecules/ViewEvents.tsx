@@ -1,8 +1,14 @@
 import React from "react";
 import TabContainer from "@/components/molecules/TabContainer";
+import next from "next/types";
+import CardList from "@/components/atoms/CardList";
 
 const UpcomingEvents = () => {
-  return <>Hello upcoming</>;
+  return <>
+  <div>
+    <CardList cards={[]}/>
+  </div>
+  </>;
 };
 
 const Drafts = () => {
@@ -19,13 +25,11 @@ const ViewEvents = () => {
   const tabs = ["Upcoming Events", "Past Events", "Drafts"];
   const panels = [<UpcomingEvents />, <PastEvents />, <Drafts />];
   return (
-    <>
       <TabContainer
         tabs={tabs}
         panels={panels}
         rightAlignedComponent={<div>Hello world</div>}
       />
-    </>
   );
 };
 
