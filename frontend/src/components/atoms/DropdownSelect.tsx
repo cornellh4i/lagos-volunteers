@@ -31,7 +31,7 @@ const DropdownSelect = ({
   };
   return (
     <>
-      <FormControl variant="standard" sx={{ m: 1, minWidth: 120 }}>
+      <FormControl variant="standard" sx={{ m: 1, minWidth: "100%" }}>
         {/* <InputLabel id="demo-simple-select-standard-label">Drafts</InputLabel> */}
         <Select
           labelId="demo-simple-select-standard-label"
@@ -39,6 +39,33 @@ const DropdownSelect = ({
           value={value}
           onChange={handleChange}
           label="Select"
+          autoWidth
+          MenuProps={{
+            MenuListProps: {
+              sx: {
+                padding: 0,
+                borderRadius: 2,
+              },
+              // dense: true,
+            },
+            PaperProps: {
+              elevation: 4,
+              sx: {
+                borderRadius: 2,
+                // "& .MuiMenuItem-root": {
+                //   padding: 2,
+                // },
+              },
+            },
+            anchorOrigin: {
+              vertical: "bottom",
+              horizontal: "right",
+            },
+            transformOrigin: {
+              vertical: "top",
+              horizontal: "right",
+            },
+          }}
         >
           {/* TODO: set default value to drafts or something */}
           <MenuItem value="0">{tabs[0]}</MenuItem>
