@@ -24,7 +24,7 @@ const TabContainer = ({
   rightAlignedComponent,
 }: TabContainerProps) => {
   const [width, setWidth] = React.useState(window.innerWidth);
-  const breakpoint = 800; //cjhange to 420
+  const breakpoint = 420;
   React.useEffect(() => {
     /* Inside of a "useEffect" hook add an event listener that updates
        the "width" state variable when the window size changes */
