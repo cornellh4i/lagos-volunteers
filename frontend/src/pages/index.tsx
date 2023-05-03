@@ -1,20 +1,24 @@
 import Head from 'next/head';
 import React, { useEffect, useState } from 'react';
-import Image from 'next/image';
-import { Inter } from '@next/font/google';
-import styles from '@/styles/Home.module.css';
 import { Button, Grid, Stack } from '@mui/material';
 import { useAuth } from '@/utils/AuthContext';
-import Login from '@/components/Login';
 import { BASE_URL } from '@/utils/constants';
 import { auth } from '@/utils/firebase';
+import { useRouter } from 'next/router';
 
 const Home = () => {
 	const { user, loading, error, signOutUser } = useAuth();
 	const [userDetails, setUserDetails] = useState<any>(null);
 
+	const router = useRouter();
+
 	const handleSignOut = async () => {
-		await signOutUser();
+		try {
+			await signOutUser();
+			router.replace('/login');
+		} catch (error) {
+			console.log(error);
+		}
 	};
 
 	const fetchUserDetails = async () => {
@@ -31,27 +35,12 @@ const Home = () => {
 				},
 			});
 			const data = await response.json();
-			console.log(data)
+			console.log(data);
 			setUserDetails(data);
 		} catch (error) {
 			console.log(error);
 		}
 	};
-
-	if (!user) {
-		return <Login />;
-	}
-
-	// Temporary fetch request to test if the backend is running
-	useEffect(() => {
-		try {
-			// Note how BASE_URL is imported from a constants file and type casted to a string
-			const url = BASE_URL as string;
-			fetch(url).then((data) => console.log(data));
-		} catch (error) {
-			console.log(error);
-		}
-	}, []);
 
 	return (
 		<>

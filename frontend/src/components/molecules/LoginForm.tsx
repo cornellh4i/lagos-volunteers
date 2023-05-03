@@ -1,9 +1,10 @@
 import React from 'react';
-// import { useAuth } from "@/utils/AuthContext";
 import Divider from '@mui/material/Divider';
 import Button from '../atoms/Button';
 import TextField from '../atoms/TextField';
 import { useForm, SubmitHandler } from 'react-hook-form';
+import { useAuth } from "@/utils/AuthContext"
+import { useRouter } from 'next/router';
 
 type FormValues = {
 	email: string;
@@ -11,7 +12,8 @@ type FormValues = {
 };
 
 const LoginForm = () => {
-	//const { signInUser } = useAuth();
+	const { signInUser } = useAuth();
+  const router = useRouter();
 
 	const {
 		register,
@@ -22,7 +24,12 @@ const LoginForm = () => {
 
 	const handleLogin: SubmitHandler<FormValues> = async (data) => {
 		const { email, password } = data;
-		console.log(email, password);
+    try{
+      await signInUser(email, password);
+      router.push("/")
+    } catch (error) {
+      console.log(error)
+    }
 	};
 
 	return (
