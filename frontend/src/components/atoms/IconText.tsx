@@ -10,9 +10,9 @@ type IconTextProps = {
  */
 const IconText = ({ icon, text }: IconTextProps) => {
   return <>
-  <div className="flex flex-row">
-    <div className="flex-none">icon</div>
-    <div className="flex-none">text</div>
+  <div className="flex items-center">
+    <div className="flex-1">{icon}</div>
+    <div className="flex-1">{text}</div>
   </div>
   </>;
 };

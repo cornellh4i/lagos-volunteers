@@ -2,6 +2,7 @@ import React from "react";
 import TabContainer from "@/components/molecules/TabContainer";
 import next from "next/types";
 import CardList from "@/components/atoms/CardList";
+import IconText from "../atoms/IconText";
 
 const UpcomingEvents = () => {
   return <>

@@ -12,7 +12,7 @@ type CardListProps = {
 const CardList = ({ cards }: CardListProps) => {
   return <>
   <div className="flex flex-col gap-4 h-screen items-center justify-center">
-    cards
+    {cards}
   </div>
   </>;
 };
