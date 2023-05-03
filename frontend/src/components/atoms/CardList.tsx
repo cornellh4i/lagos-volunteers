@@ -11,7 +11,7 @@ type CardListProps = {
  */
 const CardList = ({ cards }: CardListProps) => {
   return <>
-  <div className="flex flex-col gap-4 h-screen items-center justify-center">
+  <div className="flex flex-col gap-20 h-screen items-center">
     {cards}
   </div>
   </>;

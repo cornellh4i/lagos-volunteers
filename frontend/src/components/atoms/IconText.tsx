@@ -11,8 +11,8 @@ type IconTextProps = {
 const IconText = ({ icon, text }: IconTextProps) => {
   return <>
   <div className="flex items-center">
-    <div className="flex-1">{icon}</div>
-    <div className="flex-1">{text}</div>
+    <div className="flex-left">{icon}</div>
+    <div className="flex-left">{text}</div>
   </div>
   </>;
 };
