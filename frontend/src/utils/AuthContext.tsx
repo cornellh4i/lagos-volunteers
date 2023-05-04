@@ -95,10 +95,16 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 		createFirebaseUser,
 	};
 
+
+	// Note: Authentication works. If a user tries to access a protected route, there are 
+	// redirects to the login page. However, the page flashes for a second before the redirect
+	// happens. This is because the user is initially undefined, and then the user is set to null
+	// and then the redirect happens. This is not ideal, but it works for now.
+
+
+
 	useEffect(() => {
-		if (loading) {
-			return;
-		}
+
 		const unsub = onAuthStateChanged(auth, (authUser) => {
 			if (!authUser) {
 				router.replace('/login');
