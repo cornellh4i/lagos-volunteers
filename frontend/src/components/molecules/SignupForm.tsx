@@ -27,6 +27,25 @@ const SignupForm = () => {
 
 	const handleSubmitUser: SubmitHandler<FormValues> = async (data) => {
 		const { firstName, lastName, email, password } = data;
+		try {
+			const url = `${BASE_URL}/users`;
+			const response = await fetch(url, {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+				},
+				body: JSON.stringify({ firstName, lastName, email, password }),
+			});
+			const json = await response.json();
+			console.log(json);
+			const firebase = await createFirebaseUser(email, password)
+			console.log(firebase);
+				
+		} catch (error) {
+			console.log(error);
+		}
+
+
 	};
 
 	return (

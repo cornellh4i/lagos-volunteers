@@ -48,8 +48,6 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 		useCreateUserWithEmailAndPassword(auth);
 	const [signOut] = useSignOut(auth);
 
-	const router = useRouter();
-
 	const createFirebaseUser = async (email: string, password: string) => {
 		try {
 			await createUserWithEmailAndPassword(email, password);
@@ -95,22 +93,26 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 		createFirebaseUser,
 	};
 
+	const publicPaths = [
+		'/login',
+		'/signup',
+		'/password/forgot',
+		'/password/reset/*',
+		'/_404',
+		'/_error',
+	];
 
-	// Note: Authentication works. If a user tries to access a protected route, there are 
-	// redirects to the login page. However, the page flashes for a second before the redirect
-	// happens. This is because the user is initially undefined, and then the user is set to null
-	// and then the redirect happens. This is not ideal, but it works for now.
+	// Note: Authentication works but it flashes the home page before redirecting to login page. Need to find a workaround.
 
-
-
+	const router = useRouter();
 	useEffect(() => {
-
-		const unsub = onAuthStateChanged(auth, (authUser) => {
-			if (!authUser) {
+		const path = router.asPath;
+		const unsubscribe = onAuthStateChanged(auth, (user) => {
+			if (!user && !publicPaths.includes(path)) {
 				router.replace('/login');
 			}
 		});
-		return unsub;
+		return unsubscribe;
 	}, [user]);
 
 	return (
