@@ -27,25 +27,26 @@ const SignupForm = () => {
 
 	const handleSubmitUser: SubmitHandler<FormValues> = async (data) => {
 		const { firstName, lastName, email, password } = data;
+		const post = {
+			email,
+			profile: {
+				firstName,
+				lastName,
+			},
+		};
 		try {
-			const url = `${BASE_URL}/users`;
-			const response = await fetch(url, {
+			const fbUser = await createFirebaseUser(email, password);
+			const dbUser = await fetch(`${BASE_URL}/users`, {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json',
 				},
-				body: JSON.stringify({ firstName, lastName, email, password }),
+				body: JSON.stringify(post),
 			});
-			const json = await response.json();
-			console.log(json);
-			const firebase = await createFirebaseUser(email, password)
-			console.log(firebase);
-				
+			Promise.all([fbUser, dbUser]);
 		} catch (error) {
 			console.log(error);
 		}
-
-
 	};
 
 	return (

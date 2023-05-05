@@ -146,11 +146,11 @@ export const setVolunteerCustomClaims = async (email: string) => {
     .getUserByEmail(email)
     .then((userRecord: UserRecord) => {
       const customClaims = {
-        "admin": false,
-        "supervisor": false,
-        "volunteer": true,
+        admin: false,
+        supervisor: false,
+        volunteer: true,
       };
-      getAuth().setCustomUserClaims(userRecord.uid, customClaims);
+      getAuth().setCustomUserClaims(email, customClaims);
     })
     .catch((e: Error) => {
       console.log("Error creating new user:", e);

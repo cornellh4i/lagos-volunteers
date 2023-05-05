@@ -24,11 +24,6 @@ userRouter.post(
         req.body.permissions
       )
     );
-    // try {
-    //   await setVolunteerCustomClaims(req.body.email);
-    // } catch (e) {
-    //   console.log(e);
-    // }
   }
 );
 

@@ -3,7 +3,7 @@ import Divider from '@mui/material/Divider';
 import Button from '../atoms/Button';
 import TextField from '../atoms/TextField';
 import { useForm, SubmitHandler } from 'react-hook-form';
-import { useAuth } from "@/utils/AuthContext"
+import { useAuth } from '@/utils/AuthContext';
 import { useRouter } from 'next/router';
 
 type FormValues = {
@@ -13,7 +13,7 @@ type FormValues = {
 
 const LoginForm = () => {
 	const { signInUser } = useAuth();
-  const router = useRouter();
+	const router = useRouter();
 
 	const {
 		register,
@@ -24,49 +24,51 @@ const LoginForm = () => {
 
 	const handleLogin: SubmitHandler<FormValues> = async (data) => {
 		const { email, password } = data;
-    try{
-      await signInUser(email, password);
-      router.push("/")
-    } catch (error) {
-      console.log(error)
-    }
+		try {
+			await signInUser(email, password);
+			router.push('/');
+		} catch (error) {
+			console.log(error);
+		}
 	};
 
 	return (
-		<form onSubmit={handleSubmit(handleLogin)} className='space-y-4 '>
-			<div className='font-bold text-3xl'> Log In </div>
-			<div>
-				<TextField
-					requiredMessage={errors.email ? 'Required' : undefined}
-					label='Email *'
-					name='email'
-					type='email'
-					register={register}
-					required={true}
-				/>
-			</div>
-			<div>
-				<TextField
-					requiredMessage={errors.password ? 'Required' : undefined}
-					label='Password *'
-					name='password'
-					type='password'
-					register={register}
-					required={true}
-				/>
-			</div>
-			<div className='text-center underline'>Forgot Password?</div>
-			<div>
-				<Button
-					type='submit'
-					buttonText='Log In'
-					buttonTextColor='#000000'
-					buttonColor='#808080'
-				/>
-			</div>
-			<div>
-				<Divider>or</Divider>
-			</div>
+		<div className='space-y-4 '>
+			<form onSubmit={handleSubmit(handleLogin)} className='space-y-4 '>
+				<div className='font-bold text-3xl'> Log In </div>
+				<div>
+					<TextField
+						requiredMessage={errors.email ? 'Required' : undefined}
+						label='Email *'
+						name='email'
+						type='email'
+						register={register}
+						required={true}
+					/>
+				</div>
+				<div>
+					<TextField
+						requiredMessage={errors.password ? 'Required' : undefined}
+						label='Password *'
+						name='password'
+						type='password'
+						register={register}
+						required={true}
+					/>
+				</div>
+				<div className='text-center underline'>Forgot Password?</div>
+				<div>
+					<Button
+						type='submit'
+						buttonText='Log In'
+						buttonTextColor='#000000'
+						buttonColor='#808080'
+					/>
+				</div>
+				<div>
+					<Divider>or</Divider>
+				</div>
+			</form>
 			<div>
 				<Button
 					type='submit'
@@ -83,7 +85,7 @@ const LoginForm = () => {
 					buttonColor='#D3D3D3'
 				/>
 			</div>
-		</form>
+		</div>
 	);
 };
 

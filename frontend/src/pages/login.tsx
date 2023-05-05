@@ -11,10 +11,12 @@ import { auth } from '@/utils/firebase';
 const Login = () => {
 	const { user } = useAuth();
 	const router = useRouter();
+
+	// If you are already logged in, redirect to the home page
 	useEffect(() => {
 		const unsub = onAuthStateChanged(auth, (authUser) => {
 			if (authUser) {
-				router.replace('/');
+				router.push('/');
 			}
 		});
 		return unsub;

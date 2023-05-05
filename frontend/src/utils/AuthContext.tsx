@@ -13,7 +13,7 @@ import {
 	useCreateUserWithEmailAndPassword,
 	useSignOut,
 } from 'react-firebase-hooks/auth';
-import { onAuthStateChanged } from 'firebase/auth';
+import { onAuthStateChanged, UserCredential } from 'firebase/auth';
 import { useRouter } from 'next/router';
 
 // Define types for authentication context value
@@ -24,7 +24,10 @@ type AuthContextValue = {
 	signInUser: (email: string, password: string) => Promise<void>;
 	signOutUser: () => Promise<void>;
 	signInUserWithCustomToken: (token: string) => Promise<void>;
-	createFirebaseUser: (email: string, password: string) => Promise<void>;
+	createFirebaseUser: (
+		email: string,
+		password: string
+	) => Promise<UserCredential | undefined>;
 };
 
 export const AuthContext = createContext<AuthContextValue>({
@@ -33,7 +36,9 @@ export const AuthContext = createContext<AuthContextValue>({
 	signInUser: async () => {},
 	signInUserWithCustomToken: async () => {},
 	signOutUser: async () => {},
-	createFirebaseUser: async () => {},
+	createFirebaseUser: async () => {
+		return undefined;
+	},
 });
 
 // Define props type for authentication provider
@@ -48,9 +53,13 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 		useCreateUserWithEmailAndPassword(auth);
 	const [signOut] = useSignOut(auth);
 
-	const createFirebaseUser = async (email: string, password: string) => {
+	const createFirebaseUser = async (
+		email: string,
+		password: string
+	): Promise<UserCredential | undefined> => {
 		try {
-			await createUserWithEmailAndPassword(email, password);
+			const response = await createUserWithEmailAndPassword(email, password);
+			return response;
 		} catch (error) {
 			//TODO: Handle Different Auth Errors
 			console.log(error);
