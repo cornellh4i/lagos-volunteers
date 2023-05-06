@@ -1,11 +1,11 @@
 import "../styles/globals.css";
+import { useEffect } from "react";
 import type { AppProps } from "next/app";
 import { ThemeProvider, CssBaseline } from "@mui/material";
 import { createTheme } from "@mui/material/styles";
 import { StyledEngineProvider } from "@mui/material/styles";
 import Layout from "@/components/Layout";
 import { AuthProvider } from "@/utils/AuthContext";
-import { useAuth } from "@/utils/AuthContext";
 
 export const theme = createTheme({
   palette: {
@@ -28,11 +28,11 @@ const App = ({ Component, pageProps }: AppProps) => {
   return (
     <StyledEngineProvider injectFirst>
       <ThemeProvider theme={theme}>
-        <Layout>
-          <AuthProvider>
+        <AuthProvider>
+          <Layout>
             <Component {...pageProps} />
-          </AuthProvider>
-        </Layout>
+          </Layout>
+        </AuthProvider>
       </ThemeProvider>
     </StyledEngineProvider>
   );

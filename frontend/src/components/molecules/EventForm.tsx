@@ -7,14 +7,52 @@ import RadioButton from "../atoms/RadioButton";
 import Button from "../atoms/Button";
 import TextCopy from "../atoms/TextCopy";
 import TextField from "../atoms/TextField";
+import { useForm, SubmitHandler } from "react-hook-form";
 
 interface Props {
   eventType: string; //create or edit
 }
+
+type FormValues = {
+  eventName: string;
+  startDate: string;
+  endDate: string;
+  startTime: string;
+  endTime: string;
+  location: string;
+  volunteerSignUpCap: string;
+  eventDescription: string;
+  eventImage: string;
+  rsvpLinkImage: string;
+};
+
 /** An EventForm page */
 const EventForm = ({ eventType }: Props) => {
+  const {
+    register,
+    handleSubmit,
+    watch,
+    formState: { errors },
+  } = useForm<FormValues>();
+
+  const handleCreateEvent: SubmitHandler<FormValues> = async (data) => {
+    const {
+      eventName,
+      startDate,
+      endDate,
+      startTime,
+      endTime,
+      location,
+      volunteerSignUpCap,
+      eventDescription,
+      eventImage,
+      rsvpLinkImage,
+    } = data;
+    console.log(data);
+  };
+
   return (
-    <div className="space-y-4">
+    <form onSubmit={handleSubmit(handleCreateEvent)} className="space-y-4">
       <div className="font-bold text-3xl">
         {" "}
         {eventType == "create" ? "Create Event" : "Edit Event "}{" "}
@@ -23,8 +61,9 @@ const EventForm = ({ eventType }: Props) => {
         <TextField
           label="Event Name"
           required={true}
-          status=""
-          incorrectEntryText=""
+          name="eventName"
+          register={register}
+          requiredMessage={errors.eventName ? "Required" : undefined}
         />
       </div>
       <div className="flex md:space-x-4 grid sm:grid-cols-1 md:grid-cols-2">
@@ -44,15 +83,17 @@ const EventForm = ({ eventType }: Props) => {
         <TextField
           label="Volunteer Sign Up Cap"
           required={true}
-          status=""
-          incorrectEntryText=""
+          name="volunteerSignUpCap"
+          register={register}
+          requiredMessage={errors.volunteerSignUpCap ? "Required" : undefined}
         />
       </div>
       <MultilineTextField
         label="Event Description"
         required={true}
-        status=""
-        incorrectEntryText=""
+        name="eventDescription"
+        register={register}
+        requiredMessage={errors.eventDescription ? "Required" : undefined}
       />
       <Upload label="Event Image" />
       <TextCopy label="RSVP Link Image" text="www.lagos/event/rsvp.com" />
@@ -68,6 +109,7 @@ const EventForm = ({ eventType }: Props) => {
             </div>
             <div className="sm:col-start-1 sm:col-span-1 md:col-start-4 md:col-span-1">
               <Button
+                type="submit"
                 buttonText="Create"
                 buttonTextColor="#000000"
                 buttonColor="#808080"
@@ -92,6 +134,7 @@ const EventForm = ({ eventType }: Props) => {
             </div>
             <div className="sm:col-start-1 sm:col-span-1 md:col-start-6 md:col-span-1">
               <Button
+                type="submit"
                 buttonText="Save Changes"
                 buttonTextColor="#000000"
                 buttonColor="#808080"
@@ -100,7 +143,7 @@ const EventForm = ({ eventType }: Props) => {
           </div>
         )}
       </div>
-    </div>
+    </form>
   );
 };
 

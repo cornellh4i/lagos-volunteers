@@ -47,6 +47,14 @@ export const auth = (
   });
 };
 
+export const NoAuth = (
+  req: IGetAuthTokenRequest,
+  res: Response,
+  next: NextFunction
+) => {
+  next();
+};
+
 /**
  * Authorizes a request if a token is present with the volunteer claim,
  * returning an error otherwise.
@@ -142,14 +150,11 @@ export const setVolunteerCustomClaims = async (email: string) => {
         supervisor: false,
         volunteer: true,
       };
-      getAuth().setCustomUserClaims(userRecord.uid, customClaims);
+      getAuth().setCustomUserClaims(email, customClaims);
     })
     .catch((e: Error) => {
       console.log("Error creating new user:", e);
     });
-
-  const customToken = getAuth().createCustomToken(user.uid);
-  return customToken;
 };
 
 /**
@@ -170,9 +175,6 @@ export const updateFirebaseUserToSupervisor = async (email: string) => {
     .catch((e: Error) => {
       console.log("Error creating new user:", e);
     });
-
-  const customToken = getAuth().createCustomToken(user.uid);
-  return customToken;
 };
 
 /**
@@ -193,9 +195,6 @@ export const updateFirebaseUserToAdmin = async (email: string) => {
     .catch((e: Error) => {
       console.log("Error creating new user:", e);
     });
-
-  const customToken = getAuth().createCustomToken(user.uid);
-  return customToken;
 };
 
 export default {

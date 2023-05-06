@@ -11,7 +11,7 @@ export const FALLBACK_AVATOR_ALT = "avatar";
 type AvatarProps = {
   url?: string;
   alt?: string;
-  name: string;
+  name: string | undefined;
   start_date: Date;
   hour: number;
 };

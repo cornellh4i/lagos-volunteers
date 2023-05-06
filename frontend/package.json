@@ -12,6 +12,7 @@
     "@emotion/react": "^11.10.6",
     "@emotion/styled": "^11.10.6",
     "@mui/icons-material": "^5.11.16",
+    "@mui/lab": "^5.0.0-alpha.128",
     "@mui/material": "^5.11.13",
     "@mui/x-data-grid": "^6.2.1",
     "@mui/x-date-pickers": "^6.2.1",
@@ -28,6 +29,7 @@
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-firebase-hooks": "^5.1.1",
+    "react-hook-form": "^7.43.9",
     "typescript": "4.9.5"
   },
   "devDependencies": {
