@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import ProfileForm from "@/components/molecules/ProfileForm";
 import ProfileTemplate from "@/components/templates/ProfileTemplate";
+import Banner from "@/components/molecules/Banner";
 import { GetServerSideProps } from "next";
 import { BASE_URL } from "@/utils/constants";
 import { onAuthStateChanged, getAuth } from "firebase/auth";
@@ -64,10 +65,14 @@ const Profile = () => {
 
   return (
     <ProfileTemplate
-      name={`${userDetails?.firstName} ${userDetails?.lastName}`}
-      hour={20}
-      start_date={date}
-      Form={
+      banner={
+        <Banner
+          name={`${userDetails?.firstName} ${userDetails?.lastName}`}
+          hour={20}
+          start_date={date}
+        />
+      }
+      body={
         userDetails ? (
           <ProfileForm userDetails={userDetails} />
         ) : (
