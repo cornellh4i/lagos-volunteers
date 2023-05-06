@@ -11,15 +11,17 @@ type TableProps = {
 /**
  * A Table component
  */
-const Table = ({ columns, rows}: TableProps) => {
-  return <DataGrid 
-    columns={columns} 
-    rows={rows} 
-    sx={{border: 0,}}
-    
-    // getRowId={(r) => r.DT_RowId}
-    // onCellClick={{console.log(getRowId)}}
-  />;
+const Table = ({ columns, rows }: TableProps) => {
+  return (
+    <DataGrid
+      columns={columns}
+      rows={rows}
+      sx={{ border: 0 }}
+
+      // getRowId={(r) => r.DT_RowId}
+      // onCellClick={{console.log(getRowId)}}
+    />
+  );
 };
 
 export default Table;

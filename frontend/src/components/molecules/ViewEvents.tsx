@@ -69,6 +69,7 @@ const PastEvents = () => {
 
   return (
     <div>
+      <BoxText text="Volunteer Hours" textRight="30" />
       <Table columns={eventColumns} rows={dummyRows} />
     </div>
   );
