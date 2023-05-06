@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Button from "../atoms/Button";
 import TextField from "../atoms/TextField";
-import CustomCheckbox from "../atoms/Checkbox";
+import Checkbox from "../atoms/Checkbox";
 import { auth } from "@/utils/firebase";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { useAuth } from "@/utils/AuthContext";
@@ -163,7 +163,7 @@ const ProfileForm = ({ userDetails }: Props) => {
         />
       </div>
       <div>
-        <CustomCheckbox label="Email notifications" />
+        <Checkbox label="Email notifications" />
       </div>
       <div className="sm:space-x-4 grid grid-cols-1 sm:grid-cols-2">
         <div className="pb-4 sm:pb-0">
