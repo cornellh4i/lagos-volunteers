@@ -66,13 +66,13 @@ const EventForm = ({ eventType }: Props) => {
           requiredMessage={errors.eventName ? "Required" : undefined}
         />
       </div>
-      <div className="flex md:space-x-4 grid sm:grid-cols-1 md:grid-cols-2">
+      <div className="md:space-x-4 grid sm:grid-cols-1 md:grid-cols-2">
         <div className="sm:pb-4 md:pb-0">
           <DatePicker label="Start Date" />
         </div>
         <DatePicker label="End Date" />
       </div>
-      <div className="flex md:space-x-4 grid sm:grid-cols-1 md:grid-cols-2">
+      <div className="md:space-x-4 grid sm:grid-cols-1 md:grid-cols-2">
         <div className="sm:pb-4 md:pb-0">
           <TimePicker label="Start Time" />
         </div>

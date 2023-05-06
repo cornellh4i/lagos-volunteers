@@ -165,7 +165,7 @@ const ProfileForm = ({ userDetails }: Props) => {
       <div>
         <CustomCheckbox label="Email notifications" />
       </div>
-      <div className="flex md:space-x-4 grid sm:grid-cols-1 md:grid-cols-2">
+      <div className="md:space-x-4 grid sm:grid-cols-1 md:grid-cols-2">
         <div className="sm:pb-4 md:pb-0">
           <Button
             type="submit"

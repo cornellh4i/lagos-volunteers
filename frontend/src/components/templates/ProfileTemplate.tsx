@@ -34,7 +34,7 @@ const ProfileTemplate = ({
       </div>
       <div className="h-screen">
         {/* Add bg-red-200 to see background */}
-        <div className="sm:place-content-center mx-3 md:ml-20 md:w-1/2 md: mb-19 md: h-5/6 md: mt-16 lg:ml-20 lg:w-1/2 lg: mb-19 lg: h-5/6 lg: mt-16">
+        <div className="sm:place-content-center mx-3 md:ml-20 md:w-1/2 md: mb-19 md: h-5/6 md: mt-16 lg:ml-20 lg:w-1/2 lg: mb-19">
           {Form}
         </div>
       </div>
