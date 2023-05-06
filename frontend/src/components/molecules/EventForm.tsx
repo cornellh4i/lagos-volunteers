@@ -57,7 +57,7 @@ const EventForm = ({ eventType }: Props) => {
         {" "}
         {eventType == "create" ? "Create Event" : "Edit Event "}{" "}
       </div>
-      <div className="grid grid-cols-2  col-span-2  sm:col-span-1">
+      <div className="grid grid-cols-1 sm:grid-cols-2  col-span-2  sm:col-span-1">
         <TextField
           label="Event Name"
           required={true}
@@ -79,7 +79,7 @@ const EventForm = ({ eventType }: Props) => {
         <TimePicker label="End Time" />
       </div>
       <RadioButton label="Location" />
-      <div className="grid grid-cols-2  col-span-2  sm:col-span-1">
+      <div className="grid grid-cols-1 sm:grid-cols-2 col-span-2  sm:col-span-1">
         <TextField
           label="Volunteer Sign Up Cap"
           required={true}
