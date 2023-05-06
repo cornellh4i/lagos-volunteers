@@ -1,5 +1,5 @@
 import React from "react";
-import EventCard from "@/components/molecules/EventCard"; 
+import EventCard from "@/components/molecules/EventCard";
 
 type CardListProps = {
   cards: React.ReactElement[];
@@ -10,11 +10,11 @@ type CardListProps = {
  * contained within
  */
 const CardList = ({ cards }: CardListProps) => {
-  return <>
-  <div className="flex flex-col gap-20 h-screen items-center">
-    {cards}
-  </div>
-  </>;
+  return (
+    <>
+      <div className="flex flex-col gap-20 h-screen items-center">{cards}</div>
+    </>
+  );
 };
 
 export default CardList;
