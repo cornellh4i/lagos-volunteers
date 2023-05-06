@@ -8,6 +8,9 @@ import Layout from "@/components/Layout";
 import { AuthProvider } from "@/utils/AuthContext";
 
 export const theme = createTheme({
+  typography: {
+    fontFamily: "Helvetica, sans-serif",
+  },
   palette: {
     primary: {
       main: "#556cd6",
