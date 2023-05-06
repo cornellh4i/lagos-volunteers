@@ -11,7 +11,10 @@ import {
   useAuthState,
   useSignInWithEmailAndPassword,
   useCreateUserWithEmailAndPassword,
+  useSignOut,
 } from "react-firebase-hooks/auth";
+import { onAuthStateChanged, UserCredential } from "firebase/auth";
+import { useRouter } from "next/router";
 
 // Define types for authentication context value
 type AuthContextValue = {
@@ -21,7 +24,10 @@ type AuthContextValue = {
   signInUser: (email: string, password: string) => Promise<void>;
   signOutUser: () => Promise<void>;
   signInUserWithCustomToken: (token: string) => Promise<void>;
-  createFirebaseUser: (email: string, password: string) => Promise<void>;
+  createFirebaseUser: (
+    email: string,
+    password: string
+  ) => Promise<UserCredential | undefined>;
 };
 
 export const AuthContext = createContext<AuthContextValue>({
@@ -30,7 +36,9 @@ export const AuthContext = createContext<AuthContextValue>({
   signInUser: async () => {},
   signInUserWithCustomToken: async () => {},
   signOutUser: async () => {},
-  createFirebaseUser: async () => {},
+  createFirebaseUser: async () => {
+    return undefined;
+  },
 });
 
 // Define props type for authentication provider
@@ -38,19 +46,20 @@ type AuthProviderProps = {
   children: ReactNode;
 };
 
-export const useAuth = () => {
-  return useContext(AuthContext);
-};
-
 export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [user, loading, error] = useAuthState(auth);
   const [signInWithEmailAndPassword] = useSignInWithEmailAndPassword(auth);
   const [createUserWithEmailAndPassword] =
     useCreateUserWithEmailAndPassword(auth);
+  const [signOut] = useSignOut(auth);
 
-  const createFirebaseUser = async (email: string, password: string) => {
+  const createFirebaseUser = async (
+    email: string,
+    password: string
+  ): Promise<UserCredential | undefined> => {
     try {
-      await createUserWithEmailAndPassword(email, password);
+      const response = await createUserWithEmailAndPassword(email, password);
+      return response;
     } catch (error) {
       //TODO: Handle Different Auth Errors
       console.log(error);
@@ -68,6 +77,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const signInUser = async (email: string, password: string) => {
     try {
       const result = await signInWithEmailAndPassword(email, password);
+      console.log(result);
     } catch (error) {
       // TODO: Handle Different Auth Errors
       console.log(error);
@@ -76,11 +86,12 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
   const signOutUser = async () => {
     try {
-      await signOut(auth);
+      await signOut();
     } catch (error) {
       console.log(error);
     }
   };
+
   const value = {
     user,
     loading,
@@ -91,9 +102,35 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     createFirebaseUser,
   };
 
+  const publicPaths = [
+    "/login",
+    "/signup",
+    "/password/forgot",
+    "/password/reset/*",
+    "/_404",
+    "/_error",
+  ];
+
+  // Note: Authentication works but it flashes the home page before redirecting to login page. Need to find a workaround.
+
+  const router = useRouter();
+  useEffect(() => {
+    const path = router.asPath;
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (!user && !publicPaths.includes(path)) {
+        router.replace("/login");
+      }
+    });
+    return unsubscribe;
+  }, [user]);
+
   return (
     <AuthContext.Provider value={value}>
       {!loading && children}
     </AuthContext.Provider>
   );
+};
+
+export const useAuth = () => {
+  return useContext(AuthContext);
 };

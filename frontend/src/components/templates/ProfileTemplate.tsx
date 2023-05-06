@@ -6,10 +6,10 @@ import NavBar from "../molecules/NavBar";
 type ProfileProps = {
   url?: string;
   alt?: string;
-  name: string;
+  name: string | undefined;
   start_date: Date;
   hour: number;
-  Form: React.ComponentType;
+  Form: React.ReactElement;
 };
 
 const ProfileTemplate = ({
@@ -35,7 +35,7 @@ const ProfileTemplate = ({
       <div className="h-screen">
         {/* Add bg-red-200 to see background */}
         <div className="sm:place-content-center mx-3 md:ml-20 md:w-1/2 md: mb-19 md: h-5/6 md: mt-16 lg:ml-20 lg:w-1/2 lg: mb-19 lg: h-5/6 lg: mt-16">
-          <Form />
+          {Form}
         </div>
       </div>
     </>

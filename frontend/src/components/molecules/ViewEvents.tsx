@@ -4,6 +4,7 @@ import Chip from "@/components/atoms/Chip";
 import TabContainer from "@/components/molecules/TabContainer";
 import { GridColDef, GridValueGetterParams } from "@mui/x-data-grid";
 import Table from "@/components/atoms/Table";
+import Button from "../atoms/Button";
 
 const UpcomingEvents = () => {
   return <>Hello upcoming</>;
@@ -86,7 +87,13 @@ const ViewEvents = () => {
       <TabContainer
         tabs={tabs}
         panels={panels}
-        rightAlignedComponent={<div>Hello world</div>}
+        rightAlignedComponent={
+          <Button
+            buttonText="Create New Event"
+            buttonTextColor="#000000"
+            buttonColor="#808080"
+          />
+        }
       />
     </>
   );
