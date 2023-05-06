@@ -118,11 +118,7 @@ const ViewEvents = () => {
         tabs={tabs}
         panels={panels}
         rightAlignedComponent={
-          <Button
-            buttonText="Create New Event"
-            buttonTextColor="#000000"
-            buttonColor="#808080"
-          />
+          <Button text="Create New Event" color="dark-gray" />
         }
       />
     </>

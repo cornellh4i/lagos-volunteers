@@ -109,24 +109,17 @@ const SignupForm = () => {
         />
       </div>
       <div>
-        <Button
-          buttonText="Continue"
-          buttonTextColor="#000000"
-          buttonColor="#808080"
-          type="submit"
-        />
+        <Button text="Continue" color="dark-gray" type="submit" />
       </div>
       <div>
-        <Button
-          buttonText="Continue with Google"
-          type="submit"
-          buttonTextColor="#000000"
-          buttonColor="#D3D3D3"
-        />
+        <Button text="Continue with Google" type="submit" color="gray" />
       </div>
       <div className="justify-center flex flex-row">
         <div className="">Have an account?&nbsp;</div>
-        <Link href="/login"> Log in</Link>
+        <Link href="/login" className="text-black">
+          {" "}
+          Log in
+        </Link>
       </div>
     </form>
   );

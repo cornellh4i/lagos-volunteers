@@ -11,7 +11,7 @@ interface Props {
   register: (name: any, options?: RegisterOptions) => UseFormRegisterReturn;
 }
 
-/** A Button page */
+/** A MultilineTextField page */
 const MultilineTextField = ({
   label,
   name,

@@ -101,44 +101,22 @@ const EventForm = ({ eventType }: Props) => {
         {eventType == "create" ? (
           <div className="grid sm:grid-cols-1 md:grid-cols-4 gap-4">
             <div className="sm:col-start-1 sm:col-span-1 md:col-start-3 md:col-span-1">
-              <Button
-                buttonText="Cancel"
-                buttonTextColor="#000000"
-                buttonColor="#D3D3D3"
-              />
+              <Button text="Cancel" color="gray" />
             </div>
             <div className="sm:col-start-1 sm:col-span-1 md:col-start-4 md:col-span-1">
-              <Button
-                type="submit"
-                buttonText="Create"
-                buttonTextColor="#000000"
-                buttonColor="#808080"
-              />
+              <Button type="submit" text="Create" color="dark-gray" />
             </div>
           </div>
         ) : (
           <div className="grid sm:grid-cols-1 md:grid-cols-6 gap-4">
             <div className="sm:col-start-1 sm:col-span-1 md:col-start-4 md:col-span-1">
-              <Button
-                buttonText="Cancel"
-                buttonTextColor="#000000"
-                buttonColor="#D3D3D3"
-              />
+              <Button text="Cancel" color="gray" />
             </div>
             <div className="sm:col-start-1 sm:col-span-1 md:col-start-5 md:col-span-1">
-              <Button
-                buttonText="Cancel Event"
-                buttonTextColor="#000000"
-                buttonColor="#D3D3D3"
-              />
+              <Button text="Cancel Event" color="gray" />
             </div>
             <div className="sm:col-start-1 sm:col-span-1 md:col-start-6 md:col-span-1">
-              <Button
-                type="submit"
-                buttonText="Save Changes"
-                buttonTextColor="#000000"
-                buttonColor="#808080"
-              />
+              <Button type="submit" text="Save Changes" color="dark-gray" />
             </div>
           </div>
         )}
