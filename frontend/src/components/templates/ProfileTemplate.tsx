@@ -9,15 +9,15 @@ type ProfileTemplateProps = {
 
 const ProfileTemplate = ({ banner, body }: ProfileTemplateProps) => {
   return (
-    <>
+    <div className="flex flex-col min-h-screen">
       <NavBar />
-      <div className="h-screen">
-        {banner}
-        <div className="sm:place-content-center mx-3 md:ml-20 md:w-1/2 md: mb-19 md: h-5/6 md: mt-16 lg:ml-20 lg:w-1/2 lg: mb-19">
-          {body}
+      {banner}
+      <div className="flex grow">
+        <div className="flex w-full sm:max-w-xl items-center justify-center py-10 px-10 sm:px-20">
+          <div className="w-full">{body}</div>
         </div>
       </div>
-    </>
+    </div>
   );
 };
 

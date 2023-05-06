@@ -62,8 +62,8 @@ const SignupForm = () => {
           required={true}
         />
       </div>
-      <div className="grid md:space-x-4 sm:grid-cols-1 md:grid-cols-2 ">
-        <div className="sm:pb-4 md:pb-0">
+      <div className="grid sm:space-x-4 grid-cols-1 sm:grid-cols-2 ">
+        <div className="pb-4 sm:pb-0">
           <TextField
             requiredMessage={errors.firstName ? "Required" : undefined}
             name="firstName"
