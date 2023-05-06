@@ -1,5 +1,6 @@
 import React from "react";
-import TabContainer from "@/components/molecules/TabContainer";
+import TabContainer from "./TabContainer";
+import Button from "../atoms/Button";
 
 const UpcomingEvents = () => {
   return <>Hello upcoming</>;
@@ -23,7 +24,13 @@ const ViewEvents = () => {
       <TabContainer
         tabs={tabs}
         panels={panels}
-        rightAlignedComponent={<div>Hello world</div>}
+        rightAlignedComponent={
+          <Button
+            buttonText="Create New Event"
+            buttonTextColor="#000000"
+            buttonColor="#808080"
+          />
+        }
       />
     </>
   );
