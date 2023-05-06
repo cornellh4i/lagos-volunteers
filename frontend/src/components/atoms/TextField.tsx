@@ -7,6 +7,7 @@ interface Props {
 	name: string;
 	required?: boolean;
 	type?: string;
+	disabled?: boolean;
 	requiredMessage?: string;
 	register: (name: any, options?: RegisterOptions) => UseFormRegisterReturn;
 }
@@ -17,6 +18,7 @@ const CustomTextField = ({
 	required,
 	type = 'text',
 	requiredMessage = '',
+	disabled = false,
 	register,
 }: Props) => {
 	return (
@@ -26,6 +28,7 @@ const CustomTextField = ({
 			</div>
 			<TextField
 				type={type}
+				disabled={disabled}
 				size='small'
 				margin='dense'
 				fullWidth={true}

@@ -5,9 +5,8 @@ interface Props {
 	buttonText: string;
 	buttonTextColor: string;
 	buttonColor: string;
-	onClick?: () => Promise<void>;
+	onClick?: () => void;
 	type?: 'button' | 'submit' | 'reset' | undefined;
-  handleClick?: (e: any) => void;
 }
 
 /** A Button page */

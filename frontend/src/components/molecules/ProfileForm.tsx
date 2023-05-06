@@ -1,8 +1,12 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Button from '../atoms/Button';
 import TextField from '../atoms/TextField';
 import CustomCheckbox from '../atoms/Checkbox';
+import { auth } from '@/utils/firebase';
 import { useForm, SubmitHandler } from 'react-hook-form';
+import { useAuth } from '@/utils/AuthContext';
+import { useRouter } from 'next/router';
+import { BASE_URL } from '@/utils/constants';
 
 type FormValues = {
 	email: string;
@@ -15,26 +19,75 @@ type FormValues = {
 	emailNotifications: boolean;
 };
 
-const ProfileForm = () => {
+type formData = {
+	id: string;
+	email: string;
+	firstName: string;
+	lastName: string;
+	nickname: string;
+	role?: string;
+	status?: string;
+	createdAt?: string;
+	verified?: boolean;
+	disciplinaryNotices?: number;
+	imageUrl?: string;
+};
+
+interface Props {
+	userDetails: formData;
+}
+
+const ProfileForm = ({ userDetails }: Props) => {
+	const router = useRouter();
+
+	// Future testing: What if user doesn't have a nickname, does the code break?
+
 	const {
 		register,
 		handleSubmit,
 		watch,
+		reset,
 		formState: { errors },
-	} = useForm<FormValues>();
+	} = useForm<FormValues>({
+		defaultValues: {
+			email: userDetails.email,
+			firstName: userDetails.firstName,
+			lastName: userDetails.lastName,
+			preferredName: userDetails.nickname,
+			oldPassword: '',
+			newPassword: '',
+			confirmNewPassword: '',
+			emailNotifications: false,
+		},
+	});
 
 	const handleChanges: SubmitHandler<FormValues> = async (data) => {
-		const {
-			email,
-			firstName,
-			lastName,
-			preferredName,
-			oldPassword,
-			newPassword,
-			confirmNewPassword,
-			emailNotifications,
-		} = data;
-		console.log(data);
+		const { email, firstName, lastName, preferredName } = data;
+
+		try {
+			const url = BASE_URL as string;
+			const userid = userDetails.id;
+			const fetchUrl = `${url}/users/` + userid + `/profile`;
+			const userToken = await auth.currentUser?.getIdToken();
+			const body = {
+				firstName: firstName,
+				lastName: lastName,
+				nickname: preferredName,
+			};
+			const response = await fetch(fetchUrl, {
+				method: 'PUT',
+				headers: {
+					Authorization: `Bearer ${userToken}`,
+					'Content-Type': 'application/json',
+				},
+				body: JSON.stringify(body),
+			});
+			const data = await response.json();
+			// Refresh page to see changes.
+			router.reload();
+		} catch (error) {
+			console.log(error);
+		}
 	};
 
 	return (
@@ -42,6 +95,7 @@ const ProfileForm = () => {
 			<div>
 				<TextField
 					label='Email *'
+					disabled={true}
 					required={true}
 					name='email'
 					register={register}
@@ -98,7 +152,7 @@ const ProfileForm = () => {
 				<TextField
 					type='password'
 					label='Confirm new password'
-					required={true}
+					required={false}
 					name='confirmNewPassword'
 					register={register}
 					requiredMessage={
@@ -122,9 +176,13 @@ const ProfileForm = () => {
 				</div>
 				<div>
 					<Button
+						type='button'
 						buttonText='Cancel'
 						buttonTextColor='#000000'
 						buttonColor='#808080'
+						onClick={() => {
+							reset(userDetails, { keepDefaultValues: true });
+						}}
 					/>
 				</div>
 			</div>

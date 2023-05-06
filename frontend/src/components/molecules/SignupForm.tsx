@@ -15,6 +15,7 @@ type FormValues = {
 	confirmPassword: string;
 };
 
+
 const SignupForm = () => {
 	const { createFirebaseUser } = useAuth();
 
