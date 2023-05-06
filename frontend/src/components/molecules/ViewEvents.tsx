@@ -15,8 +15,6 @@ const UpcomingEvents = () => {
   return (
     <>
       <div>
-        <CardList cards={[]} />
-
         <CardList
           cards={[
             <EventCard
