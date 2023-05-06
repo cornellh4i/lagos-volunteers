@@ -57,7 +57,7 @@ const EventForm = ({ eventType }: Props) => {
         {" "}
         {eventType == "create" ? "Create Event" : "Edit Event "}{" "}
       </div>
-      <div className="grid sm:grid-cols-2  sm:col-span-2  md:col-span-1">
+      <div className="grid grid-cols-2  col-span-2  sm:col-span-1">
         <TextField
           label="Event Name"
           required={true}
@@ -66,20 +66,20 @@ const EventForm = ({ eventType }: Props) => {
           requiredMessage={errors.eventName ? "Required" : undefined}
         />
       </div>
-      <div className="md:space-x-4 grid sm:grid-cols-1 md:grid-cols-2">
-        <div className="sm:pb-4 md:pb-0">
+      <div className="sm:space-x-4 grid grid-cols-1 sm:grid-cols-2">
+        <div className="pb-4 sm:pb-0">
           <DatePicker label="Start Date" />
         </div>
         <DatePicker label="End Date" />
       </div>
-      <div className="md:space-x-4 grid sm:grid-cols-1 md:grid-cols-2">
-        <div className="sm:pb-4 md:pb-0">
+      <div className="sm:space-x-4 grid grid-cols-1 sm:grid-cols-2">
+        <div className="pb-4 sm:pb-0">
           <TimePicker label="Start Time" />
         </div>
         <TimePicker label="End Time" />
       </div>
       <RadioButton label="Location" />
-      <div className="grid sm:grid-cols-2  sm:col-span-2  md:col-span-1">
+      <div className="grid grid-cols-2  col-span-2  sm:col-span-1">
         <TextField
           label="Volunteer Sign Up Cap"
           required={true}
@@ -99,23 +99,23 @@ const EventForm = ({ eventType }: Props) => {
       <TextCopy label="RSVP Link Image" text="www.lagos/event/rsvp.com" />
       <div>
         {eventType == "create" ? (
-          <div className="grid sm:grid-cols-1 md:grid-cols-4 gap-4">
-            <div className="sm:col-start-1 sm:col-span-1 md:col-start-3 md:col-span-1">
+          <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
+            <div className="col-start-1 col-span-1 sm:col-start-3 sm:col-span-1">
               <Button text="Cancel" color="gray" />
             </div>
-            <div className="sm:col-start-1 sm:col-span-1 md:col-start-4 md:col-span-1">
+            <div className="col-start-1 col-span-1 sm:col-start-4 sm:col-span-1">
               <Button type="submit" text="Create" color="dark-gray" />
             </div>
           </div>
         ) : (
-          <div className="grid sm:grid-cols-1 md:grid-cols-6 gap-4">
-            <div className="sm:col-start-1 sm:col-span-1 md:col-start-4 md:col-span-1">
+          <div className="grid grid-cols-1 sm:grid-cols-6 gap-4">
+            <div className="col-start-1 col-span-1 sm:col-start-4 sm:col-span-1">
               <Button text="Cancel" color="gray" />
             </div>
-            <div className="sm:col-start-1 sm:col-span-1 md:col-start-5 md:col-span-1">
+            <div className="col-start-1 col-span-1 sm:col-start-5 sm:col-span-1">
               <Button text="Cancel Event" color="gray" />
             </div>
-            <div className="sm:col-start-1 sm:col-span-1 md:col-start-6 md:col-span-1">
+            <div className="col-start-1 col-span-1 sm:col-start-6 sm:col-span-1">
               <Button type="submit" text="Save Changes" color="dark-gray" />
             </div>
           </div>

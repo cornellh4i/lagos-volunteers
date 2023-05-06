@@ -13,19 +13,12 @@ interface Props {
  */
 const CustomDatePicker = ({ label }: Props) => {
   return (
-    <div className="w-full">
+    <div>
       <div> {label} </div>
       <LocalizationProvider dateAdapter={AdapterDayjs}>
         <DatePicker
           label=""
-          sx={{
-            borderRadius: 2,
-            borderColor: "primary.main",
-            size: "small",
-            margin: "dense",
-            width: 1,
-          }}
-          slotProps={{ textField: { size: "small" } }}
+          slotProps={{ textField: { size: "small", fullWidth: true } }}
         />
       </LocalizationProvider>
     </div>
