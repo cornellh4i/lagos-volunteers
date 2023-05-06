@@ -21,9 +21,9 @@ const TextCopy = ({ label, text }: Props) => {
 
   return (
     <div>
-      <div className="flex ">
-        <div className="pt-3">{label}:</div>
-        <div className="absolute right-0">
+      <div>
+        <div className="pt-3 float-left">{label}:</div>
+        <div className="float-right">
           <IconButton onClick={handleClick}>
             <ContentCopyIcon />
           </IconButton>
@@ -35,7 +35,7 @@ const TextCopy = ({ label, text }: Props) => {
           />
         </div>
       </div>
-      <div>{text}</div>
+      <div className="clear-both">{text}</div>
     </div>
   );
 };

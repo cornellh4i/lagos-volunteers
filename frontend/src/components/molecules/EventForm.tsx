@@ -108,14 +108,14 @@ const EventForm = ({ eventType }: Props) => {
             </div>
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-6 gap-4">
-            <div className="col-start-1 col-span-1 sm:col-start-4 sm:col-span-1">
+          <div className="grid grid-cols-1 sm:grid-cols-12 gap-4">
+            <div className="sm:col-start-4 sm:col-span-3">
               <Button text="Cancel" color="gray" />
             </div>
-            <div className="col-start-1 col-span-1 sm:col-start-5 sm:col-span-1">
+            <div className="sm:col-start-7 sm:col-span-3">
               <Button text="Cancel Event" color="gray" />
             </div>
-            <div className="col-start-1 col-span-1 sm:col-start-6 sm:col-span-1">
+            <div className="sm:col-start-10 sm:col-span-3">
               <Button type="submit" text="Save Changes" color="dark-gray" />
             </div>
           </div>
