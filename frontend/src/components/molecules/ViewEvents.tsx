@@ -2,12 +2,42 @@ import React from "react";
 import BoxText from "@/components/atoms/BoxText";
 import Chip from "@/components/atoms/Chip";
 import TabContainer from "@/components/molecules/TabContainer";
+import next from "next/types";
+import EventCard from "@/components/molecules/EventCard";
+import CardList from "@/components/atoms/CardList";
 import { GridColDef, GridValueGetterParams } from "@mui/x-data-grid";
 import Table from "@/components/atoms/Table";
 import Button from "../atoms/Button";
 
+type Action = "rsvp" | "cancel rsvp" | "publish" | "manage attendees" | "edit";
+
 const UpcomingEvents = () => {
-  return <>Hello upcoming</>;
+  return (
+    <>
+      <div>
+        <CardList
+          cards={[
+            <EventCard
+              eventid={"000"}
+              mainAction={"rsvp"}
+              dropdownActions={["cancel rsvp"]}
+              title={"snehar"}
+              location={"jameson"}
+              datetime={"today lol"}
+            />,
+            <EventCard
+              eventid={"000"}
+              mainAction={"rsvp"}
+              dropdownActions={["cancel rsvp"]}
+              title={"snehar"}
+              location={"jameson"}
+              datetime={"today lol"}
+            />,
+          ]}
+        />
+      </div>
+    </>
+  );
 };
 
 const Drafts = () => {
