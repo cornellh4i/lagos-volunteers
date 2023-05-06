@@ -49,7 +49,7 @@ const PastEvents = () => {
     {
       field: "role",
       headerName: "Role",
-      width: 200,
+      minWidth: 120,
       renderCell: (params) => {
         return (
           <Chip
@@ -62,19 +62,21 @@ const PastEvents = () => {
     {
       field: "program",
       headerName: "Program Name",
-      width: 800,
+      flex: 2,
+      minWidth: 100
     },
     {
       field: "date",
       headerName: "Date",
       type: "date",
-      width: 110,
+      flex: 0.5,
+      minWidth: 100
     },
     {
       field: "hours",
       headerName: "Hours",
       type: "number",
-      width: 110,
+      flex: 0.5
     },
   ];
 
