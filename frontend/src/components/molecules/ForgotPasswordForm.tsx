@@ -2,11 +2,28 @@ import React from "react";
 import Button from "../atoms/Button";
 import TextField from "../atoms/TextField";
 import Link from "next/link";
+import { useForm, SubmitHandler } from "react-hook-form";
+
+type FormValues = {
+  email: string;
+};
 
 /** A ForgotPasswordForm page */
 const ForgotPasswordForm = () => {
+  const {
+    register,
+    handleSubmit,
+    watch,
+    formState: { errors },
+  } = useForm<FormValues>();
+
+  const handleForgotPassword: SubmitHandler<FormValues> = async (data) => {
+    const { email } = data;
+    console.log(email);
+  };
+
   return (
-    <div className="space-y-4">
+    <form onSubmit={handleSubmit(handleForgotPassword)} className="space-y-4">
       <div className="font-bold text-3xl">Forgot Password</div>
       <div className="text-sm">
         After verifying your email, you will receive instructions on how to
@@ -15,14 +32,17 @@ const ForgotPasswordForm = () => {
       </div>
       <div>
         <TextField
-          label="Email*"
+          requiredMessage={errors.email ? "Required" : undefined}
+          name="email"
+          type="email"
+          register={register}
+          label="Email *"
           required={true}
-          status=""
-          incorrectEntryText=""
         />
       </div>
       <div>
         <Button
+          type="submit"
           buttonText="Send Email"
           buttonTextColor="#000000"
           buttonColor="#808080"
@@ -31,7 +51,7 @@ const ForgotPasswordForm = () => {
       <div className="justify-center flex flex-row text-sm">
         <Link href="/"> Reach out to support team</Link>
       </div>
-    </div>
+    </form>
   );
 };
 

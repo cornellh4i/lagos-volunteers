@@ -2,11 +2,28 @@ import React from "react";
 import Button from "../atoms/Button";
 import TextField from "../atoms/TextField";
 import Link from "next/link";
+import { useForm, SubmitHandler } from "react-hook-form";
+
+type FormValues = {
+  password: string;
+  confirmPassword: string;
+};
 
 /** A ResetPassword page */
 const ResetPassword = () => {
+  const {
+    register,
+    handleSubmit,
+    watch,
+    formState: { errors },
+  } = useForm<FormValues>();
+
+  const handleSubmitForm: SubmitHandler<FormValues> = async (data) => {
+    const { password, confirmPassword } = data;
+    console.log(password, confirmPassword);
+  };
   return (
-    <div className="space-y-4">
+    <form onSubmit={handleSubmit(handleSubmitForm)} className="space-y-4">
       <div className="font-bold text-3xl">Reset Password</div>
       <div className="text-sm">
         Password should meet the following requirements:
@@ -20,16 +37,24 @@ const ResetPassword = () => {
         <TextField
           label="Password*"
           required={true}
-          status=""
-          incorrectEntryText=""
+          name="password"
+          type="password"
+          register={register}
+          requiredMessage={errors.password ? "Required" : undefined}
         />
       </div>
       <div>
         <TextField
           label="Confirm Password*"
           required={true}
-          status=""
-          incorrectEntryText=""
+          name="confirmPassword"
+          type="password"
+          register={register}
+          requiredMessage={
+            watch("password") === watch("confirmPassword")
+              ? undefined
+              : "Passwords must match"
+          }
         />
       </div>
       <div>
@@ -42,7 +67,7 @@ const ResetPassword = () => {
       <div className="justify-center flex flex-row text-sm">
         <Link href="/"> Didn't request to reset password?</Link>
       </div>
-    </div>
+    </form>
   );
 };
 

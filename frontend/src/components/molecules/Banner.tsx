@@ -4,7 +4,7 @@ import Avatar from "../atoms/Avatar";
 type BannerProps = {
   url?: string;
   alt?: string;
-  name: string;
+  name: string | undefined;
   start_date: Date;
   hour: number;
 };
