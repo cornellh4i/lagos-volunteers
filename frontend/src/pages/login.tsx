@@ -23,7 +23,7 @@ const Login = () => {
   }, [user]);
   return (
     <>
-      <WelcomeTemplate Form={LoginForm} />
+      <WelcomeTemplate body={<LoginForm />} />
     </>
   );
 };

@@ -24,7 +24,7 @@ const Signup = () => {
 
   return (
     <>
-      <WelcomeTemplate Form={SignupForm} />
+      <WelcomeTemplate body={<SignupForm />} />
     </>
   );
 };
