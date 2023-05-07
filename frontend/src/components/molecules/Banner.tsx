@@ -2,27 +2,15 @@ import React from "react";
 import Avatar from "../atoms/Avatar";
 
 type BannerProps = {
-  url?: string;
-  alt?: string;
-  name: string | undefined;
-  start_date: Date;
-  hour: number;
+  body: React.ReactElement;
 };
 
 /** A Banner page */
-const Banner = ({ name, start_date, hour, url, alt }: BannerProps) => {
+const Banner = ({ body }: BannerProps) => {
   return (
-    <>
-      <div className="px-6 sm:px-20 py-6 bg-gradient-to-b from-gray-300 via-gray-300 to-white">
-        <Avatar
-          name={name}
-          start_date={start_date}
-          hour={hour}
-          url={url}
-          alt={alt}
-        />
-      </div>
-    </>
+    <div className="px-6 sm:px-20 py-6 bg-gradient-to-b from-gray-300 via-gray-300 to-white">
+      {body}
+    </div>
   );
 };
 

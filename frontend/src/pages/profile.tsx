@@ -7,6 +7,7 @@ import { BASE_URL } from "@/utils/constants";
 import { onAuthStateChanged, getAuth } from "firebase/auth";
 import { auth } from "@/utils/firebase";
 import { useAuth } from "@/utils/AuthContext";
+import Avatar from "@/components/atoms/Avatar";
 
 type userData = {
   id: string;
@@ -67,9 +68,13 @@ const Profile = () => {
     <ProfileTemplate
       banner={
         <Banner
-          name={`${userDetails?.firstName} ${userDetails?.lastName}`}
-          hour={20}
-          start_date={date}
+          body={
+            <Avatar
+              name={`${userDetails?.firstName} ${userDetails?.lastName}`}
+              hour={20}
+              start_date={date}
+            />
+          }
         />
       }
       body={
