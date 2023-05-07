@@ -6,7 +6,7 @@ import Typography from "@mui/material/Typography";
 import IconButton from "@mui/material/IconButton";
 import MenuIcon from "@mui/icons-material/Menu";
 
-export default function ButtonAppBar() {
+const NavBar = () => {
   return (
     <AppBar color="default" elevation={0} position="static">
       <Toolbar variant="dense" className="pt-1 pb-1">
@@ -19,4 +19,6 @@ export default function ButtonAppBar() {
       </Toolbar>
     </AppBar>
   );
-}
+};
+
+export default NavBar;
