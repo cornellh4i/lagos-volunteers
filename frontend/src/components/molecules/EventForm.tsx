@@ -9,7 +9,7 @@ import TextCopy from "../atoms/TextCopy";
 import TextField from "../atoms/TextField";
 import { useForm, SubmitHandler } from "react-hook-form";
 
-interface Props {
+interface EventFormProps {
   eventType: string; //create or edit
 }
 
@@ -27,7 +27,7 @@ type FormValues = {
 };
 
 /** An EventForm page */
-const EventForm = ({ eventType }: Props) => {
+const EventForm = ({ eventType }: EventFormProps) => {
   const {
     register,
     handleSubmit,
