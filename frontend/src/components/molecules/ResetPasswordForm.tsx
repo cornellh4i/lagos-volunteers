@@ -61,7 +61,10 @@ const ResetPassword = () => {
         <Button text="Reset Password" color="dark-gray" />
       </div>
       <div className="justify-center flex flex-row text-sm">
-        <Link href="/"> Didn't request to reset password?</Link>
+        <Link href="/" className="text-black">
+          {" "}
+          Didn't request to reset password?
+        </Link>
       </div>
     </form>
   );
