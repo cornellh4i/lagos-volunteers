@@ -7,7 +7,11 @@ import WelcomeTemplate from "@/components/templates/WelcomeTemplate";
 const ResetPassword = () => {
   // const router = useRouter();
   // const { link } = router.query;
-  return <WelcomeTemplate body={<ResetPasswordForm />} />;
+  return (
+    <WelcomeTemplate>
+      <ResetPasswordForm />
+    </WelcomeTemplate>
+  );
 };
 
 export default ResetPassword;

@@ -5,9 +5,9 @@ import DefaultTemplate from "../../components/templates/DefaultTemplate";
 /** A ViewEventsPage page */
 const ViewEventsPage = () => {
   return (
-    <>
-      <DefaultTemplate body={<ViewEvents />} />
-    </>
+    <DefaultTemplate>
+      <ViewEvents />
+    </DefaultTemplate>
   );
 };
 

@@ -1,16 +1,16 @@
-import React from "react";
+import React, { ReactNode } from "react";
 import NavBar from "@/components/molecules/NavBar";
 
 type DefaultTemplateProps = {
-  body: React.ReactElement;
+  children: ReactNode;
 };
 
 /** A DefaultTemplate page */
-const DefaultTemplate = ({ body }: DefaultTemplateProps) => {
+const DefaultTemplate = ({ children }: DefaultTemplateProps) => {
   return (
     <div className="flex flex-col min-h-screen">
       <NavBar />
-      <div className="pt-2 pb-10 px-10">{body}</div>
+      <div className="pt-2 pb-10 px-10">{children}</div>
     </div>
   );
 };

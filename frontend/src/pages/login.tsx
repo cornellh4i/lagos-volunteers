@@ -22,9 +22,9 @@ const Login = () => {
     return unsub;
   }, [user]);
   return (
-    <>
-      <WelcomeTemplate body={<LoginForm />} />
-    </>
+    <WelcomeTemplate>
+      <LoginForm />
+    </WelcomeTemplate>
   );
 };
 

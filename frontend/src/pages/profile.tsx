@@ -77,14 +77,13 @@ const Profile = () => {
           }
         />
       }
-      body={
-        userDetails ? (
-          <ProfileForm userDetails={userDetails} />
-        ) : (
-          <div>Loading data...</div>
-        )
-      }
-    />
+    >
+      {userDetails ? (
+        <ProfileForm userDetails={userDetails} />
+      ) : (
+        <div>Loading data...</div>
+      )}
+    </ProfileTemplate>
   );
 };
 

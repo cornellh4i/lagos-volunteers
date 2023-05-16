@@ -23,9 +23,9 @@ const Signup = () => {
   }, [user]);
 
   return (
-    <>
-      <WelcomeTemplate body={<SignupForm />} />
-    </>
+    <WelcomeTemplate>
+      <SignupForm />
+    </WelcomeTemplate>
   );
 };
 
