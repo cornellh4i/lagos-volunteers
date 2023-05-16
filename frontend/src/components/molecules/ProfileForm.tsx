@@ -167,17 +167,20 @@ const ProfileForm = ({ userDetails }: Props) => {
       </div>
       <div className="sm:space-x-4 grid grid-cols-1 sm:grid-cols-2">
         <div className="pb-4 sm:pb-0">
-          <Button type="submit" text="Save Changes" color="gray" />
+          <Button type="submit" color="gray">
+            Save Changes
+          </Button>
         </div>
         <div>
           <Button
             type="button"
-            text="Cancel"
             color="dark-gray"
             onClick={() => {
               reset(userDetails, { keepDefaultValues: true });
             }}
-          />
+          >
+            Cancel
+          </Button>
         </div>
       </div>
     </form>

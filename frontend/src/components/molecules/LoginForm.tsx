@@ -63,7 +63,9 @@ const LoginForm = () => {
           </Link>
         </div>
         <div>
-          <Button type="submit" text="Log In" color="dark-gray" />
+          <Button type="submit" color="dark-gray">
+            Log In
+          </Button>
         </div>
         <div>
           <Divider>or</Divider>
@@ -71,11 +73,15 @@ const LoginForm = () => {
       </form>
       <div>
         <Link href="/signup">
-          <Button type="submit" text="Sign up with Email" color="gray" />
+          <Button type="submit" color="gray">
+            Sign up with Email
+          </Button>
         </Link>
       </div>
       <div>
-        <Button type="submit" text="Continue with Google" color="gray" />
+        <Button type="submit" color="gray">
+          Continue with Google
+        </Button>
       </div>
     </div>
   );

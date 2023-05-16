@@ -67,15 +67,13 @@ const Profile = () => {
   return (
     <ProfileTemplate
       banner={
-        <Banner
-          body={
-            <Avatar
-              name={`${userDetails?.firstName} ${userDetails?.lastName}`}
-              hour={20}
-              start_date={date}
-            />
-          }
-        />
+        <Banner>
+          <Avatar
+            name={`${userDetails?.firstName} ${userDetails?.lastName}`}
+            hour={20}
+            start_date={date}
+          />
+        </Banner>
       }
     >
       {userDetails ? (

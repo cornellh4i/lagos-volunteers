@@ -63,20 +63,20 @@ const PastEvents = () => {
       field: "program",
       headerName: "Program Name",
       flex: 2,
-      minWidth: 100
+      minWidth: 100,
     },
     {
       field: "date",
       headerName: "Date",
       type: "date",
       flex: 0.5,
-      minWidth: 100
+      minWidth: 100,
     },
     {
       field: "hours",
       headerName: "Hours",
       type: "number",
-      flex: 0.5
+      flex: 0.5,
     },
   ];
 
@@ -120,7 +120,7 @@ const ViewEvents = () => {
         tabs={tabs}
         panels={panels}
         rightAlignedComponent={
-          <Button text="Create New Event" color="dark-gray" />
+          <Button color="dark-gray">Create New Event</Button>
         }
       />
     </>

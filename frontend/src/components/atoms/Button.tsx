@@ -2,14 +2,14 @@ import React from "react";
 import { Button } from "@mui/material";
 
 interface ButtonProps {
-  text: string;
+  children: string;
   color: "gray" | "dark-gray";
   onClick?: () => void;
   type?: "button" | "submit" | "reset" | undefined;
 }
 
 /** A Button page */
-const CustomButton = ({ text, color, onClick, type }: ButtonProps) => {
+const CustomButton = ({ children, color, onClick, type }: ButtonProps) => {
   return (
     <Button
       fullWidth={true}
@@ -26,7 +26,7 @@ const CustomButton = ({ text, color, onClick, type }: ButtonProps) => {
           : ""
       }
     >
-      {text}
+      {children}
     </Button>
   );
 };

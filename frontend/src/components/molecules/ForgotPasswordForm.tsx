@@ -41,7 +41,9 @@ const ForgotPasswordForm = () => {
         />
       </div>
       <div>
-        <Button type="submit" text="Send Email" color="dark-gray" />
+        <Button type="submit" color="dark-gray">
+          Send Email
+        </Button>
       </div>
       <div className="justify-center flex flex-row text-sm">
         <Link href="/" className="text-black">

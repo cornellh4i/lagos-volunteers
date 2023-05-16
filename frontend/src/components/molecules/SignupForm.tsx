@@ -109,10 +109,14 @@ const SignupForm = () => {
         />
       </div>
       <div>
-        <Button text="Continue" color="dark-gray" type="submit" />
+        <Button color="dark-gray" type="submit">
+          Continue
+        </Button>
       </div>
       <div>
-        <Button text="Continue with Google" type="submit" color="gray" />
+        <Button type="submit" color="gray">
+          Continue with Google
+        </Button>
       </div>
       <div className="justify-center flex flex-row">
         <div className="">Have an account?&nbsp;</div>

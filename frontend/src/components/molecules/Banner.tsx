@@ -1,15 +1,15 @@
-import React from "react";
+import React, { ReactNode } from "react";
 import Avatar from "../atoms/Avatar";
 
 type BannerProps = {
-  body: React.ReactElement;
+  children: ReactNode;
 };
 
 /** A Banner page */
-const Banner = ({ body }: BannerProps) => {
+const Banner = ({ children }: BannerProps) => {
   return (
     <div className="px-6 sm:px-20 py-6 bg-gradient-to-b from-gray-300 via-gray-300 to-white">
-      {body}
+      {children}
     </div>
   );
 };

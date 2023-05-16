@@ -101,22 +101,26 @@ const EventForm = ({ eventType }: EventFormProps) => {
         {eventType == "create" ? (
           <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
             <div className="col-start-1 col-span-1 sm:col-start-3 sm:col-span-1">
-              <Button text="Cancel" color="gray" />
+              <Button color="gray">Cancel</Button>
             </div>
             <div className="col-start-1 col-span-1 sm:col-start-4 sm:col-span-1">
-              <Button type="submit" text="Create" color="dark-gray" />
+              <Button type="submit" color="dark-gray">
+                Create
+              </Button>
             </div>
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-12 gap-4">
             <div className="sm:col-start-4 sm:col-span-3">
-              <Button text="Cancel" color="gray" />
+              <Button color="gray">Cancel</Button>
             </div>
             <div className="sm:col-start-7 sm:col-span-3">
-              <Button text="Cancel Event" color="gray" />
+              <Button color="gray">Cancel Event</Button>
             </div>
             <div className="sm:col-start-10 sm:col-span-3">
-              <Button type="submit" text="Save Changes" color="dark-gray" />
+              <Button type="submit" color="dark-gray">
+                Save Changes
+              </Button>
             </div>
           </div>
         )}

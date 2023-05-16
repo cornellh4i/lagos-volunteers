@@ -55,7 +55,7 @@ const EventCard = ({
                 {datetime}
               </p>
               <div className="inline-flex">
-                <Button text={mainAction} color="gray" />
+                <Button color="gray">{mainAction}</Button>
                 <IconButton
                   onClick={() => {
                     dropdownActions;
