@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from "react";
 import Button from "../atoms/Button";
 import TextField from "../atoms/TextField";
-import Checkbox from "../atoms/Checkbox";
+import FormGroup from "@mui/material/FormGroup";
+import FormControlLabel from "@mui/material/FormControlLabel";
+import Checkbox from "@mui/material/Checkbox";
 import { auth } from "@/utils/firebase";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { useAuth } from "@/utils/AuthContext";
@@ -163,7 +165,12 @@ const ProfileForm = ({ userDetails }: Props) => {
         />
       </div>
       <div>
-        <Checkbox label="Email notifications" />
+        <FormGroup>
+          <FormControlLabel
+            control={<Checkbox defaultChecked />}
+            label="Email notifications"
+          />
+        </FormGroup>
       </div>
       <div className="sm:space-x-4 grid grid-cols-1 sm:grid-cols-2">
         <div className="pb-4 sm:pb-0">
