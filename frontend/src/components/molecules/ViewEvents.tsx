@@ -8,6 +8,7 @@ import CardList from "@/components/atoms/CardList";
 import { GridColDef, GridValueGetterParams } from "@mui/x-data-grid";
 import Table from "@/components/atoms/Table";
 import Button from "../atoms/Button";
+import Link from "next/link";
 
 type Action = "rsvp" | "cancel rsvp" | "publish" | "manage attendees" | "edit";
 
@@ -122,7 +123,9 @@ const ViewEvents = () => {
         labels={labels}
         panels={panels}
         rightAlignedComponent={
-          <Button color="dark-gray">Create New Event</Button>
+          <Link href="/events/create">
+            <Button color="dark-gray">Create New Event</Button>
+          </Link>
         }
       />
     </>

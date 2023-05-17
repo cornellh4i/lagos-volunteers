@@ -1,4 +1,5 @@
 import React from "react";
+import Link from "next/link";
 import DatePicker from "../atoms/DatePicker";
 import TimePicker from "../atoms/TimePicker";
 import Upload from "../atoms/Upload";
@@ -101,7 +102,9 @@ const EventForm = ({ eventType }: EventFormProps) => {
         {eventType == "create" ? (
           <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
             <div className="col-start-1 col-span-1 sm:col-start-3 sm:col-span-1">
-              <Button color="gray">Cancel</Button>
+              <Link href="/events/view">
+                <Button color="gray">Cancel</Button>
+              </Link>
             </div>
             <div className="col-start-1 col-span-1 sm:col-start-4 sm:col-span-1">
               <Button type="submit" color="dark-gray">
@@ -112,7 +115,9 @@ const EventForm = ({ eventType }: EventFormProps) => {
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-12 gap-4">
             <div className="sm:col-start-4 sm:col-span-3">
-              <Button color="gray">Cancel</Button>
+              <Link href="/events/view">
+                <Button color="gray">Cancel</Button>
+              </Link>
             </div>
             <div className="sm:col-start-7 sm:col-span-3">
               <Button color="gray">Cancel Event</Button>
