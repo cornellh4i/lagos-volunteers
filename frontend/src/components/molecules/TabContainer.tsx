@@ -110,7 +110,7 @@ const VerticalTabContainer = ({
           </Select>
         </div>
       </FormControl>
-      <div className="grid h-screen mt-4"> {tabs[Number(value)].panel} </div>
+      <div className="mt-4">{tabs[Number(value)].panel}</div>
     </div>
   );
 };
