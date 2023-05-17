@@ -33,11 +33,11 @@ type formData = {
   imageUrl?: string;
 };
 
-interface Props {
+interface ProfileFormProps {
   userDetails: formData;
 }
 
-const ProfileForm = ({ userDetails }: Props) => {
+const ProfileForm = ({ userDetails }: ProfileFormProps) => {
   const router = useRouter();
 
   // Future testing: What if user doesn't have a nickname, does the code break?
