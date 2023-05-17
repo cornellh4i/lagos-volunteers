@@ -34,12 +34,17 @@ const DrawerAppBar = () => {
   const drawer = (
     <Box onClick={handleDrawerToggle} sx={{ textAlign: "center" }}>
       <List>
-        {navs.map((item) => (
-          <ListItem key={item.label} disablePadding>
-            <ListItemButton sx={{ textAlign: "center" }}>
-              <ListItemText primary={item.label} />
-            </ListItemButton>
-          </ListItem>
+        {navs.map((nav) => (
+          <Link
+            href={nav.link}
+            style={{ color: "black", textDecoration: "none" }}
+          >
+            <ListItem key={nav.label} disablePadding>
+              <ListItemButton sx={{ textAlign: "center" }}>
+                <ListItemText primary={nav.label} />
+              </ListItemButton>
+            </ListItem>
+          </Link>
         ))}
       </List>
     </Box>
@@ -53,9 +58,9 @@ const DrawerAppBar = () => {
             LFBI
           </Typography>
           <Box sx={{ display: { xs: "none", sm: "block" } }}>
-            {navs.map((item) => (
-              <Link href={item.link}>
-                <Button className="text-black capitalize">{item.label}</Button>
+            {navs.map((nav) => (
+              <Link href={nav.link}>
+                <Button className="text-black capitalize">{nav.label}</Button>
               </Link>
             ))}
           </Box>
