@@ -115,13 +115,15 @@ const PastEvents = () => {
  * A ViewEvents component is where a user can view and manage their events.
  */
 const ViewEvents = () => {
-  const labels = ["Upcoming Events", "Past Events", "Drafts"];
-  const panels = [<UpcomingEvents />, <PastEvents />, <Drafts />];
+  const tabs = [
+    { label: "Upcoming Events", panel: <UpcomingEvents /> },
+    { label: "Past Events", panel: <PastEvents /> },
+    { label: "Drafts", panel: <Drafts /> },
+  ];
   return (
     <>
       <TabContainer
-        labels={labels}
-        panels={panels}
+        tabs={tabs}
         rightAlignedComponent={
           <Link href="/events/create">
             <Button color="dark-gray">Create New Event</Button>

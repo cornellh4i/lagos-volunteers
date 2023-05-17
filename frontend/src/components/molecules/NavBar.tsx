@@ -14,14 +14,14 @@ import Button from "@mui/material/Button";
 import Link from "next/link";
 
 const drawerWidth = 240;
-const navLinks = ["/", "/", "/events/view", "/", "/profile", "/"];
-const navItems = [
-  "Home",
-  "About",
-  "My Events",
-  "Request Certificate",
-  "Profile",
-  "Log Out",
+
+const navs = [
+  { label: "Home", link: "/" },
+  { label: "About", link: "/" },
+  { label: "My Events", link: "/events/view" },
+  { label: "Request Certificate", link: "/" },
+  { label: "Profile", link: "/profile" },
+  { label: "Log Out", link: "/" },
 ];
 
 const DrawerAppBar = () => {
@@ -34,10 +34,10 @@ const DrawerAppBar = () => {
   const drawer = (
     <Box onClick={handleDrawerToggle} sx={{ textAlign: "center" }}>
       <List>
-        {navItems.map((item) => (
-          <ListItem key={item} disablePadding>
+        {navs.map((item) => (
+          <ListItem key={item.label} disablePadding>
             <ListItemButton sx={{ textAlign: "center" }}>
-              <ListItemText primary={item} />
+              <ListItemText primary={item.label} />
             </ListItemButton>
           </ListItem>
         ))}
@@ -53,11 +53,9 @@ const DrawerAppBar = () => {
             LFBI
           </Typography>
           <Box sx={{ display: { xs: "none", sm: "block" } }}>
-            {navLinks.map((item, index) => (
-              <Link href={item}>
-                <Button className="text-black capitalize">
-                  {navItems[index]}
-                </Button>
+            {navs.map((item) => (
+              <Link href={item.link}>
+                <Button className="text-black capitalize">{item.label}</Button>
               </Link>
             ))}
           </Box>

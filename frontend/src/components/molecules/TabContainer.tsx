@@ -1,4 +1,4 @@
-import React from "react";
+import React, { ReactElement } from "react";
 import Box from "@mui/material/Box";
 import Tab from "@mui/material/Tab";
 import {
@@ -10,17 +10,14 @@ import {
 import { TabPanel, TabContext, TabList } from "@mui/lab";
 
 interface TabContainerProps {
-  /** A list of tab labels in order */
-  labels: string[];
-  /** A list of tab panels in order */
-  panels: React.ReactElement[];
+  /** A list of tab labels and panels in order of display */
+  tabs: { label: string; panel: ReactElement }[];
   /** The element to align to the right of the tab bar */
   rightAlignedComponent?: React.ReactElement;
 }
 
 const HorizontalTabContainer = ({
-  labels,
-  panels,
+  tabs,
   rightAlignedComponent,
 }: TabContainerProps) => {
   const [value, setValue] = React.useState("1");
@@ -40,11 +37,11 @@ const HorizontalTabContainer = ({
               aria-label="nav tabs"
               className="min-h-0"
             >
-              {labels.map((label, index) => (
+              {tabs.map((tab, index) => (
                 <Tab
                   className="mr-6 p-0 min-w-0 min-h-0 capitalize text-xl"
                   disableRipple
-                  label={label}
+                  label={tab.label}
                   value={String(index)}
                 />
               ))}
@@ -52,9 +49,9 @@ const HorizontalTabContainer = ({
             <div className="ml-auto min-w-fit">{rightAlignedComponent}</div>
           </div>
           <div className="h-screen">
-            {panels.map((panel, index) => (
+            {tabs.map((tab, index) => (
               <TabPanel className="p-0 mt-4" value={String(index)}>
-                {panel}
+                {tab.panel}
               </TabPanel>
             ))}
           </div>
@@ -65,8 +62,7 @@ const HorizontalTabContainer = ({
 };
 
 const VerticalTabContainer = ({
-  labels,
-  panels,
+  tabs,
   rightAlignedComponent,
 }: TabContainerProps) => {
   const [value, setValue] = React.useState("0");
@@ -108,13 +104,13 @@ const VerticalTabContainer = ({
               },
             }}
           >
-            {labels.map((label, index) => (
-              <MenuItem value={String(index)}>{label}</MenuItem>
+            {tabs.map((tab, index) => (
+              <MenuItem value={String(index)}>{tab.label}</MenuItem>
             ))}
           </Select>
         </div>
       </FormControl>
-      <div className="grid h-screen mt-4"> {panels[Number(value)]} </div>
+      <div className="grid h-screen mt-4"> {tabs[Number(value)].panel} </div>
     </div>
   );
 };
@@ -124,24 +120,18 @@ const VerticalTabContainer = ({
  * and an element can be aligned to the right of the tab bar. The component
  * contains both the tabs and the panels associated with each tab
  */
-const TabContainer = ({
-  labels,
-  panels,
-  rightAlignedComponent,
-}: TabContainerProps) => {
+const TabContainer = ({ tabs, rightAlignedComponent }: TabContainerProps) => {
   return (
     <>
       <div className="hidden sm:block">
         <HorizontalTabContainer
-          labels={labels}
-          panels={panels}
+          tabs={tabs}
           rightAlignedComponent={rightAlignedComponent}
         />
       </div>
       <div className="block sm:hidden">
         <VerticalTabContainer
-          labels={labels}
-          panels={panels}
+          tabs={tabs}
           rightAlignedComponent={rightAlignedComponent}
         />
       </div>
