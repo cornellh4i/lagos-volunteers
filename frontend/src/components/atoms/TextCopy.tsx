@@ -21,7 +21,7 @@ const TextCopy = ({ label, text }: Props) => {
 
   return (
     <div>
-      <div>
+      <div className="flow-root">
         <div className="pt-3 float-left">{label}:</div>
         <div className="float-right">
           <IconButton onClick={handleClick}>
@@ -35,7 +35,7 @@ const TextCopy = ({ label, text }: Props) => {
           />
         </div>
       </div>
-      <div className="clear-both">{text}</div>
+      <div>{text}</div>
     </div>
   );
 };

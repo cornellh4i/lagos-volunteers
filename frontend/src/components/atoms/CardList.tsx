@@ -1,18 +1,18 @@
-import React from "react";
+import React, { ReactElement, Children } from "react";
 import EventCard from "@/components/molecules/EventCard";
 
 type CardListProps = {
-  cards: React.ReactElement[];
+  children: ReactElement[];
 };
 
 /**
  * A CardList component is a responsive list of cards that wraps all the cards
  * contained within
  */
-const CardList = ({ cards }: CardListProps) => {
+const CardList = ({ children }: CardListProps) => {
   return (
     <>
-      <div className="flex flex-col gap-20 h-screen items-center">{cards}</div>
+      <div className="flex h-screen">{children}</div>
     </>
   );
 };

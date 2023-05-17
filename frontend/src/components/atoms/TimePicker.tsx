@@ -32,7 +32,7 @@ const CustomTimePicker = ({ label }: Props) => {
           InputProps={{
             endAdornment: (
               <InputAdornment position="end">
-                <IconButton disableRipple edge="end">
+                <IconButton className="cursor-default" disableRipple edge="end">
                   <AccessTime />
                 </IconButton>
               </InputAdornment>
