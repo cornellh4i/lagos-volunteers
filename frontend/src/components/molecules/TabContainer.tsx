@@ -12,7 +12,7 @@ import { Righteous } from "@next/font/google";
 
 type TabContainerProps = {
   /** A list of tab labels in order */
-  tabs: string[];
+  labels: string[];
   /** A list of tab panels in order */
   panels: React.ReactElement[];
   /** The element to align to the right of the tab bar */
@@ -20,7 +20,7 @@ type TabContainerProps = {
 };
 
 const HorizontalTabContainer = ({
-  tabs,
+  labels,
   panels,
   rightAlignedComponent,
 }: TabContainerProps) => {
@@ -29,37 +29,44 @@ const HorizontalTabContainer = ({
     setValue(newValue);
   };
   return (
-    <Box sx={{ width: "100%", height: "100%", gap: 2, margin: 2 }}>
+    <div className="w-full">
       <TabContext value={value}>
         <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
-          <div className="grid grid-cols-5">
-            <div className="col-start-1 col-end-5">
-              <TabList
-                value={value}
-                onChange={handleChange}
-                aria-label="nav tabs"
-              >
-                <Tab label={tabs[0]} value="1" />
-                <Tab label={tabs[1]} value="2" />
-                <Tab label={tabs[2]} value="3" />
-              </TabList>
-            </div>
-
-            <div className="col-start-5">{rightAlignedComponent}</div>
+          <div className="flex items-center">
+            <TabList
+              value={value}
+              onChange={handleChange}
+              variant="scrollable"
+              scrollButtons={false}
+              aria-label="nav tabs"
+              className="min-h-0"
+            >
+              {labels.map((label, index) => (
+                <Tab
+                  className="mr-6 p-0 min-w-0 min-h-0 capitalize text-xl"
+                  disableRipple
+                  label={label}
+                  value={String(index)}
+                />
+              ))}
+            </TabList>
+            <div className="ml-auto min-w-fit">{rightAlignedComponent}</div>
           </div>
-          <div className="grid h-screen justify-center">
-            <TabPanel value="1">{panels[0]}</TabPanel>
-            <TabPanel value="2">{panels[1]}</TabPanel>
-            <TabPanel value="3">{panels[2]}</TabPanel>
+          <div className="h-screen">
+            {panels.map((panel, index) => (
+              <TabPanel className="p-0 mt-4" value={String(index)}>
+                {panel}
+              </TabPanel>
+            ))}
           </div>
         </Box>
       </TabContext>
-    </Box>
+    </div>
   );
 };
 
 const VerticalTabContainer = ({
-  tabs,
+  labels,
   panels,
   rightAlignedComponent,
 }: TabContainerProps) => {
@@ -102,9 +109,9 @@ const VerticalTabContainer = ({
               },
             }}
           >
-            <MenuItem value="0">{tabs[0]}</MenuItem>
-            <MenuItem value="1">{tabs[1]}</MenuItem>
-            <MenuItem value="2">{tabs[2]}</MenuItem>
+            {labels.map((label, index) => (
+              <MenuItem value={String(index)}>{label}</MenuItem>
+            ))}
           </Select>
         </div>
       </FormControl>
@@ -122,7 +129,7 @@ const VerticalTabContainer = ({
  * contains both the tabs and the panels associated with each tab
  */
 const TabContainer = ({
-  tabs,
+  labels,
   panels,
   rightAlignedComponent,
 }: TabContainerProps) => {
@@ -143,13 +150,13 @@ const TabContainer = ({
   };
   return width > breakpoint ? (
     <HorizontalTabContainer
-      tabs={tabs}
+      labels={labels}
       panels={panels}
       rightAlignedComponent={rightAlignedComponent}
     />
   ) : (
     <VerticalTabContainer
-      tabs={tabs}
+      labels={labels}
       panels={panels}
       rightAlignedComponent={rightAlignedComponent}
     />

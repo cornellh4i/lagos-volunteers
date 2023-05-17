@@ -13,30 +13,32 @@ type Action = "rsvp" | "cancel rsvp" | "publish" | "manage attendees" | "edit";
 
 const UpcomingEvents = () => {
   return (
-    <>
-      <div>
-        <CardList
-          cards={[
-            <EventCard
-              eventid={"000"}
-              mainAction={"rsvp"}
-              dropdownActions={["cancel rsvp"]}
-              title={"snehar"}
-              location={"jameson"}
-              datetime={"today lol"}
-            />,
-            <EventCard
-              eventid={"000"}
-              mainAction={"rsvp"}
-              dropdownActions={["cancel rsvp"]}
-              title={"snehar"}
-              location={"jameson"}
-              datetime={"today lol"}
-            />,
-          ]}
-        />
-      </div>
-    </>
+    <CardList>
+      <EventCard
+        eventid={"000"}
+        mainAction={"rsvp"}
+        dropdownActions={["cancel rsvp"]}
+        title={"snehar"}
+        location={"jameson"}
+        datetime={"today lol"}
+      />
+      <EventCard
+        eventid={"000"}
+        mainAction={"rsvp"}
+        dropdownActions={["cancel rsvp"]}
+        title={"snehar"}
+        location={"jameson"}
+        datetime={"today lol"}
+      />
+      <EventCard
+        eventid={"000"}
+        mainAction={"rsvp"}
+        dropdownActions={["cancel rsvp"]}
+        title={"snehar"}
+        location={"jameson"}
+        datetime={"today lol"}
+      />
+    </CardList>
   );
 };
 
@@ -112,12 +114,12 @@ const PastEvents = () => {
  * A ViewEvents component is where a user can view and manage their events.
  */
 const ViewEvents = () => {
-  const tabs = ["Upcoming Events", "Past Events", "Drafts"];
+  const labels = ["Upcoming Events", "Past Events", "Drafts"];
   const panels = [<UpcomingEvents />, <PastEvents />, <Drafts />];
   return (
     <>
       <TabContainer
-        tabs={tabs}
+        labels={labels}
         panels={panels}
         rightAlignedComponent={
           <Button color="dark-gray">Create New Event</Button>
