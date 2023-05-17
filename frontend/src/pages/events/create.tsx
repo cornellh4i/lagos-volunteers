@@ -1,5 +1,5 @@
 import React from "react";
-import EventForm from "@/components/molecules/EventForm";
+import EventForm from "@/components/organisms/EventForm";
 import CenteredTemplate from "@/components/templates/CenteredTemplate";
 
 /** A CreateEvent page */

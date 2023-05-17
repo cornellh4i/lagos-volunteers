@@ -1,4 +1,4 @@
-import ForgotPasswordForm from "@/components/molecules/ForgotPasswordForm";
+import ForgotPasswordForm from "@/components/organisms/ForgotPasswordForm";
 import React from "react";
 import WelcomeTemplate from "@/components/templates/WelcomeTemplate";
 

@@ -1,5 +1,5 @@
 import React, { ReactNode } from "react";
-import NavBar from "@/components/molecules/NavBar";
+import NavBar from "@/components/organisms/NavBar";
 
 /** A CenteredTemplate page */
 interface CenteredTemplateProps {

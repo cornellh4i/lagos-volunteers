@@ -1,5 +1,5 @@
 import React, { ReactNode } from "react";
-import Avatar from "../atoms/Avatar";
+import Avatar from "./Avatar";
 
 interface BannerProps {
   children: ReactNode;

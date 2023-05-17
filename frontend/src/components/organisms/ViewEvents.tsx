@@ -3,10 +3,10 @@ import BoxText from "@/components/atoms/BoxText";
 import Chip from "@/components/atoms/Chip";
 import TabContainer from "@/components/molecules/TabContainer";
 import next from "next/types";
-import EventCard from "@/components/molecules/EventCard";
-import CardList from "@/components/atoms/CardList";
+import EventCard from "@/components/organisms/EventCard";
+import CardList from "@/components/molecules/CardList";
 import { GridColDef, GridValueGetterParams } from "@mui/x-data-grid";
-import Table from "@/components/atoms/Table";
+import Table from "@/components/molecules/Table";
 import Button from "../atoms/Button";
 import Link from "next/link";
 

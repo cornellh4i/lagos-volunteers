@@ -1,5 +1,5 @@
 import React, { ReactNode, ReactElement } from "react";
-import NavBar from "../molecules/NavBar";
+import NavBar from "../organisms/NavBar";
 
 /** A ProfileTemplate page */
 interface ProfileTemplateProps {

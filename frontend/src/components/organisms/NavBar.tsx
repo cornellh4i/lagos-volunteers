@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import AppBar from "@/components/atoms/AppBar";
+import AppBar from "@/components/molecules/AppBar";
 import Button from "@/components/atoms/Button";
 import { useAuth } from "@/utils/AuthContext";
 import { auth } from "@/utils/firebase";
