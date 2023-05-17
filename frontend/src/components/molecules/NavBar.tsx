@@ -23,10 +23,6 @@ const NavBar = () => {
   useEffect(() => {
     setLoginStatus(!(auth.currentUser == null));
   });
-  // const isLoggedIn = async () => {
-  //   const user = await auth.currentUser;
-  //   return !(user == null);
-  // };
 
   const navs = [
     { label: "Home", link: "/" },
