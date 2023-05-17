@@ -4,11 +4,16 @@ import DatePicker from "../atoms/DatePicker";
 import TimePicker from "../atoms/TimePicker";
 import Upload from "../atoms/Upload";
 import MultilineTextField from "../atoms/MultilineTextField";
-import RadioButton from "../atoms/RadioButton";
 import Button from "../atoms/Button";
 import TextCopy from "../atoms/TextCopy";
 import TextField from "../atoms/TextField";
 import { useForm, SubmitHandler } from "react-hook-form";
+import Radio from "@mui/material/Radio";
+import RadioGroup from "@mui/material/RadioGroup";
+import FormControlLabel from "@mui/material/FormControlLabel";
+import FormControl from "@mui/material/FormControl";
+import LocationPicker from "../atoms/LocationPicker";
+import { Typography } from "@mui/material";
 
 interface EventFormProps {
   eventType: string; //create or edit
@@ -52,6 +57,12 @@ const EventForm = ({ eventType }: EventFormProps) => {
     console.log(data);
   };
 
+  // For deciding whether to show "In-person" or "Virtual"
+  const [status, setStatus] = React.useState(0); // 0: no show, 1: show yes.
+  const radioHandler = (status: number) => {
+    setStatus(status);
+  };
+
   return (
     <form onSubmit={handleSubmit(handleCreateEvent)} className="space-y-4">
       <div className="font-bold text-3xl">
@@ -79,7 +90,32 @@ const EventForm = ({ eventType }: EventFormProps) => {
         </div>
         <TimePicker label="End Time" />
       </div>
-      <RadioButton label="Location" />
+      <div>
+        <FormControl>
+          <div>Location</div>
+          <RadioGroup
+            row
+            aria-labelledby="demo-row-radio-buttons-group-label"
+            name="row-radio-buttons-group"
+            defaultValue="Virtual"
+            sx={{ borderRadius: 2, borderColor: "primary.main" }}
+          >
+            <FormControlLabel
+              value="Virtual"
+              control={<Radio />}
+              label={<Typography sx={{ fontSize: 15 }}>Virtual</Typography>}
+              onClick={() => radioHandler(0)}
+            />
+            <FormControlLabel
+              value="In-Person"
+              control={<Radio />}
+              label={<Typography sx={{ fontSize: 15 }}>In-Person</Typography>}
+              onClick={() => radioHandler(1)}
+            />
+          </RadioGroup>
+        </FormControl>
+        {status == 1 && <LocationPicker label="" />}
+      </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 col-span-2  sm:col-span-1">
         <TextField
           label="Volunteer Sign Up Cap"
