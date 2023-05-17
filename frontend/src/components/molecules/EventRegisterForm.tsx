@@ -1,8 +1,8 @@
 import React from "react";
 
-type EventRegisterFormProps = {
+interface EventRegisterFormProps {
   eventid: string;
-};
+}
 
 /**
  * An EventRegisterForm component

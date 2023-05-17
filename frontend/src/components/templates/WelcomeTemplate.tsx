@@ -2,9 +2,9 @@ import React, { ReactNode } from "react";
 import NavBar from "@/components/molecules/NavBar";
 
 /** A WelcomeTemplate page */
-type WelcomeTemplateProps = {
+interface WelcomeTemplateProps {
   children: ReactNode;
-};
+}
 
 const WelcomeTemplate = ({ children }: WelcomeTemplateProps) => {
   return (

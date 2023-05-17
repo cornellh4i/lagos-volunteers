@@ -1,13 +1,13 @@
 import React from "react";
 
-type EventDetailsProps = {
+interface EventDetailsProps {
   title: string;
   location: string;
   datetime: string;
   supervisors: string[];
   capacity: number;
   image: React.ReactElement;
-};
+}
 
 /**
  * An EventDetails component is a two-column component, with an event image on

@@ -2,9 +2,9 @@ import React, { ReactNode } from "react";
 import NavBar from "@/components/molecules/NavBar";
 
 /** A CenteredTemplate page */
-type CenteredTemplateProps = {
+interface CenteredTemplateProps {
   children: ReactNode;
-};
+}
 
 const CenteredTemplate = ({ children }: CenteredTemplateProps) => {
   return (

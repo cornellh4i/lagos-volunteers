@@ -9,14 +9,14 @@ import {
 } from "@mui/material";
 import { TabPanel, TabContext, TabList } from "@mui/lab";
 
-type TabContainerProps = {
+interface TabContainerProps {
   /** A list of tab labels in order */
   labels: string[];
   /** A list of tab panels in order */
   panels: React.ReactElement[];
   /** The element to align to the right of the tab bar */
   rightAlignedComponent?: React.ReactElement;
-};
+}
 
 const HorizontalTabContainer = ({
   labels,

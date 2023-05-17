@@ -1,9 +1,9 @@
 import React, { ReactNode } from "react";
 import Avatar from "../atoms/Avatar";
 
-type BannerProps = {
+interface BannerProps {
   children: ReactNode;
-};
+}
 
 /** A Banner page */
 const Banner = ({ children }: BannerProps) => {

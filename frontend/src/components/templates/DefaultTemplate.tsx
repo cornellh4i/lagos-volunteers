@@ -1,9 +1,9 @@
 import React, { ReactNode } from "react";
 import NavBar from "@/components/molecules/NavBar";
 
-type DefaultTemplateProps = {
+interface DefaultTemplateProps {
   children: ReactNode;
-};
+}
 
 /** A DefaultTemplate page */
 const DefaultTemplate = ({ children }: DefaultTemplateProps) => {

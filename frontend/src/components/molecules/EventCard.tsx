@@ -6,14 +6,14 @@ import MoreVertIcon from "@mui/icons-material/MoreVert";
 
 type Action = "rsvp" | "cancel rsvp" | "publish" | "manage attendees" | "edit";
 
-type EventCardProps = {
+interface EventCardProps {
   eventid: string;
   mainAction: Action;
   dropdownActions: Action[];
   title: string;
   location: string;
   datetime: string;
-};
+}
 
 /**
  * An EventCard component shows an event and some quick details. The card action

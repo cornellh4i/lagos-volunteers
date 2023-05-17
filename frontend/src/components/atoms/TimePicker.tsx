@@ -6,7 +6,7 @@ import { IconButton } from "@mui/material";
 import { InputAdornment } from "@mui/material";
 import { AccessTime } from "@mui/icons-material";
 
-interface Props {
+interface TimePickerProps {
   label: string;
 }
 
@@ -14,7 +14,7 @@ interface Props {
  * A TimePicker component is an input field that allows selecting different
  * times of day.
  */
-const CustomTimePicker = ({ label }: Props) => {
+const CustomTimePicker = ({ label }: TimePickerProps) => {
   return (
     <div>
       <div> {label} </div>

@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import { TextField } from "@mui/material";
 import { RegisterOptions, UseFormRegisterReturn } from "react-hook-form";
 
-interface Props {
+interface TextFieldProps {
   label: string;
   name: string;
   required?: boolean;
@@ -20,7 +20,7 @@ const CustomTextField = ({
   requiredMessage = "",
   disabled = false,
   register,
-}: Props) => {
+}: TextFieldProps) => {
   return (
     <div>
       <div>

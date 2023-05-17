@@ -1,9 +1,9 @@
 import React, { ReactElement, Children } from "react";
 import EventCard from "@/components/molecules/EventCard";
 
-type CardListProps = {
+interface CardListProps {
   children: ReactElement[];
-};
+}
 
 /**
  * A CardList component is a responsive list of cards that wraps all the cards

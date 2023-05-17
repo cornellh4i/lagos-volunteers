@@ -6,14 +6,14 @@ import FormControl from "@mui/material/FormControl";
 import LocationPicker from "./LocationPicker";
 import { Typography } from "@mui/material";
 
-interface Props {
+interface RadioButtonProps {
   label: string;
 }
 
 /**
  * A RadioButton component is a simple radio button
  */
-const RadioButton = ({ label }: Props) => {
+const RadioButton = ({ label }: RadioButtonProps) => {
   const [status, setStatus] = React.useState(0); // 0: no show, 1: show yes.
 
   const radioHandler = (status: number) => {

@@ -53,11 +53,6 @@ const DrawerAppBar = () => {
             LFBI
           </Typography>
           <Box sx={{ display: { xs: "none", sm: "block" } }}>
-            {/* {navItems.map((item) => (
-              <Button key={item} className="text-black capitalize">
-                {item}
-              </Button>
-            ))} */}
             {navLinks.map((item, index) => (
               <Link href={item}>
                 <Button className="text-black capitalize">

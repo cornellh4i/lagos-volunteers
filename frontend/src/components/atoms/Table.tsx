@@ -7,12 +7,12 @@ import {
   MuiEvent,
 } from "@mui/x-data-grid";
 
-type TableProps = {
+interface TableProps {
   /** The columns of the table, following the MUI Data Grid spec */
   columns: GridColDef<object>[];
   /** The table rows represented as an object array */
   rows: Object[];
-};
+}
 
 /**
  * A Table component

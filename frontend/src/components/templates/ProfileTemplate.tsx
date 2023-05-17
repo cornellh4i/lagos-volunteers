@@ -2,10 +2,10 @@ import React, { ReactNode, ReactElement } from "react";
 import NavBar from "../molecules/NavBar";
 
 /** A ProfileTemplate page */
-type ProfileTemplateProps = {
+interface ProfileTemplateProps {
   banner: ReactElement;
   children: ReactNode;
-};
+}
 
 const ProfileTemplate = ({ banner, children }: ProfileTemplateProps) => {
   return (

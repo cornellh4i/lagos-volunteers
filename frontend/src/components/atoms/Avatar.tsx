@@ -8,13 +8,13 @@ export const FALLBACK_AVATAR_URL =
 export const FALLBACK_AVATOR_ALT = "avatar";
 
 /** both the image url and alt text are optional */
-type AvatarProps = {
+interface AvatarProps {
   url?: string;
   alt?: string;
   name: string | undefined;
   start_date: Date;
   hour: number;
-};
+}
 
 const Avatar = ({
   url = FALLBACK_AVATAR_URL,
