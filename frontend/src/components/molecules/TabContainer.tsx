@@ -8,7 +8,6 @@ import {
   SelectChangeEvent,
 } from "@mui/material";
 import { TabPanel, TabContext, TabList } from "@mui/lab";
-import { Righteous } from "@next/font/google";
 
 type TabContainerProps = {
   /** A list of tab labels in order */
@@ -133,33 +132,23 @@ const TabContainer = ({
   panels,
   rightAlignedComponent,
 }: TabContainerProps) => {
-  const [width, setWidth] = React.useState(window.innerWidth);
-  const breakpoint = 420;
-  React.useEffect(() => {
-    /* Inside of a "useEffect" hook add an event listener that updates
-       the "width" state variable when the window size changes */
-    window.addEventListener("resize", () => setWidth(window.innerWidth));
-
-    /* passing an empty array as the dependencies of the effect will cause this
-       effect to only run when the component mounts, and not each time it updates.
-       We only want the listener to be added once */
-  }, []);
-  const [value, setValue] = React.useState("1");
-  const handleChange = (event: React.SyntheticEvent, newValue: string) => {
-    setValue(newValue);
-  };
-  return width > breakpoint ? (
-    <HorizontalTabContainer
-      labels={labels}
-      panels={panels}
-      rightAlignedComponent={rightAlignedComponent}
-    />
-  ) : (
-    <VerticalTabContainer
-      labels={labels}
-      panels={panels}
-      rightAlignedComponent={rightAlignedComponent}
-    />
+  return (
+    <>
+      <div className="hidden sm:block">
+        <HorizontalTabContainer
+          labels={labels}
+          panels={panels}
+          rightAlignedComponent={rightAlignedComponent}
+        />
+      </div>
+      <div className="block sm:hidden">
+        <VerticalTabContainer
+          labels={labels}
+          panels={panels}
+          rightAlignedComponent={rightAlignedComponent}
+        />
+      </div>
+    </>
   );
 };
 
