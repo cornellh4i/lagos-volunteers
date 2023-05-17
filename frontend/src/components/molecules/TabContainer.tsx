@@ -75,7 +75,7 @@ const VerticalTabContainer = ({
   };
   return (
     <div>
-      <FormControl variant="standard" sx={{ m: 1, minWidth: "100%" }}>
+      <FormControl variant="standard" sx={{ minWidth: "100%" }}>
         <div className="grid grid-cols-1 space-y-4">
           {rightAlignedComponent}
           <Select
@@ -114,10 +114,7 @@ const VerticalTabContainer = ({
           </Select>
         </div>
       </FormControl>
-      <div className="grid h-screen justify-center">
-        {" "}
-        {panels[Number(value)]}{" "}
-      </div>
+      <div className="grid h-screen mt-4"> {panels[Number(value)]} </div>
     </div>
   );
 };
