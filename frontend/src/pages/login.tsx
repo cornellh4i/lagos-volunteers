@@ -16,7 +16,7 @@ const Login = () => {
   useEffect(() => {
     const unsub = onAuthStateChanged(auth, (authUser) => {
       if (authUser) {
-        router.push("/");
+        router.push("/events/view");
       }
     });
     return unsub;

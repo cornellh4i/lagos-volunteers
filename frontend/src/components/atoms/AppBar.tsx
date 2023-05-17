@@ -33,10 +33,7 @@ const DrawerAppBar = ({ navs, rightAlignedComponents }: AppBarProps) => {
     <Box onClick={handleDrawerToggle} sx={{ textAlign: "center" }}>
       <List>
         {navs.map((nav) => (
-          <Link
-            href={nav.link}
-            style={{ color: "black", textDecoration: "none" }}
-          >
+          <Link href={nav.link} className="text-black no-underline">
             <ListItem key={nav.label} disablePadding>
               <ListItemButton sx={{ textAlign: "center" }}>
                 <ListItemText primary={nav.label} />
@@ -86,6 +83,7 @@ const DrawerAppBar = ({ navs, rightAlignedComponents }: AppBarProps) => {
       </AppBar>
       <Box component="nav">
         <Drawer
+          container={() => document.getElementById("__next")}
           variant="temporary"
           open={mobileOpen}
           onClose={handleDrawerToggle}
