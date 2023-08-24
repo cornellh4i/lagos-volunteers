@@ -2,7 +2,7 @@ import React from "react";
 import Autocomplete from "@mui/material/Autocomplete";
 import { TextField } from "@mui/material";
 
-interface Props {
+interface LocationPickerProps {
   label: string;
 }
 
@@ -10,7 +10,7 @@ interface Props {
  * A LocationPicker component is an input field that allows selecting a specific
  * geographic location with autocomplete
  */
-const LocationPicker = ({ label }: Props) => {
+const LocationPicker = ({ label }: LocationPickerProps) => {
   return (
     <div>
       <div> {label} </div>

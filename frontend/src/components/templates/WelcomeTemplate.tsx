@@ -1,24 +1,20 @@
-import React from "react";
-import NavBar from "@/components/molecules/NavBar";
+import React, { ReactNode } from "react";
+import NavBar from "@/components/organisms/NavBar";
 
 /** A WelcomeTemplate page */
-type WelcomeProps = {
-  Form: React.ComponentType;
-};
+interface WelcomeTemplateProps {
+  children: ReactNode;
+}
 
-const WelcomeTemplate = ({ Form }: WelcomeProps) => {
+const WelcomeTemplate = ({ children }: WelcomeTemplateProps) => {
   return (
-    <div className="flex flex-col h-screen">
-      <div>
-        <NavBar />
-      </div>
-      <div className="grid grid-cols-12 grow">
-        <div className="flex items-center justify-center col-span-12 sm:col-span-5 bg-white sm:px-20 px-10">
-          <div className="w-full">
-            <Form />
-          </div>
+    <div className="flex flex-col min-h-screen">
+      <NavBar />
+      <div className="flex grow">
+        <div className="flex w-full sm:max-w-md items-center justify-center py-10 px-10 sm:px-20">
+          <div className="w-full">{children}</div>
         </div>
-        <div className="sm:col-span-7 sm:bg-gray-300"></div>
+        <div className="flex-1 bg-gray-300"></div>
       </div>
     </div>
   );

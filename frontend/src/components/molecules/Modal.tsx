@@ -1,9 +1,9 @@
 import React from "react";
 
-type ModalProps = {
+interface ModalProps {
   open: boolean;
   body: React.ReactElement;
-};
+}
 
 /**
  * A Modal component is a styled modal that takes in a body component

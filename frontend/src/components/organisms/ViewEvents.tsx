@@ -3,40 +3,43 @@ import BoxText from "@/components/atoms/BoxText";
 import Chip from "@/components/atoms/Chip";
 import TabContainer from "@/components/molecules/TabContainer";
 import next from "next/types";
-import EventCard from "@/components/molecules/EventCard";
-import CardList from "@/components/atoms/CardList";
+import EventCard from "@/components/organisms/EventCard";
+import CardList from "@/components/molecules/CardList";
 import { GridColDef, GridValueGetterParams } from "@mui/x-data-grid";
-import Table from "@/components/atoms/Table";
+import Table from "@/components/molecules/Table";
 import Button from "../atoms/Button";
+import Link from "next/link";
 
 type Action = "rsvp" | "cancel rsvp" | "publish" | "manage attendees" | "edit";
 
 const UpcomingEvents = () => {
   return (
-    <>
-      <div>
-        <CardList
-          cards={[
-            <EventCard
-              eventid={"000"}
-              mainAction={"rsvp"}
-              dropdownActions={["cancel rsvp"]}
-              title={"snehar"}
-              location={"jameson"}
-              datetime={"today lol"}
-            />,
-            <EventCard
-              eventid={"000"}
-              mainAction={"rsvp"}
-              dropdownActions={["cancel rsvp"]}
-              title={"snehar"}
-              location={"jameson"}
-              datetime={"today lol"}
-            />,
-          ]}
-        />
-      </div>
-    </>
+    <CardList>
+      <EventCard
+        eventid={"000"}
+        mainAction={"rsvp"}
+        dropdownActions={["cancel rsvp"]}
+        title={"snehar"}
+        location={"jameson"}
+        datetime={"today lol"}
+      />
+      <EventCard
+        eventid={"000"}
+        mainAction={"rsvp"}
+        dropdownActions={["cancel rsvp"]}
+        title={"snehar"}
+        location={"jameson"}
+        datetime={"today lol"}
+      />
+      <EventCard
+        eventid={"000"}
+        mainAction={"rsvp"}
+        dropdownActions={["cancel rsvp"]}
+        title={"snehar"}
+        location={"jameson"}
+        datetime={"today lol"}
+      />
+    </CardList>
   );
 };
 
@@ -63,20 +66,20 @@ const PastEvents = () => {
       field: "program",
       headerName: "Program Name",
       flex: 2,
-      minWidth: 100
+      minWidth: 100,
     },
     {
       field: "date",
       headerName: "Date",
       type: "date",
       flex: 0.5,
-      minWidth: 100
+      minWidth: 100,
     },
     {
       field: "hours",
       headerName: "Hours",
       type: "number",
-      flex: 0.5
+      flex: 0.5,
     },
   ];
 
@@ -112,19 +115,19 @@ const PastEvents = () => {
  * A ViewEvents component is where a user can view and manage their events.
  */
 const ViewEvents = () => {
-  const tabs = ["Upcoming Events", "Past Events", "Drafts"];
-  const panels = [<UpcomingEvents />, <PastEvents />, <Drafts />];
+  const tabs = [
+    { label: "Upcoming Events", panel: <UpcomingEvents /> },
+    { label: "Past Events", panel: <PastEvents /> },
+    { label: "Drafts", panel: <Drafts /> },
+  ];
   return (
     <>
       <TabContainer
         tabs={tabs}
-        panels={panels}
         rightAlignedComponent={
-          <Button
-            buttonText="Create New Event"
-            buttonTextColor="#000000"
-            buttonColor="#808080"
-          />
+          <Link href="/events/create">
+            <Button color="dark-gray">Create New Event</Button>
+          </Link>
         }
       />
     </>

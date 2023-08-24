@@ -1,13 +1,13 @@
 import React from "react";
-import ViewEvents from "../../components/molecules/ViewEvents";
+import ViewEvents from "../../components/organisms/ViewEvents";
 import DefaultTemplate from "../../components/templates/DefaultTemplate";
 
 /** A ViewEventsPage page */
 const ViewEventsPage = () => {
   return (
-    <>
-      <DefaultTemplate body={<ViewEvents />} />
-    </>
+    <DefaultTemplate>
+      <ViewEvents />
+    </DefaultTemplate>
   );
 };
 

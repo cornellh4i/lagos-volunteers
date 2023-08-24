@@ -1,8 +1,8 @@
 import React from "react";
 
-type EventConfirmationProps = {
+interface EventConfirmationProps {
   eventid: string;
-};
+}
 
 /**
  * An EventConfirmation component shows a confirmation page for the user

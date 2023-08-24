@@ -1,10 +1,10 @@
 import React from "react";
 import { Chip } from "@mui/material";
 
-type BoxTextProps = {
+interface BoxTextProps {
   text: string;
   textRight: string;
-};
+}
 
 /**
  * A BoxText component is a piece of text surrounded by a colored box

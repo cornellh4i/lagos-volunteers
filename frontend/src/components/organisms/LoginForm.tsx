@@ -5,6 +5,7 @@ import TextField from "../atoms/TextField";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { useAuth } from "@/utils/AuthContext";
 import { useRouter } from "next/router";
+import Link from "next/link";
 
 type FormValues = {
   email: string;
@@ -56,34 +57,31 @@ const LoginForm = () => {
             required={true}
           />
         </div>
-        <div className="text-center underline">Forgot Password?</div>
+        <div className="text-center">
+          <Link href="/password/forgot" className="text-black">
+            Forgot Password?
+          </Link>
+        </div>
         <div>
-          <Button
-            type="submit"
-            buttonText="Log In"
-            buttonTextColor="#000000"
-            buttonColor="#808080"
-          />
+          <Button type="submit" color="dark-gray">
+            Log In
+          </Button>
         </div>
         <div>
           <Divider>or</Divider>
         </div>
       </form>
       <div>
-        <Button
-          type="submit"
-          buttonText="Sign up with Email"
-          buttonTextColor="#000000"
-          buttonColor="#D3D3D3"
-        />
+        <Link href="/signup">
+          <Button type="submit" color="gray">
+            Sign up with Email
+          </Button>
+        </Link>
       </div>
       <div>
-        <Button
-          type="submit"
-          buttonText="Continue with Google"
-          buttonTextColor="#000000"
-          buttonColor="#D3D3D3"
-        />
+        <Button type="submit" color="gray">
+          Continue with Google
+        </Button>
       </div>
     </div>
   );

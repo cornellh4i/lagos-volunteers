@@ -1,9 +1,9 @@
 import React from "react";
 
-type IconTextProps = {
+interface IconTextProps {
   icon: React.ReactElement;
   text: string;
-};
+}
 
 /**
  * A IconText component is a small line of text prefaced by an icon

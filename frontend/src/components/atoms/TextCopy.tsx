@@ -3,7 +3,7 @@ import { Snackbar } from "@mui/material";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import IconButton from "@mui/material/IconButton";
 
-interface Props {
+interface TextCopyProps {
   label: string;
   text: string;
 }
@@ -12,7 +12,7 @@ interface Props {
  * A TextCopy component has a label and a text body, along with a copy button.
  * Pressing the button copies the text body to the clipboard.
  */
-const TextCopy = ({ label, text }: Props) => {
+const TextCopy = ({ label, text }: TextCopyProps) => {
   const [open, setOpen] = useState(false);
   const handleClick = () => {
     setOpen(true);
@@ -21,9 +21,9 @@ const TextCopy = ({ label, text }: Props) => {
 
   return (
     <div>
-      <div className="flex ">
-        <div className="pt-3">{label}:</div>
-        <div className="absolute right-0">
+      <div className="flow-root">
+        <div className="pt-3 float-left">{label}:</div>
+        <div className="float-right">
           <IconButton onClick={handleClick}>
             <ContentCopyIcon />
           </IconButton>

@@ -1,10 +1,10 @@
 import React from "react";
 import { Chip } from "@mui/material";
 
-type ChipProps = {
+interface ChipProps {
   label: string;
   color: "default" | "primary" | "success";
-};
+}
 
 /**
  * A Chip component is a chip with text inside

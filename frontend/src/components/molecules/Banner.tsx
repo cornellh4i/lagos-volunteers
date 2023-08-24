@@ -1,28 +1,16 @@
-import React from "react";
-import Avatar from "../atoms/Avatar";
+import React, { ReactNode } from "react";
+import Avatar from "./Avatar";
 
-type BannerProps = {
-  url?: string;
-  alt?: string;
-  name: string | undefined;
-  start_date: Date;
-  hour: number;
-};
+interface BannerProps {
+  children: ReactNode;
+}
 
 /** A Banner page */
-const Banner = ({ name, start_date, hour, url, alt }: BannerProps) => {
+const Banner = ({ children }: BannerProps) => {
   return (
-    <>
-      <div className="px-6 md:px-20 py-6 bg-gradient-to-b from-gray-300 via-gray-300 to-white">
-        <Avatar
-          name={name}
-          start_date={start_date}
-          hour={hour}
-          url={url}
-          alt={alt}
-        />
-      </div>
-    </>
+    <div className="px-6 sm:px-20 py-6 bg-gradient-to-b from-gray-300 via-gray-300 to-white">
+      {children}
+    </div>
   );
 };
 

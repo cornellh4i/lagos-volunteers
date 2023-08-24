@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Button from "../atoms/Button";
 import TextField from "../atoms/TextField";
-import CustomCheckbox from "../atoms/Checkbox";
+import Checkbox from "../atoms/Checkbox";
 import { auth } from "@/utils/firebase";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { useAuth } from "@/utils/AuthContext";
@@ -33,11 +33,11 @@ type formData = {
   imageUrl?: string;
 };
 
-interface Props {
+interface ProfileFormProps {
   userDetails: formData;
 }
 
-const ProfileForm = ({ userDetails }: Props) => {
+const ProfileForm = ({ userDetails }: ProfileFormProps) => {
   const router = useRouter();
 
   // Future testing: What if user doesn't have a nickname, does the code break?
@@ -163,27 +163,24 @@ const ProfileForm = ({ userDetails }: Props) => {
         />
       </div>
       <div>
-        <CustomCheckbox label="Email notifications" />
+        <Checkbox label="Email notifications" />
       </div>
-      <div className="flex md:space-x-4 grid sm:grid-cols-1 md:grid-cols-2">
-        <div className="sm:pb-4 md:pb-0">
-          <Button
-            type="submit"
-            buttonText="Save Changes"
-            buttonTextColor="#000000"
-            buttonColor="#D3D3D3"
-          />
+      <div className="sm:space-x-4 grid grid-cols-1 sm:grid-cols-2">
+        <div className="pb-4 sm:pb-0">
+          <Button type="submit" color="gray">
+            Save Changes
+          </Button>
         </div>
         <div>
           <Button
             type="button"
-            buttonText="Cancel"
-            buttonTextColor="#000000"
-            buttonColor="#808080"
+            color="dark-gray"
             onClick={() => {
               reset(userDetails, { keepDefaultValues: true });
             }}
-          />
+          >
+            Cancel
+          </Button>
         </div>
       </div>
     </form>

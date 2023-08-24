@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from "react";
-import ProfileForm from "@/components/molecules/ProfileForm";
+import ProfileForm from "@/components/organisms/ProfileForm";
 import ProfileTemplate from "@/components/templates/ProfileTemplate";
+import Banner from "@/components/molecules/Banner";
 import { GetServerSideProps } from "next";
 import { BASE_URL } from "@/utils/constants";
 import { onAuthStateChanged, getAuth } from "firebase/auth";
 import { auth } from "@/utils/firebase";
 import { useAuth } from "@/utils/AuthContext";
+import Avatar from "@/components/molecules/Avatar";
 
 type userData = {
   id: string;
@@ -64,17 +66,22 @@ const Profile = () => {
 
   return (
     <ProfileTemplate
-      name={`${userDetails?.firstName} ${userDetails?.lastName}`}
-      hour={20}
-      start_date={date}
-      Form={
-        userDetails ? (
-          <ProfileForm userDetails={userDetails} />
-        ) : (
-          <div>Loading data...</div>
-        )
+      banner={
+        <Banner>
+          <Avatar
+            name={`${userDetails?.firstName} ${userDetails?.lastName}`}
+            hour={20}
+            start_date={date}
+          />
+        </Banner>
       }
-    />
+    >
+      {userDetails ? (
+        <ProfileForm userDetails={userDetails} />
+      ) : (
+        <div>Loading data...</div>
+      )}
+    </ProfileTemplate>
   );
 };
 

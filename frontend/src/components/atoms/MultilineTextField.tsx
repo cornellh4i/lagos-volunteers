@@ -2,7 +2,7 @@ import React from "react";
 import { TextField } from "@mui/material";
 import { RegisterOptions, UseFormRegisterReturn } from "react-hook-form";
 
-interface Props {
+interface MultilineTextFieldProps {
   label: string;
   required: boolean;
   type?: string;
@@ -11,7 +11,7 @@ interface Props {
   register: (name: any, options?: RegisterOptions) => UseFormRegisterReturn;
 }
 
-/** A Button page */
+/** A MultilineTextField page */
 const MultilineTextField = ({
   label,
   name,
@@ -19,7 +19,7 @@ const MultilineTextField = ({
   type = "text",
   requiredMessage = "",
   register,
-}: Props) => {
+}: MultilineTextFieldProps) => {
   return (
     <div>
       <div>

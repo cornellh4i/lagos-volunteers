@@ -1,4 +1,4 @@
-import LoginForm from "@/components/molecules/LoginForm";
+import LoginForm from "@/components/organisms/LoginForm";
 import React from "react";
 import WelcomeTemplate from "@/components/templates/WelcomeTemplate";
 import { useEffect } from "react";
@@ -16,15 +16,15 @@ const Login = () => {
   useEffect(() => {
     const unsub = onAuthStateChanged(auth, (authUser) => {
       if (authUser) {
-        router.push("/");
+        router.push("/events/view");
       }
     });
     return unsub;
   }, [user]);
   return (
-    <>
-      <WelcomeTemplate Form={LoginForm} />
-    </>
+    <WelcomeTemplate>
+      <LoginForm />
+    </WelcomeTemplate>
   );
 };
 
