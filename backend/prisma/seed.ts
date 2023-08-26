@@ -1,6 +1,16 @@
 import { Prisma } from "@prisma/client";
 import prisma from "../client";
 import { formatISO } from "date-fns";
+import { createRandomUser, createRandomEvent } from "../src/utils/script";
+
+const users: any = [];
+for (let i = 0; i < 100; i++) {
+  users.push(createRandomUser());
+}
+const events = [];
+for (let i = 0; i < 20; i++) {
+  events.push(createRandomEvent());
+}
 
 const userData: Prisma.UserCreateInput[] = [
   {
@@ -175,13 +185,35 @@ async function main() {
   await prisma.profile.deleteMany({});
   await prisma.permission.deleteMany({});
   await prisma.user.deleteMany({});
-  
+
   for (const u of userData) {
     const user = await prisma.user.create({
       data: u,
     });
     console.log(`Created user with id: ${user.id}`);
   }
+
+  users.map(async (user: any) => {
+    await prisma.user.create({
+      data: {
+        email: user.email,
+        role: user.role,
+        profile: {
+          create: {
+            firstName: user.firstName,
+            lastName: user.lastName,
+            nickname: user.nickname,
+            imageURL: user.imageURL,
+          },
+        },
+        preferences: {
+          create: {
+            sendPromotions: true,
+          },
+        },
+      },
+    });
+  });
   for (const e of eventData) {
     const event = await prisma.event.create({
       data: e,
