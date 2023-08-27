@@ -3,7 +3,7 @@ import { faker } from "@faker-js/faker";
 
 type Role = "VOLUNTEER" | "ADMIN" | "SUPERVISOR";
 
-interface User {
+export interface User {
   email: string;
   imageURL: string;
   firstName: string;
@@ -15,7 +15,7 @@ interface User {
 type Mode = "IN_PERSON" | "VIRTUAL";
 type Status = "DRAFT" | "ACTIVE" | "CANCELLED" | "COMPLETED";
 
-interface Event {
+export interface Event {
   name: string;
   description: string;
   location: string;

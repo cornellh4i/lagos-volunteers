@@ -1,15 +1,89 @@
 import { Prisma } from "@prisma/client";
 import prisma from "../client";
 import { formatISO } from "date-fns";
-import { createRandomUser, createRandomEvent } from "../src/utils/script";
+import {
+  createRandomUser,
+  createRandomEvent,
+  User,
+  Event,
+} from "../src/utils/script";
 
-const users: any = [];
-for (let i = 0; i < 100; i++) {
-  users.push(createRandomUser());
+/**
+ * This function is used to seed the database with dummy data.
+ * It is used for testing purposes only.
+ * @param pool - The number of users to create.
+ * */
+
+const userDataSeed: Prisma.UserCreateInput[] = [];
+
+async function createPoolOfRandomUsers(pool: number) {
+  const users: User[] = [];
+  for (let i = 0; i < pool; i++) {
+    users.push(createRandomUser());
+  }
+
+  users.map((user) => {
+    userDataSeed.push({
+      email: user.email,
+      role: user.role,
+      profile: {
+        create: {
+          firstName: user.firstName,
+          lastName: user.lastName,
+          nickname: user.nickname,
+          imageURL: user.imageURL,
+        },
+      },
+      preferences: {
+        create: {
+          sendPromotions: true,
+        },
+      },
+    });
+  });
 }
-const events = [];
-for (let i = 0; i < 20; i++) {
-  events.push(createRandomEvent());
+
+/**
+ * This function is used to seed the database with dummy event data.
+ */
+
+const eventDataSeed: Prisma.EventCreateInput[] = [];
+
+async function createPoolOfRandomEvents(pool: number) {
+  const events: Event[] = [];
+  for (let i = 0; i < pool; i++) {
+    events.push(createRandomEvent());
+  }
+
+  events.map((event, index) => {
+    // Get a random owner that is admin/supervisor - hopefully doesn't go on forever haha.
+    const randomOwner: any = () => {
+      const randomIndex = Math.floor(Math.random() * userDataSeed.length);
+      const randomUser = userDataSeed[randomIndex];
+      if (randomUser.role === "ADMIN" || randomUser.role === "SUPERVISOR") {
+        return randomUser;
+      } else {
+        return randomOwner();
+      }
+    };
+
+    eventDataSeed.push({
+      name: event.name,
+      description: event.description,
+      location: event.location,
+      startDate: event.startDate,
+      endDate: event.endDate,
+      capacity: event.capacity,
+      imageURL: event.imageURL,
+      mode: event.mode,
+      owner: {
+        connect: {
+          id: randomOwner().id,
+          email: randomOwner().email,
+        },
+      },
+    });
+  });
 }
 
 const userData: Prisma.UserCreateInput[] = [
@@ -193,33 +267,30 @@ async function main() {
     console.log(`Created user with id: ${user.id}`);
   }
 
-  users.map(async (user: any) => {
-    await prisma.user.create({
-      data: {
-        email: user.email,
-        role: user.role,
-        profile: {
-          create: {
-            firstName: user.firstName,
-            lastName: user.lastName,
-            nickname: user.nickname,
-            imageURL: user.imageURL,
-          },
-        },
-        preferences: {
-          create: {
-            sendPromotions: true,
-          },
-        },
-      },
-    });
-  });
   for (const e of eventData) {
     const event = await prisma.event.create({
       data: e,
     });
     console.log(`Created event with id: ${event.id}`);
   }
+
+  await createPoolOfRandomUsers(100);
+  await createPoolOfRandomEvents(100);
+
+  for (const u of userDataSeed) {
+    const user = await prisma.user.create({
+      data: u,
+    });
+    console.log(`Created user with id: ${user.id}`);
+  }
+
+  for (const e of eventDataSeed) {
+    const event = await prisma.event.create({
+      data: e,
+    });
+    console.log(`Created event with id: ${event.id}`);
+  }
+
   await enrollAlice();
   console.log(`Seeding finished.`);
 }
