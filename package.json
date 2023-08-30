@@ -1,0 +1,10 @@
+{
+  "name": "lfbi",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "build": "(cd backend && yarn install && npx prisma migrate dev && yarn prisma db seed && yarn swagger) && (cd frontend && yarn install)",
+    "test": "yarn run build && cd backend && yarn run test",
+    "start": "(cd backend && npx prisma studio) & (cd backend && yarn run backend) & (cd frontend && yarn run dev)"
+  }
+}
