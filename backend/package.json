@@ -40,6 +40,7 @@
     "seed": "ts-node --compiler-options {\"module\":\"CommonJS\"} prisma/seed.ts"
   },
   "devDependencies": {
+    "@faker-js/faker": "^8.0.2",
     "@types/supertest": "^2.0.12"
   }
 }
