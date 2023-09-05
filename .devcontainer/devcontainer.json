@@ -16,10 +16,40 @@
   // "forwardPorts": [],
 
   // Uncomment the next line to run commands after the container is created.
-  "postCreateCommand": "service postgresql start"
+  "postCreateCommand": "service postgresql start",
 
   // Configure tool-specific properties.
-  // "customizations": {},
+  "customizations": {
+    "vscode": {
+      "settings": {
+        "[javascript]": {
+          "editor.defaultFormatter": "esbenp.prettier-vscode"
+        },
+        "[typescript]": {
+          "editor.defaultFormatter": "esbenp.prettier-vscode"
+        },
+        "[typescriptreact]": {
+          "editor.defaultFormatter": "esbenp.prettier-vscode"
+        },
+        "[css]": {
+          "editor.defaultFormatter": "esbenp.prettier-vscode"
+        },
+        "[jsonc]": {
+          "editor.defaultFormatter": "esbenp.prettier-vscode"
+        },
+        "editor.tabSize": 2,
+        "editor.rulers": [80],
+        "editor.formatOnSave": true
+      },
+      "extensions": [
+        "formulahendry.auto-rename-tag",
+        "dbaeumer.vscode-eslint",
+        "esbenp.prettier-vscode",
+        "Prisma.prisma",
+        "bradlc.vscode-tailwindcss"
+      ]
+    }
+  }
 
   // Uncomment to connect as an existing user other than the container default. More info: https://aka.ms/dev-containers-non-root.
   // "remoteUser": "devcontainer"
