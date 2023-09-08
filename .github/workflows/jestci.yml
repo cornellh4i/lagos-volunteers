@@ -52,6 +52,7 @@ jobs:
         run: |
           npx prisma generate
           npx prisma db push --preview-feature
+          ts-node --compiler-options {\"module\":\"CommonJS\"} prisma/seed.ts
 
       - name: Run Jest Tests
         working-directory: ./backend/
