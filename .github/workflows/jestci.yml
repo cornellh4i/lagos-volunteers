@@ -52,10 +52,9 @@ jobs:
         run: |
           npx prisma generate
           npx prisma db push --preview-feature
-          ts-node --compiler-options {\"module\":\"CommonJS\"} prisma/seed.ts
 
       - name: Run Jest Tests
         working-directory: ./backend/
         env:
           DATABASE_URL: postgres://postgres:postgres@localhost:5433/mydb
-        run: yarn test
+        run: yarn test:ci
