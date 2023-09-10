@@ -32,11 +32,11 @@
   "scripts": {
     "build": "yarn install && npx prisma migrate dev && yarn prisma db seed && yarn swagger",
     "test": "yarn run build && NODE_ENV=test jest",
+    "test:ci": "NODE_ENV=test prisma db seed && jest",
     "start": "npx prisma studio & yarn run backend",
     "backend": "nodemon -r dotenv/config src/index.ts",
     "swagger": "ts-node -r dotenv/config src/swagger.ts",
 
-    "test:ci:deprecated": "NODE_ENV=test prisma db seed && jest",
     "build:deprecated": "tsc",
     "start:deprecated": "ts-node -r dotenv/config src/index.ts"
   },
