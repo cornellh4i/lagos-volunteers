@@ -3,10 +3,13 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "build": "yarn install",
+    "start": "yarn run dev",
     "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
-    "lint": "next lint"
+
+    "build:deprecated": "next build",
+    "start:deprecated": "next start",
+    "lint:deprecated": "next lint"
   },
   "dependencies": {
     "@emotion/react": "^11.10.6",
