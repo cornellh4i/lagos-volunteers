@@ -30,11 +30,14 @@
     "typescript": "^4.9.4"
   },
   "scripts": {
-    "start": "ts-node -r dotenv/config src/index.ts",
+    "build": "yarn install && npx prisma migrate dev && yarn prisma db seed && yarn swagger",
+    "test": "yarn run build && NODE_ENV=test jest",
+    "test:ci": "NODE_ENV=test prisma db seed && jest",
+    "start": "npx prisma studio & yarn run backend",
     "backend": "nodemon -r dotenv/config src/index.ts",
-    "build": "tsc",
-    "test": "NODE_ENV=test prisma db seed && jest",
-    "swagger": "ts-node -r dotenv/config src/swagger.ts"
+    "swagger": "ts-node -r dotenv/config src/swagger.ts",
+    "build:local": "tsc",
+    "start:local": "ts-node -r dotenv/config src/index.ts"
   },
   "prisma": {
     "seed": "ts-node --compiler-options {\"module\":\"CommonJS\"} prisma/seed.ts"
