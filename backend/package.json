@@ -36,9 +36,8 @@
     "start": "npx prisma studio & yarn run backend",
     "backend": "nodemon -r dotenv/config src/index.ts",
     "swagger": "ts-node -r dotenv/config src/swagger.ts",
-
-    "build:deprecated": "tsc",
-    "start:deprecated": "ts-node -r dotenv/config src/index.ts"
+    "build:local": "tsc",
+    "start:local": "ts-node -r dotenv/config src/index.ts"
   },
   "prisma": {
     "seed": "ts-node --compiler-options {\"module\":\"CommonJS\"} prisma/seed.ts"

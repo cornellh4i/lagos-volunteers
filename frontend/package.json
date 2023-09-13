@@ -6,10 +6,9 @@
     "build": "yarn install",
     "start": "yarn run dev",
     "dev": "next dev",
-
-    "build:deprecated": "next build",
-    "start:deprecated": "next start",
-    "lint:deprecated": "next lint"
+    "build:local": "next build",
+    "start:local": "next start",
+    "lint:local": "next lint"
   },
   "dependencies": {
     "@emotion/react": "^11.10.6",
