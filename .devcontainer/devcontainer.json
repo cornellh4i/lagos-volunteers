@@ -16,7 +16,10 @@
   // "forwardPorts": [],
 
   // Uncomment the next line to run commands after the container is created.
-  "postCreateCommand": "service postgresql start",
+  // "postCreateCommand": "",
+
+  // Uncomment the next line to run commands after the container is started.
+  "postStartCommand": "service postgresql start",
 
   // Configure tool-specific properties.
   "customizations": {
