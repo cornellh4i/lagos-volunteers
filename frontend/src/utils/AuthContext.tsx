@@ -13,7 +13,7 @@ import {
 	useCreateUserWithEmailAndPassword,
 	useSignOut,
 } from 'react-firebase-hooks/auth';
-import { onAuthStateChanged, UserCredential } from 'firebase/auth';
+import { UserCredential } from 'firebase/auth';
 import { useRouter } from 'next/router';
 
 // Define types for authentication context value
@@ -28,6 +28,7 @@ type AuthContextValue = {
 		email: string,
 		password: string
 	) => Promise<UserCredential | undefined>;
+	isAuthenticated: boolean;
 };
 
 export const AuthContext = createContext<AuthContextValue>({
@@ -39,6 +40,7 @@ export const AuthContext = createContext<AuthContextValue>({
 	createFirebaseUser: async () => {
 		return undefined;
 	},
+	isAuthenticated: false,
 });
 
 // Define props type for authentication provider
@@ -52,6 +54,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 	const [createUserWithEmailAndPassword] =
 		useCreateUserWithEmailAndPassword(auth);
 	const [signOut] = useSignOut(auth);
+	const [isAuthenticated, setIsAuthenticated] = React.useState(false);
 
 	const createFirebaseUser = async (
 		email: string,
@@ -100,6 +103,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 		signOutUser,
 		signInUserWithCustomToken,
 		createFirebaseUser,
+		isAuthenticated,
 	};
 
 	const publicPaths = [
@@ -111,18 +115,18 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 		'/_error',
 	];
 
-	// Note: Authentication works but it flashes the home page before redirecting to login page. Need to find a workaround.
-
 	const router = useRouter();
 	useEffect(() => {
 		const path = router.asPath;
 		if (!user && !publicPaths.includes(path)) {
 			router.replace('/login');
+		} else {
+			setIsAuthenticated(true);
 		}
 	}, [user, router]);
 
-	if (loading) {
-		return <div>loading...</div>;
+	if (loading || !isAuthenticated) {
+		return <div>Loading...</div>;
 	}
 
 	return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

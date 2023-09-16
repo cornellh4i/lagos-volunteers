@@ -10,13 +10,14 @@ import { FormValues } from '@/components/organisms/LoginForm';
 /** A Login page */
 const Login = () => {
 	const { user, loading, signInUser } = useAuth();
+	const [isLogged, setIsLogged] = useState(false);
 	const router = useRouter();
 
-	// Login should happen on page level
+	// // Login should happen on page level
 	const handleLogin: SubmitHandler<FormValues> = async (data) => {
 		try {
 			await signInUser(data.email, data.password);
-			router.push('/');
+			router.replace('/events/view');
 		} catch (error) {
 			console.log(error);
 		}
@@ -28,13 +29,17 @@ const Login = () => {
 	// If you are already logged in, redirect to the home page
 	useEffect(() => {
 		if (user) {
-			router.replace('/events/view');
+			setIsLogged(true);
+			router.push('/events/view');
+		} else {
+			setIsLogged(false);
 		}
 	}, [user, loading]);
 
-	if (loading) {
+	if (user || loading) {
 		return <div>Loading...</div>;
 	}
+
 	return (
 		<WelcomeTemplate>
 			<LoginForm onFormSubmission={handleFormDataSubmission} />
