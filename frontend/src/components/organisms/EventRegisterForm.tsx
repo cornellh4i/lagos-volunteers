@@ -8,7 +8,7 @@ interface EventRegisterFormProps {
  * An EventRegisterForm component
  */
 const EventRegisterForm = ({ eventid }: EventRegisterFormProps) => {
-  return <>Hello there</>;
+  return <>Hello there!</>;
 };
 
 export default EventRegisterForm;
