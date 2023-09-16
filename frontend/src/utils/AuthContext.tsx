@@ -119,6 +119,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 	useEffect(() => {
 		const path = router.asPath;
 		if (!user && !publicPaths.includes(path)) {
+			setIsAuthenticated(false);
 			router.replace('/login');
 		} else {
 			setIsAuthenticated(true);
