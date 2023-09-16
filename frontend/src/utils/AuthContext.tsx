@@ -13,7 +13,7 @@ import {
 	useCreateUserWithEmailAndPassword,
 	useSignOut,
 } from 'react-firebase-hooks/auth';
-import { UserCredential } from 'firebase/auth';
+import { UserCredential, onAuthStateChanged } from 'firebase/auth';
 import { useRouter } from 'next/router';
 
 // Define types for authentication context value
@@ -118,13 +118,18 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 	const router = useRouter();
 	useEffect(() => {
 		const path = router.asPath;
-		if (!user && !publicPaths.includes(path)) {
-			setIsAuthenticated(false);
-			router.replace('/login');
-		} else {
-			setIsAuthenticated(true);
-		}
-	}, [user, router]);
+		const unsubscribe = onAuthStateChanged(auth, (user) => {
+			if (!user && !publicPaths.includes(path)) {
+				console.log('not authenticated');
+				router.replace('/login');
+				setIsAuthenticated(false);
+			} else {
+				console.log('authenticated');
+				setIsAuthenticated(true);
+			}
+		});
+		return unsubscribe;
+	}, [user, router, loading]);
 
 	if (loading || !isAuthenticated) {
 		return <div>Loading...</div>;

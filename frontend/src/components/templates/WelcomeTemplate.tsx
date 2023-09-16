@@ -15,11 +15,11 @@ const WelcomeTemplate = ({ children }: WelcomeTemplateProps) => {
 	// If you are already logged in, redirect to the home page
 	useEffect(() => {
 		if (user && isAuthenticated) {
-			router.push('/events/view');
+			router.replace('/events/view');
 		}
 	}, [user, loading]);
 
-	if (loading || isAuthenticated) {
+	if (loading || user) {
 		return <div>Loading...</div>;
 	}
 
