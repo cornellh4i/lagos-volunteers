@@ -118,7 +118,11 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 	}, [user, router, loading]);
 
 	if (loading || !isAuthenticated) {
-		return <div><Loading/></div>;
+		return (
+			<div>
+				<Loading />
+			</div>
+		);
 	}
 
 	return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

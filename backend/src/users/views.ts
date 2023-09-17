@@ -2,6 +2,7 @@ import { Router, RequestHandler, Request, Response } from "express";
 import userController from "./controllers";
 import { auth, setVolunteerCustomClaims, NoAuth } from "../middleware/auth";
 const userRouter = Router();
+import * as firebase from "firebase-admin";
 
 import { attempt } from "../utils/helpers";
 
@@ -16,14 +17,36 @@ userRouter.post(
   NoAuth as RequestHandler,
   async (req: Request, res: Response) => {
     // #swagger.tags = ['Users']
-    attempt(res, 201, () =>
-      userController.createUser(
-        req.body,
-        req.body.profile,
-        req.body.preferences,
-        req.body.permissions
-      )
-    );
+    const { password, ...rest } = req.body;
+
+    try {
+      const user = await userController.createUser(
+        rest,
+        rest.profile,
+        rest.preferences,
+        rest.permissions
+      );
+      if (user) {
+        try {
+          const fbUser = await firebase.auth().createUser({
+            uid: user.id,
+            email: rest.email,
+            password: password,
+          });
+          if (fbUser) {
+            await firebase.auth().setCustomUserClaims(fbUser.uid, {
+              volunteer: true,
+            });
+          }
+        } catch (e: any) {
+          await userController.deleteUser(user.id);
+          return res.status(500).send({ success: false, error: e.message });
+        }
+      }
+      return res.status(200).send({ success: true, data: user });
+    } catch (e: any) {
+      return res.status(500).send({ success: false, error: e.message });
+    }
   }
 );
 
@@ -103,6 +126,14 @@ userRouter.get(
 
 userRouter.get("/:userid", useAuth, async (req: Request, res: Response) => {
   // #swagger.tags = ['Users']
+  // try {
+  //   console.log(req.params.userid);
+  //   const claims = await firebase.auth().getUser(req.params.userid);
+  //   return res.status(200).send({ success: true, data: claims });
+  // } catch (e: any) {
+  //   return res.status(500).send({ success: false, error: e.message });
+  // }
+  console.log(req.params.userid);
   attempt(res, 200, () => userController.getUserByID(req.params.userid));
 });
 
