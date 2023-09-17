@@ -2,6 +2,7 @@ import React, { ReactNode, useEffect } from 'react';
 import NavBar from '@/components/organisms/NavBar';
 import { useRouter } from 'next/router';
 import { useAuth } from '@/utils/AuthContext';
+import Loading from '../organisms/Loading';
 
 /** A WelcomeTemplate page */
 interface WelcomeTemplateProps {
@@ -20,7 +21,11 @@ const WelcomeTemplate = ({ children }: WelcomeTemplateProps) => {
 	}, [user, loading]);
 
 	if (loading || user) {
-		return <div>Loading...</div>;
+		return (
+			<div>
+				<Loading />
+			</div>
+		);
 	}
 
 	return (

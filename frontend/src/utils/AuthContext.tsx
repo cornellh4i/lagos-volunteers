@@ -15,6 +15,7 @@ import {
 } from 'react-firebase-hooks/auth';
 import { UserCredential, onAuthStateChanged } from 'firebase/auth';
 import { useRouter } from 'next/router';
+import Loading from '@/components/organisms/Loading';
 
 // Define types for authentication context value
 type AuthContextValue = {
@@ -49,12 +50,6 @@ type AuthProviderProps = {
 
 export const AuthProvider = ({ children }: AuthProviderProps) => {
 	const [user, loading, error] = useAuthState(auth);
-	const [
-		signInWithEmailAndPassword,
-		signedInUser,
-		signInLoading,
-		signInErrors,
-	] = useSignInWithEmailAndPassword(auth);
 	const [createUserWithEmailAndPassword] =
 		useCreateUserWithEmailAndPassword(auth);
 	const [signOut] = useSignOut(auth);
@@ -123,7 +118,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 	}, [user, router, loading]);
 
 	if (loading || !isAuthenticated) {
-		return <div>Loading...</div>;
+		return <div><Loading/></div>;
 	}
 
 	return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
