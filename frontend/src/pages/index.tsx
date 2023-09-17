@@ -29,7 +29,6 @@ const Home = () => {
 			const userId = auth.currentUser?.uid;
 			const token = await auth.currentUser?.getIdToken();
 			const fetchUrl = `${url}/users/${userId}`;
-			console.log(fetchUrl);
 
 			const response = await fetch(fetchUrl, {
 				method: 'GET',

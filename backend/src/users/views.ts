@@ -126,14 +126,7 @@ userRouter.get(
 
 userRouter.get("/:userid", useAuth, async (req: Request, res: Response) => {
   // #swagger.tags = ['Users']
-  // try {
-  //   console.log(req.params.userid);
-  //   const claims = await firebase.auth().getUser(req.params.userid);
-  //   return res.status(200).send({ success: true, data: claims });
-  // } catch (e: any) {
-  //   return res.status(500).send({ success: false, error: e.message });
-  // }
-  console.log(req.params.userid);
+
   attempt(res, 200, () => userController.getUserByID(req.params.userid));
 });
 
