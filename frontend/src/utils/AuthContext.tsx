@@ -20,8 +20,7 @@ import { useRouter } from 'next/router';
 type AuthContextValue = {
 	user: User | null | undefined;
 	loading: boolean;
-	error?: AuthError | Error | null | undefined;
-	signInUser: (email: string, password: string) => Promise<void>;
+	error: AuthError | Error | null | undefined;
 	signOutUser: () => Promise<void>;
 	signInUserWithCustomToken: (token: string) => Promise<void>;
 	createFirebaseUser: (
@@ -34,7 +33,7 @@ type AuthContextValue = {
 export const AuthContext = createContext<AuthContextValue>({
 	user: undefined,
 	loading: true,
-	signInUser: async () => {},
+	error: undefined,
 	signInUserWithCustomToken: async () => {},
 	signOutUser: async () => {},
 	createFirebaseUser: async () => {
@@ -50,7 +49,12 @@ type AuthProviderProps = {
 
 export const AuthProvider = ({ children }: AuthProviderProps) => {
 	const [user, loading, error] = useAuthState(auth);
-	const [signInWithEmailAndPassword] = useSignInWithEmailAndPassword(auth);
+	const [
+		signInWithEmailAndPassword,
+		signedInUser,
+		signInLoading,
+		signInErrors,
+	] = useSignInWithEmailAndPassword(auth);
 	const [createUserWithEmailAndPassword] =
 		useCreateUserWithEmailAndPassword(auth);
 	const [signOut] = useSignOut(auth);
@@ -77,16 +81,6 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 		}
 	};
 
-	const signInUser = async (email: string, password: string) => {
-		try {
-			const result = await signInWithEmailAndPassword(email, password);
-			console.log(result);
-		} catch (error) {
-			// TODO: Handle Different Auth Errors
-			console.log(error);
-		}
-	};
-
 	const signOutUser = async () => {
 		try {
 			await signOut();
@@ -99,7 +93,6 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 		user,
 		loading,
 		error,
-		signInUser,
 		signOutUser,
 		signInUserWithCustomToken,
 		createFirebaseUser,
@@ -120,11 +113,9 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 		const path = router.asPath;
 		const unsubscribe = onAuthStateChanged(auth, (user) => {
 			if (!user && !publicPaths.includes(path)) {
-				console.log('not authenticated');
 				router.replace('/login');
 				setIsAuthenticated(false);
 			} else {
-				console.log('authenticated');
 				setIsAuthenticated(true);
 			}
 		});

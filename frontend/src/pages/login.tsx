@@ -9,25 +9,9 @@ import { FormValues } from '@/components/organisms/LoginForm';
 
 /** A Login page */
 const Login = () => {
-	const { signInUser } = useAuth();
-	const router = useRouter();
-
-	// Log a user in
-	const handleLogin: SubmitHandler<FormValues> = async (data) => {
-		try {
-			await signInUser(data.email, data.password);
-			router.replace('/events/view');
-		} catch (error) {
-			console.log(error);
-		}
-	};
-	const handleFormDataSubmission = (data: FormValues) => {
-		handleLogin(data);
-	};
-
 	return (
 		<WelcomeTemplate>
-			<LoginForm onFormSubmission={handleFormDataSubmission} />
+			<LoginForm />
 		</WelcomeTemplate>
 	);
 };

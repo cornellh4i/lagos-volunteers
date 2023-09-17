@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Divider from '@mui/material/Divider';
 import Button from '../atoms/Button';
 import TextField from '../atoms/TextField';
@@ -6,17 +6,26 @@ import { useForm, SubmitHandler } from 'react-hook-form';
 import { useAuth } from '@/utils/AuthContext';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
+import { auth } from '@/utils/firebase';
+import CustomAlert from '../atoms/CustomAlert';
+
+import { useSignInWithEmailAndPassword } from 'react-firebase-hooks/auth';
 
 export type FormValues = {
 	email: string;
 	password: string;
 };
 
-interface LoginFormProps {
-	onFormSubmission: (data: FormValues) => void;
-}
+const LoginForm = () => {
+	const [isLoading, setIsLoading] = useState(false);
+	const router = useRouter();
+	const [
+		signInWithEmailAndPassword,
+		signedInUser,
+		signInLoading,
+		signInErrors,
+	] = useSignInWithEmailAndPassword(auth);
 
-const LoginForm = ({ onFormSubmission }: LoginFormProps) => {
 	const {
 		register,
 		handleSubmit,
@@ -24,12 +33,50 @@ const LoginForm = ({ onFormSubmission }: LoginFormProps) => {
 		formState: { errors },
 	} = useForm<FormValues>();
 
+	const handleErrors = (errors: any) => {
+		switch (errors) {
+			case 'auth/invalid-email':
+				return 'Invalid email address format.';
+			case 'auth/user-disabled':
+				return 'User with this email has been disabled.';
+			case 'auth/user-not-found':
+				return 'There is no user with this email address.';
+			case 'auth/wrong-password':
+				return 'Invalid email or password.';
+			default:
+				return 'Something went wrong.';
+		}
+	};
+
+	const LoginErrorComponent = (): JSX.Element => {
+		return (
+			<div>
+				{signInErrors ? (
+					<CustomAlert
+						severity='error'
+						title='Error'
+						message={handleErrors(signInErrors?.code)}
+					/>
+				) : null}
+			</div>
+		);
+	};
+
 	const handleLogin: SubmitHandler<FormValues> = async (data) => {
-		onFormSubmission(data);
+		const { email, password } = data;
+		setIsLoading(true);
+		try {
+			await signInWithEmailAndPassword(email, password);
+			if (signedInUser) {
+				router.push('/events/view');
+			}
+		} catch (err) {}
+		setIsLoading(false);
 	};
 
 	return (
 		<div className='space-y-4 '>
+			<LoginErrorComponent />
 			<form onSubmit={handleSubmit(handleLogin)} className='space-y-4 '>
 				<div className='font-bold text-3xl'> Log In </div>
 				<div>
@@ -58,7 +105,7 @@ const LoginForm = ({ onFormSubmission }: LoginFormProps) => {
 					</Link>
 				</div>
 				<div>
-					<Button type='submit' color='dark-gray'>
+					<Button isLoading={isLoading} type='submit' color='dark-gray'>
 						Log In
 					</Button>
 				</div>
