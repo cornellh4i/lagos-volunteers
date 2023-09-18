@@ -12,7 +12,7 @@ interface CardListProps {
 const CardList = ({ children }: CardListProps) => {
   return (
     <>
-      <div className="flex grow space-x-6">{children}</div>
+      <div className="flex space-x-6">{children}</div>
     </>
   );
 };

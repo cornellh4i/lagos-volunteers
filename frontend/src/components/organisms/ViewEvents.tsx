@@ -31,14 +31,14 @@ const UpcomingEvents = () => {
         location={"jameson"}
         datetime={"today lol"}
       />
-      {/* <EventCard
+      <EventCard
         eventid={"000"}
         mainAction={"rsvp"}
         dropdownActions={["cancel rsvp"]}
         title={"test3"}
         location={"jameson"}
         datetime={"today lol"}
-      /> */}
+      />
     </CardList>
   );
 };
