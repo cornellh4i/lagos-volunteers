@@ -62,7 +62,7 @@ const EventRegisterForm = ({ eventid }: EventRegisterFormProps) => {
             in hendrerit urna. Pellentesque sit amet sapien fringilla, mattis
             ligula consectetur, ultrices mauris.
           </div>
-          <div className="font-bold">Terms and Conditions*</div>
+          <div className="font-bold pt-4">Terms and Conditions*</div>
           <div>
             By registering, I agree that I will attend the event. If I cannot
             attend, I will cancel my registration at least 24 hours before the
@@ -71,7 +71,7 @@ const EventRegisterForm = ({ eventid }: EventRegisterFormProps) => {
           </div>
           <CustomCheckbox label="I agree to the terms and conditions" />
         </div>
-        <div className="col-start-2 col-end-4 md:pt-8">
+        <div className="col-start-1 col-end-5 pt-4 md:col-start-2 md:col-end-4 md:pt-8">
           <Button
             children="Register"
             color="gray"
