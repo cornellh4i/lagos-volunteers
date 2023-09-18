@@ -1,7 +1,7 @@
 import React from "react";
 
 interface IconTextProps {
-  icon: React.ReactElement;
+  icon: any;
   text: string;
 }
 

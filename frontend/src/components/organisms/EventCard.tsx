@@ -3,6 +3,8 @@ import IconText from "@/components/atoms/IconText";
 import Button from "@/components/atoms/Button";
 import IconButton from "@mui/material/IconButton";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
+import { Card } from "@mui/material";
+import LocationOnIcon from "@mui/icons-material/LocationOn";
 
 type Action = "rsvp" | "cancel rsvp" | "publish" | "manage attendees" | "edit";
 
@@ -36,39 +38,56 @@ const EventCard = ({
 }: EventCardProps) => {
   return (
     <>
-      {
-        <div className="flex flex-col h-32">
-          {" "}
-          <div className="grid grid-cols-12 grow">
-            <div className="block rounded-lg items-center bg-white p-6 sm:col-span-2 shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)] dark:bg-neutral-700">
-              <h5
-                text-left
-                item-center
-                className="mb-2 text-xl font-medium leading-tight text-neutral-800 dark:text-neutral-50"
-              >
-                {title}
-              </h5>
-              <p text-left item-center>
-                {location}
-              </p>
-              <p text-left item-center>
-                {datetime}
-              </p>
-              <div className="inline-flex">
-                <Button color="gray">{mainAction}</Button>
-                <IconButton
-                  onClick={() => {
-                    dropdownActions;
-                  }}
-                  aria-label="dropdown"
-                >
-                  <MoreVertIcon />
-                </IconButton>
-              </div>
-            </div>
-          </div>
+      {/* {
+        // <div className="flex flex-col h-32">
+        //   {" "}
+        //   <div className="grid grid-cols-12 grow">
+        //     <div className="block rounded-lg items-center bg-white p-6 sm:col-span-2 shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)] dark:bg-neutral-700">
+        //       <h5
+        //         text-left
+        //         item-center
+        //         className="mb-2 text-xl font-medium leading-tight text-neutral-800 dark:text-neutral-50"
+        //       >
+        //         {title}
+        //       </h5>
+        //       <p text-left item-center>
+        //         {location}
+        //       </p>
+        //       <p text-left item-center>
+        //         {datetime}
+        //       </p>
+        //       <div className="inline-flex">
+        //         <Button color="gray">{mainAction}</Button>
+        //         <IconButton
+        //           onClick={() => {
+        //             dropdownActions;
+        //           }}
+        //           aria-label="dropdown"
+        //         >
+        //           <MoreVertIcon />
+        //         </IconButton>
+        //       </div>
+        //     </div>
+        //   </div>
+        // </div>
+          {/* <Card variant="outlined">
+            <CardContent>
+              <Typography>Outlined card (default)</Typography>
+              <Typography>Description of the card.</Typography>
+            </CardContent>
+          </Card> */}
+      <Card variant="outlined" className="w-3/12">
+        <div className="p-5">
+          <h1>{title}</h1>
+          <p>{location}</p>
+          <p>{datetime}</p>
+          <Button color="gray" type="button">
+            Cancel RSVP
+          </Button>
+          {/* <IconText icon={LocationOnIcon.prototype} text={location}> */}
+          {/* </IconText> */}
         </div>
-      }
+      </Card>
     </>
   );
 };

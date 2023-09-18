@@ -19,7 +19,7 @@ const UpcomingEvents = () => {
         eventid={"000"}
         mainAction={"rsvp"}
         dropdownActions={["cancel rsvp"]}
-        title={"snehar"}
+        title={"test1"}
         location={"jameson"}
         datetime={"today lol"}
       />
@@ -27,18 +27,18 @@ const UpcomingEvents = () => {
         eventid={"000"}
         mainAction={"rsvp"}
         dropdownActions={["cancel rsvp"]}
-        title={"snehar"}
+        title={"test2"}
         location={"jameson"}
         datetime={"today lol"}
       />
-      <EventCard
+      {/* <EventCard
         eventid={"000"}
         mainAction={"rsvp"}
         dropdownActions={["cancel rsvp"]}
-        title={"snehar"}
+        title={"test3"}
         location={"jameson"}
         datetime={"today lol"}
-      />
+      /> */}
     </CardList>
   );
 };

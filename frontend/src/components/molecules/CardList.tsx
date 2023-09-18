@@ -1,5 +1,5 @@
 import React, { ReactElement, Children } from "react";
-import EventCard from "@/components/molecules/EventCard";
+//import EventCard from "@/components/molecules/EventCard";
 
 interface CardListProps {
   children: ReactElement[];
@@ -12,7 +12,7 @@ interface CardListProps {
 const CardList = ({ children }: CardListProps) => {
   return (
     <>
-      <div className="flex h-screen">{children}</div>
+      <div className="flex grow space-x-6">{children}</div>
     </>
   );
 };
