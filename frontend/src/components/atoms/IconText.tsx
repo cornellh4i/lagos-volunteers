@@ -12,7 +12,7 @@ const IconText = ({ icon, text }: IconTextProps) => {
   return (
     <>
       <div className="flex items-center">
-        <div className={"flex-left"}>{icon}</div>
+        <div className="flex-left">{icon}</div>
         <div className="flex-left">{text}</div>
       </div>
     </>
