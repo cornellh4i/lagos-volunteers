@@ -5,8 +5,8 @@ import Button from "../atoms/Button";
 import { Modal } from "@mui/material";
 import Link from "next/link";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-import IconText from "../atoms/IconText"
-import AccessTimeFilledIcon from '@mui/icons-material/AccessTimeFilled';
+import IconText from "../atoms/IconText";
+import AccessTimeFilledIcon from "@mui/icons-material/AccessTimeFilled";
 import MultilineTextField from "../atoms/MultilineTextField";
 import { useForm, SubmitHandler } from "react-hook-form";
 
@@ -78,10 +78,14 @@ const EventCancelForm = ({ eventid }: EventCancelFormProps) => {
             in hendrerit urna. Pellentesque sit amet sapien fringilla, mattis
             ligula consectetur, ultrices mauris.
           </div>
-          <div className="font-bold text-xl pt-6">You are registered for this event.</div>
+          <div className="font-bold text-xl pt-6">
+            You are registered for this event.
+          </div>
           <div>
-            <IconText icon={<AccessTimeFilledIcon/>} 
-              text="4 hours left to cancel registration" />
+            <IconText
+              icon={<AccessTimeFilledIcon />}
+              text="4 hours left to cancel registration"
+            />
           </div>
           <div className="pt-4">
             If you can no longer attend, please cancel your registration.
@@ -91,13 +95,15 @@ const EventCancelForm = ({ eventid }: EventCancelFormProps) => {
           <div className="pt-4">
             <MultilineTextField
               requiredMessage={"" ? "Required" : undefined}
+              labelStyling="font-semibold"
+              placeholder="Your answer here"
               name="email"
               type="email"
               register={register}
               label="Reason for cancelling*"
               required={true}
             />
-        </div>
+          </div>
         </div>
         <div className="col-start-1 col-end-5 pt-4 md:col-start-2 md:col-end-4 md:pt-8">
           <Button

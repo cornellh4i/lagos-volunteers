@@ -1,4 +1,4 @@
-import React, { ReactElement } from "react";
+import React from "react";
 import { TextField } from "@mui/material";
 import { RegisterOptions, UseFormRegisterReturn } from "react-hook-form";
 
@@ -7,6 +7,7 @@ interface MultilineTextFieldProps {
   labelStyling?: string;
   required: boolean;
   type?: string;
+  placeholder?: string;
   requiredMessage?: string;
   name: string;
   register: (name: any, options?: RegisterOptions) => UseFormRegisterReturn;
@@ -16,6 +17,7 @@ interface MultilineTextFieldProps {
 const MultilineTextField = ({
   label,
   labelStyling,
+  placeholder,
   name,
   required,
   type = "text",
@@ -32,7 +34,7 @@ const MultilineTextField = ({
       <TextField
         id="outlined-multiline-static"
         multiline
-        placeholder="Your answer here "
+        placeholder={placeholder}
         rows={4}
         sx={{ borderRadius: 2, borderColor: "primary.main" }}
         required={required}
