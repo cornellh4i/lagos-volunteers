@@ -35,8 +35,10 @@ const EventDetails = ({
       <div className="text-2xl font-semibold mb-6">{title}</div>
       <div className="grid grid-cols-2 gap-4">
         <div className="col-span-2 md:col-span-1">
-        <img
-            src={"https://i0.wp.com/roadmap-tech.com/wp-content/uploads/2019/04/placeholder-image.jpg?resize=800%2C800&ssl=1"}
+          <img
+            src={
+              "https://i0.wp.com/roadmap-tech.com/wp-content/uploads/2019/04/placeholder-image.jpg?resize=800%2C800&ssl=1"
+            }
             className="object-cover h-56 w-full"
           />
         </div>
@@ -47,15 +49,22 @@ const EventDetails = ({
           <div className="space-y-0.5 mb-4">
             <IconText
               icon={<LocationOnIcon />}
+              iconClass="text-gray-400"
               text={"LOCATION (" + location + ")"}
             />
-            <IconText icon={<CalendarMonthIcon />} text={datetime} />
+            <IconText
+              icon={<CalendarMonthIcon />}
+              iconClass="text-gray-400"
+              text={datetime}
+            />
             <IconText
               icon={<PersonIcon />}
+              iconClass="text-gray-400"
               text={"Supervisor: " + supervisor}
             />
             <IconText
               icon={<PersonIcon />}
+              iconClass="text-gray-400"
               text={"Event Capacity: " + capacity.toString()}
             />
           </div>
