@@ -43,7 +43,7 @@ const EventRegisterForm = ({ eventid }: EventRegisterFormProps) => {
             </Link>
           </div>
 
-          <div className="font-semibold text-2xl">Event Registration</div>
+          <div className="font-semibold text-3xl">Event Registration</div>
           <div>
             <EventDetails
               title="EDUFOOD"
