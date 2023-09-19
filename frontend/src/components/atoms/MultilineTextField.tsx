@@ -1,9 +1,10 @@
-import React from "react";
+import React, { ReactElement } from "react";
 import { TextField } from "@mui/material";
 import { RegisterOptions, UseFormRegisterReturn } from "react-hook-form";
 
 interface MultilineTextFieldProps {
   label: string;
+  labelStyling?: string;
   required: boolean;
   type?: string;
   requiredMessage?: string;
@@ -14,6 +15,7 @@ interface MultilineTextFieldProps {
 /** A MultilineTextField page */
 const MultilineTextField = ({
   label,
+  labelStyling,
   name,
   required,
   type = "text",
@@ -24,11 +26,13 @@ const MultilineTextField = ({
     <div>
       <div>
         {" "}
-        {label} <span className="text-red-500">{requiredMessage}</span>
+        <span className={labelStyling}>{label} </span>
+        <span className="text-red-500">{requiredMessage}</span>
       </div>
       <TextField
         id="outlined-multiline-static"
         multiline
+        placeholder="Your answer here "
         rows={4}
         sx={{ borderRadius: 2, borderColor: "primary.main" }}
         required={required}
