@@ -32,7 +32,8 @@
     "react-dom": "18.2.0",
     "react-firebase-hooks": "^5.1.1",
     "react-hook-form": "^7.43.9",
-    "typescript": "4.9.5"
+    "typescript": "4.9.5",
+    "@mui/material": "5.14.10"
   },
   "devDependencies": {
     "autoprefixer": "^10.4.13",

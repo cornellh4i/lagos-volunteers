@@ -8,6 +8,7 @@ import { onAuthStateChanged, getAuth } from "firebase/auth";
 import { auth } from "@/utils/firebase";
 import { useAuth } from "@/utils/AuthContext";
 import Avatar from "@/components/molecules/Avatar";
+import { Modal } from "@mui/material";
 
 type userData = {
   id: string;
