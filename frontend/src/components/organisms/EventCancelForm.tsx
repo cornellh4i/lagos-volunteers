@@ -58,7 +58,7 @@ const EventCancelForm = ({ eventid }: EventCancelFormProps) => {
             </Link>
           </div>
 
-          <div className="font-semibold text-2xl">Cancel Registration</div>
+          <div className="font-semibold text-3xl">Cancel Registration</div>
           <div>
             {/* dummy data, to be replaced during full-stack */}
             <EventDetails
