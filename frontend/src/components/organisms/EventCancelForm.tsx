@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import EventDetails from "./EventDetails";
-import CustomCheckbox from "../atoms/Checkbox";
 import Button from "../atoms/Button";
 import { Modal } from "@mui/material";
 import Link from "next/link";
@@ -8,7 +7,7 @@ import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import IconText from "../atoms/IconText";
 import AccessTimeFilledIcon from "@mui/icons-material/AccessTimeFilled";
 import MultilineTextField from "../atoms/MultilineTextField";
-import { useForm, SubmitHandler } from "react-hook-form";
+import { useForm } from "react-hook-form";
 
 interface EventCancelFormProps {
   eventid: string;
@@ -33,8 +32,6 @@ const EventCancelForm = ({ eventid }: EventCancelFormProps) => {
 
   const {
     register,
-    handleSubmit,
-    watch,
     formState: { errors },
   } = useForm<FormValues>();
 
@@ -93,16 +90,18 @@ const EventCancelForm = ({ eventid }: EventCancelFormProps) => {
             begins.
           </div>
           <div className="pt-4">
-            <MultilineTextField
-              requiredMessage={"" ? "Required" : undefined}
-              labelStyling="font-semibold"
-              placeholder="Your answer here"
-              name="email"
-              type="email"
-              register={register}
-              label="Reason for cancelling*"
-              required={true}
-            />
+            <form>
+              <MultilineTextField
+                requiredMessage={"" ? "Required" : undefined}
+                labelStyling="font-semibold"
+                placeholder="Your answer here"
+                name="email"
+                type="email"
+                register={register}
+                label="Reason for cancelling*"
+                required={true}
+              />
+            </form>
           </div>
         </div>
         <div className="col-start-1 col-end-5 pt-4 md:col-start-2 md:col-end-4 md:pt-8">
