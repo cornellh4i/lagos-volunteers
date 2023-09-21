@@ -17,49 +17,7 @@ userRouter.post(
   NoAuth as RequestHandler,
   async (req: Request, res: Response) => {
     // #swagger.tags = ['Users']
-    // const { password, ...rest } = req.body;
-    // attempt(res, 201, () =>
-    //   userController.createUser(
-    //     req.body,
-    //     req.body.profile,
-    //     req.body.preferences,
-    //     req.body.permissions
-    //   )
-    // );
     const { password, ...rest } = req.body;
-    // userController
-    //   .createUser(rest, rest.profile, rest.preferences, rest.permissions)
-    //   .then((user) => {
-    //     firebase
-    //       .auth()
-    //       .createUser({
-    //         uid: user.id,
-    //         email: rest.email,
-    //         password: password,
-    //       })
-    //       .then((fbUser) => {
-    //         firebase.auth().setCustomUserClaims(fbUser.uid, {
-    //           volunteer: true,
-    //         });
-    //         return res.status(200).send({ success: true, user: user });
-    //       })
-    //       .catch((e) => {
-    //         // remove user from database
-    //         console.log(e);
-    //         userController
-    //           .deleteUser(user.id)
-    //           .then(() => {})
-    //           .catch((e) => {
-    //             return res
-    //               .status(500)
-    //               .send({ success: false, error: e.message });
-    //           });
-    //         return res.status(500).send({ success: false, error: e.code });
-    //       });
-    //   })
-    //   .catch((e) => {
-    //     return res.status(500).send({ success: false, error: e.message });
-    //   });
     try {
       const user = await userController.createUser(
         rest,

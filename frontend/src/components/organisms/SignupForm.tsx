@@ -46,10 +46,18 @@ const SignupForm = () => {
 	const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
 	const handleErrors = (errors: any) => {
-		// Firebase create user errors
+		const userAlreadyExistsPrisma = /Unique constraint failed/;
+
+		if (userAlreadyExistsPrisma.test(errors)) {
+			return 'A user with that email already exists.';
+		} else if (errors == 'Passwords do not match') {
+			return 'Passwords do not match';
+		}
+
+		// Firebase errors
 		switch (errors) {
 			case 'auth/email-already-exists':
-				return 'Email already in use. Please choose another email.';
+				return 'A user with that email already exists.';
 			case 'auth/invalid-email':
 				return 'Invalid email address format.';
 			case 'auth/invalid-password':
@@ -90,9 +98,10 @@ const SignupForm = () => {
 
 		try {
 			if (password != data.confirmPassword) {
+				setIsLoading(false);
+				setErrorMessage('Passwords do not match');
 				return;
 			}
-
 			const response = await fetch(`${BASE_URL}/users`, {
 				method: 'POST',
 				headers: {
@@ -101,7 +110,6 @@ const SignupForm = () => {
 				body: JSON.stringify(post),
 			});
 			const r = await response.json();
-			console.log(r);
 			if (response.ok) {
 				const signIn = await signInWithEmailAndPassword(email, password);
 				if (signIn?.user) {
@@ -109,14 +117,13 @@ const SignupForm = () => {
 				}
 				setIsLoading(false);
 			} else {
+				console.log(r);
 				setErrorMessage(r.error);
 			}
 		} catch (error: any) {
 			setErrorMessage(error.message);
 		}
 		setIsLoading(false);
-
-		// Remeber handling errors for mismatched signup credentials
 	};
 
 	return (
