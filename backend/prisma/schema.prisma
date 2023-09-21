@@ -17,6 +17,14 @@ model User {
   posts Post[]
 }
 
+model Profile{
+  id    Int     @id @default(autoincrement())
+  email String?
+  following Int? @default(0)
+  followers Int? @default(0)
+
+}
+
 model Post {
   id        Int      @id @default(autoincrement())
   createdAt DateTime @default(now())
