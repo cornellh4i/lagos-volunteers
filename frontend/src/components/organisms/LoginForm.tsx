@@ -9,7 +9,10 @@ import Link from 'next/link';
 import { auth } from '@/utils/firebase';
 import CustomAlert from '../atoms/CustomAlert';
 
-import { useSignInWithEmailAndPassword } from 'react-firebase-hooks/auth';
+import {
+	useSignInWithEmailAndPassword,
+	useSignInWithGoogle,
+} from 'react-firebase-hooks/auth';
 
 export type FormValues = {
 	email: string;
@@ -25,6 +28,10 @@ const LoginForm = () => {
 		signInLoading,
 		signInErrors,
 	] = useSignInWithEmailAndPassword(auth);
+
+	// Sign in With Google
+	const [signInWithGoogle, googleUser, googleLoading, googleError] =
+		useSignInWithGoogle(auth);
 
 	const {
 		register,
@@ -62,9 +69,21 @@ const LoginForm = () => {
 		);
 	};
 
-	const handleLogin: SubmitHandler<FormValues> = async (data) => {
-		const { email, password } = data;
+	const handleGoogleLogin = async () => {
 		setIsLoading(true);
+		try {
+			await signInWithGoogle();
+			if (googleUser) {
+				router.push('/events/view');
+			}
+		} catch (err) {}
+		setIsLoading(false);
+	};
+
+	const handleLogin: SubmitHandler<FormValues> = async (data) => {
+		setIsLoading(true);
+		const { email, password } = data;
+
 		try {
 			await signInWithEmailAndPassword(email, password);
 			if (signedInUser) {
@@ -114,16 +133,16 @@ const LoginForm = () => {
 				</div>
 			</form>
 			<div>
+				<Button onClick={() => handleGoogleLogin()} type='submit' color='gray'>
+					Continue with Google
+				</Button>
+			</div>
+			<div>
 				<Link href='/signup'>
 					<Button type='submit' color='gray'>
 						Sign up with Email
 					</Button>
 				</Link>
-			</div>
-			<div>
-				<Button type='submit' color='gray'>
-					Continue with Google
-				</Button>
 			</div>
 		</div>
 	);

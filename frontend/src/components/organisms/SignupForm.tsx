@@ -21,12 +21,6 @@ type FormValues = {
 
 const SignupForm = () => {
 	const [
-		createUserWithEmailAndPassword,
-		createdUser,
-		createdUserLoading,
-		createdUserErrors,
-	] = useCreateUserWithEmailAndPassword(auth);
-	const [
 		signInWithEmailAndPassword,
 		signedInUser,
 		signInLoading,
