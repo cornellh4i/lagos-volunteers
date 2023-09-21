@@ -24,9 +24,16 @@ const EventRegisterForm = ({ eventid }: EventRegisterFormProps) => {
   );
 
   const [open, setOpen] = useState(false);
-  const handleOpen = () => setOpen(true);
+  const handleOpen = () => {
+    if (checked) {
+      setOpen(true);
+    }
+  };
   const handleClose = () => setOpen(false);
-
+  const [checked, setChecked] = useState(false);
+  const handleChange = () => {
+    setChecked((checked) => !checked);
+  };
   return (
     <div>
       <Modal open={open} onClose={handleClose}>
@@ -69,7 +76,12 @@ const EventRegisterForm = ({ eventid }: EventRegisterFormProps) => {
             event begins. Failure to cancel my registration may negatively
             impact my status as a volunteer.
           </div>
-          <CustomCheckbox label="I agree to the terms and conditions" />
+
+          <CustomCheckbox
+            label="I agree to the terms and conditions"
+            onChange={handleChange}
+            checked={checked}
+          />
         </div>
         <div className="col-start-1 col-end-5 pt-4 md:col-start-2 md:col-end-4 md:pt-8">
           <Button
