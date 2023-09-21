@@ -7,6 +7,7 @@ import {
   User,
   Event,
 } from "../src/utils/script";
+import { PrimaryExpression } from "typescript";
 
 /**
  * This function is used to seed the database with dummy data.
@@ -18,6 +19,7 @@ const userDataSeed: Prisma.UserCreateInput[] = [];
 
 async function createPoolOfRandomUsers(pool: number) {
   const users: User[] = [];
+  f;
   for (let i = 0; i < pool; i++) {
     users.push(createRandomUser());
   }
@@ -85,6 +87,19 @@ async function createPoolOfRandomEvents(pool: number) {
     });
   });
 }
+
+const onboardingDate = formatISO(new Date("2019-01-16"));
+
+const onboarding: Prisma.ProfileCreateInput[] = [
+  {
+    bio: "Hi I'm Alice",
+    following: 1,
+    followers: 2,
+    createdAt: onboardingDate,
+    updatedAt: onboardingDate,
+    user: undefined,
+  },
+];
 
 const userData: Prisma.UserCreateInput[] = [
   {
@@ -251,6 +266,7 @@ async function enrollAlice() {
 }
 
 async function main() {
+  await prisma.profile.deleteMany();
   console.log(`Start seeding ...`);
 
   await prisma.eventEnrollment.deleteMany({});

@@ -29,18 +29,31 @@ model User {
   permissions   Permission[]      @relation(name: "RolePermission")
 }
 
+
 model Profile {
-  // Profile info
-  firstName           String?
-  lastName            String?
-  nickname            String?
-  imageURL            String?
-  disciplinaryNotices Int?    @default(0)
-  user                User    @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  userId              String
+  bio       String?
+  following Int?      @default(0)
+  followers Int?      @default(0)
+  createdAt DateTime? @default(now())
+  updatedAt DateTime? @updatedAt
+  userId    String
+  user      User?     @relation(fields: [userId], references: [id])
 
   @@id([userId])
 }
+
+// model Profile {
+//   // Profile info
+//   firstName           String?
+//   lastName            String?
+//   nickname            String?
+//   imageURL            String?
+//   disciplinaryNotices Int?    @default(0)
+//   user                User    @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+//   userId              String
+
+//   @@id([userId])
+// }
 
 model UserPreferences {
   // User settings info
