@@ -52,6 +52,7 @@ const Profile = () => {
 				firstName: data['data'][0]['profile']['firstName'],
 				lastName: data['data'][0]['profile']['lastName'],
 				nickname: data['data'][0]['profile']['nickname'] || '',
+				imageUrl: data['data'][0]['profile']['imageUrl'] || '',
 			});
 			console.log(data);
 		} catch (error) {
@@ -73,6 +74,7 @@ const Profile = () => {
 						name={`${userDetails?.firstName} ${userDetails?.lastName}`}
 						hour={20}
 						start_date={date}
+						url={userDetails?.imageUrl}
 					/>
 				</Banner>
 			}>

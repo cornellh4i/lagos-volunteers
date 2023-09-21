@@ -78,8 +78,9 @@ const SignupForm = () => {
 
 		event?.preventDefault(); // do we need this though?
 		const { firstName, lastName, email, password } = data;
+		const emailLowerCase = email.toLowerCase();
 		const post = {
-			email,
+			email: emailLowerCase,
 			profile: {
 				firstName,
 				lastName,
