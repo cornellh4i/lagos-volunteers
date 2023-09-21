@@ -7,7 +7,5 @@
     "test": "cd backend && yarn run test",
     "start": "(cd backend && yarn run start) & (cd frontend && yarn run start)"
   },
-  "dependencies": {
-    "react-icons": "^4.11.0"
-  }
+  "dependencies": {}
 }

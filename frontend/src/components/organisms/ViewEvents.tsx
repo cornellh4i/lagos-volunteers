@@ -14,32 +14,60 @@ type Action = "rsvp" | "cancel rsvp" | "publish" | "manage attendees" | "edit";
 
 const UpcomingEvents = () => {
   return (
-    <CardList>
-      <EventCard
-        eventid={"000"}
-        mainAction={"rsvp"}
-        dropdownActions={["cancel rsvp"]}
-        title={"test1"}
-        location={"jameson"}
-        datetime={"today lol"}
-      />
-      <EventCard
-        eventid={"000"}
-        mainAction={"rsvp"}
-        dropdownActions={["cancel rsvp"]}
-        title={"test2"}
-        location={"jameson"}
-        datetime={"today lol"}
-      />
-      <EventCard
-        eventid={"000"}
-        mainAction={"rsvp"}
-        dropdownActions={["cancel rsvp"]}
-        title={"test3"}
-        location={"jameson"}
-        datetime={"today lol"}
-      />
-    </CardList>
+    <>
+      <CardList>
+        <EventCard
+          eventid={"000"}
+          mainAction={"rsvp"}
+          dropdownActions={["cancel rsvp"]}
+          title={"test1"}
+          location={"jameson"}
+          datetime={"today lol"}
+        />
+        <EventCard
+          eventid={"000"}
+          mainAction={"rsvp"}
+          dropdownActions={["cancel rsvp"]}
+          title={"test2"}
+          location={"jameson"}
+          datetime={"today lol"}
+        />
+        <EventCard
+          eventid={"000"}
+          mainAction={"rsvp"}
+          dropdownActions={["cancel rsvp"]}
+          title={"test3"}
+          location={"jameson"}
+          datetime={"today lol"}
+        />
+      </CardList>
+      <CardList>
+        <EventCard
+          eventid={"000"}
+          mainAction={"rsvp"}
+          dropdownActions={["cancel rsvp"]}
+          title={"test1"}
+          location={"jameson"}
+          datetime={"today lol"}
+        />
+        <EventCard
+          eventid={"000"}
+          mainAction={"rsvp"}
+          dropdownActions={["cancel rsvp"]}
+          title={"test2"}
+          location={"jameson"}
+          datetime={"today lol"}
+        />
+        <EventCard
+          eventid={"000"}
+          mainAction={"rsvp"}
+          dropdownActions={["cancel rsvp"]}
+          title={"test3"}
+          location={"jameson"}
+          datetime={"today lol"}
+        />
+      </CardList>
+    </>
   );
 };
 

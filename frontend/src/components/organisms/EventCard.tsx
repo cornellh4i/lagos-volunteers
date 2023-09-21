@@ -1,13 +1,9 @@
 import React from "react";
 import IconText from "@/components/atoms/IconText";
 import Button from "@/components/atoms/Button";
-import IconButton from "@mui/material/IconButton";
-import MoreVertIcon from "@mui/icons-material/MoreVert";
 import { Card, Icon } from "@mui/material";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
-import ViewEvents from "./ViewEvents";
-import EventRegisterForm from "./EventRegisterForm";
-import { FaCarrot } from "react-icons/fa";
+import EmojiFoodBeverageIcon from "@mui/icons-material/EmojiFoodBeverage";
 import WatchLaterIcon from "@mui/icons-material/WatchLater";
 
 type Action = "rsvp" | "cancel rsvp" | "publish" | "manage attendees" | "edit";
@@ -45,17 +41,20 @@ const EventCard = ({
       <Card variant="outlined" className="w-4/12">
         <div className="p-5">
           <h2>
-            <IconText icon={<FaCarrot />} text={title.toLocaleUpperCase()} />
+            <IconText
+              icon={<EmojiFoodBeverageIcon color="disabled" fontSize="small" />}
+              text={title.toLocaleUpperCase()}
+            />
           </h2>
 
           <IconText
-            icon={<LocationOnIcon fontSize="small" />}
+            icon={<LocationOnIcon color="disabled" fontSize="small" />}
             text={location.toLocaleUpperCase()}
           />
 
           <div className="my-1">
             <IconText
-              icon={<WatchLaterIcon fontSize="small" />}
+              icon={<WatchLaterIcon color="disabled" fontSize="small" />}
               text={datetime}
             />
           </div>
