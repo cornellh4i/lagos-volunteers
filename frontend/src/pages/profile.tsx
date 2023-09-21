@@ -52,16 +52,14 @@ const Profile = () => {
 				firstName: data['data'][0]['profile']['firstName'],
 				lastName: data['data'][0]['profile']['lastName'],
 				nickname: data['data'][0]['profile']['nickname'] || '',
-				imageUrl: data['data'][0]['profile']['imageUrl'] || '',
+				imageUrl: data['data'][0]['profile']['imageURL'] || '',
 			});
-			console.log(data);
 		} catch (error) {
 			console.log(error);
 		}
 	};
 
 	// Ideally this should happen in getServersideProps for faster loads
-	// but it will require us to use firebase-admin. Will get back to this in the future
 	useEffect(() => {
 		fetchUserDetails();
 	}, []);

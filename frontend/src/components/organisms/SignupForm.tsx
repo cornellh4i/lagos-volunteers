@@ -43,30 +43,30 @@ const SignupForm = () => {
 		formState: { errors },
 	} = useForm<FormValues>();
 
+	const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
 	const handleErrors = (errors: any) => {
 		// Firebase create user errors
 		switch (errors) {
-			case 'auth/email-already-in-use':
-				return 'Email already in use.';
+			case 'auth/email-already-exists':
+				return 'Email already in use. Please choose another email.';
 			case 'auth/invalid-email':
 				return 'Invalid email address format.';
-			case 'auth/operation-not-allowed':
-				return 'Email/password accounts are not enabled.';
-			case 'auth/weak-password':
+			case 'auth/invalid-password':
 				return 'Password should be at least 6 characters.';
 			default:
-				return 'Something went wrong.';
+				return 'Something went wrong trying to create your account. Please try again.';
 		}
 	};
 
 	const SignUpErrorComponent = (): JSX.Element => {
 		return (
 			<div>
-				{createdUserErrors ? (
+				{errorMessage ? (
 					<CustomAlert
 						severity='error'
 						title='Error'
-						message={handleErrors(createdUserErrors?.code)}
+						message={handleErrors(errorMessage)}
 					/>
 				) : null}
 			</div>
@@ -92,6 +92,7 @@ const SignupForm = () => {
 			if (password != data.confirmPassword) {
 				return;
 			}
+
 			const response = await fetch(`${BASE_URL}/users`, {
 				method: 'POST',
 				headers: {
@@ -100,6 +101,7 @@ const SignupForm = () => {
 				body: JSON.stringify(post),
 			});
 			const r = await response.json();
+			console.log(r);
 			if (response.ok) {
 				const signIn = await signInWithEmailAndPassword(email, password);
 				if (signIn?.user) {
@@ -107,42 +109,14 @@ const SignupForm = () => {
 				}
 				setIsLoading(false);
 			} else {
-				console.log(r.error);
+				setErrorMessage(r.error);
 			}
 		} catch (error: any) {
-			console.log(error);
+			setErrorMessage(error.message);
 		}
 		setIsLoading(false);
 
 		// Remeber handling errors for mismatched signup credentials
-		// try {
-		// 	if (password != data.confirmPassword) {
-		// 		return;
-		// 	}
-
-		// 	const create = await createUserWithEmailAndPassword(email, password);
-
-		// 	if (createdUser) {
-		// 		const response = await fetch(`${BASE_URL}/users`, {
-		// 			method: 'POST',
-		// 			headers: {
-		// 				'Content-Type': 'application/json',
-		// 			},
-		// 			body: JSON.stringify(post),
-		// 		});
-		// 		if (response.ok) {
-		// 			setIsLoading(false);
-		// 			setIgnoreAuthStateChange(false);
-		// 			router.replace('/events/view');
-		// 		}
-		// 	} else {
-		// 		// Delete created firebase user
-		// 		await create?.user.delete();
-		// 	}
-		// } catch (error: any) {
-		// 	// TODO: Handle Server Errors
-		// 	console.log(error.error);
-		// }
 	};
 
 	return (
