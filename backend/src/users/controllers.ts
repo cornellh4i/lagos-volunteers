@@ -22,7 +22,7 @@ const getUsers = async (req: Request, res: Response) => {
     res.status(500).json({ error: error.message });
   }
 };
-
+ 
 /**
  * Sign up a new user. User details are passed in request body.
  * Request body includes:
