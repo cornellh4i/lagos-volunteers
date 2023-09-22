@@ -86,6 +86,8 @@ async function createPoolOfRandomEvents(pool: number) {
   });
 }
 
+const createdDate = formatISO(new Date("2019-01-16"));
+const updatedDate = formatISO(new Date("2019-01-17"));
 const userData: Prisma.UserCreateInput[] = [
   {
     email: "alice@hey.com",
@@ -94,6 +96,11 @@ const userData: Prisma.UserCreateInput[] = [
         firstName: "Alice",
         lastName: "Smith",
         nickname: "Asmithy",
+        bio: "From Columbus Ohio",
+        following: 300,
+        followers: 300,
+        createdAt: createdDate,
+        updatedAt: updatedDate,
       },
     },
     preferences: {

@@ -31,12 +31,17 @@ model User {
 
 model Profile {
   // Profile info
+  bio                 String?
+  following           Int?
+  followers           Int?
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
   firstName           String?
   lastName            String?
   nickname            String?
   imageURL            String?
-  disciplinaryNotices Int?    @default(0)
-  user                User    @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  disciplinaryNotices Int?     @default(0)
+  user                User     @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   userId              String
 
   @@id([userId])
