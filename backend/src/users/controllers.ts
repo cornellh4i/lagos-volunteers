@@ -66,7 +66,11 @@ const updateUser = async (userID: string, user: User) => {
  * @returns promise with all users or error
  */
 const getAllUsers = async () => {
-  return prisma.user.findMany({});
+  return await prisma.user.findMany({
+    include: {
+      profile: true, // Returns all Profile fields
+    },
+  });
 };
 
 /**
