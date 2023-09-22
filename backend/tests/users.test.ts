@@ -29,6 +29,13 @@ describe("Testing user Endpoints", () => {
     const response = await request(app).post("/user/signup").send(user);
     expect(response.status).toBe(201);
   });
+
+  test("Get all users in containing Profile", async () => {
+    const response = await request(app).get("/users");
+    expect(response.status).toBe(200);
+  });
+
+  
 });
 
 // TODO: Add Tests for post endpoints
