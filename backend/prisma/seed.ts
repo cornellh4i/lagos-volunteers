@@ -1,6 +1,17 @@
 import { Prisma } from "@prisma/client";
 import prisma from "../client";
 
+const profileData: Prisma.ProfileCreateInput[] = [{
+  bio : "Hi, I'm Alice",
+  following : 5,
+  followers : 5,
+  user: {
+    connect : {
+      id : 32,
+    }
+  }
+}]
+
 const userData: Prisma.UserCreateInput[] = [
   {
     name: "Alice",
@@ -52,15 +63,25 @@ async function main() {
   // But, we will get constraint errors becuause we are creating the same data again.
 
   console.log("deleting previous seed data");
+  await prisma.profile.deleteMany();
   await prisma.post.deleteMany();
   await prisma.user.deleteMany();
+
   console.log(`Start seeding ...`);
+
   for (const u of userData) {
     const user = await prisma.user.create({
       data: u,
     });
     console.log(`Created user with id: ${user.id}`);
   }
+
+  for (const u of profileData) {
+    const profile = await prisma.profile.create({
+      data: u,
+    });
+  }
+
   console.log(`Seeding finished.`);
 }
 
