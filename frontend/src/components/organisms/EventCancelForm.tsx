@@ -43,7 +43,6 @@ const EventCancelForm = ({ eventid }: EventCancelFormProps) => {
 	const handleSubmitReason: SubmitHandler<FormValues> = async (data) => {
 		const { cancelReason } = data;
 		setOpen(!open);
-		console.log(data);
 	};
 
 	return (
