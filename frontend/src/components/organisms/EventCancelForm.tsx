@@ -7,13 +7,17 @@ import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import IconText from "../atoms/IconText";
 import AccessTimeFilledIcon from "@mui/icons-material/AccessTimeFilled";
 import MultilineTextField from "../atoms/MultilineTextField";
-import { useForm } from "react-hook-form";
+import { useForm, SubmitHandler } from "react-hook-form";
 
 interface EventCancelFormProps {
   eventid: string;
 }
 type FormValues = {
   cancelReason: string;
+};
+
+const handleSubmitReason: SubmitHandler<FormValues> = async (data) => {
+  const { cancelReason } = data;
 };
 
 /**
@@ -32,11 +36,18 @@ const EventCancelForm = ({ eventid }: EventCancelFormProps) => {
 
   const {
     register,
+    handleSubmit,
     formState: { errors },
   } = useForm<FormValues>();
 
   const [open, setOpen] = useState(false);
-  const handleOpen = () => setOpen(true);
+  const handleOpen = () => {
+    if(errors.cancelReason!==undefined){
+      console.log(errors.cancelReason)
+    }else{
+      setOpen(true)
+    }
+  };
   const handleClose = () => setOpen(false);
 
   return (
@@ -45,8 +56,8 @@ const EventCancelForm = ({ eventid }: EventCancelFormProps) => {
         <div>lalala</div>
       </Modal>
 
-      <div className="justify-center center-items grid grid-cols-4 grid-rows-6`">
-        <div className="space-y-2 col-start-1 col-end-5">
+      <div className="justify-center center-items">
+        <div className="space-y-2">
           <div className="flex items-center text-gray-400">
             <ArrowBackIcon></ArrowBackIcon>
             <Link href="/events/view/" className="text-gray-400">
@@ -89,28 +100,31 @@ const EventCancelForm = ({ eventid }: EventCancelFormProps) => {
             Registration must be cancelled at least 24 hours before the event
             begins.
           </div>
-          <div className="pt-4">
-            <form>
+        </div>
+
+        <form onSubmit={handleSubmit(handleSubmitReason)}>
+          <div className="justify-center center-items grid grid-cols-4 grid-rows-2">
+            <div className="pt-4 col-start-1 col-end-5">
               <MultilineTextField
-                requiredMessage={"" ? "Required" : undefined}
+                requiredMessage={errors.cancelReason ? "Required" : undefined}
                 labelStyling="font-semibold"
                 placeholder="Your answer here"
-                name="email"
-                type="email"
+                name="cancelReason"
                 register={register}
                 label="Reason for cancelling*"
                 required={true}
               />
-            </form>
+            </div>
+            <div className="col-start-1 col-end-5 pt-4 md:col-start-2 md:col-end-4 md:pt-8">
+              <Button
+                children="Cancel Registration"
+                color="gray"
+                type="submit"
+                onClick={handleOpen}
+              ></Button>
+            </div>
           </div>
-        </div>
-        <div className="col-start-1 col-end-5 pt-4 md:col-start-2 md:col-end-4 md:pt-8">
-          <Button
-            children="Cancel Registration"
-            color="gray"
-            onClick={handleOpen}
-          ></Button>
-        </div>
+        </form>
       </div>
     </div>
   );
