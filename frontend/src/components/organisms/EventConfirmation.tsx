@@ -39,7 +39,7 @@ const EventConfirmation = ({
             {<CheckCircleOutlineIcon sx={{ fontSize: 60, color: grey[500] }} />}
           </div>
           <h1 className="flex justify-center">You are Registered!</h1>
-          <div className="p-10">
+          <div>
             <Box
               sx={{
                 width: "w-screen",
@@ -59,7 +59,7 @@ const EventConfirmation = ({
       );
     case "cancel rsvp":
       return (
-        <div className="p-20">
+        <div>
           <h1>You are no longer registered.</h1>
           <h3>
             {" "}
