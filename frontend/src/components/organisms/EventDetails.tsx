@@ -43,19 +43,19 @@ const EventDetails = ({
           <div className="space-y-0.5 mb-4">
             <IconText
               icon={<LocationOnIcon className="text-gray-400" />}
-              text={"LOCATION (" + location + ")"}
+              body={<div>LOCATION ({location})</div>}
             />
             <IconText
               icon={<CalendarMonthIcon className="text-gray-400" />}
-              text={datetime}
+              body={<div>{datetime}</div>}
             />
             <IconText
               icon={<PersonIcon className="text-gray-400" />}
-              text={"Supervisor: " + supervisor}
+              body={<div>Supervisor: {supervisor}</div>}
             />
             <IconText
               icon={<PersonIcon className="text-gray-400" />}
-              text={"Event Capacity: " + capacity.toString()}
+              body={<div>Event Capacity: {capacity.toString()}</div>}
             />
           </div>
           <div className="flex space-x-2">

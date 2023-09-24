@@ -2,18 +2,18 @@ import React from "react";
 
 interface IconTextProps {
   icon: React.ReactElement;
-  text: string;
+  body: React.ReactElement;
 }
 
 /**
  * A IconText component is a small line of text prefaced by an icon
  */
-const IconText = ({ icon, text }: IconTextProps) => {
+const IconText = ({ icon, body }: IconTextProps) => {
   return (
     <>
       <div className="flex">
         <div className="pr-1">{icon}</div>
-        <div>{text}</div>
+        <div>{body}</div>
       </div>
     </>
   );
