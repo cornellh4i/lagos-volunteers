@@ -1,10 +1,7 @@
 import React from "react";
 import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
-import { Grid, Box, Button } from "@mui/material";
-import LocationOnIcon from "@mui/icons-material/LocationOn";
-import IconText from "../atoms/IconText";
-import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
-import PersonIcon from "@mui/icons-material/Person";
+import { Grid, Box } from "@mui/material";
+import EventDetails from "./EventDetails";
 import Link from "next/link";
 import { grey } from "@mui/material/colors";
 
@@ -38,15 +35,17 @@ const EventConfirmation = ({
           <div className="flex m-7 justify-center">
             {<CheckCircleOutlineIcon sx={{ fontSize: 60, color: grey[500] }} />}
           </div>
-          <h1 className="flex justify-center">You are Registered!</h1>
+          <h1 className="text-center">You are Registered!</h1>
           <div>
-            <Box
-              sx={{
-                width: "w-screen",
-                height: 300,
-                backgroundColor: grey[300],
-              }}
-            ></Box>
+            <EventDetails
+              title="EDUFOOD"
+              location="Address, Building Name"
+              datetime="02/15/2023, 9:00AM-11:00AM"
+              supervisors={["Jane Doe", "Jess Lee"]}
+              capacity={20}
+              image_src="https://i0.wp.com/roadmap-tech.com/wp-content/uploads/2019/04/placeholder-image.jpg?resize=800%2C800&ssl=1"
+              tags={["In-person", "EDUFOOD"]}
+            />
             <p>
               If you can no longer attend,{" "}
               <Link href="@/pages/profile" rel="noreferrer">
@@ -69,13 +68,15 @@ const EventConfirmation = ({
             Explore other volunteer opportunities on the{" "}
             <Link href="#index.tsx"> home page</Link>.
           </p>
-          <Box
-            sx={{
-              width: "w-screen",
-              height: 300,
-              backgroundColor: grey[300],
-            }}
-          ></Box>
+          <EventDetails
+            title="EDUFOOD"
+            location="Address, Building Name"
+            datetime="02/15/2023, 9:00AM-11:00AM"
+            supervisors={["Jane Doe", "Jess Lee"]}
+            capacity={20}
+            image_src="https://i0.wp.com/roadmap-tech.com/wp-content/uploads/2019/04/placeholder-image.jpg?resize=800%2C800&ssl=1"
+            tags={["In-person", "EDUFOOD"]}
+          />
           <Grid item xs={6}></Grid>
         </div>
       );
