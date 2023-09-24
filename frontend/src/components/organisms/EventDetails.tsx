@@ -41,22 +41,18 @@ const EventDetails = ({
             Event Details
           </div>
           <div className="space-y-0.5 mb-4">
-            <IconText
-              icon={<LocationOnIcon className="text-gray-400" />}
-              body={<div>LOCATION ({location})</div>}
-            />
-            <IconText
-              icon={<CalendarMonthIcon className="text-gray-400" />}
-              body={<div>{datetime}</div>}
-            />
-            <IconText
-              icon={<PersonIcon className="text-gray-400" />}
-              body={<div>Supervisor: {supervisor}</div>}
-            />
-            <IconText
-              icon={<PersonIcon className="text-gray-400" />}
-              body={<div>Event Capacity: {capacity.toString()}</div>}
-            />
+            <IconText icon={<LocationOnIcon className="text-gray-400" />}>
+              <div>LOCATION ({location})</div>
+            </IconText>
+            <IconText icon={<CalendarMonthIcon className="text-gray-400" />}>
+              <div>{datetime}</div>
+            </IconText>
+            <IconText icon={<PersonIcon className="text-gray-400" />}>
+              <div>Supervisor: {supervisor}</div>
+            </IconText>
+            <IconText icon={<PersonIcon className="text-gray-400" />}>
+              <div>Event Capacity: {capacity.toString()}</div>
+            </IconText>
           </div>
           <div className="flex space-x-2">
             {tags.map((tag) => {
