@@ -35,7 +35,7 @@ const EventConfirmation = ({
           <div className="flex m-7 justify-center">
             {<CheckCircleOutlineIcon sx={{ fontSize: 60, color: grey[500] }} />}
           </div>
-          <h1 className="text-center">You are Registered!</h1>
+          <h1 className="text-center">You are registered!</h1>
           <div>
             <EventDetails
               title="EDUFOOD"
