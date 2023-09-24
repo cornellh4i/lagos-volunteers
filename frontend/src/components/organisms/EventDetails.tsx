@@ -1,7 +1,6 @@
 import React from "react";
 import IconText from "../atoms/IconText";
 import Chip from "../atoms/Chip";
-
 import LocationOnIcon from "@mui/icons-material/LocationOn";
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import PersonIcon from "@mui/icons-material/Person";
@@ -12,7 +11,7 @@ interface EventDetailsProps {
   datetime: string;
   supervisors: string[];
   capacity: number;
-  image: React.ReactElement;
+  image_src: string;
   tags: string[];
 }
 
@@ -26,7 +25,7 @@ const EventDetails = ({
   datetime,
   supervisors,
   capacity,
-  image,
+  image_src,
   tags,
 }: EventDetailsProps) => {
   var supervisor = supervisors.toString().replace(",", ", ");
@@ -35,12 +34,7 @@ const EventDetails = ({
       <div className="text-2xl font-semibold mb-6">{title}</div>
       <div className="grid grid-cols-2 gap-4">
         <div className="col-span-2 md:col-span-1">
-          <img
-            src={
-              "https://i0.wp.com/roadmap-tech.com/wp-content/uploads/2019/04/placeholder-image.jpg?resize=800%2C800&ssl=1"
-            }
-            className="object-cover h-56 w-full"
-          />
+          <img src={image_src} className="object-cover h-56 w-full" />
         </div>
         <div className="col-span-2 md:col-span-1">
           <div className="text-lg font-semibold mb-4 mt-4 md:mt-0">
@@ -48,28 +42,23 @@ const EventDetails = ({
           </div>
           <div className="space-y-0.5 mb-4">
             <IconText
-              icon={<LocationOnIcon />}
-              iconClass="text-gray-400"
+              icon={<LocationOnIcon className="text-gray-400" />}
               text={"LOCATION (" + location + ")"}
             />
             <IconText
-              icon={<CalendarMonthIcon />}
-              iconClass="text-gray-400"
+              icon={<CalendarMonthIcon className="text-gray-400" />}
               text={datetime}
             />
             <IconText
-              icon={<PersonIcon />}
-              iconClass="text-gray-400"
+              icon={<PersonIcon className="text-gray-400" />}
               text={"Supervisor: " + supervisor}
             />
             <IconText
-              icon={<PersonIcon />}
-              iconClass="text-gray-400"
+              icon={<PersonIcon className="text-gray-400" />}
               text={"Event Capacity: " + capacity.toString()}
             />
           </div>
           <div className="flex space-x-2">
-            {" "}
             {tags.map((tag) => {
               return <Chip label={tag} color="default" />;
             })}
