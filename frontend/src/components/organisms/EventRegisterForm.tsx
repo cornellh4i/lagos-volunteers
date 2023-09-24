@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import EventDetails from "./EventDetails";
+import IconText from "../atoms/IconText";
 import CustomCheckbox from "../atoms/Checkbox";
 import Button from "../atoms/Button";
 import { Modal } from "@mui/material";
@@ -37,19 +38,18 @@ const EventRegisterForm = ({ eventid }: EventRegisterFormProps) => {
   return (
     <div>
       <Modal open={open} onClose={handleClose}>
-        <div>lalala</div>
+        <div>lalalaadjfkldasfkl;dajlkfjklsajl</div>
       </Modal>
 
       <div className="justify-center center-items grid grid-cols-4 grid-rows-6`">
         <div className="space-y-4 col-start-1 col-end-5">
           <div className="flex items-center text-gray-400">
-            <ArrowBackIcon></ArrowBackIcon>
-            <Link href="/events/view/" className="text-gray-400">
-              {" "}
-              <u>Return to My Events</u>
-            </Link>
+            <IconText icon={<ArrowBackIcon />}>
+              <Link href="/events/view/" className="text-gray-400">
+                <u>Return to My Events</u>
+              </Link>
+            </IconText>
           </div>
-
           <div className="font-semibold text-3xl">Event Registration</div>
           <div>
             <EventDetails
