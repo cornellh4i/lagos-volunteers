@@ -62,7 +62,7 @@ const LoginForm = () => {
 					<CustomAlert
 						severity='error'
 						title='Error'
-						message={handleErrors(signInErrors?.code)}
+						message={handleErrors(signInErrors.code)}
 					/>
 				) : null}
 			</div>
@@ -133,7 +133,12 @@ const LoginForm = () => {
 				</div>
 			</form>
 			<div>
-				<Button onClick={() => handleGoogleLogin()} type='submit' color='gray'>
+				<Button
+					isLoading={googleLoading}
+					disabled={googleLoading}
+					onClick={() => handleGoogleLogin()}
+					type='submit'
+					color='gray'>
 					Continue with Google
 				</Button>
 			</div>

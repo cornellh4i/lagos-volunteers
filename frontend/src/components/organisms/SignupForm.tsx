@@ -78,7 +78,7 @@ const SignupForm = () => {
 	const handleSubmitUser: SubmitHandler<FormValues> = async (data, event) => {
 		setIsLoading(true);
 
-		event?.preventDefault(); // do we need this though?
+		event?.preventDefault();
 		const { firstName, lastName, email, password } = data;
 		const emailLowerCase = email.toLowerCase();
 		const post = {

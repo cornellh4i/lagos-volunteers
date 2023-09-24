@@ -8,6 +8,7 @@ interface ButtonProps {
 	onClick?: () => void;
 	type?: 'button' | 'submit' | 'reset' | undefined;
 	isLoading?: boolean;
+	disabled?: boolean;
 }
 
 /** A Button page */
@@ -17,10 +18,12 @@ const CustomButton = ({
 	onClick,
 	type,
 	isLoading,
+	disabled,
 }: ButtonProps) => {
 	return (
 		<Button
 			fullWidth={true}
+			disabled={disabled}
 			type={type}
 			variant='contained'
 			onClick={onClick}
@@ -33,15 +36,8 @@ const CustomButton = ({
 					? 'bg-gray-400 text-black'
 					: ''
 			}>
-			{isLoading && (
-				<CircularProgress
-					size={16}
-					style={{
-						marginRight: 10,
-					}}
-				/>
-			)}
-			{isLoading ? 'loading...' : children}
+			{isLoading && <CircularProgress size={24} />}
+			{!isLoading && children}
 		</Button>
 	);
 };

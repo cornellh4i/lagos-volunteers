@@ -13,10 +13,11 @@ const WelcomeTemplate = ({ children }: WelcomeTemplateProps) => {
 	const { user, loading, isAuthenticated } = useAuth();
 	const router = useRouter();
 
-	// If you are already logged in, redirect to events page
+	// If you are already logged in, redirect to profile page
 	useEffect(() => {
+		const path = router.asPath;
 		if (user && isAuthenticated) {
-			router.replace('/events/view');
+			router.replace('/profile');
 		}
 	}, [user, loading]);
 
