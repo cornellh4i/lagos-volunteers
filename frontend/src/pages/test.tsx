@@ -5,7 +5,7 @@ import Button from "../components/atoms/Button";
 const test = () => {
     return (
         <div>
-        <CustomModal open = {true} header={"hello"} bodyText={"hi"} buttonText={"toodaloo"} buttonText2={"teehee"}
+        <CustomModal open = {true} body={<div></div>}
         />
         </div>
     );
