@@ -50,6 +50,8 @@ const LoginForm = () => {
 				return 'There is no user with this email address.';
 			case 'auth/wrong-password':
 				return 'Invalid email or password.';
+			case 'auth/too-many-requests':
+				return 'You have made too many requests to login. Please try again later.';
 			default:
 				return 'Something went wrong.';
 		}
