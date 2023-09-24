@@ -5,6 +5,8 @@ import EventDetails from "./EventDetails";
 import Link from "next/link";
 import { grey } from "@mui/material/colors";
 
+type Confirmation = "rsvp" | "cancel rsvp";
+
 interface EventConfirmationProps {
   eventid: string;
   title: string;
@@ -12,7 +14,7 @@ interface EventConfirmationProps {
   supervisor: string;
   capacity: number;
   datetime: string;
-  action: string;
+  confirmation: Confirmation;
 }
 
 /**
@@ -23,12 +25,12 @@ interface EventConfirmationProps {
  */
 const EventConfirmation = ({
   title,
-  action,
+  confirmation,
   datetime,
   supervisor,
   capacity,
 }: EventConfirmationProps) => {
-  switch (action) {
+  switch (confirmation) {
     case "rsvp":
       return (
         <div>
