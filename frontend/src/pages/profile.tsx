@@ -67,19 +67,23 @@ const Profile = () => {
 	return (
 		<ProfileTemplate
 			banner={
-				<Banner>
-					<Avatar
-						name={`${userDetails?.firstName} ${userDetails?.lastName}`}
-						hour={20}
-						start_date={date}
-						url={userDetails?.imageUrl}
-					/>
-				</Banner>
+				userDetails ? (
+					<Banner>
+						<Avatar
+							name={`${userDetails?.firstName} ${userDetails?.lastName}`}
+							hour={20}
+							start_date={date}
+							url={userDetails?.imageUrl}
+						/>
+					</Banner>
+				) : (
+					<div>Grabbing your data...</div>
+				)
 			}>
 			{userDetails ? (
 				<ProfileForm userDetails={userDetails} />
 			) : (
-				<div>Loading data...</div>
+				<div>Getting your data...</div>
 			)}
 		</ProfileTemplate>
 	);
