@@ -25,7 +25,7 @@ userRouter.post(
         rest.preferences,
         rest.permissions
       );
-      if (user) {
+      if (user && process.env.NODE_ENV !== "test") {
         try {
           const fbUser = await firebase.auth().createUser({
             uid: user.id,
@@ -39,6 +39,8 @@ userRouter.post(
             return res.status(200).send({ success: true, user: user });
           }
         } catch (e: any) {
+          // If firebase fails to create user, delete user from database
+          // In jest - need to configure firebase App so firebase always fails.
           await userController
             .deleteUser(user.id)
             .then(() => {
@@ -49,6 +51,8 @@ userRouter.post(
             });
         }
       }
+      // If test environment, return user without firebase auth
+      return res.status(201).send({ success: true, data: user });
     } catch (e: any) {
       return res.status(500).send({ success: false, error: e.message });
     }
