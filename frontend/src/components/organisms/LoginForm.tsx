@@ -1,18 +1,18 @@
-import React, { useState } from 'react';
-import Divider from '@mui/material/Divider';
-import Button from '../atoms/Button';
-import TextField from '../atoms/TextField';
-import { useForm, SubmitHandler } from 'react-hook-form';
-import { useAuth } from '@/utils/AuthContext';
-import { useRouter } from 'next/router';
-import Link from 'next/link';
-import { auth } from '@/utils/firebase';
-import CustomAlert from '../atoms/CustomAlert';
+import React, { useState } from "react";
+import Divider from "@mui/material/Divider";
+import Button from "../atoms/Button";
+import TextField from "../atoms/TextField";
+import { useForm, SubmitHandler } from "react-hook-form";
+import { useAuth } from "@/utils/AuthContext";
+import { useRouter } from "next/router";
+import Link from "next/link";
+import { auth } from "@/utils/firebase";
+import CustomAlert from "../atoms/CustomAlert";
 
 import {
 	useSignInWithEmailAndPassword,
 	useSignInWithGoogle,
-} from 'react-firebase-hooks/auth';
+} from "react-firebase-hooks/auth";
 
 export type FormValues = {
 	email: string;
@@ -42,18 +42,18 @@ const LoginForm = () => {
 
 	const handleErrors = (errors: any) => {
 		switch (errors) {
-			case 'auth/invalid-email':
-				return 'Invalid email address format.';
-			case 'auth/user-disabled':
-				return 'User with this email has been disabled.';
-			case 'auth/user-not-found':
-				return 'There is no user with this email address.';
-			case 'auth/wrong-password':
-				return 'Invalid email or password.';
-			case 'auth/too-many-requests':
-				return 'You have made too many requests to login. Please try again later.';
+			case "auth/invalid-email":
+				return "Invalid email address format.";
+			case "auth/user-disabled":
+				return "User with this email has been disabled.";
+			case "auth/user-not-found":
+				return "There is no user with this email address.";
+			case "auth/wrong-password":
+				return "Invalid email or password.";
+			case "auth/too-many-requests":
+				return "You have made too many requests to login. Please try again later.";
 			default:
-				return 'Something went wrong.';
+				return "Something went wrong.";
 		}
 	};
 
@@ -62,8 +62,8 @@ const LoginForm = () => {
 			<div>
 				{signInErrors ? (
 					<CustomAlert
-						severity='error'
-						title='Error'
+						severity="error"
+						title="Error"
 						message={handleErrors(signInErrors.code)}
 					/>
 				) : null}
@@ -76,7 +76,7 @@ const LoginForm = () => {
 		try {
 			await signInWithGoogle();
 			if (googleUser) {
-				router.push('/events/view');
+				router.push("/events/view");
 			}
 		} catch (err) {}
 		setIsLoading(false);
@@ -89,44 +89,44 @@ const LoginForm = () => {
 		try {
 			await signInWithEmailAndPassword(email, password);
 			if (signedInUser) {
-				router.push('/events/view');
+				router.push("/events/view");
 			}
 		} catch (err) {}
 		setIsLoading(false);
 	};
 
 	return (
-		<div className='space-y-4 '>
+		<div className="space-y-4 ">
 			<LoginErrorComponent />
-			<form onSubmit={handleSubmit(handleLogin)} className='space-y-4 '>
-				<div className='font-bold text-3xl'> Log In </div>
+			<form onSubmit={handleSubmit(handleLogin)} className="space-y-4 ">
+				<div className="font-bold text-3xl"> Log In </div>
 				<div>
 					<TextField
-						requiredMessage={errors.email ? 'Required' : undefined}
-						label='Email *'
-						name='email'
-						type='email'
+						requiredMessage={errors.email ? "Required" : undefined}
+						label="Email *"
+						name="email"
+						type="email"
 						register={register}
 						required={true}
 					/>
 				</div>
 				<div>
 					<TextField
-						requiredMessage={errors.password ? 'Required' : undefined}
-						label='Password *'
-						name='password'
-						type='password'
+						requiredMessage={errors.password ? "Required" : undefined}
+						label="Password *"
+						name="password"
+						type="password"
 						register={register}
 						required={true}
 					/>
 				</div>
-				<div className='text-center'>
-					<Link href='/password/forgot' className='text-black'>
+				<div className="text-center">
+					<Link href="/password/forgot" className="text-black">
 						Forgot Password?
 					</Link>
 				</div>
 				<div>
-					<Button isLoading={isLoading} type='submit' color='dark-gray'>
+					<Button isLoading={isLoading} type="submit" color="dark-gray">
 						Log In
 					</Button>
 				</div>
@@ -138,15 +138,16 @@ const LoginForm = () => {
 				<Button
 					isLoading={googleLoading}
 					disabled={googleLoading}
-					onClick={() => handleGoogleLogin()}
-					type='submit'
-					color='gray'>
+					// We are paused on this feature for now...
+					// onClick={() => handleGoogleLogin()}
+					type="submit"
+					color="gray">
 					Continue with Google
 				</Button>
 			</div>
 			<div>
-				<Link href='/signup'>
-					<Button type='submit' color='gray'>
+				<Link href="/signup">
+					<Button type="submit" color="gray">
 						Sign up with Email
 					</Button>
 				</Link>

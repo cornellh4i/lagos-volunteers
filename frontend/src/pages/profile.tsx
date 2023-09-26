@@ -1,13 +1,12 @@
-import React, { useState, useEffect } from 'react';
-import ProfileForm from '@/components/organisms/ProfileForm';
-import ProfileTemplate from '@/components/templates/ProfileTemplate';
-import Banner from '@/components/molecules/Banner';
-import { GetServerSideProps } from 'next';
-import { BASE_URL } from '@/utils/constants';
-import { onAuthStateChanged, getAuth } from 'firebase/auth';
-import { auth } from '@/utils/firebase';
-import { useAuth } from '@/utils/AuthContext';
-import Avatar from '@/components/molecules/Avatar';
+import React, { useState, useEffect } from "react";
+import ProfileForm from "@/components/organisms/ProfileForm";
+import ProfileTemplate from "@/components/templates/ProfileTemplate";
+import Banner from "@/components/molecules/Banner";
+import { BASE_URL } from "@/utils/constants";
+import { onAuthStateChanged, getAuth } from "firebase/auth";
+import { auth } from "@/utils/firebase";
+import { useAuth } from "@/utils/AuthContext";
+import Avatar from "@/components/molecules/Avatar";
 
 type userData = {
 	id: string;
@@ -39,7 +38,7 @@ const Profile = () => {
 			const fetchUrl = `${url}/users/search/?email=${user?.email}`;
 			const userToken = await auth.currentUser?.getIdToken();
 			const response = await fetch(fetchUrl, {
-				method: 'GET',
+				method: "GET",
 				headers: {
 					Authorization: `Bearer ${userToken}`,
 				},
@@ -47,12 +46,12 @@ const Profile = () => {
 			const data = await response.json();
 
 			setUserDetails({
-				id: data['data'][0]['profile']['userId'],
-				email: data['data'][0]['email'],
-				firstName: data['data'][0]['profile']['firstName'],
-				lastName: data['data'][0]['profile']['lastName'],
-				nickname: data['data'][0]['profile']['nickname'] || '',
-				imageUrl: data['data'][0]['profile']['imageURL'] || '',
+				id: data["data"][0]["profile"]["userId"],
+				email: data["data"][0]["email"],
+				firstName: data["data"][0]["profile"]["firstName"],
+				lastName: data["data"][0]["profile"]["lastName"],
+				nickname: data["data"][0]["profile"]["nickname"] || "",
+				imageUrl: data["data"][0]["profile"]["imageURL"] || "",
 			});
 		} catch (error) {
 			console.log(error);

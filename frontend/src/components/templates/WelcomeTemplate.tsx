@@ -1,8 +1,8 @@
-import React, { ReactNode, useEffect } from 'react';
-import NavBar from '@/components/organisms/NavBar';
-import { useRouter } from 'next/router';
-import { useAuth } from '@/utils/AuthContext';
-import Loading from '../organisms/Loading';
+import React, { ReactNode, useEffect } from "react";
+import NavBar from "@/components/organisms/NavBar";
+import { useRouter } from "next/router";
+import { useAuth } from "@/utils/AuthContext";
+import Loading from "../organisms/Loading";
 
 /** A WelcomeTemplate page */
 interface WelcomeTemplateProps {
@@ -17,7 +17,7 @@ const WelcomeTemplate = ({ children }: WelcomeTemplateProps) => {
 	useEffect(() => {
 		const path = router.asPath;
 		if (user && isAuthenticated) {
-			router.replace('/profile');
+			router.replace("/profile");
 		}
 	}, [user, loading]);
 
@@ -30,13 +30,13 @@ const WelcomeTemplate = ({ children }: WelcomeTemplateProps) => {
 	}
 
 	return (
-		<div className='flex flex-col min-h-screen'>
+		<div className="flex flex-col min-h-screen">
 			<NavBar />
-			<div className='flex grow'>
-				<div className='flex w-full sm:max-w-md items-center justify-center py-10 px-10 sm:px-20'>
-					<div className='w-full'>{children}</div>
+			<div className="flex grow">
+				<div className="flex w-full sm:max-w-md items-center justify-center py-10 px-10 sm:px-20">
+					<div className="w-full">{children}</div>
 				</div>
-				<div className='flex-1 bg-gray-300'></div>
+				<div className="flex-1 bg-gray-300"></div>
 			</div>
 		</div>
 	);

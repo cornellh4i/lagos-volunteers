@@ -131,7 +131,6 @@ userRouter.get(
 
 userRouter.get("/:userid", useAuth, async (req: Request, res: Response) => {
   // #swagger.tags = ['Users']
-
   attempt(res, 200, () => userController.getUserByID(req.params.userid));
 });
 

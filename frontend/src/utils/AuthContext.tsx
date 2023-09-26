@@ -4,18 +4,17 @@ import React, {
 	useContext,
 	useEffect,
 	ReactNode,
-} from 'react';
-import { auth } from './firebase';
-import { User, AuthError, signOut, signInWithCustomToken } from 'firebase/auth';
+} from "react";
+import { auth } from "./firebase";
+import { User, AuthError, signOut, signInWithCustomToken } from "firebase/auth";
 import {
 	useAuthState,
-	useSignInWithEmailAndPassword,
 	useCreateUserWithEmailAndPassword,
 	useSignOut,
-} from 'react-firebase-hooks/auth';
-import { UserCredential, onAuthStateChanged } from 'firebase/auth';
-import { useRouter } from 'next/router';
-import Loading from '@/components/organisms/Loading';
+} from "react-firebase-hooks/auth";
+import { UserCredential, onAuthStateChanged } from "firebase/auth";
+import { useRouter } from "next/router";
+import Loading from "@/components/organisms/Loading";
 
 // Define types for authentication context value
 type AuthContextValue = {
@@ -95,12 +94,12 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 	};
 
 	const publicPaths = [
-		'/login',
-		'/signup',
-		'/password/forgot',
-		'/password/reset/*',
-		'/_404',
-		'/_error',
+		"/login",
+		"/signup",
+		"/password/forgot",
+		"/password/reset/*",
+		"/_404",
+		"/_error",
 	];
 
 	const router = useRouter();
@@ -108,7 +107,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 		const path = router.asPath;
 		const unsubscribe = onAuthStateChanged(auth, (user) => {
 			if (!user && !publicPaths.includes(path)) {
-				router.replace('/login');
+				router.replace("/login");
 				setIsAuthenticated(false);
 			} else {
 				setIsAuthenticated(true);

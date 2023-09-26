@@ -1,14 +1,14 @@
-import React, { useEffect, useState } from 'react';
-import Button from '../atoms/Button';
-import TextField from '../atoms/TextField';
-import Checkbox from '../atoms/Checkbox';
-import { auth } from '@/utils/firebase';
-import { useForm, SubmitHandler } from 'react-hook-form';
-import { useRouter } from 'next/router';
-import { BASE_URL } from '@/utils/constants';
-import { useUpdatePassword } from 'react-firebase-hooks/auth';
-import CustomAlert from '../atoms/CustomAlert';
-import { reauthenticateWithCredential, EmailAuthProvider } from 'firebase/auth';
+import React, { useEffect, useState } from "react";
+import Button from "../atoms/Button";
+import TextField from "../atoms/TextField";
+import Checkbox from "../atoms/Checkbox";
+import { auth } from "@/utils/firebase";
+import { useForm, SubmitHandler } from "react-hook-form";
+import { useRouter } from "next/router";
+import { BASE_URL } from "@/utils/constants";
+import { useUpdatePassword } from "react-firebase-hooks/auth";
+import CustomAlert from "../atoms/CustomAlert";
+import { reauthenticateWithCredential, EmailAuthProvider } from "firebase/auth";
 
 type FormValues = {
 	email: string;
@@ -44,29 +44,29 @@ const ProfileForm = ({ userDetails }: ProfileFormProps) => {
 	const [updatePassword, updating, error] = useUpdatePassword(auth);
 	const [success, setSuccess] = React.useState<boolean>(false);
 	const [isLoading, setIsLoading] = React.useState<boolean>(false);
-	const [errorMessage, setErrorMessage] = React.useState<string>('');
+	const [errorMessage, setErrorMessage] = React.useState<string>("");
 
 	const handleErrors = (errors: any) => {
-		const errorParsed = errors?.split('/')[1].slice(0, -2);
+		const errorParsed = errors?.split("/")[1].slice(0, -2);
 		switch (errorParsed) {
-			case 'invalid-email':
-				return 'Invalid email address format.';
-			case 'user-disabled':
-				return 'User with this email has been disabled.';
-			case 'user-not-found':
-				return 'There is no user with this email address.';
-			case 'wrong-password':
-				return 'Old password is incorrect.';
-			case 'weak-password':
-				return 'Password must be at least 6 characters.';
-			case 'invalid-password':
-				return 'Invalid password.';
-			case 'requires-recent-login':
-				return 'Please reauthenticate to change your password.';
-			case 'too-many-requests':
-				return 'You have made too many requests to change your password. Please try again later.';
+			case "invalid-email":
+				return "Invalid email address format.";
+			case "user-disabled":
+				return "User with this email has been disabled.";
+			case "user-not-found":
+				return "There is no user with this email address.";
+			case "wrong-password":
+				return "Old password is incorrect.";
+			case "weak-password":
+				return "Password must be at least 6 characters.";
+			case "invalid-password":
+				return "Invalid password.";
+			case "requires-recent-login":
+				return "Please reauthenticate to change your password.";
+			case "too-many-requests":
+				return "You have made too many requests to change your password. Please try again later.";
 			default:
-				return 'Something went wrong.';
+				return "Something went wrong.";
 		}
 	};
 
@@ -75,8 +75,8 @@ const ProfileForm = ({ userDetails }: ProfileFormProps) => {
 			<div>
 				{error ? (
 					<CustomAlert
-						severity='error'
-						title='Error'
+						severity="error"
+						title="Error"
 						message={handleErrors(error?.message)}
 					/>
 				) : null}
@@ -89,8 +89,8 @@ const ProfileForm = ({ userDetails }: ProfileFormProps) => {
 			<div>
 				{errorMessage.length > 0 ? (
 					<CustomAlert
-						severity='error'
-						title='Error'
+						severity="error"
+						title="Error"
 						message={handleErrors(errorMessage)}
 					/>
 				) : null}
@@ -103,16 +103,14 @@ const ProfileForm = ({ userDetails }: ProfileFormProps) => {
 			<div>
 				{!error && !(errorMessage.length > 0) && success ? (
 					<CustomAlert
-						severity='success'
-						title='Success'
-						message='Profile update was successful. Please refresh the page to see your changes!'
+						severity="success"
+						title="Success"
+						message="Profile update was successful. Please refresh the page to see your changes!"
 					/>
 				) : null}
 			</div>
 		);
 	};
-
-	// Future testing: What if user doesn't have a nickname, does the code break?
 
 	const {
 		register,
@@ -126,9 +124,9 @@ const ProfileForm = ({ userDetails }: ProfileFormProps) => {
 			firstName: userDetails.firstName,
 			lastName: userDetails.lastName,
 			preferredName: userDetails.nickname,
-			oldPassword: '',
-			newPassword: '',
-			confirmNewPassword: '',
+			oldPassword: "",
+			newPassword: "",
+			confirmNewPassword: "",
 			emailNotifications: false,
 		},
 	});
@@ -158,17 +156,17 @@ const ProfileForm = ({ userDetails }: ProfileFormProps) => {
 				nickname: preferredName,
 			};
 			const response = await fetch(fetchUrl, {
-				method: 'PUT',
+				method: "PUT",
 				headers: {
 					Authorization: `Bearer ${userToken}`,
-					'Content-Type': 'application/json',
+					"Content-Type": "application/json",
 				},
 				body: JSON.stringify(body),
 			});
 			const data = await response.json();
 
 			// Update password in Firebase
-			if (newPassword !== '' && currentUser != null) {
+			if (newPassword !== "" && currentUser != null) {
 				// first re-authenticate the user to check if the old password is correct
 
 				const credentials = EmailAuthProvider.credential(email, oldPassword);
@@ -184,7 +182,7 @@ const ProfileForm = ({ userDetails }: ProfileFormProps) => {
 						setIsLoading(false);
 					});
 			}
-			setErrorMessage('');
+			setErrorMessage("");
 			setIsLoading(false);
 		} catch (error) {
 			setIsLoading(false);
@@ -193,97 +191,97 @@ const ProfileForm = ({ userDetails }: ProfileFormProps) => {
 	};
 
 	return (
-		<form onSubmit={handleSubmit(handleChanges)} className='space-y-4'>
+		<form onSubmit={handleSubmit(handleChanges)} className="space-y-4">
 			<ProfileErrorComponent />
 			<ProfileSuccessComponent />
 			<ProfileErrorFromReauthenticating />
 			<div>
 				<TextField
-					label='Email *'
+					label="Email *"
 					disabled={true}
 					required={true}
-					name='email'
+					name="email"
 					register={register}
-					requiredMessage={errors.email ? 'Required' : undefined}
+					requiredMessage={errors.email ? "Required" : undefined}
 				/>
 			</div>
 			<div>
 				<TextField
-					label='First name *'
+					label="First name *"
 					required={true}
-					name='firstName'
+					name="firstName"
 					register={register}
-					requiredMessage={errors.firstName ? 'Required' : undefined}
+					requiredMessage={errors.firstName ? "Required" : undefined}
 				/>
 			</div>
 			<div>
 				<TextField
-					label='Last name *'
+					label="Last name *"
 					required={true}
-					name='lastName'
+					name="lastName"
 					register={register}
-					requiredMessage={errors.lastName ? 'Required' : undefined}
+					requiredMessage={errors.lastName ? "Required" : undefined}
 				/>
 			</div>
 			<div>
 				<TextField
-					label='Preferred name'
+					label="Preferred name"
 					required={false}
-					name='preferredName'
+					name="preferredName"
 					register={register}
-					requiredMessage={errors.preferredName ? 'Required' : undefined}
+					requiredMessage={errors.preferredName ? "Required" : undefined}
 				/>
 			</div>
 			<div>
 				<TextField
-					type='password'
-					label='Old password *'
+					type="password"
+					label="Old password *"
 					required={false}
-					name='oldPassword'
+					name="oldPassword"
 					register={register}
-					requiredMessage={errors.oldPassword ? 'Required' : undefined}
+					requiredMessage={errors.oldPassword ? "Required" : undefined}
 				/>
 			</div>
 			<div>
 				<TextField
-					type='password'
-					label='New password '
+					type="password"
+					label="New password "
 					required={false}
-					name='newPassword'
+					name="newPassword"
 					register={register}
 				/>
 			</div>
 			<div>
 				<TextField
-					type='password'
-					label='Confirm new password'
+					type="password"
+					label="Confirm new password"
 					required={false}
-					name='confirmNewPassword'
+					name="confirmNewPassword"
 					register={register}
 					requiredMessage={
-						watch('newPassword') === watch('confirmNewPassword')
+						watch("newPassword") === watch("confirmNewPassword")
 							? undefined
-							: 'Passwords must match'
+							: "Passwords must match"
 					}
 				/>
 			</div>
 			<div>
-				<Checkbox label='Email notifications' />
+				<Checkbox label="Email notifications" />
 			</div>
-			<div className='sm:space-x-4 grid grid-cols-1 sm:grid-cols-2'>
-				<div className='pb-4 sm:pb-0'>
+			<div className="sm:space-x-4 grid grid-cols-1 sm:grid-cols-2">
+				<div className="pb-4 sm:pb-0">
 					<Button
 						isLoading={isLoading}
 						disabled={isLoading}
-						type='submit'
-						color='gray'>
+						type="submit"
+						color="gray">
 						Save Changes
 					</Button>
 				</div>
 				<div>
 					<Button
-						type='button'
-						color='dark-gray'
+						type="button"
+						color="dark-gray"
 						onClick={() => {
 							reset(userDetails, { keepDefaultValues: true });
 						}}>

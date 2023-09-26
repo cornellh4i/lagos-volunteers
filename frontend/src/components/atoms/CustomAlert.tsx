@@ -1,9 +1,8 @@
-import React from 'react';
-import Alert from '@mui/material/Alert';
-import AlertTitle from '@mui/material/AlertTitle';
+import React from "react";
+import Alert from "@mui/material/Alert";
 
 interface CustomAlertProps {
-	severity: 'error' | 'warning' | 'info' | 'success';
+	severity: "error" | "warning" | "info" | "success";
 	title: string;
 	message: string;
 }

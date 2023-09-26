@@ -1,15 +1,14 @@
-import React, { useState, useEffect } from 'react';
-import Button from '../atoms/Button';
-import TextField from '../atoms/TextField';
-import Link from 'next/link';
-import { useAuth } from '@/utils/AuthContext';
-import { auth } from '@/utils/firebase';
-import { BASE_URL } from '@/utils/constants';
-import { useForm, SubmitHandler } from 'react-hook-form';
-import { useCreateUserWithEmailAndPassword } from 'react-firebase-hooks/auth';
-import CustomAlert from '../atoms/CustomAlert';
-import { useRouter } from 'next/router';
-import { useSignInWithEmailAndPassword } from 'react-firebase-hooks/auth';
+import React, { useState, useEffect } from "react";
+import Button from "../atoms/Button";
+import TextField from "../atoms/TextField";
+import Link from "next/link";
+import { useAuth } from "@/utils/AuthContext";
+import { auth } from "@/utils/firebase";
+import { BASE_URL } from "@/utils/constants";
+import { useForm, SubmitHandler } from "react-hook-form";
+import CustomAlert from "../atoms/CustomAlert";
+import { useRouter } from "next/router";
+import { useSignInWithEmailAndPassword } from "react-firebase-hooks/auth";
 
 type FormValues = {
 	firstName: string;
@@ -43,21 +42,21 @@ const SignupForm = () => {
 		const userAlreadyExistsPrisma = /Unique constraint failed/;
 
 		if (userAlreadyExistsPrisma.test(errors)) {
-			return 'A user with that email already exists.';
-		} else if (errors == 'Passwords do not match') {
-			return 'Passwords do not match';
+			return "A user with that email already exists.";
+		} else if (errors == "Passwords do not match") {
+			return "Passwords do not match";
 		}
 
 		// Firebase errors
 		switch (errors) {
-			case 'auth/email-already-exists':
-				return 'A user with that email already exists.';
-			case 'auth/invalid-email':
-				return 'Invalid email address format.';
-			case 'auth/invalid-password':
-				return 'Password should be at least 6 characters.';
+			case "auth/email-already-exists":
+				return "A user with that email already exists.";
+			case "auth/invalid-email":
+				return "Invalid email address format.";
+			case "auth/invalid-password":
+				return "Password should be at least 6 characters.";
 			default:
-				return 'Something went wrong trying to create your account. Please try again.';
+				return "Something went wrong trying to create your account. Please try again.";
 		}
 	};
 
@@ -66,8 +65,8 @@ const SignupForm = () => {
 			<div>
 				{errorMessage ? (
 					<CustomAlert
-						severity='error'
-						title='Error'
+						severity="error"
+						title="Error"
 						message={handleErrors(errorMessage)}
 					/>
 				) : null}
@@ -93,13 +92,13 @@ const SignupForm = () => {
 		try {
 			if (password != data.confirmPassword) {
 				setIsLoading(false);
-				setErrorMessage('Passwords do not match');
+				setErrorMessage("Passwords do not match");
 				return;
 			}
 			const response = await fetch(`${BASE_URL}/users`, {
-				method: 'POST',
+				method: "POST",
 				headers: {
-					'Content-Type': 'application/json',
+					"Content-Type": "application/json",
 				},
 				body: JSON.stringify(post),
 			});
@@ -107,7 +106,7 @@ const SignupForm = () => {
 			if (response.ok) {
 				const signIn = await signInWithEmailAndPassword(email, password);
 				if (signIn?.user) {
-					router.replace('/events/view');
+					router.replace("/events/view");
 				}
 				setIsLoading(false);
 			} else {
@@ -121,79 +120,79 @@ const SignupForm = () => {
 	};
 
 	return (
-		<form onSubmit={handleSubmit(handleSubmitUser)} className='space-y-4'>
+		<form onSubmit={handleSubmit(handleSubmitUser)} className="space-y-4">
 			<SignUpErrorComponent />
-			<div className='font-bold text-3xl'>Sign Up</div>
+			<div className="font-bold text-3xl">Sign Up</div>
 			<div>
 				<TextField
-					requiredMessage={errors.email ? 'Required' : undefined}
-					name='email'
-					type='email'
+					requiredMessage={errors.email ? "Required" : undefined}
+					name="email"
+					type="email"
 					register={register}
-					label='Email *'
+					label="Email *"
 					required={true}
 				/>
 			</div>
-			<div className='grid sm:space-x-4 grid-cols-1 sm:grid-cols-2 '>
-				<div className='pb-4 sm:pb-0'>
+			<div className="grid sm:space-x-4 grid-cols-1 sm:grid-cols-2 ">
+				<div className="pb-4 sm:pb-0">
 					<TextField
-						requiredMessage={errors.firstName ? 'Required' : undefined}
-						name='firstName'
+						requiredMessage={errors.firstName ? "Required" : undefined}
+						name="firstName"
 						register={register}
-						label='First Name *'
+						label="First Name *"
 						required={true}
 					/>
 				</div>
 				<div>
 					<TextField
-						requiredMessage={errors.lastName ? 'Required' : undefined}
-						name='lastName'
+						requiredMessage={errors.lastName ? "Required" : undefined}
+						name="lastName"
 						register={register}
-						label='Last Name *'
+						label="Last Name *"
 						required={true}
 					/>
 				</div>
 			</div>
 			<div>
 				<TextField
-					requiredMessage={errors.password ? 'Required' : undefined}
-					type='password'
-					name='password'
+					requiredMessage={errors.password ? "Required" : undefined}
+					type="password"
+					name="password"
 					register={register}
-					label='Password *'
+					label="Password *"
 					required={true}
 				/>
 			</div>
 			<div>
 				<TextField
-					type='password'
+					type="password"
 					requiredMessage={
 						errors.confirmPassword
-							? 'Required'
-							: watch('password') != watch('confirmPassword')
-							? 'Passwords do not match'
+							? "Required"
+							: watch("password") != watch("confirmPassword")
+							? "Passwords do not match"
 							: undefined
 					}
-					name='confirmPassword'
+					name="confirmPassword"
 					register={register}
-					label='Confirm Password *'
+					label="Confirm Password *"
 					required={true}
 				/>
 			</div>
 			<div>
-				<Button isLoading={isLoading} color='dark-gray' type='submit'>
+				<Button isLoading={isLoading} color="dark-gray" type="submit">
 					Continue
 				</Button>
 			</div>
 			<div>
-				<Button type='submit' color='gray'>
+				<Button type="submit" color="gray">
 					Continue with Google
 				</Button>
 			</div>
-			<div className='justify-center flex flex-row'>
-				<div className=''>Have an account?&nbsp;</div>
-				<Link href='/login' className='text-black'>
-					{' '}
+			<div className="justify-center flex flex-row">
+				<div className="">Have an account?&nbsp;</div>
+				<Link href="/login" className="text-black">
+					{" "}
 					Log in
 				</Link>
 			</div>

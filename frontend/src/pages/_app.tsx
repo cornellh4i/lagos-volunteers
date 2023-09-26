@@ -1,28 +1,28 @@
-import '../styles/globals.css';
-import { useEffect } from 'react';
-import type { AppProps } from 'next/app';
-import { ThemeProvider, CssBaseline } from '@mui/material';
-import { createTheme } from '@mui/material/styles';
-import { StyledEngineProvider } from '@mui/material/styles';
-import Layout from '@/components/Layout';
-import { AuthProvider } from '@/utils/AuthContext';
+import "../styles/globals.css";
+import { useEffect } from "react";
+import type { AppProps } from "next/app";
+import { ThemeProvider, CssBaseline } from "@mui/material";
+import { createTheme } from "@mui/material/styles";
+import { StyledEngineProvider } from "@mui/material/styles";
+import Layout from "@/components/Layout";
+import { AuthProvider } from "@/utils/AuthContext";
 
 export const theme = createTheme({
 	typography: {
-		fontFamily: 'Helvetica, sans-serif',
+		fontFamily: "Helvetica, sans-serif",
 	},
 	palette: {
 		primary: {
-			main: '#556cd6',
+			main: "#556cd6",
 		},
 		secondary: {
-			main: '#19857b',
+			main: "#19857b",
 		},
 		error: {
-			main: '#ff0000',
+			main: "#ff0000",
 		},
 		background: {
-			default: '#fff',
+			default: "#fff",
 		},
 	},
 });
