@@ -51,7 +51,7 @@ jobs:
           DATABASE_URL: postgres://postgres:postgres@localhost:5433/mydb
         run: |
           npx prisma generate
-          npx prisma db push --preview-feature
+          npx prisma db push --accept-data-loss
 
       - name: Run Jest Tests
         working-directory: ./backend/
