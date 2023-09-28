@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { useSendPasswordResetEmail } from "react-firebase-hooks/auth";
 import { auth } from "@/utils/firebase";
-import CustomAlert from "../atoms/CustomAlert";
+import Alert from "../atoms/Alert";
 import { BASE_URL_CLIENT } from "@/utils/constants";
 
 type FormValues = {
@@ -46,7 +46,7 @@ const ForgotPasswordForm = () => {
     return (
       <div>
         {error ? (
-          <CustomAlert
+          <Alert
             severity="error"
             title="Error"
             message={handleErrors(error.message)}
@@ -60,7 +60,7 @@ const ForgotPasswordForm = () => {
     return (
       <div>
         {success ? (
-          <CustomAlert
+          <Alert
             severity="success"
             title="Success"
             message="Password Reset Email Sent. Please check your inbox."

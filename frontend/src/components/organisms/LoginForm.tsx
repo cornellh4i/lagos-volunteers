@@ -7,7 +7,7 @@ import { useAuth } from "@/utils/AuthContext";
 import { useRouter } from "next/router";
 import Link from "next/link";
 import { auth } from "@/utils/firebase";
-import CustomAlert from "../atoms/CustomAlert";
+import Alert from "../atoms/Alert";
 
 import {
   useSignInWithEmailAndPassword,
@@ -61,7 +61,7 @@ const LoginForm = () => {
     return (
       <div>
         {signInErrors ? (
-          <CustomAlert
+          <Alert
             severity="error"
             title="Error"
             message={handleErrors(signInErrors.code)}
@@ -126,7 +126,7 @@ const LoginForm = () => {
           </Link>
         </div>
         <div>
-          <Button isLoading={isLoading} type="submit" color="dark-gray">
+          <Button isLoading={true} type="submit" color="dark-gray">
             Log In
           </Button>
         </div>

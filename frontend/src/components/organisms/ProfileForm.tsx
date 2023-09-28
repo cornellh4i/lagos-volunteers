@@ -7,7 +7,7 @@ import { useForm, SubmitHandler } from "react-hook-form";
 import { useRouter } from "next/router";
 import { BASE_URL } from "@/utils/constants";
 import { useUpdatePassword } from "react-firebase-hooks/auth";
-import CustomAlert from "../atoms/CustomAlert";
+import Alert from "../atoms/Alert";
 import { reauthenticateWithCredential, EmailAuthProvider } from "firebase/auth";
 
 type FormValues = {
@@ -74,7 +74,7 @@ const ProfileForm = ({ userDetails }: ProfileFormProps) => {
     return (
       <div>
         {error ? (
-          <CustomAlert
+          <Alert
             severity="error"
             title="Error"
             message={handleErrors(error?.message)}
@@ -88,7 +88,7 @@ const ProfileForm = ({ userDetails }: ProfileFormProps) => {
     return (
       <div>
         {errorMessage.length > 0 ? (
-          <CustomAlert
+          <Alert
             severity="error"
             title="Error"
             message={handleErrors(errorMessage)}
@@ -102,7 +102,7 @@ const ProfileForm = ({ userDetails }: ProfileFormProps) => {
     return (
       <div>
         {!error && !(errorMessage.length > 0) && success ? (
-          <CustomAlert
+          <Alert
             severity="success"
             title="Success"
             message="Profile update was successful. Please refresh the page to see your changes!"

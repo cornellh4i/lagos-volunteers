@@ -6,7 +6,7 @@ import { useAuth } from "@/utils/AuthContext";
 import { auth } from "@/utils/firebase";
 import { BASE_URL } from "@/utils/constants";
 import { useForm, SubmitHandler } from "react-hook-form";
-import CustomAlert from "../atoms/CustomAlert";
+import Alert from "../atoms/Alert";
 import { useRouter } from "next/router";
 import { useSignInWithEmailAndPassword } from "react-firebase-hooks/auth";
 
@@ -64,7 +64,7 @@ const SignupForm = () => {
     return (
       <div>
         {errorMessage ? (
-          <CustomAlert
+          <Alert
             severity="error"
             title="Error"
             message={handleErrors(errorMessage)}
