@@ -37,6 +37,14 @@ const CustomModal = ({ body }: CustomModalProps) => {
 				aria-describedby='modal-modal-description'>
 				<Box sx={style}>
 					{body}
+					<Grid container item>
+					<Grid xs={6}>
+					<Button color='dark-gray' onClick={handleClose}>Accept</Button>
+					</Grid>
+					<Grid xs={6}>
+					<Button color='dark-gray' onClick={handleClose}>Disagree</Button>
+					</Grid>
+					</Grid>
 				</Box>
 			</Modal>
 
