@@ -126,7 +126,7 @@ const LoginForm = () => {
           </Link>
         </div>
         <div>
-          <Button isLoading={true} type="submit" color="dark-gray">
+          <Button isLoading={isLoading} type="submit" color="dark-gray">
             Log In
           </Button>
         </div>
