@@ -2,7 +2,7 @@ import React, { ReactNode, useEffect } from "react";
 import NavBar from "@/components/organisms/NavBar";
 import { useRouter } from "next/router";
 import { useAuth } from "@/utils/AuthContext";
-import Loading from "../organisms/Loading";
+import Loading from "../molecules/Loading";
 
 /** A WelcomeTemplate page */
 interface WelcomeTemplateProps {

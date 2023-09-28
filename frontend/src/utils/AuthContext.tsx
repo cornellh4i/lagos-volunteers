@@ -14,7 +14,7 @@ import {
 } from "react-firebase-hooks/auth";
 import { UserCredential, onAuthStateChanged } from "firebase/auth";
 import { useRouter } from "next/router";
-import Loading from "@/components/organisms/Loading";
+import Loading from "@/components/molecules/Loading";
 
 // Define types for authentication context value
 type AuthContextValue = {
