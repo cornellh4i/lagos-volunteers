@@ -93,6 +93,13 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     isAuthenticated,
   };
 
+  const authPaths = [
+    "/login",
+    "/signup",
+    "/password/forgot",
+    "/password/reset/*",
+  ];
+
   const publicPaths = [
     "/login",
     "/signup",
@@ -109,6 +116,8 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       if (!user && !publicPaths.includes(path)) {
         router.replace("/login");
         setIsAuthenticated(false);
+      } else if (user && authPaths.includes(path)) {
+        router.replace("/events/view");
       } else {
         setIsAuthenticated(true);
       }

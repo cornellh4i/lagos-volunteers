@@ -10,25 +10,6 @@ interface WelcomeTemplateProps {
 }
 
 const WelcomeTemplate = ({ children }: WelcomeTemplateProps) => {
-  const { user, loading, isAuthenticated } = useAuth();
-  const router = useRouter();
-
-  // If you are already logged in, redirect to profile page
-  useEffect(() => {
-    const path = router.asPath;
-    if (user && isAuthenticated) {
-      router.replace("/profile");
-    }
-  }, [user, loading]);
-
-  if (loading || user) {
-    return (
-      <div>
-        <Loading />
-      </div>
-    );
-  }
-
   return (
     <div className="flex flex-col min-h-screen">
       <NavBar />
