@@ -93,13 +93,17 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     isAuthenticated,
   };
 
+  // Paths that are related to user authentication and which will be redirected
+  // to the dashboard when the user is already logged in
   const authPaths = [
+    "/",
     "/login",
     "/signup",
     "/password/forgot",
     "/password/reset/*",
   ];
 
+  // Paths that can be accessed freely when not logged in
   const publicPaths = [
     "/login",
     "/signup",
