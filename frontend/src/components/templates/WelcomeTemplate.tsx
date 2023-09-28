@@ -6,40 +6,40 @@ import Loading from "../organisms/Loading";
 
 /** A WelcomeTemplate page */
 interface WelcomeTemplateProps {
-	children: ReactNode;
+  children: ReactNode;
 }
 
 const WelcomeTemplate = ({ children }: WelcomeTemplateProps) => {
-	const { user, loading, isAuthenticated } = useAuth();
-	const router = useRouter();
+  const { user, loading, isAuthenticated } = useAuth();
+  const router = useRouter();
 
-	// If you are already logged in, redirect to profile page
-	useEffect(() => {
-		const path = router.asPath;
-		if (user && isAuthenticated) {
-			router.replace("/profile");
-		}
-	}, [user, loading]);
+  // If you are already logged in, redirect to profile page
+  useEffect(() => {
+    const path = router.asPath;
+    if (user && isAuthenticated) {
+      router.replace("/profile");
+    }
+  }, [user, loading]);
 
-	if (loading || user) {
-		return (
-			<div>
-				<Loading />
-			</div>
-		);
-	}
+  if (loading || user) {
+    return (
+      <div>
+        <Loading />
+      </div>
+    );
+  }
 
-	return (
-		<div className="flex flex-col min-h-screen">
-			<NavBar />
-			<div className="flex grow">
-				<div className="flex w-full sm:max-w-md items-center justify-center py-10 px-10 sm:px-20">
-					<div className="w-full">{children}</div>
-				</div>
-				<div className="flex-1 bg-gray-300"></div>
-			</div>
-		</div>
-	);
+  return (
+    <div className="flex flex-col min-h-screen">
+      <NavBar />
+      <div className="flex grow">
+        <div className="flex w-full sm:max-w-md items-center justify-center py-10 px-10 sm:px-20">
+          <div className="w-full">{children}</div>
+        </div>
+        <div className="flex-1 bg-gray-300"></div>
+      </div>
+    </div>
+  );
 };
 
 export default WelcomeTemplate;

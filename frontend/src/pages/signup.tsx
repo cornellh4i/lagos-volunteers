@@ -4,11 +4,11 @@ import SignupForm from "@/components/organisms/SignupForm";
 
 /** A Signup page */
 const Signup = () => {
-	return (
-		<WelcomeTemplate>
-			<SignupForm />
-		</WelcomeTemplate>
-	);
+  return (
+    <WelcomeTemplate>
+      <SignupForm />
+    </WelcomeTemplate>
+  );
 };
 
 export default Signup;

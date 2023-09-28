@@ -8,37 +8,37 @@ import Layout from "@/components/Layout";
 import { AuthProvider } from "@/utils/AuthContext";
 
 export const theme = createTheme({
-	typography: {
-		fontFamily: "Helvetica, sans-serif",
-	},
-	palette: {
-		primary: {
-			main: "#556cd6",
-		},
-		secondary: {
-			main: "#19857b",
-		},
-		error: {
-			main: "#ff0000",
-		},
-		background: {
-			default: "#fff",
-		},
-	},
+  typography: {
+    fontFamily: "Helvetica, sans-serif",
+  },
+  palette: {
+    primary: {
+      main: "#556cd6",
+    },
+    secondary: {
+      main: "#19857b",
+    },
+    error: {
+      main: "#ff0000",
+    },
+    background: {
+      default: "#fff",
+    },
+  },
 });
 
 const App = ({ Component, pageProps }: AppProps) => {
-	return (
-		<AuthProvider>
-			<StyledEngineProvider injectFirst>
-				<ThemeProvider theme={theme}>
-					<Layout>
-						<Component {...pageProps} />
-					</Layout>
-				</ThemeProvider>
-			</StyledEngineProvider>
-		</AuthProvider>
-	);
+  return (
+    <AuthProvider>
+      <StyledEngineProvider injectFirst>
+        <ThemeProvider theme={theme}>
+          <Layout>
+            <Component {...pageProps} />
+          </Layout>
+        </ThemeProvider>
+      </StyledEngineProvider>
+    </AuthProvider>
+  );
 };
 
 export default App;

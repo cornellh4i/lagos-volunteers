@@ -2,17 +2,17 @@ import React, { ReactNode } from "react";
 import NavBar from "@/components/organisms/NavBar";
 
 interface DefaultTemplateProps {
-	children: ReactNode;
+  children: ReactNode;
 }
 
 /** A DefaultTemplate page */
 const DefaultTemplate = ({ children }: DefaultTemplateProps) => {
-	return (
-		<div className="flex flex-col min-h-screen">
-			<NavBar />
-			<div className="pt-8 pb-10 px-6">{children}</div>
-		</div>
-	);
+  return (
+    <div className="flex flex-col min-h-screen">
+      <NavBar />
+      <div className="pt-8 pb-10 px-6">{children}</div>
+    </div>
+  );
 };
 
 export default DefaultTemplate;
