@@ -1,10 +1,14 @@
 import React from 'react';
 import { Modal, Grid, Backdrop, Fade, Box, Typography } from '@mui/material';
 import Button from '../../components/atoms/Button';
+import { StringLiteral } from 'typescript';
 
 interface CustomModalProps {
 	open: boolean;
-	body: React.ReactElement;
+	title: string; 
+	bodyText: string; 
+	leftButtonText: string; 
+	rightButtonText: string;
 }
 
 const style = {
@@ -12,88 +16,42 @@ const style = {
 	top: '50%',
 	left: '50%',
 	transform: 'translate(-50%, -50%)',
-	width: 400,
 	bgcolor: 'background.paper',
-	border: '2px solid #000',
-	boxShadow: 24,
+	borderRadius: '5px',
+	width : '70%',
 	p: 4,
+	fontweight: 'bold'
 };
 
 /**
  * A Modal component is a styled modal that takes in a body component
  */
-const CustomModal = ({ body }: CustomModalProps) => {
+const CustomModal = ({ title, bodyText, leftButtonText, rightButtonText }: CustomModalProps) => {
 	const [open, setOpen] = React.useState(true);
 	const handleOpen = () => setOpen(true);
 	const handleClose = () => setOpen(false);
 	return (
-		<div className='flex justify-center items-center h-screen'>
-			<div className='bg-gray-200 p-4 h-7 w-7'></div>
-			{/* MUI Modal */}
 			<Modal
+				className='w-full'
 				open={open}
 				onClose={handleClose}
 				aria-labelledby='modal-modal-title'
 				aria-describedby='modal-modal-description'>
 				<Box sx={style}>
-					{body}
-					<Grid container item>
-					<Grid xs={6}>
-					<Button color='dark-gray' onClick={handleClose}>Accept</Button>
+					<b>{title}</b>
+					<br></br>
+					{bodyText}
+					<br></br>
+					<Grid container spacing={2}>
+					<Grid item md={6} xs={12}>
+					<Button color= "gray" type="button" onClick={handleClose}>{leftButtonText}</Button>
 					</Grid>
-					<Grid xs={6}>
-					<Button color='dark-gray' onClick={handleClose}>Disagree</Button>
+					<Grid item md={6} xs={12}>
+					<Button color='dark-gray' type='button' onClick={handleClose}>{rightButtonText}</Button>
 					</Grid>
 					</Grid>
 				</Box>
 			</Modal>
-
-			{/* <Modal
-				aria-labelledby='transition-modal-title'
-				aria-describedby='transition-modal-description'
-				open={open}
-				onClose={handleClose}>
-				<Box
-					sx={{
-						width: 300,
-						height: 300,
-						backgroundColor: 'gray',
-						'&:hover': {
-							backgroundColor: 'primary.main',
-							opacity: [0.9, 0.8, 0.7],
-						},
-					}}
-					justifyContent='center'>
-					<Typography id='transition-modal-title' variant='h6' component='h2'>
-						Text in a modal
-					</Typography>
-					<Typography id='transition-modal-description' sx={{ mt: 2 }}>
-						Duis mollis, est non commodo luctus, nisi erat porttitor ligula.
-					</Typography>
-				</Box>
-			</Modal> */}
-		</div>
-
-		// <div className="p-52">
-		// <Modal
-		// open={open}
-		// onClose={handleClose}>
-		/* <div>
-        <h2 id="modal-title"> {header} </h2>
-        <p id="modal-description">
-          {bodyText}
-        </p>
-        <Grid item container>
-          <Grid xs={6}>
-        <Button color="gray" onClick={handleClose}>{buttonText}</Button>
-        </Grid>
-        <Grid xs={6}>
-        <Button color="gray" onClick={handleClose}>{buttonText}</Button>
-        </Grid>
-        </Grid>
-        </div>
-  </Modal>
-  </div> */
 	);
 };
 

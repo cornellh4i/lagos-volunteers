@@ -7,17 +7,7 @@ import { Box } from '@mui/material';
 const test = () => {
     return (
         <div>
-        <CustomModal open = {true} body={<div>
-            <Box sx={{
-                        width: 400,
-						height: 300,
-						backgroundColor: 'gray',
-						'&:hover': {
-							backgroundColor: 'primary.main',
-							opacity: [0.9, 0.8, 0.7],
-						},
-					}}>
-                    </Box></div>}
+        <CustomModal open = {true} title={"Title"} bodyText={"Lorem ipsum du bio bo"} leftButtonText={"Disagree"} rightButtonText={"Agree & Continue"}
         />
         </div>
     );
