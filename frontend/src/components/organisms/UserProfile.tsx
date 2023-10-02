@@ -22,21 +22,29 @@ const UserProfile = ({ userid }: UserProfileProps) => {
   return (
     <>
       <div className="flex">
-        <div className="flex justify-center">
+        <div className="flex items-center">
           <img
             src={avatarSrc}
             alt={FALLBACK_AVATOR_ALT}
-            className="rounded-full w-32"
+            className="rounded-full w-24 h-24"
             onError={() => setAvatarSrc(FALLBACK_AVATAR_URL)}
           />
         </div>
-        <div className="space-y-0.5 mb-4">
-          {/* to be adapted to new the new icontext class */}
-          <div>Julia Papp</div>
-          <IconText icon={<PersonIcon />} text="Volunteer" />
-          <IconText icon={<EmailIcon />} text="jpapp@gmail.com" />
-          <IconText icon={<CalendarMonthIcon />} text="Joined 5/1/2023" />
+        <div className="flex items-center pl-4">
+          <div className="space-y-0.5">
+            <div className="text-2xl font-bold" >Julia Papp</div>
+            <IconText icon={<PersonIcon className="text-gray-400" />}>
+                <div>Volunteer</div>
+            </IconText>
+            <IconText icon={<EmailIcon className="text-gray-400" />}>
+                <div>jpapp@gmail.com</div>
+            </IconText>
+            <IconText icon={<CalendarMonthIcon className="text-gray-400" />}>
+                <div>Joined 5/1/2023</div>
+            </IconText>
+          </div>
         </div>
+        
       </div>
     </>
   );
