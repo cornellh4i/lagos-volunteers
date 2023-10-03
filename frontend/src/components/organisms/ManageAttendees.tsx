@@ -15,16 +15,14 @@ import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import IconText from "../atoms/IconText";
 import LoginIcon from "@mui/icons-material/Login";
 
-// renderCell: (params) => {
-//   return <CheckBox label={params.value} />;
-// },
 interface ManageAttendeesProps {}
-// use Table Component and the Card component
+
 const eventColumnsPending: GridColDef[] = [
   {
     field: "check",
     headerName: "",
-    minWidth: 25,
+    minWidth: 15,
+    flex: 0.5,
     renderCell: (params) => {
       return <CheckBox label={params.value} />;
     },
@@ -32,34 +30,39 @@ const eventColumnsPending: GridColDef[] = [
   {
     field: "name",
     headerName: "Name",
-    minWidth: 200,
+    minWidth: 100,
+    flex: 0.5,
   },
   {
     field: "email",
     headerName: "Email",
-    minWidth: 200,
+    minWidth: 100,
+    flex: 0.5,
   },
   {
     field: "role",
     headerName: "Role",
-    minWidth: 200,
-    flex: 2,
+    minWidth: 100,
+    flex: 2.5,
   },
   {
     field: "button",
     headerName: "",
     minWidth: 100,
     flex: 0.5,
-    renderCell: (params) => {
-      return <Button children="Check IN" color="gray" />;
-    },
+    renderCell: () => (
+      <div style={{ display: "flex", justifyContent: "flex-end" }}>
+        <Button children="Check In" color="gray"></Button>
+      </div>
+    ),
   },
 ];
 const eventColumnsCheckedIn: GridColDef[] = [
   {
     field: "check",
     headerName: "",
-    minWidth: 25,
+    minWidth: 15,
+    flex: 0.5,
     renderCell: (params) => {
       return <CheckBox label={params.value} />;
     },
@@ -67,34 +70,39 @@ const eventColumnsCheckedIn: GridColDef[] = [
   {
     field: "name",
     headerName: "Name",
-    minWidth: 200,
+    minWidth: 100,
+    flex: 0.5,
   },
   {
     field: "email",
     headerName: "Email",
-    minWidth: 200,
+    minWidth: 100,
+    flex: 0.5,
   },
   {
     field: "role",
     headerName: "Role",
-    minWidth: 200,
-    flex: 2,
+    minWidth: 100,
+    flex: 2.5,
   },
   {
     field: "button",
     headerName: "",
     minWidth: 100,
     flex: 0.5,
-    renderCell: (params) => {
-      return <Button children="Check IN" color="gray" />;
-    },
+    renderCell: () => (
+      <div style={{ display: "flex", justifyContent: "flex-end" }}>
+        <Button children="Check Out" color="gray"></Button>
+      </div>
+    ),
   },
 ];
 const eventColumnsCheckedOut: GridColDef[] = [
   {
     field: "check",
     headerName: "",
-    minWidth: 25,
+    minWidth: 15,
+    flex: 0.5,
     renderCell: (params) => {
       return <CheckBox label={params.value} />;
     },
@@ -102,27 +110,20 @@ const eventColumnsCheckedOut: GridColDef[] = [
   {
     field: "name",
     headerName: "Name",
-    minWidth: 200,
+    minWidth: 100,
+    flex: 0.5,
   },
   {
     field: "email",
     headerName: "Email",
-    minWidth: 200,
+    minWidth: 100,
+    flex: 0.5,
   },
   {
     field: "role",
     headerName: "Role",
-    minWidth: 200,
-    flex: 2,
-  },
-  {
-    field: "gib",
-    headerName: "",
-    minWidth: 200,
-    flex: 2,
-    renderCell: (params) => {
-      return <IconText icon={<LoginIcon />} text="Check In" />;
-    },
+    minWidth: 100,
+    flex: 2.5,
   },
 ];
 // below are dummy data, in the future we want to get data from backend and
@@ -134,14 +135,35 @@ const dummyRows = [
     check: true,
     name: "Greatest Ball Handler",
     email: "gbh@gmail.com",
-    role: "Supervisor",
+    role: "Volunteer",
   },
   {
     id: 2,
     check: true,
-    name: "Greatest Ball Handler",
+    name: "Big Ballllahh",
     email: "gbh@gmail.com",
-    role: "Supervisor",
+    role: "Volunteer",
+  },
+  {
+    id: 3,
+    check: true,
+    name: "Top Shottaahh",
+    email: "gbh@gmail.com",
+    role: "Volunteer",
+  },
+  {
+    id: 4,
+    check: true,
+    name: "Brita Filter",
+    email: "gbh@gmail.com",
+    role: "Volunteer",
+  },
+  {
+    id: 5,
+    check: true,
+    name: "Ollie The Otter",
+    email: "gbh@gmail.com",
+    role: "Volunteer",
   },
 ];
 
@@ -191,7 +213,10 @@ const ManageAttendees = ({}: ManageAttendeesProps) => {
       <div className="space-y-2 col-start-1 col-end-5">
         <SearchBar value="Search for a member by name, email" />
       </div>
-      <TabContainer tabs={tabs} />
+
+      <div>
+        <TabContainer tabs={tabs} />
+      </div>
     </>
   );
 };
