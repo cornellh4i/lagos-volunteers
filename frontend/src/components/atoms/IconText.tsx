@@ -12,8 +12,8 @@ const IconText = ({ icon, children }: IconTextProps) => {
   return (
     <>
       <div className="flex">
-        <div className="pr-1">{icon}</div>
-        <div>{children}</div>
+        <div className="flex items-center pr-1">{icon}</div>
+        <div className="flex items-center">{children}</div>
       </div>
     </>
   );

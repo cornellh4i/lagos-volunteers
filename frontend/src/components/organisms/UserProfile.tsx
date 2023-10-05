@@ -31,7 +31,7 @@ const UserProfile = ({ userid }: UserProfileProps) => {
           />
         </div>
         <div className="flex items-center pl-4">
-          <div className="space-y-0.5">
+          <div className="space-y-1">
             <div className="text-2xl font-bold" >Julia Papp</div>
             <IconText icon={<PersonIcon className="text-gray-400" />}>
                 <div>Volunteer</div>
