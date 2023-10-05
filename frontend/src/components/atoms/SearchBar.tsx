@@ -3,7 +3,7 @@ import React from "react";
 import IconButton from "@mui/material/IconButton";
 import SearchIcon from "@mui/icons-material/Search";
 import TextField from "@mui/material/TextField";
-import { FilledInput, Input, InputAdornment, Grid } from "@mui/material";
+import { FilledInput, Input, InputAdornment, Grid, Paper, InputBase, Divider } from "@mui/material";
 
 interface SearchBarProps {
   value: string;
@@ -15,31 +15,20 @@ interface SearchBarProps {
 const SearchBar = ({ value }: SearchBarProps) => {
   return (
     <>
-      <div>
-        <Grid container>
-          <Grid item xs={4}>
-            <TextField
-              fullWidth
-              sx={{ m: 1 }}
-              id="search-bar"
-              className="text"
-              label="Search member by name, email"
-              variant="outlined"
-              placeholder="Search..."
-              size="small"
-              InputProps={{
-                endAdornment: (
-                  <InputAdornment position="end">
-                    <IconButton type="submit" aria-label="search">
-                      <SearchIcon style={{ fill: "gray" }} />
-                    </IconButton>
-                  </InputAdornment>
-                ),
-              }}
-            ></TextField>
-          </Grid>
-        </Grid>
-      </div>
+      <Paper
+        component="form"
+        variant="outlined"
+        sx={{ p: '2px 4px', display: 'flex', alignItems: 'center', width: 400 }}
+      >
+        <InputBase
+          sx={{ ml: 1, flex: 1 }}
+          placeholder="Search member by name, email"
+          inputProps={{ 'aria-label': 'search google maps' }}
+        />
+        <IconButton type="button" sx={{ p: '10px' }} aria-label="search">
+          <SearchIcon />
+        </IconButton>
+      </Paper>
     </>
   );
 };
