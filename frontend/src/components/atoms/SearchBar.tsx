@@ -2,8 +2,7 @@ import React from "react";
 // import { useState } from "react";
 import IconButton from "@mui/material/IconButton";
 import SearchIcon from "@mui/icons-material/Search";
-import TextField from "@mui/material/TextField";
-import { FilledInput, Input, InputAdornment, Grid, Paper, InputBase, Divider } from "@mui/material";
+import { Paper, InputBase } from "@mui/material";
 
 interface SearchBarProps {
   value: string;
