@@ -23,6 +23,7 @@ const UpcomingEvents = () => {
           title={"test1"}
           location={"jameson"}
           datetime={"today lol"}
+          access={true}
         />
         <EventCard
           eventid={"000"}
@@ -31,6 +32,7 @@ const UpcomingEvents = () => {
           title={"test2"}
           location={"jameson"}
           datetime={"today lol"}
+          access={true}
         />
         <EventCard
           eventid={"000"}
@@ -39,6 +41,7 @@ const UpcomingEvents = () => {
           title={"test3"}
           location={"jameson"}
           datetime={"today lol"}
+          access={false}
         />
       </CardList>
       <CardList>
@@ -49,6 +52,7 @@ const UpcomingEvents = () => {
           title={"test1"}
           location={"jameson"}
           datetime={"today lol"}
+          access={true}
         />
         <EventCard
           eventid={"000"}
@@ -57,6 +61,7 @@ const UpcomingEvents = () => {
           title={"test2"}
           location={"jameson"}
           datetime={"today lol"}
+          access={true}
         />
         <EventCard
           eventid={"000"}
@@ -65,6 +70,7 @@ const UpcomingEvents = () => {
           title={"test3"}
           location={"jameson"}
           datetime={"today lol"}
+          access={false}
         />
       </CardList>
     </>
