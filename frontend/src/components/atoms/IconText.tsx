@@ -13,7 +13,7 @@ const IconText = ({ icon, text }: IconTextProps) => {
     <>
       <div className="flex items-center">
         <div className="flex-left p-1">{icon}</div>
-        <div className="flex-left">{text}</div>
+        <div className="flex-left truncate">{text}</div>
       </div>
     </>
   );

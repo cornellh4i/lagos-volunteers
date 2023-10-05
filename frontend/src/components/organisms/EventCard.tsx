@@ -40,24 +40,20 @@ const EventCard = ({
     <>
       <Card variant="outlined" className="w-4/12">
         <div className="p-5">
-          <h2>
+          <b className="text-2xl" >
             <IconText
               icon={<EmojiFoodBeverageIcon color="disabled" fontSize="small" />}
               text={title.toLocaleUpperCase()}
             />
-          </h2>
-
+          </b>
           <IconText
             icon={<LocationOnIcon color="disabled" fontSize="small" />}
             text={location.toLocaleUpperCase()}
           />
-
-          <div className="my-1">
-            <IconText
-              icon={<WatchLaterIcon color="disabled" fontSize="small" />}
-              text={datetime}
-            />
-          </div>
+          <IconText
+            icon={<WatchLaterIcon color="disabled" fontSize="small" />}
+            text={datetime}
+          />
 
           <Button color="gray" type="button">
             Cancel RSVP
