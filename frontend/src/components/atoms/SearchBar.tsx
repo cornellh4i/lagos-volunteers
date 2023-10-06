@@ -1,5 +1,4 @@
 import React from "react";
-import { TextField } from ""
 
 interface SearchBarProps {
   value: string;
@@ -11,7 +10,7 @@ interface SearchBarProps {
 const SearchBar = ({ value }: SearchBarProps) => {
   return (
     <>
-      
+      <div>Lorem</div>
     </>
   );
 };
