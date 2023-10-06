@@ -63,6 +63,6 @@ const CustomModal = ({
 			</Box>
 		</Modal>
 	);
-};
+}; 
 
 export default CustomModal;
