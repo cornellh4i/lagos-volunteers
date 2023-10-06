@@ -1,7 +1,5 @@
 import React from "react";
 import { Modal, Grid, Backdrop, Fade, Box, Typography } from "@mui/material";
-import Button from "../../components/atoms/Button";
-import { StringLiteral } from "typescript";
 
 interface CustomModalProps {
   open: boolean;
@@ -15,28 +13,18 @@ const style = {
   left: "50%",
   transform: "translate(-50%, -50%)",
   bgcolor: "background.paper",
-  borderRadius: "5px",
-  width: "50%",
-  paddingLeft: 10,
-  paddingRight: 10,
-  paddingTop: 5,
-  paddingBottom: 5,
+  borderRadius: "1rem",
   fontweight: "bold",
 };
 
 const styleSmall = {
-  position: "absolute" as "absolute",
-  top: "50%",
-  left: "50%",
-  transform: "translate(-50%, -50%)",
-  bgcolor: "background.paper",
-  borderRadius: "5px",
   width: "80%",
-  paddingLeft: 5,
-  paddingRight: 5,
-  paddingTop: 5,
-  paddingBottom: 5,
-  fontweight: "bold",
+  padding: 4,
+};
+
+const styleLarge = {
+  width: 500,
+  padding: "4rem 6rem",
 };
 
 /**
@@ -44,21 +32,17 @@ const styleSmall = {
  */
 const CustomModal = ({ open, handleClose, children }: CustomModalProps) => {
   const [width, setWidth] = React.useState(window.innerWidth);
-  const breakpoint = 420;
+  const breakpoint = 768; // breakpoint width for md
   React.useEffect(() => {
-    /* Inside of a "useEffect" hook add an event listener that updates
-       the "width" state variable when the window size changes */
+    // Inside of a "useEffect" hook add an event listener that updates
+    // the "width" state variable when the window size changes
     window.addEventListener("resize", () => setWidth(window.innerWidth));
 
-    /* passing an empty array as the dependencies of the effect will cause this
-       effect to only run when the component mounts, and not each time it updates.
-       We only want the listener to be added once */
+    // Passing an empty array as the dependencies of the effect will cause this
+    // effect to only run when the component mounts, and not each time it updates.
+    // We only want the listener to be added once.
   }, []);
-  const [value, setValue] = React.useState("1");
-  const handleChange = (event: React.SyntheticEvent, newValue: string) => {
-    setValue(newValue);
-  };
-  return width > breakpoint ? (
+  return (
     <Modal
       className="w-full"
       open={open}
@@ -66,17 +50,11 @@ const CustomModal = ({ open, handleClose, children }: CustomModalProps) => {
       aria-labelledby="modal-modal-title"
       aria-describedby="modal-modal-description"
     >
-      <Box sx={style}>{children}</Box>
-    </Modal>
-  ) : (
-    <Modal
-      className="w-full"
-      open={open}
-      onClose={handleClose}
-      aria-labelledby="modal-modal-title"
-      aria-describedby="modal-modal-description"
-    >
-      <Box sx={styleSmall}>{children}</Box>
+      {width > breakpoint ? (
+        <Box sx={[style, styleLarge]}>{children}</Box>
+      ) : (
+        <Box sx={[style, styleSmall]}>{children}</Box>
+      )}
     </Modal>
   );
 };
