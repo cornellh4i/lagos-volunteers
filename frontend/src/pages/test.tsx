@@ -4,10 +4,7 @@ import Button from "../components/atoms/Button";
 import { Box, Grid } from "@mui/material";
 import MuiButton from "@mui/material/Button";
 
-const ModalBody = () => {
-  const [open, setOpen] = React.useState(false);
-  const handleOpen = () => setOpen(true);
-  const handleClose = () => setOpen(false);
+const ModalBody = ({ handleClose }: { handleClose: () => void }) => {
   return (
     <div>
       <h2>Terms and Conditions</h2>
@@ -43,7 +40,7 @@ const test = () => {
       <CustomModal
         open={open}
         handleClose={handleClose}
-        children={<ModalBody />}
+        children={<ModalBody handleClose={handleClose} />}
       />
     </div>
   );

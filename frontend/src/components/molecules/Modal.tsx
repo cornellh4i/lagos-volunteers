@@ -15,6 +15,7 @@ const style = {
   bgcolor: "background.paper",
   borderRadius: "1rem",
   fontweight: "bold",
+  boxShadow: 4,
 };
 
 const styleSmall = {
