@@ -8,4 +8,3 @@
     "start": "(cd backend && yarn run start) & (cd frontend && yarn run start)"
   }
 }
-
