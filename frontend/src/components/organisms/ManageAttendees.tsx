@@ -1,10 +1,5 @@
 import React from "react";
-import BoxText from "@/components/atoms/BoxText";
-import Chip from "@/components/atoms/Chip";
 import TabContainer from "@/components/molecules/TabContainer";
-import next from "next/types";
-import EventCard from "@/components/organisms/EventCard";
-import CardList from "@/components/molecules/CardList";
 import { GridColDef, GridValueGetterParams } from "@mui/x-data-grid";
 import Table from "@/components/molecules/Table";
 import Button from "../atoms/Button";
@@ -12,8 +7,6 @@ import Link from "next/link";
 import CheckBox from "@/components/atoms/Checkbox";
 import SearchBar from "../atoms/SearchBar";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-import IconText from "../atoms/IconText";
-import LoginIcon from "@mui/icons-material/Login";
 
 interface ManageAttendeesProps {}
 
@@ -21,7 +14,7 @@ const eventColumnsPending: GridColDef[] = [
   {
     field: "check",
     headerName: "",
-    minWidth: 15,
+    maxWidth: 50,
     flex: 0.5,
     renderCell: (params) => {
       return <CheckBox label={params.value} />;
@@ -61,7 +54,7 @@ const eventColumnsCheckedIn: GridColDef[] = [
   {
     field: "check",
     headerName: "",
-    minWidth: 15,
+    maxWidth: 50,
     flex: 0.5,
     renderCell: (params) => {
       return <CheckBox label={params.value} />;
@@ -101,8 +94,11 @@ const eventColumnsCheckedOut: GridColDef[] = [
   {
     field: "check",
     headerName: "",
-    minWidth: 15,
+    maxWidth: 50,
     flex: 0.5,
+    renderHeader: (params) => (
+      <div style={{ fontWeight: "bold" }}>{params.colDef.headerName}</div>
+    ),
     renderCell: (params) => {
       return <CheckBox label={params.value} />;
     },
@@ -112,6 +108,9 @@ const eventColumnsCheckedOut: GridColDef[] = [
     headerName: "Name",
     minWidth: 100,
     flex: 0.5,
+    renderHeader: (params) => (
+      <div style={{ fontWeight: "bold" }}>{params.colDef.headerName}</div>
+    ),
   },
   {
     field: "email",
@@ -132,35 +131,35 @@ let dummyDate: Date = new Date(2023, 0o1, 21);
 const dummyRows = [
   {
     id: 1,
-    check: true,
+    check: false,
     name: "Greatest Ball Handler",
     email: "gbh@gmail.com",
     role: "Volunteer",
   },
   {
     id: 2,
-    check: true,
+    check: false,
     name: "Big Ballllahh",
     email: "gbh@gmail.com",
     role: "Volunteer",
   },
   {
     id: 3,
-    check: true,
+    check: false,
     name: "Top Shottaahh",
     email: "gbh@gmail.com",
     role: "Volunteer",
   },
   {
     id: 4,
-    check: true,
+    check: false,
     name: "Brita Filter",
     email: "gbh@gmail.com",
     role: "Volunteer",
   },
   {
     id: 5,
-    check: true,
+    check: false,
     name: "Ollie The Otter",
     email: "gbh@gmail.com",
     role: "Volunteer",
