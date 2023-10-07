@@ -21,28 +21,19 @@ const style = {
 const styleSmall = {
   width: "80%",
   padding: 4,
+  display: { xs: "block", md: "none" },
 };
 
 const styleLarge = {
   width: 500,
   padding: "4rem 6rem",
+  display: { xs: "none", md: "block" },
 };
 
 /**
  * A Modal component is a styled modal that takes in a body component
  */
 const CustomModal = ({ open, handleClose, children }: CustomModalProps) => {
-  const [width, setWidth] = React.useState(window.innerWidth);
-  const breakpoint = 768; // breakpoint width for md
-  React.useEffect(() => {
-    // Inside of a "useEffect" hook add an event listener that updates
-    // the "width" state variable when the window size changes
-    window.addEventListener("resize", () => setWidth(window.innerWidth));
-
-    // Passing an empty array as the dependencies of the effect will cause this
-    // effect to only run when the component mounts, and not each time it updates.
-    // We only want the listener to be added once.
-  }, []);
   return (
     <Modal
       className="w-full"
@@ -51,11 +42,10 @@ const CustomModal = ({ open, handleClose, children }: CustomModalProps) => {
       aria-labelledby="modal-modal-title"
       aria-describedby="modal-modal-description"
     >
-      {width > breakpoint ? (
-        <Box sx={[style, styleLarge]}>{children}</Box>
-      ) : (
+      <div>
         <Box sx={[style, styleSmall]}>{children}</Box>
-      )}
+        <Box sx={[style, styleLarge]}>{children}</Box>
+      </div>
     </Modal>
   );
 };
