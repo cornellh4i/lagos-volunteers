@@ -25,9 +25,7 @@ type userData = {
 /** A Profile page */
 const Profile = () => {
   const date = new Date();
-
   const { user } = useAuth();
-
   const [userDetails, setUserDetails] = useState<userData | null | undefined>(
     null
   );
