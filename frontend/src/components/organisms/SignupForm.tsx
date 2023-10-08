@@ -6,6 +6,9 @@ import { useAuth } from "@/utils/AuthContext";
 import { auth } from "@/utils/firebase";
 import { BASE_URL } from "@/utils/constants";
 import { useForm, SubmitHandler } from "react-hook-form";
+import Alert from "../atoms/Alert";
+import { useRouter } from "next/router";
+import { useSignInWithEmailAndPassword } from "react-firebase-hooks/auth";
 
 type FormValues = {
   firstName: string;
@@ -16,7 +19,15 @@ type FormValues = {
 };
 
 const SignupForm = () => {
-  const { createFirebaseUser } = useAuth();
+  const [
+    signInWithEmailAndPassword,
+    signedInUser,
+    signInLoading,
+    signInErrors,
+  ] = useSignInWithEmailAndPassword(auth);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const router = useRouter();
 
   const {
     register,
@@ -25,32 +36,84 @@ const SignupForm = () => {
     formState: { errors },
   } = useForm<FormValues>();
 
-  const handleSubmitUser: SubmitHandler<FormValues> = async (data) => {
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
+  const handleErrors = (errors: any) => {
+    const userAlreadyExistsPrisma = /Unique constraint failed/;
+
+    if (userAlreadyExistsPrisma.test(errors)) {
+      return "A user with that email already exists.";
+    } else if (errors == "Passwords do not match") {
+      return "Passwords do not match";
+    }
+
+    // Firebase errors
+    switch (errors) {
+      case "auth/email-already-exists":
+        return "A user with that email already exists.";
+      case "auth/invalid-email":
+        return "Invalid email address format.";
+      case "auth/invalid-password":
+        return "Password should be at least 6 characters.";
+      default:
+        return "Something went wrong trying to create your account. Please try again.";
+    }
+  };
+
+  const SignUpErrorComponent = (): JSX.Element | null => {
+    return errorMessage ? (
+      <Alert severity="error">Error: {handleErrors(errorMessage)}</Alert>
+    ) : null;
+  };
+
+  const handleSubmitUser: SubmitHandler<FormValues> = async (data, event) => {
+    setIsLoading(true);
+
+    event?.preventDefault();
     const { firstName, lastName, email, password } = data;
+    const emailLowerCase = email.toLowerCase();
     const post = {
-      email,
+      email: emailLowerCase,
       profile: {
         firstName,
         lastName,
       },
+      password,
     };
+
     try {
-      const fbUser = await createFirebaseUser(email, password);
-      const dbUser = await fetch(`${BASE_URL}/users`, {
+      if (password != data.confirmPassword) {
+        setIsLoading(false);
+        setErrorMessage("Passwords do not match");
+        return;
+      }
+      const response = await fetch(`${BASE_URL}/users`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify(post),
       });
-      Promise.all([fbUser, dbUser]);
-    } catch (error) {
-      console.log(error);
+      const r = await response.json();
+      if (response.ok) {
+        const signIn = await signInWithEmailAndPassword(email, password);
+        if (signIn?.user) {
+          router.replace("/events/view");
+        }
+        setIsLoading(false);
+      } else {
+        console.log(r);
+        setErrorMessage(r.error);
+      }
+    } catch (error: any) {
+      setErrorMessage(error.message);
     }
+    setIsLoading(false);
   };
 
   return (
     <form onSubmit={handleSubmit(handleSubmitUser)} className="space-y-4">
+      <SignUpErrorComponent />
       <div className="font-bold text-3xl">Sign Up</div>
       <div>
         <TextField
@@ -109,7 +172,7 @@ const SignupForm = () => {
         />
       </div>
       <div>
-        <Button color="dark-gray" type="submit">
+        <Button isLoading={isLoading} color="dark-gray" type="submit">
           Continue
         </Button>
       </div>
