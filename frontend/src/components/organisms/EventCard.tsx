@@ -49,17 +49,20 @@ const EventCard = ({
                 icon={
                   <EmojiFoodBeverageIcon color="disabled" fontSize="small" />
                 }
-                text={title.toLocaleUpperCase()}
-              />
+              >
+                {title.toLocaleUpperCase()}
+              </IconText>
             </b>
             <IconText
               icon={<LocationOnIcon color="disabled" fontSize="small" />}
-              text={location.toLocaleUpperCase()}
-            />
+            >
+              {location.toLocaleUpperCase()}
+            </IconText>
             <IconText
               icon={<WatchLaterIcon color="disabled" fontSize="small" />}
-              text={datetime}
-            />
+            >
+              {datetime}
+            </IconText>
             <Button color="gray" type="button">
               Cancel RSVP
             </Button>
@@ -78,17 +81,20 @@ const EventCard = ({
                 icon={
                   <EmojiFoodBeverageIcon color="disabled" fontSize="small" />
                 }
-                text={title.toLocaleUpperCase()}
-              />
+              >
+                {title.toLocaleUpperCase()}
+              </IconText>
             </b>
             <IconText
               icon={<LocationOnIcon color="disabled" fontSize="small" />}
-              text={location.toLocaleUpperCase()}
-            />
+            >
+              {location.toLocaleUpperCase()}
+            </IconText>
             <IconText
               icon={<WatchLaterIcon color="disabled" fontSize="small" />}
-              text={datetime}
-            />
+            >
+              {datetime}
+            </IconText>
             <div className="flex-row flex">
               <Button color="gray" type="button">
                 Cancel RSVP

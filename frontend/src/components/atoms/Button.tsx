@@ -1,9 +1,9 @@
-import React from "react";
+import React, { ReactNode } from "react";
 import { Button } from "@mui/material";
 import CircularProgress from "@mui/material/CircularProgress";
 
 interface ButtonProps {
-  children: string;
+  children: ReactNode;
   color: "gray" | "dark-gray";
   onClick?: () => void;
   type?: "button" | "submit" | "reset" | undefined;
