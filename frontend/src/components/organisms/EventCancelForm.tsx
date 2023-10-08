@@ -1,19 +1,45 @@
 import React, { useState } from "react";
 import EventDetails from "./EventDetails";
 import Button from "../atoms/Button";
-import { Modal } from "@mui/material";
+import Modal from "@/components/molecules/Modal";
 import Link from "next/link";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import IconText from "../atoms/IconText";
 import AccessTimeFilledIcon from "@mui/icons-material/AccessTimeFilled";
 import MultilineTextField from "../atoms/MultilineTextField";
 import { useForm, SubmitHandler } from "react-hook-form";
+import { Typography, Grid } from "@mui/material";
 
 interface EventCancelFormProps {
   eventid: string;
 }
 type FormValues = {
   cancelReason: string;
+};
+
+/**
+ * A confirmation modal body
+ */
+const ModalBody = ({ handleClose }: { handleClose: () => void }) => {
+  return (
+    <div>
+      <Typography align="center" sx={{ paddingBottom: 2 }}>
+        Are you sure you want to cancel?
+      </Typography>
+      <Grid container spacing={2}>
+        <Grid item md={6} xs={12}>
+          <Button color="gray" type="button" onClick={handleClose}>
+            No
+          </Button>
+        </Grid>
+        <Grid item md={6} xs={12}>
+          <Button color="dark-gray" type="button" onClick={handleClose}>
+            Yes, cancel
+          </Button>
+        </Grid>
+      </Grid>
+    </div>
+  );
 };
 
 /**
@@ -26,20 +52,21 @@ const EventCancelForm = ({ eventid }: EventCancelFormProps) => {
     formState: { errors },
   } = useForm<FormValues>();
 
+  // Confirmation modal
   const [open, setOpen] = useState(false);
-
-  const handleClose = () => setOpen(false);
-
   const handleSubmitReason: SubmitHandler<FormValues> = async (data) => {
     const { cancelReason } = data;
     setOpen(!open);
   };
+  const handleClose = () => setOpen(false);
 
   return (
     <div>
-      <Modal open={open} onClose={handleClose}>
-        <div>lalala</div>
-      </Modal>
+      <Modal
+        open={open}
+        handleClose={handleClose}
+        children={<ModalBody handleClose={handleClose} />}
+      />
 
       <div className="justify-center center-items">
         <div className="space-y-2">
