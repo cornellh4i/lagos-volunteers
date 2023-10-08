@@ -72,31 +72,22 @@ const ProfileForm = ({ userDetails }: ProfileFormProps) => {
 
   const ProfileErrorComponent = (): JSX.Element | null => {
     return error ? (
-      <Alert
-        severity="error"
-        title="Error"
-        message={handleErrors(error?.message)}
-      />
+      <Alert severity="error">Error: {handleErrors(error?.message)}</Alert>
     ) : null;
   };
 
   const ProfileErrorFromReauthenticating = (): JSX.Element | null => {
     return errorMessage.length > 0 ? (
-      <Alert
-        severity="error"
-        title="Error"
-        message={handleErrors(errorMessage)}
-      />
+      <Alert severity="error">Error: {handleErrors(errorMessage)}</Alert>
     ) : null;
   };
 
   const ProfileSuccessComponent = (): JSX.Element | null => {
     return !error && !(errorMessage.length > 0) && success ? (
-      <Alert
-        severity="success"
-        title="Success"
-        message="Profile update was successful. Please refresh the page to see your changes!"
-      />
+      <Alert severity="success">
+        Success: Profile update was successful. Please refresh the page to see
+        your changes!
+      </Alert>
     ) : null;
   };
 

@@ -62,11 +62,7 @@ const SignupForm = () => {
 
   const SignUpErrorComponent = (): JSX.Element | null => {
     return errorMessage ? (
-      <Alert
-        severity="error"
-        title="Error"
-        message={handleErrors(errorMessage)}
-      />
+      <Alert severity="error">Error: {handleErrors(errorMessage)}</Alert>
     ) : null;
   };
 

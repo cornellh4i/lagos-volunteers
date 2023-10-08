@@ -1,18 +1,13 @@
-import React from "react";
-import Alert from "@mui/material/Alert";
+import React, { ReactNode } from "react";
+import Alert, { AlertColor } from "@mui/material/Alert";
 
 interface CustomAlertProps {
-  severity: "error" | "warning" | "info" | "success";
-  title: string;
-  message: string;
+  severity: AlertColor;
+  children: ReactNode;
 }
 
-function CustomAlert({ severity, title, message }: CustomAlertProps) {
-  return (
-    <Alert severity={severity}>
-      {title}: {message}
-    </Alert>
-  );
+function CustomAlert({ severity, children }: CustomAlertProps) {
+  return <Alert severity={severity}>{children}</Alert>;
 }
 
 export default CustomAlert;

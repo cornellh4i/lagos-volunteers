@@ -59,11 +59,7 @@ const LoginForm = () => {
 
   const LoginErrorComponent = (): JSX.Element | null => {
     return signInErrors ? (
-      <Alert
-        severity="error"
-        title="Error"
-        message={handleErrors(signInErrors.code)}
-      />
+      <Alert severity="error">Error: {handleErrors(signInErrors.code)}</Alert>
     ) : null;
   };
 

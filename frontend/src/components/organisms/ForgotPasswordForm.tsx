@@ -43,21 +43,15 @@ const ForgotPasswordForm = () => {
 
   const LoginErrorComponent = (): JSX.Element | null => {
     return error ? (
-      <Alert
-        severity="error"
-        title="Error"
-        message={handleErrors(error.message)}
-      />
+      <Alert severity="error">Error: {handleErrors(error.message)}</Alert>
     ) : null;
   };
 
   const SuccessMessage = (): JSX.Element | null => {
     return success ? (
-      <Alert
-        severity="success"
-        title="Success"
-        message="Password Reset Email Sent. Please check your inbox."
-      />
+      <Alert severity="success">
+        Success: Password reset email sent. Please check your inbox.
+      </Alert>
     ) : null;
   };
 
