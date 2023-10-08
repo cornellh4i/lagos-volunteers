@@ -9,6 +9,7 @@ import AccessTimeFilledIcon from "@mui/icons-material/AccessTimeFilled";
 import MultilineTextField from "../atoms/MultilineTextField";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { Typography, Grid } from "@mui/material";
+import { useRouter } from "next/router";
 
 interface EventCancelFormProps {
   eventid: string;
@@ -20,7 +21,17 @@ type FormValues = {
 /**
  * A confirmation modal body
  */
-const ModalBody = ({ handleClose }: { handleClose: () => void }) => {
+const ModalBody = ({
+  eventid,
+  handleClose,
+}: {
+  eventid: string;
+  handleClose: () => void;
+}) => {
+  const router = useRouter();
+  const cancel = () => {
+    router.replace(`/events/${eventid}/confirm/cancel`);
+  };
   return (
     <div>
       <Typography align="center" sx={{ paddingBottom: 2 }}>
@@ -33,7 +44,7 @@ const ModalBody = ({ handleClose }: { handleClose: () => void }) => {
           </Button>
         </Grid>
         <Grid item md={6} xs={12}>
-          <Button color="dark-gray" type="button" onClick={handleClose}>
+          <Button color="dark-gray" type="button" onClick={cancel}>
             Yes, cancel
           </Button>
         </Grid>
@@ -65,7 +76,7 @@ const EventCancelForm = ({ eventid }: EventCancelFormProps) => {
       <Modal
         open={open}
         handleClose={handleClose}
-        children={<ModalBody handleClose={handleClose} />}
+        children={<ModalBody eventid={eventid} handleClose={handleClose} />}
       />
 
       <div className="justify-center center-items">

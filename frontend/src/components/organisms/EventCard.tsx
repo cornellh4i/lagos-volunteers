@@ -3,6 +3,7 @@ import IconText from "@/components/atoms/IconText";
 import Button from "@/components/atoms/Button";
 import IconButton from "@mui/material/IconButton";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
+import EventConfirmation from "./EventConfirmation";
 
 type Action = "rsvp" | "cancel rsvp" | "publish" | "manage attendees" | "edit";
 
@@ -67,6 +68,15 @@ const EventCard = ({
               </div>
             </div>
           </div>
+          {/* <EventConfirmation
+            eventid={"0000"}
+            title="test1"
+            location="jameson"
+            datetime={"today lol"}
+            supervisor={"teehee"}
+            capacity={2}
+            action={"wahoo"}
+          ></EventConfirmation> */}
         </div>
       }
     </>
