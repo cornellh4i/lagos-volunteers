@@ -9,7 +9,13 @@ interface CardListProps {
  * contained within
  */
 const CardList = ({ children }: CardListProps) => {
-  return <div className="flex space-x-6 p-3">{children}</div>;
+  return (
+    <div className="flex flex-wrap pt-3">
+      {children.map((card) => {
+        return <div className="pr-5 pb-5">{card}</div>;
+      })}
+    </div>
+  );
 };
 
 export default CardList;

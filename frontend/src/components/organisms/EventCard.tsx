@@ -12,11 +12,10 @@ type Action = "rsvp" | "cancel rsvp" | "publish" | "manage attendees" | "edit";
 interface EventCardProps {
   eventid: string;
   mainAction: Action;
-  dropdownActions: Action[];
+  dropdownActions?: Action[];
   title: string;
   location: string;
   datetime: string;
-  access: boolean;
 }
 
 /**
@@ -33,82 +32,50 @@ interface EventCardProps {
 const EventCard = ({
   eventid,
   mainAction,
-  dropdownActions,
-  access,
+  dropdownActions = [],
   title,
   location,
   datetime,
 }: EventCardProps) => {
-  if (access == false) {
-    return (
-      <>
-        <Card variant="outlined" className="w-4/12">
-          <div className="p-5">
-            <b className="text-2xl">
-              <IconText
-                icon={
-                  <EmojiFoodBeverageIcon color="disabled" fontSize="small" />
-                }
-              >
-                {title.toLocaleUpperCase()}
-              </IconText>
-            </b>
-            <IconText
-              icon={<LocationOnIcon color="disabled" fontSize="small" />}
-            >
-              {location.toLocaleUpperCase()}
-            </IconText>
-            <IconText
-              icon={<WatchLaterIcon color="disabled" fontSize="small" />}
-            >
-              {datetime}
-            </IconText>
+  return (
+    <Card variant="outlined" className="w-96">
+      <div className="p-5">
+        {/* Main card body */}
+        <b className="text-2xl">
+          <IconText
+            icon={<EmojiFoodBeverageIcon color="disabled" fontSize="small" />}
+          >
+            {title.toLocaleUpperCase()}
+          </IconText>
+        </b>
+        <IconText icon={<LocationOnIcon color="disabled" fontSize="small" />}>
+          {location.toLocaleUpperCase()}
+        </IconText>
+        <IconText icon={<WatchLaterIcon color="disabled" fontSize="small" />}>
+          {datetime}
+        </IconText>
+
+        {/* Card buttons */}
+        {dropdownActions.length > 0 ? (
+          <div className="pt-4 flex-row flex">
+            <Button color="gray" type="button">
+              Cancel RSVP
+            </Button>
+            <div className="w-fit px-1">
+              <Button color="gray" type="button">
+                <MoreVertIcon style={{ fill: "gray" }} />
+              </Button>
+            </div>
+          </div>
+        ) : (
+          <div className="pt-4">
             <Button color="gray" type="button">
               Cancel RSVP
             </Button>
           </div>
-        </Card>
-      </>
-    );
-  }
-  if (access == true) {
-    return (
-      <>
-        <Card variant="outlined" className="w-4/12">
-          <div className="p-5">
-            <b className="text-2xl">
-              <IconText
-                icon={
-                  <EmojiFoodBeverageIcon color="disabled" fontSize="small" />
-                }
-              >
-                {title.toLocaleUpperCase()}
-              </IconText>
-            </b>
-            <IconText
-              icon={<LocationOnIcon color="disabled" fontSize="small" />}
-            >
-              {location.toLocaleUpperCase()}
-            </IconText>
-            <IconText
-              icon={<WatchLaterIcon color="disabled" fontSize="small" />}
-            >
-              {datetime}
-            </IconText>
-            <div className="flex-row flex">
-              <Button color="gray" type="button">
-                Cancel RSVP
-              </Button>
-              <div className="w-fit px-1">
-                <Button color="gray" type="button">
-                  <MoreVertIcon style={{ fill: "gray" }} />
-                </Button>
-              </div>
-            </div>
-          </div>
-        </Card>
-      </>
-    );
-  }
+        )}
+      </div>
+    </Card>
+  );
 };
 export default EventCard;
