@@ -38,7 +38,7 @@ const CustomButton = ({
       }
     >
       {isLoading && <CircularProgress size={24} />}
-      {!isLoading && children}
+      {!isLoading && <div className="truncate">{children}</div>}
     </Button>
   );
 };
