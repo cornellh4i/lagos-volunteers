@@ -10,12 +10,10 @@ interface IconTextProps {
  */
 const IconText = ({ icon, children }: IconTextProps) => {
   return (
-    <>
-      <div className="flex">
-        <div className="pr-1">{icon}</div>
-        <div>{children}</div>
-      </div>
-    </>
+    <div className="flex">
+      <div className="pr-1">{icon}</div>
+      <div>{children}</div>
+    </div>
   );
 };
 

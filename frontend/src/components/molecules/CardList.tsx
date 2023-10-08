@@ -1,4 +1,4 @@
-import React, { ReactElement, Children } from "react";
+import React, { ReactElement } from "react";
 
 interface CardListProps {
   children: ReactElement[];
@@ -9,11 +9,7 @@ interface CardListProps {
  * contained within
  */
 const CardList = ({ children }: CardListProps) => {
-  return (
-    <>
-      <div className="flex h-screen">{children}</div>
-    </>
-  );
+  return <div className="flex h-screen">{children}</div>;
 };
 
 export default CardList;
