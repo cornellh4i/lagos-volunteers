@@ -1,6 +1,4 @@
 import React from "react";
-import { useState } from "react";
-// import { Avatar } from "@mui/material";
 
 /** default royalty free avatar image */
 export const FALLBACK_AVATAR_URL =
@@ -23,16 +21,14 @@ const Avatar = ({
   start_date,
   hour,
 }: AvatarProps) => {
-  const [avatarSrc, setAvatarSrc] = useState(url);
   return (
     <>
       <div className="sm:flex">
         <div className="flex justify-center">
           <img
-            src={avatarSrc}
+            src={url || FALLBACK_AVATAR_URL}
             alt={alt}
             className="rounded-full w-32"
-            onError={() => setAvatarSrc(FALLBACK_AVATAR_URL)}
           />
         </div>
         <div className="p-6 font-sans text-center sm:text-left">

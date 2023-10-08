@@ -13,34 +13,35 @@ import Link from "next/link";
 type Action = "rsvp" | "cancel rsvp" | "publish" | "manage attendees" | "edit";
 
 const UpcomingEvents = () => {
-  return (
-    <CardList>
-      <EventCard
-        eventid={"000"}
-        mainAction={"rsvp"}
-        dropdownActions={["cancel rsvp"]}
-        title={"snehar"}
-        location={"jameson"}
-        datetime={"today lol"}
-      />
-      <EventCard
-        eventid={"000"}
-        mainAction={"rsvp"}
-        dropdownActions={["cancel rsvp"]}
-        title={"snehar"}
-        location={"jameson"}
-        datetime={"today lol"}
-      />
-      <EventCard
-        eventid={"000"}
-        mainAction={"rsvp"}
-        dropdownActions={["cancel rsvp"]}
-        title={"snehar"}
-        location={"jameson"}
-        datetime={"today lol"}
-      />
-    </CardList>
-  );
+  return <></>;
+  // return (
+  //   <CardList>
+  //     <EventCard
+  //       eventid={"000"}
+  //       mainAction={"rsvp"}
+  //       dropdownActions={["cancel rsvp"]}
+  //       title={"snehar"}
+  //       location={"jameson"}
+  //       datetime={"today lol"}
+  //     />
+  //     <EventCard
+  //       eventid={"000"}
+  //       mainAction={"rsvp"}
+  //       dropdownActions={["cancel rsvp"]}
+  //       title={"snehar"}
+  //       location={"jameson"}
+  //       datetime={"today lol"}
+  //     />
+  //     <EventCard
+  //       eventid={"000"}
+  //       mainAction={"rsvp"}
+  //       dropdownActions={["cancel rsvp"]}
+  //       title={"snehar"}
+  //       location={"jameson"}
+  //       datetime={"today lol"}
+  //     />
+  //   </CardList>
+  // );
 };
 
 const Drafts = () => {
