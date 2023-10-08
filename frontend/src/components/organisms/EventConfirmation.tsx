@@ -5,15 +5,10 @@ import EventDetails from "./EventDetails";
 import Link from "next/link";
 import { grey } from "@mui/material/colors";
 
-type Confirmation = "rsvp" | "cancel rsvp";
+type Confirmation = "register" | "cancel";
 
 interface EventConfirmationProps {
   eventid: string;
-  title: string;
-  location: string;
-  supervisor: string;
-  capacity: number;
-  datetime: string;
   confirmation: Confirmation;
 }
 
@@ -24,14 +19,11 @@ interface EventConfirmationProps {
  * component displays "You are no longer registered".
  */
 const EventConfirmation = ({
-  title,
+  eventid,
   confirmation,
-  datetime,
-  supervisor,
-  capacity,
 }: EventConfirmationProps) => {
   switch (confirmation) {
-    case "rsvp":
+    case "register":
       return (
         <div>
           <div className="flex m-7 justify-center">
@@ -39,8 +31,8 @@ const EventConfirmation = ({
           </div>
           <h1 className="text-center">You are registered!</h1>
           <div>
+            <div className="text-2xl font-semibold mb-6">EDUFOOD</div>
             <EventDetails
-              title="EDUFOOD"
               location="Address, Building Name"
               datetime="02/15/2023, 9:00AM-11:00AM"
               supervisors={["Jane Doe", "Jess Lee"]}
@@ -50,7 +42,7 @@ const EventConfirmation = ({
             />
             <p>
               If you can no longer attend,{" "}
-              <Link href="@/pages/profile" rel="noreferrer">
+              <Link href={`/events/${eventid}/cancel`} rel="noreferrer">
                 cancel here
               </Link>{" "}
               or on the "My Events" page.
@@ -58,7 +50,7 @@ const EventConfirmation = ({
           </div>
         </div>
       );
-    case "cancel rsvp":
+    case "cancel":
       return (
         <div>
           <h1>You are no longer registered.</h1>
@@ -68,10 +60,10 @@ const EventConfirmation = ({
           </h3>
           <p>
             Explore other volunteer opportunities on the{" "}
-            <Link href="#index.tsx"> home page</Link>.
+            <Link href="/events/view"> home page</Link>.
           </p>
+          <div className="text-2xl font-semibold mb-6">EDUFOOD</div>
           <EventDetails
-            title="EDUFOOD"
             location="Address, Building Name"
             datetime="02/15/2023, 9:00AM-11:00AM"
             supervisors={["Jane Doe", "Jess Lee"]}

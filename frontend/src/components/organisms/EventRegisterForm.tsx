@@ -7,6 +7,7 @@ import Modal from "@/components/molecules/Modal";
 import Link from "next/link";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { Grid } from "@mui/material";
+import { useRouter } from "next/router";
 
 interface EventRegisterFormProps {
   eventid: string;
@@ -15,7 +16,17 @@ interface EventRegisterFormProps {
 /**
  * A confirmation modal body
  */
-const ModalBody = ({ handleClose }: { handleClose: () => void }) => {
+const ModalBody = ({
+  eventid,
+  handleClose,
+}: {
+  eventid: string;
+  handleClose: () => void;
+}) => {
+  const router = useRouter();
+  const register = () => {
+    router.replace(`/events/${eventid}/confirm/register`);
+  };
   return (
     <div>
       <h2>Terms and Conditions</h2>
@@ -32,7 +43,7 @@ const ModalBody = ({ handleClose }: { handleClose: () => void }) => {
           </Button>
         </Grid>
         <Grid item md={6} xs={12}>
-          <Button color="dark-gray" type="button" onClick={handleClose}>
+          <Button color="dark-gray" type="button" onClick={register}>
             Agree & Continue
           </Button>
         </Grid>
@@ -64,7 +75,7 @@ const EventRegisterForm = ({ eventid }: EventRegisterFormProps) => {
       <Modal
         open={open}
         handleClose={handleClose}
-        children={<ModalBody handleClose={handleClose} />}
+        children={<ModalBody eventid={eventid} handleClose={handleClose} />}
       />
 
       <div className="justify-center center-items grid grid-cols-4 grid-rows-6`">
