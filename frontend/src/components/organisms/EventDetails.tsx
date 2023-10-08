@@ -6,7 +6,6 @@ import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import PersonIcon from "@mui/icons-material/Person";
 
 interface EventDetailsProps {
-  title: string;
   location: string;
   datetime: string;
   supervisors: string[];
@@ -20,7 +19,6 @@ interface EventDetailsProps {
  * the left and key event details on the right
  */
 const EventDetails = ({
-  title,
   location,
   datetime,
   supervisors,
@@ -31,7 +29,6 @@ const EventDetails = ({
   var supervisor = supervisors.toString().replace(",", ", ");
   return (
     <div>
-      <div className="text-2xl font-semibold mb-6">{title}</div>
       <div className="grid grid-cols-2 gap-4">
         <div className="col-span-2 md:col-span-1">
           <img src={image_src} className="object-cover h-56 w-full" />

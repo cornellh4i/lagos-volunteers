@@ -1,8 +1,8 @@
-import React from "react";
+import React, { ReactElement, ReactNode } from "react";
 
 interface IconTextProps {
-  icon: React.ReactElement;
-  children: React.ReactElement;
+  icon: ReactElement;
+  children: ReactNode;
 }
 
 /**
