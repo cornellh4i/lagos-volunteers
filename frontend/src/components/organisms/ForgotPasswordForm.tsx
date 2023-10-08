@@ -29,7 +29,6 @@ const ForgotPasswordForm = () => {
   const handleErrors = (errors: any) => {
     // Firebase reset password email error codes are weird. Need to parse it
     const parsedError = errors.split("/")[1].slice(0, -2);
-    console.log(parsedError);
     switch (parsedError) {
       case "invalid-email":
         return "Invalid email address format.";
@@ -42,32 +41,24 @@ const ForgotPasswordForm = () => {
     }
   };
 
-  const LoginErrorComponent = (): JSX.Element => {
-    return (
-      <div>
-        {error ? (
-          <Alert
-            severity="error"
-            title="Error"
-            message={handleErrors(error.message)}
-          />
-        ) : null}
-      </div>
-    );
+  const LoginErrorComponent = (): JSX.Element | null => {
+    return error ? (
+      <Alert
+        severity="error"
+        title="Error"
+        message={handleErrors(error.message)}
+      />
+    ) : null;
   };
 
-  const SuccessMessage = (): JSX.Element => {
-    return (
-      <div>
-        {success ? (
-          <Alert
-            severity="success"
-            title="Success"
-            message="Password Reset Email Sent. Please check your inbox."
-          />
-        ) : null}
-      </div>
-    );
+  const SuccessMessage = (): JSX.Element | null => {
+    return success ? (
+      <Alert
+        severity="success"
+        title="Success"
+        message="Password Reset Email Sent. Please check your inbox."
+      />
+    ) : null;
   };
 
   const handleForgotPassword: SubmitHandler<FormValues> = async (data) => {
