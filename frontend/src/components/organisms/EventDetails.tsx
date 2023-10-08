@@ -11,7 +11,7 @@ interface EventDetailsProps {
   supervisors: string[];
   capacity: number;
   image_src: string;
-  tags: string[];
+  tags?: string[];
 }
 
 /**
@@ -52,7 +52,7 @@ const EventDetails = ({
             </IconText>
           </div>
           <div className="flex space-x-2">
-            {tags.map((tag) => {
+            {tags?.map((tag) => {
               return <Chip label={tag} color="default" />;
             })}
           </div>
