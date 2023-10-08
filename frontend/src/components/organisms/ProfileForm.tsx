@@ -76,7 +76,7 @@ const ProfileForm = ({ userDetails }: ProfileFormProps) => {
     ) : null;
   };
 
-  const ProfileErrorFromReauthenticating = (): JSX.Element | null => {
+  const ProfileReauthenticationErrorComponent = (): JSX.Element | null => {
     return errorMessage.length > 0 ? (
       <Alert severity="error">Error: {handleErrors(errorMessage)}</Alert>
     ) : null;
@@ -173,7 +173,7 @@ const ProfileForm = ({ userDetails }: ProfileFormProps) => {
     <form onSubmit={handleSubmit(handleChanges)} className="space-y-4">
       <ProfileErrorComponent />
       <ProfileSuccessComponent />
-      <ProfileErrorFromReauthenticating />
+      <ProfileReauthenticationErrorComponent />
       <div>
         <TextField
           label="Email *"

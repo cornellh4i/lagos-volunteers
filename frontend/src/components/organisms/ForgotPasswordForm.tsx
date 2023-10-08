@@ -41,13 +41,13 @@ const ForgotPasswordForm = () => {
     }
   };
 
-  const LoginErrorComponent = (): JSX.Element | null => {
+  const ForgotPasswordErrorComponent = (): JSX.Element | null => {
     return error ? (
       <Alert severity="error">Error: {handleErrors(error.message)}</Alert>
     ) : null;
   };
 
-  const SuccessMessage = (): JSX.Element | null => {
+  const ForgotPasswordSuccessComponent = (): JSX.Element | null => {
     return success ? (
       <Alert severity="success">
         Success: Password reset email sent. Please check your inbox.
@@ -76,8 +76,8 @@ const ForgotPasswordForm = () => {
 
   return (
     <form onSubmit={handleSubmit(handleForgotPassword)} className="space-y-4">
-      <LoginErrorComponent />
-      <SuccessMessage />
+      <ForgotPasswordErrorComponent />
+      <ForgotPasswordSuccessComponent />
       <div className="font-bold text-3xl">Forgot Password</div>
       <div className="text-sm">
         After verifying your email, you will receive instructions on how to
