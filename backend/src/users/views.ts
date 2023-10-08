@@ -2,6 +2,7 @@ import { Router, RequestHandler, Request, Response } from "express";
 import userController from "./controllers";
 import { auth, setVolunteerCustomClaims, NoAuth } from "../middleware/auth";
 const userRouter = Router();
+import * as firebase from "firebase-admin";
 
 import { attempt } from "../utils/helpers";
 
@@ -16,14 +17,45 @@ userRouter.post(
   NoAuth as RequestHandler,
   async (req: Request, res: Response) => {
     // #swagger.tags = ['Users']
-    attempt(res, 201, () =>
-      userController.createUser(
-        req.body,
-        req.body.profile,
-        req.body.preferences,
-        req.body.permissions
-      )
-    );
+    const { password, ...rest } = req.body;
+    try {
+      const user = await userController.createUser(
+        rest,
+        rest.profile,
+        rest.preferences,
+        rest.permissions
+      );
+      if (user && process.env.NODE_ENV !== "test") {
+        try {
+          const fbUser = await firebase.auth().createUser({
+            uid: user.id,
+            email: rest.email,
+            password: password,
+          });
+          if (fbUser) {
+            await firebase.auth().setCustomUserClaims(fbUser.uid, {
+              volunteer: true,
+            });
+            return res.status(200).send({ success: true, user: user });
+          }
+        } catch (e: any) {
+          // If firebase fails to create user, delete user from database
+          // In jest - need to configure firebase App so firebase always fails.
+          await userController
+            .deleteUser(user.id)
+            .then(() => {
+              return res.status(500).send({ success: false, error: e.code });
+            })
+            .catch((e: any) => {
+              return res.status(500).send({ success: false, error: e.message });
+            });
+        }
+      }
+      // If test environment, return user without firebase auth
+      return res.status(201).send({ success: true, data: user });
+    } catch (e: any) {
+      return res.status(500).send({ success: false, error: e.message });
+    }
   }
 );
 

@@ -5,7 +5,7 @@ import { Card, Grid, Icon, IconButton } from "@mui/material";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
 import EmojiFoodBeverageIcon from "@mui/icons-material/EmojiFoodBeverage";
 import WatchLaterIcon from "@mui/icons-material/WatchLater";
-import MoreVertIcon from '@mui/icons-material/MoreVert';
+import MoreVertIcon from "@mui/icons-material/MoreVert";
 
 type Action = "rsvp" | "cancel rsvp" | "publish" | "manage attendees" | "edit";
 
@@ -18,7 +18,6 @@ interface EventCardProps {
   datetime: string;
   access: boolean;
 }
-
 
 /**
  * An EventCard component shows an event and some quick details. The card action
@@ -45,9 +44,11 @@ const EventCard = ({
       <>
         <Card variant="outlined" className="w-4/12">
           <div className="p-5">
-            <b className="text-2xl" >
+            <b className="text-2xl">
               <IconText
-                icon={<EmojiFoodBeverageIcon color="disabled" fontSize="small" />}
+                icon={
+                  <EmojiFoodBeverageIcon color="disabled" fontSize="small" />
+                }
                 text={title.toLocaleUpperCase()}
               />
             </b>
@@ -72,9 +73,11 @@ const EventCard = ({
       <>
         <Card variant="outlined" className="w-4/12">
           <div className="p-5">
-            <b className="text-2xl" >
+            <b className="text-2xl">
               <IconText
-                icon={<EmojiFoodBeverageIcon color="disabled" fontSize="small" />}
+                icon={
+                  <EmojiFoodBeverageIcon color="disabled" fontSize="small" />
+                }
                 text={title.toLocaleUpperCase()}
               />
             </b>

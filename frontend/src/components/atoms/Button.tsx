@@ -1,18 +1,29 @@
 import React from "react";
 import { Button } from "@mui/material";
+import CircularProgress from "@mui/material/CircularProgress";
 
 interface ButtonProps {
   children: string;
   color: "gray" | "dark-gray";
   onClick?: () => void;
   type?: "button" | "submit" | "reset" | undefined;
+  isLoading?: boolean;
+  disabled?: boolean;
 }
 
 /** A Button page */
-const CustomButton = ({ children, color, onClick, type }: ButtonProps) => {
+const CustomButton = ({
+  children,
+  color,
+  onClick,
+  type,
+  isLoading,
+  disabled,
+}: ButtonProps) => {
   return (
     <Button
       fullWidth={true}
+      disabled={disabled}
       type={type}
       variant="contained"
       onClick={onClick}
@@ -26,7 +37,8 @@ const CustomButton = ({ children, color, onClick, type }: ButtonProps) => {
           : ""
       }
     >
-      {children}
+      {isLoading && <CircularProgress size={24} />}
+      {!isLoading && children}
     </Button>
   );
 };
