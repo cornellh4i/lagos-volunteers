@@ -68,15 +68,6 @@ const EventCard = ({
               </div>
             </div>
           </div>
-          {/* <EventConfirmation
-            eventid={"0000"}
-            title="test1"
-            location="jameson"
-            datetime={"today lol"}
-            supervisor={"teehee"}
-            capacity={2}
-            action={"wahoo"}
-          ></EventConfirmation> */}
         </div>
       }
     </>
