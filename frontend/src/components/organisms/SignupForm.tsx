@@ -60,18 +60,14 @@ const SignupForm = () => {
     }
   };
 
-  const SignUpErrorComponent = (): JSX.Element => {
-    return (
-      <div>
-        {errorMessage ? (
-          <Alert
-            severity="error"
-            title="Error"
-            message={handleErrors(errorMessage)}
-          />
-        ) : null}
-      </div>
-    );
+  const SignUpErrorComponent = (): JSX.Element | null => {
+    return errorMessage ? (
+      <Alert
+        severity="error"
+        title="Error"
+        message={handleErrors(errorMessage)}
+      />
+    ) : null;
   };
 
   const handleSubmitUser: SubmitHandler<FormValues> = async (data, event) => {

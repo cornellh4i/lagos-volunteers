@@ -57,18 +57,14 @@ const LoginForm = () => {
     }
   };
 
-  const LoginErrorComponent = (): JSX.Element => {
-    return (
-      <div>
-        {signInErrors ? (
-          <Alert
-            severity="error"
-            title="Error"
-            message={handleErrors(signInErrors.code)}
-          />
-        ) : null}
-      </div>
-    );
+  const LoginErrorComponent = (): JSX.Element | null => {
+    return signInErrors ? (
+      <Alert
+        severity="error"
+        title="Error"
+        message={handleErrors(signInErrors.code)}
+      />
+    ) : null;
   };
 
   const handleGoogleLogin = async () => {

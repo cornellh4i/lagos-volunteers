@@ -70,46 +70,34 @@ const ProfileForm = ({ userDetails }: ProfileFormProps) => {
     }
   };
 
-  const ProfileErrorComponent = (): JSX.Element => {
-    return (
-      <div>
-        {error ? (
-          <Alert
-            severity="error"
-            title="Error"
-            message={handleErrors(error?.message)}
-          />
-        ) : null}
-      </div>
-    );
+  const ProfileErrorComponent = (): JSX.Element | null => {
+    return error ? (
+      <Alert
+        severity="error"
+        title="Error"
+        message={handleErrors(error?.message)}
+      />
+    ) : null;
   };
 
-  const ProfileErrorFromReauthenticating = (): JSX.Element => {
-    return (
-      <div>
-        {errorMessage.length > 0 ? (
-          <Alert
-            severity="error"
-            title="Error"
-            message={handleErrors(errorMessage)}
-          />
-        ) : null}
-      </div>
-    );
+  const ProfileErrorFromReauthenticating = (): JSX.Element | null => {
+    return errorMessage.length > 0 ? (
+      <Alert
+        severity="error"
+        title="Error"
+        message={handleErrors(errorMessage)}
+      />
+    ) : null;
   };
 
-  const ProfileSuccessComponent = (): JSX.Element => {
-    return (
-      <div>
-        {!error && !(errorMessage.length > 0) && success ? (
-          <Alert
-            severity="success"
-            title="Success"
-            message="Profile update was successful. Please refresh the page to see your changes!"
-          />
-        ) : null}
-      </div>
-    );
+  const ProfileSuccessComponent = (): JSX.Element | null => {
+    return !error && !(errorMessage.length > 0) && success ? (
+      <Alert
+        severity="success"
+        title="Success"
+        message="Profile update was successful. Please refresh the page to see your changes!"
+      />
+    ) : null;
   };
 
   const {
