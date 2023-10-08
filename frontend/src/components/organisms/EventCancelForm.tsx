@@ -52,10 +52,10 @@ const EventCancelForm = ({ eventid }: EventCancelFormProps) => {
           </div>
 
           <div className="font-semibold text-3xl">Cancel Registration</div>
+          <div className="text-2xl font-semibold mb-6">EDUFOOD</div>
           <div>
             {/* dummy data, to be replaced during full-stack */}
             <EventDetails
-              title="EDUFOOD"
               location="Address, Building Name"
               datetime="02/15/2023, 9:00AM-11:00AM"
               supervisors={["Jane Doe", "Jess Lee"]}
