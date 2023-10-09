@@ -1,18 +1,18 @@
 import React from "react";
 import { useRouter } from "next/router";
 import CenteredTemplate from "@/components/templates/CenteredTemplate";
-import EventCancelForm from "@/components/organisms/EventCancelForm";
+import EventConfirmation from "@/components/organisms/EventConfirmation";
 
-/** An EventCancellation page */
-const EventCancellation = () => {
+/** An EventConfirmationPage page */
+const EventConfirmationPage = () => {
   const router = useRouter();
   const { eventid } = router.query;
 
   return (
     <CenteredTemplate>
-      <EventCancelForm eventid={eventid as string} />
+      <EventConfirmation eventid={eventid as string} confirmation="register" />
     </CenteredTemplate>
   );
 };
 
-export default EventCancellation;
+export default EventConfirmationPage;

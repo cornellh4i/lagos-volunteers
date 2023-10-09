@@ -1,6 +1,6 @@
-import React from 'react';
-import { TextField } from '@mui/material';
-import { RegisterOptions, UseFormRegisterReturn } from 'react-hook-form';
+import React from "react";
+import { TextField } from "@mui/material";
+import { RegisterOptions, UseFormRegisterReturn } from "react-hook-form";
 
 interface MultilineTextFieldProps {
   label: string;
@@ -11,6 +11,7 @@ interface MultilineTextFieldProps {
   requiredMessage?: string;
   name: string;
   register: (name: any, options?: RegisterOptions) => UseFormRegisterReturn;
+
 	label: string;
 	labelStyling?: string;
 	required: boolean;
@@ -31,6 +32,7 @@ const MultilineTextField = ({
   type = "text",
   requiredMessage = "",
   register,
+
 }: MultilineTextFieldProps) => {
   return (
     <div>
@@ -63,27 +65,27 @@ const MultilineTextField = ({
 	requiredMessage = '',
 	register,
 }: MultilineTextFieldProps) => {
-	return (
-		<div>
-			<div>
-				{' '}
-				<span className={labelStyling}>{label} </span>
-				<span className='text-red-500'>{requiredMessage}</span>
-			</div>
-			<TextField
-				id='outlined-multiline-static'
-				multiline
-				placeholder={placeholder}
-				rows={4}
-				sx={{ borderRadius: 2, borderColor: 'primary.main' }}
-				fullWidth={true}
-				{...register(name, {
-					required: required,
-				})}
-				margin='dense'
-			/>
-		</div>
-	);
+  return (
+    <div>
+      <div>
+        {" "}
+        <span className={labelStyling}>{label} </span>
+        <span className="text-red-500">{requiredMessage}</span>
+      </div>
+      <TextField
+        id="outlined-multiline-static"
+        multiline
+        placeholder={placeholder}
+        rows={4}
+        sx={{ borderRadius: 2, borderColor: "primary.main" }}
+        fullWidth={true}
+        {...register(name, {
+          required: required,
+        })}
+        margin="dense"
+      />
+    </div>
+  );
 };
 
 export default MultilineTextField;
