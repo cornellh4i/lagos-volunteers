@@ -6,6 +6,7 @@ import LocationOnIcon from "@mui/icons-material/LocationOn";
 import EmojiFoodBeverageIcon from "@mui/icons-material/EmojiFoodBeverage";
 import WatchLaterIcon from "@mui/icons-material/WatchLater";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
+import Link from "next/link";
 
 type Action = "rsvp" | "cancel rsvp" | "publish" | "manage attendees" | "edit";
 
@@ -37,40 +38,52 @@ const EventCard = ({
   location,
   datetime,
 }: EventCardProps) => {
+  const MainAction = () => {
+    switch (mainAction) {
+      case "cancel rsvp":
+        return (
+          <Link
+            className="text-black no-underline"
+            href={`/events/${eventid}/cancel`}
+          >
+            Cancel RSVP
+          </Link>
+        );
+      default:
+        return <></>;
+    }
+  };
+
   return (
-    <Card variant="outlined" className="w-96">
+    <Card variant="outlined" className="w-full">
       <div className="p-5">
         {/* Main card body */}
-        <b className="text-2xl">
-          <IconText
-            icon={<EmojiFoodBeverageIcon color="disabled" fontSize="small" />}
-          >
-            {title.toLocaleUpperCase()}
-          </IconText>
-        </b>
-        <IconText icon={<LocationOnIcon color="disabled" fontSize="small" />}>
+        <IconText icon={<EmojiFoodBeverageIcon color="disabled" />}>
+          <b className="text-2xl">{title.toLocaleUpperCase()}</b>
+        </IconText>
+        <IconText icon={<LocationOnIcon color="disabled" />}>
           {location.toLocaleUpperCase()}
         </IconText>
-        <IconText icon={<WatchLaterIcon color="disabled" fontSize="small" />}>
+        <IconText icon={<WatchLaterIcon color="disabled" />}>
           {datetime}
         </IconText>
 
         {/* Card buttons */}
         {dropdownActions.length > 0 ? (
-          <div className="pt-4 flex-row flex">
-            <Button color="gray" type="button">
-              Cancel RSVP
+          <div className="pt-4 flex flex-row">
+            <Button color="gray">
+              <MainAction />
             </Button>
-            <div className="w-fit px-1">
-              <Button color="gray" type="button">
-                <MoreVertIcon style={{ fill: "gray" }} />
-              </Button>
+            <div className="pl-1">
+              <IconButton className="bg-gray-300 rounded-md">
+                <MoreVertIcon />
+              </IconButton>
             </div>
           </div>
         ) : (
           <div className="pt-4">
-            <Button color="gray" type="button">
-              Cancel RSVP
+            <Button color="gray">
+              <MainAction />
             </Button>
           </div>
         )}
