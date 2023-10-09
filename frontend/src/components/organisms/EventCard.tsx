@@ -1,16 +1,19 @@
 import React from "react";
 import IconText from "@/components/atoms/IconText";
 import Button from "@/components/atoms/Button";
-import IconButton from "@mui/material/IconButton";
+import { Card, Grid, Icon, IconButton } from "@mui/material";
+import LocationOnIcon from "@mui/icons-material/LocationOn";
+import EmojiFoodBeverageIcon from "@mui/icons-material/EmojiFoodBeverage";
+import WatchLaterIcon from "@mui/icons-material/WatchLater";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
-import EventConfirmation from "./EventConfirmation";
+import Link from "next/link";
 
 type Action = "rsvp" | "cancel rsvp" | "publish" | "manage attendees" | "edit";
 
 interface EventCardProps {
   eventid: string;
   mainAction: Action;
-  dropdownActions: Action[];
+  dropdownActions?: Action[];
   title: string;
   location: string;
   datetime: string;
@@ -30,47 +33,62 @@ interface EventCardProps {
 const EventCard = ({
   eventid,
   mainAction,
-  dropdownActions,
+  dropdownActions = [],
   title,
   location,
   datetime,
 }: EventCardProps) => {
+  const MainAction = () => {
+    switch (mainAction) {
+      case "cancel rsvp":
+        return (
+          <Link
+            className="text-black no-underline"
+            href={`/events/${eventid}/cancel`}
+          >
+            Cancel RSVP
+          </Link>
+        );
+      default:
+        return <></>;
+    }
+  };
+
   return (
-    <>
-      {
-        <div className="flex flex-col h-32">
-          {" "}
-          <div className="grid grid-cols-12 grow">
-            <div className="block rounded-lg items-center bg-white p-6 sm:col-span-2 shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)] dark:bg-neutral-700">
-              <h5
-                text-left
-                item-center
-                className="mb-2 text-xl font-medium leading-tight text-neutral-800 dark:text-neutral-50"
-              >
-                {title}
-              </h5>
-              <p text-left item-center>
-                {location}
-              </p>
-              <p text-left item-center>
-                {datetime}
-              </p>
-              <div className="inline-flex">
-                <Button color="gray">{mainAction}</Button>
-                <IconButton
-                  onClick={() => {
-                    dropdownActions;
-                  }}
-                  aria-label="dropdown"
-                >
-                  <MoreVertIcon />
-                </IconButton>
-              </div>
+    <Card variant="outlined" className="w-full">
+      <div className="p-5">
+        {/* Main card body */}
+        <IconText icon={<EmojiFoodBeverageIcon color="disabled" />}>
+          <b className="text-2xl">{title.toLocaleUpperCase()}</b>
+        </IconText>
+        <IconText icon={<LocationOnIcon color="disabled" />}>
+          {location.toLocaleUpperCase()}
+        </IconText>
+        <IconText icon={<WatchLaterIcon color="disabled" />}>
+          {datetime}
+        </IconText>
+
+        {/* Card buttons */}
+        {dropdownActions.length > 0 ? (
+          <div className="pt-4 flex flex-row">
+            <Button color="gray">
+              <MainAction />
+            </Button>
+            <div className="pl-1">
+              <IconButton className="bg-gray-300 rounded-md">
+                <MoreVertIcon />
+              </IconButton>
             </div>
           </div>
-        </div>
-      }
-    </>
+        ) : (
+          <div className="pt-4">
+            <Button color="gray">
+              <MainAction />
+            </Button>
+          </div>
+        )}
+      </div>
+    </Card>
   );
 };
 export default EventCard;
