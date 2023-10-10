@@ -95,25 +95,21 @@ eventRouter.delete(
   }
 );
 
-eventRouter.patch(
-  "/:eventid/status/:status",
-  async (req: Request, res: Response) => {
-    // #swagger.tags = ['Events']
-    attempt(res, 200, () =>
-      eventController.updateEventStatus(req.params.eventid, req.params.status)
-    );
-  }
-);
+eventRouter.patch("/:eventid/status", async (req: Request, res: Response) => {
+  // #swagger.tags = ['Events']
+  const { status } = req.body;
+  attempt(res, 200, () =>
+    eventController.updateEventStatus(req.params.eventid, status)
+  );
+});
 
-eventRouter.patch(
-  "/:eventid/owner/:ownerid",
-  async (req: Request, res: Response) => {
-    // #swagger.tags = ['Events']
-    attempt(res, 200, () =>
-      eventController.updateEventOwner(req.params.eventid, req.params.ownerid)
-    );
-  }
-);
+eventRouter.patch("/:eventid/owner", async (req: Request, res: Response) => {
+  // #swagger.tags = ['Events']
+  const { ownerid } = req.body;
+  attempt(res, 200, () =>
+    eventController.updateEventOwner(req.params.eventid, ownerid)
+  );
+});
 
 eventRouter.patch(
   "/:eventid/attendees/:attendeeid/confirm",

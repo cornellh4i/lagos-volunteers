@@ -113,14 +113,14 @@ describe("Testing GET /events/:eventid/attendees", () => {
   });
 });
 
-describe("Testing PATCH /events/:eventid/status/:status", () => {
+describe("Testing PATCH /events/:eventid/status", () => {
   test("Update event status to active", async () => {
     const events = await request(app).get("/events");
     const eventid = events.body.data[0].id;
     const status = "ACTIVE";
-    const response = await request(app).patch(
-      `/events/${eventid}/status/${status}`
-    );
+    const response = await request(app)
+      .patch(`/events/${eventid}/status`)
+      .send({ status: `${status}` });
     const data = response.body.data;
     expect(response.status).toBe(200);
     expect(data.status).toBe("ACTIVE");
@@ -130,23 +130,23 @@ describe("Testing PATCH /events/:eventid/status/:status", () => {
     const events = await request(app).get("/events");
     const eventid = events.body.data[0].id;
     const status = "COMPLETE";
-    const response = await request(app).patch(
-      "/events/" + eventid + "/status/" + status
-    );
+    const response = await request(app)
+      .patch("/events/" + eventid + "/status")
+      .send({ status: status });
     expect(response.status).toBe(500);
   });
 });
 
-describe("Testing PATCH /events/:eventid/owner/:ownerid", () => {
+describe("Testing PATCH /events/:eventid/owner", () => {
   test("Change current owner", async () => {
     const events = await request(app).get("/events");
     const eventid = events.body.data[1].id;
     const event = events.body.data[1];
     const users = await request(app).get("/users");
     const ownerid = users.body.data[1].id;
-    const response = await request(app).patch(
-      "/events/" + eventid + "/owner/" + ownerid
-    );
+    const response = await request(app)
+      .patch("/events/" + eventid + "/owner")
+      .send({ ownerid: `${ownerid}` });
     const data = response.body.data;
     expect(response.status).toBe(200);
     expect(data.ownerId).toBe(users.body.data[1].id);
@@ -157,9 +157,9 @@ describe("Testing PATCH /events/:eventid/owner/:ownerid", () => {
     const eventid = events.body.data[1].id;
     const users = await request(app).get("/users");
     const ownerid = users.body.data[-1];
-    const response = await request(app).patch(
-      "/events/" + eventid + "/owner/" + ownerid
-    );
+    const response = await request(app)
+      .patch("/events/" + eventid + "/owner")
+      .send({ ownerid: `${ownerid}` });
     expect(response.status).toBe(500);
   });
 });
