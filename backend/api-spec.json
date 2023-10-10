@@ -501,9 +501,7 @@
           }
         ],
         "responses": {}
-      }
-    },
-    "/events/{eventid}/attendees/{attendeeid}": {
+      },
       "post": {
         "tags": [
           "Events"
@@ -517,14 +515,22 @@
             "type": "string"
           },
           {
-            "name": "attendeeid",
-            "in": "path",
-            "required": true,
-            "type": "string"
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "attendeeid": {
+                  "example": "any"
+                }
+              }
+            }
           }
         ],
         "responses": {}
-      },
+      }
+    },
+    "/events/{eventid}/attendees/{attendeeid}": {
       "delete": {
         "tags": [
           "Events"

@@ -59,15 +59,13 @@ eventRouter.get("/:eventid/attendees", async (req: Request, res: Response) => {
   attempt(res, 200, () => eventController.getAttendees(req.params.eventid));
 });
 
-eventRouter.post(
-  "/:eventid/attendees/:attendeeid",
-  async (req: Request, res: Response) => {
-    // #swagger.tags = ['Events']
-    attempt(res, 200, () =>
-      eventController.addAttendee(req.params.eventid, req.params.attendeeid)
-    );
-  }
-);
+eventRouter.post("/:eventid/attendees", async (req: Request, res: Response) => {
+  // #swagger.tags = ['Events']
+  const { attendeeid } = req.body;
+  attempt(res, 200, () =>
+    eventController.addAttendee(req.params.eventid, attendeeid)
+  );
+});
 
 eventRouter.delete(
   "/:eventid/attendees/:attendeeid",
