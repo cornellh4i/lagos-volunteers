@@ -13,6 +13,12 @@ import { useRouter } from "next/router";
 
 interface EventCancelFormProps {
   eventid: string;
+  location: string;
+  datetime: string;
+  supervisors: string[];
+  capacity: number;
+  image_src: string;
+  tags?: string[];
 }
 type FormValues = {
   cancelReason: string;
@@ -56,7 +62,15 @@ const ModalBody = ({
 /**
  * An EventCancelForm component
  */
-const EventCancelForm = ({ eventid }: EventCancelFormProps) => {
+const EventCancelForm = ({
+  eventid,
+  location,
+  datetime,
+  supervisors,
+  capacity,
+  image_src,
+  tags,
+}: EventCancelFormProps) => {
   const {
     register,
     handleSubmit,
@@ -92,13 +106,13 @@ const EventCancelForm = ({ eventid }: EventCancelFormProps) => {
           <div className="font-semibold text-3xl">Cancel Registration</div>
           <div className="text-2xl font-semibold mb-6">EDUFOOD</div>
           <div>
-            {/* dummy data, to be replaced during full-stack */}
             <EventDetails
-              location="Address, Building Name"
-              datetime="02/15/2023, 9:00AM-11:00AM"
-              supervisors={["Jane Doe", "Jess Lee"]}
-              capacity={20}
-              image_src="https://i0.wp.com/roadmap-tech.com/wp-content/uploads/2019/04/placeholder-image.jpg?resize=800%2C800&ssl=1"
+              location={location}
+              datetime={datetime}
+              supervisors={supervisors}
+              capacity={capacity}
+              image_src={image_src}
+              tags={tags}
             />
           </div>
           <div>

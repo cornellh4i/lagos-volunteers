@@ -11,6 +11,12 @@ import { useRouter } from "next/router";
 
 interface EventRegisterFormProps {
   eventid: string;
+  location: string;
+  datetime: string;
+  supervisors: string[];
+  capacity: number;
+  image_src: string;
+  tags?: string[];
 }
 
 /**
@@ -55,7 +61,15 @@ const ModalBody = ({
 /**
  * An EventRegisterForm component
  */
-const EventRegisterForm = ({ eventid }: EventRegisterFormProps) => {
+const EventRegisterForm = ({
+  eventid,
+  location,
+  datetime,
+  supervisors,
+  capacity,
+  image_src,
+  tags,
+}: EventRegisterFormProps) => {
   const [checked, setChecked] = useState(false);
   const handleChange = () => {
     setChecked((checked) => !checked);
@@ -90,12 +104,12 @@ const EventRegisterForm = ({ eventid }: EventRegisterFormProps) => {
           <div className="font-semibold text-3xl">Event Registration</div>
           <div className="text-2xl font-semibold mb-6">EDUFOOD</div>
           <EventDetails
-            location="Address, Building Name"
-            datetime="02/15/2023, 9:00AM-11:00AM"
-            supervisors={["Jane Doe", "Jess Lee"]}
-            capacity={20}
-            image_src="https://i0.wp.com/roadmap-tech.com/wp-content/uploads/2019/04/placeholder-image.jpg?resize=800%2C800&ssl=1"
-            tags={["In-person", "EDUFOOD"]}
+            location={location}
+            datetime={datetime}
+            supervisors={supervisors}
+            capacity={capacity}
+            image_src={image_src}
+            tags={tags}
           />
           <div>
             Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut et massa
