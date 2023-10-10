@@ -32,18 +32,19 @@ describe("Testing GET /events/past", () => {
 
 describe("Testing POST /events/:userid", () => {
   test("POST Create a new event", async () => {
-    const event = {
-      name: "Cool Event",
-      location: "Hack Hall",
-      description: "This is a cool event",
-      startDate: new Date("2021-03-01T00:00:00.000Z"),
-      endDate: new Date("2021-03-01T00:00:00.000Z"),
-      capacity: 10,
-    };
     const users = await request(app).get("/users");
-    const response = await request(app)
-      .post(`/events/${users.body.data[1].id}`)
-      .send(event);
+    const eventDTO = {
+      userID: `${users.body.data[1].id}`,
+      event: {
+        name: "Cool Event",
+        location: "Hack Hall",
+        description: "This is a cool event",
+        startDate: new Date("2021-03-01T00:00:00.000Z"),
+        endDate: new Date("2021-03-01T00:00:00.000Z"),
+        capacity: 10,
+      },
+    };
+    const response = await request(app).post("/events").send(eventDTO);
     const data = response.body.data;
     expect(data.name).toBe("Cool Event");
     expect(data.location).toBe("Hack Hall");
@@ -52,11 +53,12 @@ describe("Testing POST /events/:userid", () => {
   });
 
   test("POST Create a new event with an empty name", async () => {
-    const event = {};
     const users = await request(app).get("/users");
-    const response = await request(app)
-      .post(`/events/${users.body.data[0].id}`)
-      .send(event);
+    const eventDTO = {
+      userID: `${users.body.data[0].id}`,
+      event: {},
+    };
+    const response = await request(app).post("/events").send(eventDTO);
     expect(response.status).toBe(500);
   });
 });

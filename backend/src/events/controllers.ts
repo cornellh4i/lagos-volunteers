@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import { EventMode, EventStatus, Event, EventEnrollment } from "@prisma/client";
+import { EventDTO } from "./views";
 
 // We are using one connection to prisma client to prevent multiple connections
 import prisma from "../../client";
@@ -16,11 +17,12 @@ import prisma from "../../client";
  * @param Status (EventStatus)
  * @returns promise with event or error.
  */
-const createEvent = async (userID: string, req: Request) => {
+const createEvent = async (eventDTO: EventDTO) => {
   // weird typescript error here with the prisma event type
+  const { userID, event } = eventDTO;
   return prisma.event.create({
     data: {
-      ...req.body,
+      ...event,
       owner: {
         connect: {
           id: userID,

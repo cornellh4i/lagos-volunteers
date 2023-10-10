@@ -382,20 +382,21 @@
         "responses": {}
       }
     },
-    "/events/{userid}": {
+    "/events/": {
       "post": {
         "tags": [
           "Events"
         ],
         "description": "",
-        "parameters": [
-          {
-            "name": "userid",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          }
+        "parameters": [],
+        "responses": {}
+      },
+      "get": {
+        "tags": [
+          "Events"
         ],
+        "description": "",
+        "parameters": [],
         "responses": {}
       }
     },
@@ -443,16 +444,6 @@
             "type": "string"
           }
         ],
-        "responses": {}
-      }
-    },
-    "/events/": {
-      "get": {
-        "tags": [
-          "Events"
-        ],
-        "description": "",
-        "parameters": [],
         "responses": {}
       }
     },
