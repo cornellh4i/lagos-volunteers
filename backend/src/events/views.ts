@@ -4,7 +4,7 @@ import { auth } from "../middleware/auth";
 import { attempt } from "../utils/helpers";
 
 import { errorJson, successJson } from "../utils/jsonResponses";
-import { EventMode, EventStatus, EventTags } from "@prisma/client";
+import { EventMode, EventStatus } from "@prisma/client";
 
 const eventRouter = Router();
 

@@ -7,14 +7,7 @@ import prisma from "../../client";
 
 /**
  * Creates a new event and assign owner to it.
- * @param name (String)
- * @param subtitle (String)
- * @param Location (String)
- * @param Description (String)
- * @param startDate (DateTime)
- * @private endDate (DateTime)
- * @param Mode (EventMode)
- * @param Status (EventStatus)
+ * @param eventDTO contains the ownerID and the event body
  * @returns promise with event or error.
  */
 const createEvent = async (eventDTO: EventDTO) => {
