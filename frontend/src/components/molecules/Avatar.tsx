@@ -22,24 +22,22 @@ const Avatar = ({
   hour,
 }: AvatarProps) => {
   return (
-    <>
-      <div className="sm:flex">
-        <div className="flex justify-center">
-          <img
-            src={url || FALLBACK_AVATAR_URL}
-            alt={alt}
-            className="rounded-full w-32"
-          />
-        </div>
-        <div className="p-6 font-sans text-center sm:text-left">
-          <div className="text-3xl font-semibold">{name}</div>
-          <div className="py-1">
-            Volunteer since {start_date.toLocaleDateString("en-US")}
-          </div>
-          <div>{hour} volunteer hours completed</div>
-        </div>
+    <div className="sm:flex">
+      <div className="flex justify-center">
+        <img
+          src={url || FALLBACK_AVATAR_URL}
+          alt={alt}
+          className="rounded-full w-32"
+        />
       </div>
-    </>
+      <div className="p-6 font-sans text-center sm:text-left">
+        <div className="text-3xl font-semibold">{name}</div>
+        <div className="py-1">
+          Volunteer since {start_date.toLocaleDateString("en-US")}
+        </div>
+        <div>{hour} volunteer hours completed</div>
+      </div>
+    </div>
   );
 };
 
