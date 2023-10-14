@@ -73,17 +73,40 @@ userRouter.put("/:userid", useAuth, async (req: Request, res: Response) => {
 
 userRouter.get("/", useAuth, async (req: Request, res: Response) => {
   // #swagger.tags = ['Users']
-  attempt(res, 200, userController.getAllUsers);
+
+  const {
+    email,
+    firstName,
+    lastName,
+    role,
+    status,
+    hours,
+    nickname,
+    sort,
+    limit,
+    after,
+  } = req.body;
+  attempt(res, 200, () =>
+    userController.getUsers(
+      req,
+      email,
+      firstName,
+      lastName,
+      role,
+      status,
+      hours,
+      nickname,
+      sort,
+      limit,
+      after
+    )
+  );
+  attempt(res, 200, () => userController.getUsers(req));
 });
 
 userRouter.get("/pagination", useAuth, async (req: Request, res: Response) => {
   // #swagger.tags = ['Users']
   attempt(res, 200, () => userController.getUsersPaginated(req));
-});
-
-userRouter.get("/users", useAuth, async (req: Request, res: Response) => {
-  // #swagger.tags = ['Users']
-  // TODO
 });
 
 userRouter.get("/search", useAuth, async (req: Request, res: Response) => {

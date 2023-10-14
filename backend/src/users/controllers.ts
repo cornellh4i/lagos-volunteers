@@ -5,6 +5,7 @@ import admin from "firebase-admin";
 // We are using one connection to prisma client to prevent multiple connections
 import prisma from "../../client";
 import { setVolunteerCustomClaims } from "../middleware/auth";
+import { SortOrder } from "mongoose";
 
 /**
  * Creates a new user
@@ -65,8 +66,74 @@ const updateUser = async (userID: string, user: User) => {
  * Gets all Users in database and all data associated with each user
  * @returns promise with all users or error
  */
-const getAllUsers = async () => {
-  return prisma.user.findMany({});
+const getUsers = async (
+  req: Request,
+  email?: string | string[],
+  role?: userRole,
+  firstName?: string,
+  lastName?: string,
+  nickname?: string,
+  hours?: number,
+  status?: UserStatus,
+  sort?: string,
+  limit?: number,
+  after?: string
+) => {
+  const query = req.query;
+
+  const sortQuery = req.query.sort as string;
+  const querySplit = sortQuery.split(":");
+  const key: string = querySplit[0];
+  const order = querySplit[1] as Prisma.SortOrder;
+  const sortDict: { [key: string]: any } = {
+    email: [{ email: order }],
+    hours: [{ hours: order }],
+    firstName: {
+      profile: {
+        firstName: order,
+      },
+    },
+    lastName: {
+      profile: {
+        lastName: order,
+      },
+    },
+  };
+  return prisma.user.findMany({
+    where: {
+      AND: [
+        {
+          email: Array.isArray(query.email) ? { in: query.email } : query.email,
+          role: {
+            equals: query.role as userRole,
+          },
+          hours: query.hours ? parseInt(query.hours as any) : undefined,
+          status: {
+            equals: query.status as UserStatus,
+          },
+          profile: {
+            firstName: Array.isArray(query.firstName)
+              ? { in: query.firstName }
+              : query.firstName,
+            lastName: Array.isArray(query.lastName)
+              ? { in: query.lastName }
+              : query.lastName,
+            nickname: Array.isArray(query.nickname)
+              ? { in: query.nickname }
+              : query.nickname,
+          },
+        },
+      ],
+    },
+    include: {
+      profile: true,
+    },
+    orderBy: sortDict[key],
+    take: query.limit ? parseInt(query.limit as string) : 10,
+    cursor: {
+      id: query.after ? (query.after as string) : undefined,
+    },
+  });
 };
 
 /**
@@ -468,7 +535,7 @@ export default {
   createUser,
   deleteUser,
   updateUser,
-  getAllUsers,
+  getUsers,
   getUsersPaginated,
   getSearchedUser,
   getUserByID,
