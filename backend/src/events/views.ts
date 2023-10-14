@@ -62,6 +62,11 @@ eventRouter.get("/current", async (req: Request, res: Response) => {
   attempt(res, 200, eventController.getCurrentEvents);
 });
 
+eventRouter.get("/events", async (req: Request, res: Response) => {
+  // #swagger.tags = ['Events']
+  // TODO
+});
+
 eventRouter.get("/past", async (req: Request, res: Response) => {
   // #swagger.tags = ['Events']
   attempt(res, 200, eventController.getPastEvents);

@@ -81,6 +81,11 @@ userRouter.get("/pagination", useAuth, async (req: Request, res: Response) => {
   attempt(res, 200, () => userController.getUsersPaginated(req));
 });
 
+userRouter.get("/users", useAuth, async (req: Request, res: Response) => {
+  // #swagger.tags = ['Users']
+  // TODO
+});
+
 userRouter.get("/search", useAuth, async (req: Request, res: Response) => {
   // #swagger.tags = ['Users']
   const { email, firstName, lastName, role, status, hours, nickname } =
