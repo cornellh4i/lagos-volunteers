@@ -10,6 +10,12 @@ type Confirmation = "register" | "cancel";
 interface EventConfirmationProps {
   eventid: string;
   confirmation: Confirmation;
+  location: string;
+  datetime: string;
+  supervisors: string[];
+  capacity: number;
+  image_src: string;
+  tags?: string[];
 }
 
 /**
@@ -21,6 +27,12 @@ interface EventConfirmationProps {
 const EventConfirmation = ({
   eventid,
   confirmation,
+  location,
+  datetime,
+  supervisors,
+  capacity,
+  image_src,
+  tags,
 }: EventConfirmationProps) => {
   switch (confirmation) {
     case "register":
@@ -33,12 +45,12 @@ const EventConfirmation = ({
           <div>
             <div className="text-2xl font-semibold mb-6">EDUFOOD</div>
             <EventDetails
-              location="Address, Building Name"
-              datetime="02/15/2023, 9:00AM-11:00AM"
-              supervisors={["Jane Doe", "Jess Lee"]}
-              capacity={20}
-              image_src="https://i0.wp.com/roadmap-tech.com/wp-content/uploads/2019/04/placeholder-image.jpg?resize=800%2C800&ssl=1"
-              tags={["In-person", "EDUFOOD"]}
+              location={location}
+              datetime={datetime}
+              supervisors={supervisors}
+              capacity={capacity}
+              image_src={image_src}
+              tags={tags}
             />
             <p>
               If you can no longer attend,{" "}
