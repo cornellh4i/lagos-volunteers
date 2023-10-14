@@ -11,6 +11,9 @@ const firebaseConfig = {
   appId: process.env.NEXT_PUBLIC_APP_ID,
   measurementId: process.env.NEXT_PUBLIC_MEASUREMENT_ID,
 };
-
 const app = initializeApp(firebaseConfig);
+
+/**
+ * Returns the Auth instance associated with the created Firebase App
+ */
 export const auth = getAuth(app);

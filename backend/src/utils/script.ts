@@ -29,7 +29,7 @@ export interface Event {
 }
 
 export function createRandomUser(): User {
-  const email = faker.internet.email();
+  const email = faker.internet.email().toLocaleLowerCase();
   const imageURL = faker.image.avatar();
   const firstName = faker.person.firstName();
   const lastName = faker.person.lastName();

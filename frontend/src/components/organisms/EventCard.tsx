@@ -1,17 +1,19 @@
 import React from "react";
 import IconText from "@/components/atoms/IconText";
 import Button from "@/components/atoms/Button";
-import { Card, Icon } from "@mui/material";
+import { Card, Grid, Icon, IconButton } from "@mui/material";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
 import EmojiFoodBeverageIcon from "@mui/icons-material/EmojiFoodBeverage";
 import WatchLaterIcon from "@mui/icons-material/WatchLater";
+import MoreVertIcon from "@mui/icons-material/MoreVert";
+import Link from "next/link";
 
 type Action = "rsvp" | "cancel rsvp" | "publish" | "manage attendees" | "edit";
 
 interface EventCardProps {
   eventid: string;
   mainAction: Action;
-  dropdownActions: Action[];
+  dropdownActions?: Action[];
   title: string;
   location: string;
   datetime: string;
@@ -31,40 +33,62 @@ interface EventCardProps {
 const EventCard = ({
   eventid,
   mainAction,
-  dropdownActions,
+  dropdownActions = [],
   title,
   location,
   datetime,
 }: EventCardProps) => {
-  return (
-    <>
-      <Card variant="outlined" className="w-4/12">
-        <div className="p-5">
-          <h2>
-            <IconText
-              icon={<EmojiFoodBeverageIcon color="disabled" fontSize="small" />}
-              text={title.toLocaleUpperCase()}
-            />
-          </h2>
-
-          <IconText
-            icon={<LocationOnIcon color="disabled" fontSize="small" />}
-            text={location.toLocaleUpperCase()}
-          />
-
-          <div className="my-1">
-            <IconText
-              icon={<WatchLaterIcon color="disabled" fontSize="small" />}
-              text={datetime}
-            />
-          </div>
-
-          <Button color="gray" type="button">
+  const MainAction = () => {
+    switch (mainAction) {
+      case "cancel rsvp":
+        return (
+          <Link
+            className="text-black no-underline"
+            href={`/events/${eventid}/cancel`}
+          >
             Cancel RSVP
-          </Button>
-        </div>
-      </Card>
-    </>
+          </Link>
+        );
+      default:
+        return <></>;
+    }
+  };
+
+  return (
+    <Card variant="outlined" className="w-full">
+      <div className="p-5">
+        {/* Main card body */}
+        <IconText icon={<EmojiFoodBeverageIcon color="disabled" />}>
+          <b className="text-2xl">{title.toLocaleUpperCase()}</b>
+        </IconText>
+        <IconText icon={<LocationOnIcon color="disabled" />}>
+          {location.toLocaleUpperCase()}
+        </IconText>
+        <IconText icon={<WatchLaterIcon color="disabled" />}>
+          {datetime}
+        </IconText>
+
+        {/* Card buttons */}
+        {dropdownActions.length > 0 ? (
+          <div className="pt-4 flex flex-row">
+            <Button color="gray">
+              <MainAction />
+            </Button>
+            <div className="pl-1">
+              <IconButton className="bg-gray-300 rounded-md">
+                <MoreVertIcon />
+              </IconButton>
+            </div>
+          </div>
+        ) : (
+          <div className="pt-4">
+            <Button color="gray">
+              <MainAction />
+            </Button>
+          </div>
+        )}
+      </div>
+    </Card>
   );
 };
 export default EventCard;

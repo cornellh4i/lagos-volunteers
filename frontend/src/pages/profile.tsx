@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import ProfileForm from "@/components/organisms/ProfileForm";
 import ProfileTemplate from "@/components/templates/ProfileTemplate";
 import Banner from "@/components/molecules/Banner";
-import { GetServerSideProps } from "next";
 import { BASE_URL } from "@/utils/constants";
 import { onAuthStateChanged, getAuth } from "firebase/auth";
 import { auth } from "@/utils/firebase";
@@ -26,9 +25,7 @@ type userData = {
 /** A Profile page */
 const Profile = () => {
   const date = new Date();
-
   const { user } = useAuth();
-
   const [userDetails, setUserDetails] = useState<userData | null | undefined>(
     null
   );
@@ -52,6 +49,7 @@ const Profile = () => {
         firstName: data["data"][0]["profile"]["firstName"],
         lastName: data["data"][0]["profile"]["lastName"],
         nickname: data["data"][0]["profile"]["nickname"] || "",
+        imageUrl: data["data"][0]["profile"]["imageURL"] || "",
       });
     } catch (error) {
       console.log(error);
@@ -59,7 +57,6 @@ const Profile = () => {
   };
 
   // Ideally this should happen in getServersideProps for faster loads
-  // but it will require us to use firebase-admin. Will get back to this in the future
   useEffect(() => {
     fetchUserDetails();
   }, []);
@@ -67,19 +64,24 @@ const Profile = () => {
   return (
     <ProfileTemplate
       banner={
-        <Banner>
-          <Avatar
-            name={`${userDetails?.firstName} ${userDetails?.lastName}`}
-            hour={20}
-            start_date={date}
-          />
-        </Banner>
+        userDetails ? (
+          <Banner>
+            <Avatar
+              name={`${userDetails?.firstName} ${userDetails?.lastName}`}
+              hour={20}
+              start_date={date}
+              url={userDetails?.imageUrl}
+            />
+          </Banner>
+        ) : (
+          <div>Grabbing your data...</div>
+        )
       }
     >
       {userDetails ? (
         <ProfileForm userDetails={userDetails} />
       ) : (
-        <div>Loading data...</div>
+        <div>Getting your data...</div>
       )}
     </ProfileTemplate>
   );
