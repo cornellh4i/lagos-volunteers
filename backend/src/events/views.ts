@@ -49,8 +49,7 @@ eventRouter.delete("/:eventid", async (req: Request, res: Response) => {
 
 eventRouter.get("/", async (req: Request, res: Response) => {
   // #swagger.tags = ['Events']
-  const { upcoming } = req.body;
-  attempt(res, 200, () => eventController.getEvents(req, upcoming));
+  attempt(res, 200, () => eventController.getEvents(req));
 });
 
 eventRouter.get("/upcoming", async (req: Request, res: Response) => {

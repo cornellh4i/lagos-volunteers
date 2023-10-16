@@ -68,7 +68,7 @@ const updateUser = async (userID: string, user: User) => {
  */
 const getUsers = async (req: Request) => {
   const query = req.query;
-
+  
   const sortQuery = req.query.sort as string;
   const querySplit = sortQuery ? sortQuery.split(":") : ["default", "asc"];
   const key: string = querySplit[0];

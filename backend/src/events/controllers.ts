@@ -1,5 +1,11 @@
 import { Request, Response } from "express";
-import { EventMode, EventStatus, Event, EventEnrollment } from "@prisma/client";
+import {
+  EventMode,
+  EventStatus,
+  Event,
+  EventEnrollment,
+  Prisma,
+} from "@prisma/client";
 import { EventDTO } from "./views";
 
 // We are using one connection to prisma client to prevent multiple connections
@@ -42,21 +48,37 @@ const deleteEvent = async (eventID: string) => {
  * Get all events in DB
  * @returns promise with all events or error
  */
-const getEvents = async (
-  req?: Request,
-  upcoming?: boolean
-  // sort?:
-) => {
-  //TODO
+const getEvents = async (req: Request) => {
+  console.log(req.query);
+  console.log(req.params);
+  const query = req.query;
+  let upcoming = query.upcoming;
   let whereDict: { [key: string]: any } = {};
   if (upcoming) {
-    const dateTime = new Date();
-    whereDict["startDate"] = {
-      gt: dateTime,
-    };
+    if (upcoming == "true") {
+      const dateTime = new Date();
+      whereDict["startDate"] = {
+        gt: dateTime,
+      };
+    }
   }
+  const sortQuery = req.query.sort as string;
+  const querySplit = sortQuery ? sortQuery.split(":") : ["default", "asc"];
+  const key: string = querySplit[0];
+  const order = querySplit[1] as Prisma.SortOrder;
+  const sortDict: { [key: string]: any } = {
+    default: { id: order },
+    name: [{ name: order }],
+    location: [{ location: order }],
+  };
+
   return prisma.event.findMany({
     where: whereDict,
+    orderBy: sortDict[key],
+    take: query.limit ? parseInt(query.limit as string) : 10,
+    // cursor: {
+    //   id: query.after ? (query.after as string) : undefined,
+    // },
   });
 };
 
