@@ -66,26 +66,15 @@ const updateUser = async (userID: string, user: User) => {
  * Gets all Users in database and all data associated with each user
  * @returns promise with all users or error
  */
-const getUsers = async (
-  req: Request,
-  email?: string | string[],
-  role?: userRole,
-  firstName?: string,
-  lastName?: string,
-  nickname?: string,
-  hours?: number,
-  status?: UserStatus,
-  sort?: string,
-  limit?: number,
-  after?: string
-) => {
+const getUsers = async (req: Request) => {
   const query = req.query;
 
   const sortQuery = req.query.sort as string;
-  const querySplit = sortQuery.split(":");
+  const querySplit = sortQuery ? sortQuery.split(":") : ["default", "asc"];
   const key: string = querySplit[0];
   const order = querySplit[1] as Prisma.SortOrder;
   const sortDict: { [key: string]: any } = {
+    default: { id: order },
     email: [{ email: order }],
     hours: [{ hours: order }],
     firstName: {
@@ -130,9 +119,9 @@ const getUsers = async (
     },
     orderBy: sortDict[key],
     take: query.limit ? parseInt(query.limit as string) : 10,
-    cursor: {
-      id: query.after ? (query.after as string) : undefined,
-    },
+    // cursor: {
+    //   id: query.after ? (query.after as string) : undefined,
+    // },
   });
 };
 

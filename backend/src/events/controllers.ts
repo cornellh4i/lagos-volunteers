@@ -42,8 +42,22 @@ const deleteEvent = async (eventID: string) => {
  * Get all events in DB
  * @returns promise with all events or error
  */
-const getEvents = async () => {
-  return prisma.event.findMany({});
+const getEvents = async (
+  req?: Request,
+  upcoming?: boolean
+  // sort?:
+) => {
+  //TODO
+  let whereDict: { [key: string]: any } = {};
+  if (upcoming) {
+    const dateTime = new Date();
+    whereDict["startDate"] = {
+      gt: dateTime,
+    };
+  }
+  return prisma.event.findMany({
+    where: whereDict,
+  });
 };
 
 /**

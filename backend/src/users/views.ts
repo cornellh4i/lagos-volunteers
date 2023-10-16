@@ -73,34 +73,6 @@ userRouter.put("/:userid", useAuth, async (req: Request, res: Response) => {
 
 userRouter.get("/", useAuth, async (req: Request, res: Response) => {
   // #swagger.tags = ['Users']
-
-  const {
-    email,
-    firstName,
-    lastName,
-    role,
-    status,
-    hours,
-    nickname,
-    sort,
-    limit,
-    after,
-  } = req.body;
-  attempt(res, 200, () =>
-    userController.getUsers(
-      req,
-      email,
-      firstName,
-      lastName,
-      role,
-      status,
-      hours,
-      nickname,
-      sort,
-      limit,
-      after
-    )
-  );
   attempt(res, 200, () => userController.getUsers(req));
 });
 

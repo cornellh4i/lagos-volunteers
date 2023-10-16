@@ -49,7 +49,8 @@ eventRouter.delete("/:eventid", async (req: Request, res: Response) => {
 
 eventRouter.get("/", async (req: Request, res: Response) => {
   // #swagger.tags = ['Events']
-  attempt(res, 200, eventController.getEvents);
+  const { upcoming } = req.body;
+  attempt(res, 200, () => eventController.getEvents(req, upcoming));
 });
 
 eventRouter.get("/upcoming", async (req: Request, res: Response) => {
@@ -60,11 +61,6 @@ eventRouter.get("/upcoming", async (req: Request, res: Response) => {
 eventRouter.get("/current", async (req: Request, res: Response) => {
   // #swagger.tags = ['Events']
   attempt(res, 200, eventController.getCurrentEvents);
-});
-
-eventRouter.get("/events", async (req: Request, res: Response) => {
-  // #swagger.tags = ['Events']
-  // TODO
 });
 
 eventRouter.get("/past", async (req: Request, res: Response) => {
