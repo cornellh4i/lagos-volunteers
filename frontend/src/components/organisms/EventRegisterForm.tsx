@@ -9,17 +9,6 @@ import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { Grid } from "@mui/material";
 import { useRouter } from "next/router";
 
-// Should I comment this out?
-// interface EventRegisterFormProps {
-//   eventid: string;
-//   location: string;
-//   datetime: string;
-//   supervisors: string[];
-//   capacity: number;
-//   image_src: string;
-//   tags?: string[];
-// }
-
 type eventData = {
   eventid: string;
   location: string;
@@ -27,8 +16,6 @@ type eventData = {
   supervisors: string[];
   capacity: number;
   image_src: string;
-
-  // do I need to change to tags? : string[] | undefined
   tags: string[] | undefined;
 };
 
