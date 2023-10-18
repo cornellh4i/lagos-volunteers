@@ -122,6 +122,14 @@ const getEvent = async (eventID: string) => {
     where: {
       id: eventID,
     },
+    include: {
+      owner: {
+        select: {
+          profile: true,
+      }
+    },
+    tags: true,
+  }
   });
 };
 

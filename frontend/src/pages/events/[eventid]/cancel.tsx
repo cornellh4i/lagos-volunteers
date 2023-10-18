@@ -72,10 +72,14 @@ const EventCancellation = () => {
             data["data"]["startDate"],
             data["data"]["endDate"]
           ),
-          supervisors: [data["data"]["ownerId"]], // need to change supervisors
+          supervisors: [
+            data["data"]["owner"]["profile"]["firstName"] +
+              " " +
+              data["data"]["owner"]["profile"]["lastName"],
+          ],
           capacity: data["data"]["capacity"],
-          image_src: data["data"]["image_url"],
-          tags: [data["data"]["mode"]] || "",
+          image_src: data["data"]["imageURL"],
+          tags: data["data"]["tags"],
         });
       }
     } catch (error) {
@@ -95,8 +99,6 @@ const EventCancellation = () => {
         <div>Getting your data...</div>
       )}
     </CenteredTemplate>
-
-
 
     // <CenteredTemplate>
     //   <EventCancelForm

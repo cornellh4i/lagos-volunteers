@@ -53,6 +53,7 @@ const EventRegistration = () => {
       const url = BASE_URL as string;
       const fetchUrl = `${url}/events/${eventid}`;
       const userToken = await auth.currentUser?.getIdToken();
+      console.log(userToken);
 
       const response = await fetch(fetchUrl, {
         method: "GET",
@@ -71,10 +72,14 @@ const EventRegistration = () => {
             data["data"]["startDate"],
             data["data"]["endDate"]
           ),
-          supervisors: [data["data"]["ownerId"]], // need to change supervisors
+          supervisors: [
+            data["data"]["owner"]["profile"]["firstName"] +
+              " " +
+              data["data"]["owner"]["profile"]["lastName"],
+          ],
           capacity: data["data"]["capacity"],
-          image_src: data["data"]["image_url"],
-          tags: [data["data"]["mode"]] || "",
+          image_src: data["data"]["imageURL"],
+          tags: data["data"]["tags"],
         });
       }
     } catch (error) {
