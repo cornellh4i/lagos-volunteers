@@ -9,14 +9,31 @@ import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { Grid } from "@mui/material";
 import { useRouter } from "next/router";
 
-interface EventRegisterFormProps {
+// Should I comment this out?
+// interface EventRegisterFormProps {
+//   eventid: string;
+//   location: string;
+//   datetime: string;
+//   supervisors: string[];
+//   capacity: number;
+//   image_src: string;
+//   tags?: string[];
+// }
+
+type eventData = {
   eventid: string;
   location: string;
   datetime: string;
   supervisors: string[];
   capacity: number;
   image_src: string;
-  tags?: string[];
+
+  // do I need to change to tags? : string[] | undefined
+  tags: string[] | undefined;
+};
+
+interface EventRegisterFormProps {
+  eventDetails: eventData;
 }
 
 /**
@@ -61,15 +78,7 @@ const ModalBody = ({
 /**
  * An EventRegisterForm component
  */
-const EventRegisterForm = ({
-  eventid,
-  location,
-  datetime,
-  supervisors,
-  capacity,
-  image_src,
-  tags,
-}: EventRegisterFormProps) => {
+const EventRegisterForm = ({ eventDetails }: EventRegisterFormProps) => {
   const [checked, setChecked] = useState(false);
   const handleChange = () => {
     setChecked((checked) => !checked);
@@ -89,7 +98,7 @@ const EventRegisterForm = ({
       <Modal
         open={open}
         handleClose={handleClose}
-        children={<ModalBody eventid={eventid} handleClose={handleClose} />}
+        children={<ModalBody eventid={eventDetails.eventid} handleClose={handleClose} />}
       />
 
       <div className="justify-center center-items grid grid-cols-4 grid-rows-6`">
@@ -104,12 +113,12 @@ const EventRegisterForm = ({
           <div className="font-semibold text-3xl">Event Registration</div>
           <div className="text-2xl font-semibold mb-6">EDUFOOD</div>
           <EventDetails
-            location={location}
-            datetime={datetime}
-            supervisors={supervisors}
-            capacity={capacity}
-            image_src={image_src}
-            tags={tags}
+            location={eventDetails.location}
+            datetime={eventDetails.datetime}
+            supervisors={eventDetails.supervisors}
+            capacity={eventDetails.capacity}
+            image_src={eventDetails.image_src}
+            tags={eventDetails.tags}
           />
           <div>
             Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut et massa
