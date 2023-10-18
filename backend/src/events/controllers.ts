@@ -45,15 +45,23 @@ const deleteEvent = async (eventID: string) => {
 };
 
 /**
- * Get all events in DB
- * @returns promise with all events or error
+ * Search, Sort and Pagination for Events
+ * [option] corresponds to the columns in the Event table.
+ * Search supports multiple queries
+ * The following options are supported:
+ * @param upcoming if the event is upcoming then true, else false
+ * @param sort possible sort columns: name, location
+ * @param ownerid all events that were created by ownerid
+ * @param userid all events such that userid is registered 
+ * @param req: Request paramters to get query used for search
+ * @returns  promise with list of all events where [option] is [value]
+
  */
 const getEvents = async (req: Request) => {
-  console.log(req.query);
-  console.log(req.params);
   const query = req.query;
   let upcoming = query.upcoming;
   let whereDict: { [key: string]: any } = {};
+  let includeDict: { [key: string]: any } = {};
   if (upcoming) {
     if (upcoming == "true") {
       const dateTime = new Date();
@@ -76,11 +84,22 @@ const getEvents = async (req: Request) => {
   if (ownerId) {
     whereDict["ownerId"] = ownerId;
   }
+  const userId = query.userid;
+  if (userId) {
+    whereDict["attendees"] = {
+      some: {
+        userId: userId,
+      },
+    };
+    includeDict["attendees"] = true;
+  }
 
-  console.log("whereDict", whereDict)
 
   return prisma.event.findMany({
-    where: whereDict,
+    where: {
+      AND: [whereDict],
+    },
+    include: includeDict,
     orderBy: sortDict[key],
     take: query.limit ? parseInt(query.limit as string) : 10,
     // cursor: {

@@ -68,7 +68,7 @@ const updateUser = async (userID: string, user: User) => {
  */
 const getUsers = async (req: Request) => {
   const query = req.query;
-  
+
   const sortQuery = req.query.sort as string;
   const querySplit = sortQuery ? sortQuery.split(":") : ["default", "asc"];
   const key: string = querySplit[0];
@@ -88,10 +88,22 @@ const getUsers = async (req: Request) => {
       },
     },
   };
+
+  const eventId = query.eventid;
+  let events: { [key: string]: any } = {};
+  if (eventId) {
+    events = {
+      some: {
+        eventId: eventId,
+      },
+    };
+  }
+
   return prisma.user.findMany({
     where: {
       AND: [
         {
+          events: events,
           email: Array.isArray(query.email) ? { in: query.email } : query.email,
           role: {
             equals: query.role as userRole,
@@ -116,6 +128,7 @@ const getUsers = async (req: Request) => {
     },
     include: {
       profile: true,
+      events: eventId ? true : false,
     },
     orderBy: sortDict[key],
     take: query.limit ? parseInt(query.limit as string) : 10,
