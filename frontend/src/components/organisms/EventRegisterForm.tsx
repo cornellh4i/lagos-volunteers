@@ -85,7 +85,9 @@ const EventRegisterForm = ({ eventDetails }: EventRegisterFormProps) => {
       <Modal
         open={open}
         handleClose={handleClose}
-        children={<ModalBody eventid={eventDetails.eventid} handleClose={handleClose} />}
+        children={
+          <ModalBody eventid={eventDetails.eventid} handleClose={handleClose} />
+        }
       />
 
       <div className="justify-center center-items grid grid-cols-4 grid-rows-6`">

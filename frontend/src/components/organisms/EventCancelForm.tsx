@@ -11,15 +11,30 @@ import { useForm, SubmitHandler } from "react-hook-form";
 import { Typography, Grid } from "@mui/material";
 import { useRouter } from "next/router";
 
-interface EventCancelFormProps {
+// interface EventCancelFormProps {
+//   eventid: string;
+//   location: string;
+//   datetime: string;
+//   supervisors: string[];
+//   capacity: number;
+//   image_src: string;
+//   tags?: string[];
+// }
+
+type eventData = {
   eventid: string;
   location: string;
   datetime: string;
   supervisors: string[];
   capacity: number;
   image_src: string;
-  tags?: string[];
+  tags: string[] | undefined;
+};
+
+interface EventCancelFormProps {
+  eventDetails: eventData;
 }
+
 type FormValues = {
   cancelReason: string;
 };
@@ -62,15 +77,7 @@ const ModalBody = ({
 /**
  * An EventCancelForm component
  */
-const EventCancelForm = ({
-  eventid,
-  location,
-  datetime,
-  supervisors,
-  capacity,
-  image_src,
-  tags,
-}: EventCancelFormProps) => {
+const EventCancelForm = ({ eventDetails }: EventCancelFormProps) => {
   const {
     register,
     handleSubmit,
@@ -90,7 +97,7 @@ const EventCancelForm = ({
       <Modal
         open={open}
         handleClose={handleClose}
-        children={<ModalBody eventid={eventid} handleClose={handleClose} />}
+        children={<ModalBody eventid={eventDetails.eventid} handleClose={handleClose} />}
       />
 
       <div className="justify-center center-items">
@@ -107,12 +114,12 @@ const EventCancelForm = ({
           <div className="text-2xl font-semibold mb-6">EDUFOOD</div>
           <div>
             <EventDetails
-              location={location}
-              datetime={datetime}
-              supervisors={supervisors}
-              capacity={capacity}
-              image_src={image_src}
-              tags={tags}
+              location={eventDetails.location}
+              datetime={eventDetails.datetime}
+              supervisors={eventDetails.supervisors}
+              capacity={eventDetails.capacity}
+              image_src={eventDetails.image_src}
+              tags={eventDetails.tags}
             />
           </div>
           <div>

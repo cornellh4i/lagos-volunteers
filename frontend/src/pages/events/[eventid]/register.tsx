@@ -1,5 +1,3 @@
-// to test go to http://localhost:3000/events/cln80ae520006pcc77ri0t8rs/register
-
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import CenteredTemplate from "@/components/templates/CenteredTemplate";
