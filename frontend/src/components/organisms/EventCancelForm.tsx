@@ -11,16 +11,6 @@ import { useForm, SubmitHandler } from "react-hook-form";
 import { Typography, Grid } from "@mui/material";
 import { useRouter } from "next/router";
 
-// interface EventCancelFormProps {
-//   eventid: string;
-//   location: string;
-//   datetime: string;
-//   supervisors: string[];
-//   capacity: number;
-//   image_src: string;
-//   tags?: string[];
-// }
-
 type eventData = {
   eventid: string;
   location: string;

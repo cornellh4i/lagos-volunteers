@@ -5,17 +5,21 @@ import EventDetails from "./EventDetails";
 import Link from "next/link";
 import { grey } from "@mui/material/colors";
 
-type Confirmation = "register" | "cancel";
+type confirmation = "register" | "cancel";
 
-interface EventConfirmationProps {
+type eventData = {
   eventid: string;
-  confirmation: Confirmation;
   location: string;
   datetime: string;
   supervisors: string[];
   capacity: number;
   image_src: string;
-  tags?: string[];
+  tags: string[] | undefined;
+};
+
+interface EventConfirmationProps {
+  eventDetails: eventData;
+  confirmation: confirmation;
 }
 
 /**
@@ -24,15 +28,10 @@ interface EventConfirmationProps {
  * component displays "You are registered". If a user is not registered, the
  * component displays "You are no longer registered".
  */
+
 const EventConfirmation = ({
-  eventid,
+  eventDetails,
   confirmation,
-  location,
-  datetime,
-  supervisors,
-  capacity,
-  image_src,
-  tags,
 }: EventConfirmationProps) => {
   switch (confirmation) {
     case "register":
@@ -45,16 +44,16 @@ const EventConfirmation = ({
           <div>
             <div className="text-2xl font-semibold mb-6">EDUFOOD</div>
             <EventDetails
-              location={location}
-              datetime={datetime}
-              supervisors={supervisors}
-              capacity={capacity}
-              image_src={image_src}
-              tags={tags}
+              location={eventDetails.location}
+              datetime={eventDetails.datetime}
+              supervisors={eventDetails.supervisors}
+              capacity={eventDetails.capacity}
+              image_src={eventDetails.image_src}
+              tags={eventDetails.tags}
             />
             <p>
               If you can no longer attend,{" "}
-              <Link href={`/events/${eventid}/cancel`} rel="noreferrer">
+              <Link href={`/events/${eventDetails.eventid}/cancel`} rel="noreferrer">
                 cancel here
               </Link>{" "}
               or on the "My Events" page.
@@ -76,13 +75,13 @@ const EventConfirmation = ({
           </p>
           <div className="text-2xl font-semibold mb-6">EDUFOOD</div>
           <EventDetails
-            location="Address, Building Name"
-            datetime="02/15/2023, 9:00AM-11:00AM"
-            supervisors={["Jane Doe", "Jess Lee"]}
-            capacity={20}
-            image_src="https://i0.wp.com/roadmap-tech.com/wp-content/uploads/2019/04/placeholder-image.jpg?resize=800%2C800&ssl=1"
-            tags={["In-person", "EDUFOOD"]}
-          />
+              location={eventDetails.location}
+              datetime={eventDetails.datetime}
+              supervisors={eventDetails.supervisors}
+              capacity={eventDetails.capacity}
+              image_src={eventDetails.image_src}
+              tags={eventDetails.tags}
+            />
           <Grid item xs={6}></Grid>
         </div>
       );
