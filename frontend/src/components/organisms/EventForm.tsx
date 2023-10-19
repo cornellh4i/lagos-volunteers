@@ -59,6 +59,12 @@ const EventForm = ({ eventType }: EventFormProps) => {
 
   // For deciding whether to show "In-person" or "Virtual"
   const [status, setStatus] = React.useState(0); // 0: no show, 1: show yes.
+  const [location, setLocation] = React.useState("");
+
+  const locationHandler = (newValue: any) => {
+    setLocation(newValue.label);
+  }
+
   const radioHandler = (status: number) => {
     setStatus(status);
   };
@@ -114,7 +120,7 @@ const EventForm = ({ eventType }: EventFormProps) => {
             />
           </RadioGroup>
         </FormControl>
-        {status == 1 && <LocationPicker label="" />}
+        {status == 1 && <LocationPicker label="" onChange={locationHandler} />}
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 col-span-2  sm:col-span-1">
         <TextField
