@@ -70,23 +70,30 @@ const getUsers = async (req: Request) => {
   const query = req.query;
 
   const sortQuery = req.query.sort as string;
+  const defaultCursor = { id: "asc" };
   const querySplit = sortQuery ? sortQuery.split(":") : ["default", "asc"];
   const key: string = querySplit[0];
   const order = querySplit[1] as Prisma.SortOrder;
   const sortDict: { [key: string]: any } = {
     default: { id: order },
-    email: [{ email: order }],
-    hours: [{ hours: order }],
-    firstName: {
-      profile: {
-        firstName: order,
+    email: [{ email: order }, defaultCursor],
+    hours: [{ hours: order }, defaultCursor],
+    firstName: [
+      {
+        profile: {
+          firstName: order,
+        },
       },
-    },
-    lastName: {
-      profile: {
-        lastName: order,
+      defaultCursor,
+    ],
+    lastName: [
+      {
+        profile: {
+          lastName: order,
+        },
       },
-    },
+      defaultCursor,
+    ],
   };
 
   const eventId = query.eventid;
@@ -132,9 +139,9 @@ const getUsers = async (req: Request) => {
     },
     orderBy: sortDict[key],
     take: query.limit ? parseInt(query.limit as string) : 10,
-    // cursor: {
-    //   id: query.after ? (query.after as string) : undefined,
-    // },
+    cursor: {
+      id: query.after ? (query.after as string) : "",
+    },
   });
 };
 

@@ -71,13 +71,14 @@ const getEvents = async (req: Request) => {
     }
   }
   const sortQuery = query.sort as string;
+  const defaultCursor = { id: "asc" };
   const querySplit = sortQuery ? sortQuery.split(":") : ["default", "asc"];
   const key: string = querySplit[0];
   const order = querySplit[1] as Prisma.SortOrder;
   const sortDict: { [key: string]: any } = {
     default: { id: order },
-    name: [{ name: order }],
-    location: [{ location: order }],
+    name: [{ name: order }, defaultCursor],
+    location: [{ location: order }, defaultCursor],
   };
 
   const ownerId = query.ownerid;
@@ -94,7 +95,6 @@ const getEvents = async (req: Request) => {
     includeDict["attendees"] = true;
   }
 
-
   return prisma.event.findMany({
     where: {
       AND: [whereDict],
@@ -102,9 +102,9 @@ const getEvents = async (req: Request) => {
     include: includeDict,
     orderBy: sortDict[key],
     take: query.limit ? parseInt(query.limit as string) : 10,
-    // cursor: {
-    //   id: query.after ? (query.after as string) : undefined,
-    // },
+    cursor: {
+      id: query.after ? (query.after as string) : "",
+    },
   });
 };
 /**
