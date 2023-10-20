@@ -7,12 +7,12 @@ import MenuItem from "@mui/material/MenuItem";
 import Select, { SelectChangeEvent } from "@mui/material/Select";
 import Table from "@/components/molecules/Table";
 import { GridColDef } from "@mui/x-data-grid";
-import Chip from "@/components/atoms/Chip";
 import HourglassEmptyIcon from "@mui/icons-material/HourglassEmpty";
 import IconText from "../atoms/IconText";
 import LinearProgress from "@mui/material/LinearProgress";
 import Link from "next/link";
 import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
+import { IconButton } from "@mui/material";
 
 interface ManageUserProfileProps {
   userid: string;
@@ -141,17 +141,26 @@ const ManageUserProfile = ({ userid }: ManageUserProfileProps) => {
   ];
   return (
     <>
-      <Link href="/" className="no-underline">
-        <div className="flex items-center">
-          <ArrowBackIosNewIcon className="text-gray-400" />
-          <div className="pl-2 text-3xl font-bold text-black">
-            Member Profile
-          </div>
-        </div>
-      </Link>
+      <IconText
+        icon={
+          <Link href="/events/view" className="no-underline">
+            <IconButton>
+              <ArrowBackIosNewIcon className="text-gray-400" />
+            </IconButton>
+          </Link>
+        }
+      >
+        <div className="pl-2 text-3xl font-bold text-black">Member Profile</div>
+      </IconText>
+      <div className="pt-5 pb-5">
+        <UserProfile
+          name="Julia Papp"
+          role="Volunteer"
+          email="jpapp@gmail.com"
+          joinDate={new Date()}
+        />
+      </div>
 
-      <UserProfile userid={userid} />
-      <div></div>
       <TabContainer tabs={tabs} />
     </>
   );
