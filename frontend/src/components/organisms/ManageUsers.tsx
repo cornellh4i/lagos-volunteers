@@ -6,10 +6,9 @@ import { GridColDef } from "@mui/x-data-grid";
 import AccountBoxIcon from "@mui/icons-material/AccountBox";
 import SearchBar from "@/components/atoms/SearchBar";
 import IconText from "../atoms/IconText";
+import Link from "next/link";
 
-interface ManageUsersProps {
-  eventid: string;
-}
+interface ManageUsersProps {}
 
 const Active = () => {
   const eventColumns: GridColDef[] = [
@@ -72,9 +71,11 @@ const Active = () => {
             justifyContent: "flex-end",
           }}
         >
-          <Button color="gray">
-            <IconText icon={<AccountBoxIcon />}>View Profile</IconText>
-          </Button>
+          <Link href="/users/asdf/manage" className="no-underline">
+            <Button color="gray">
+              <IconText icon={<AccountBoxIcon />}>View Profile</IconText>
+            </Button>
+          </Link>
         </div>
       ),
     },
