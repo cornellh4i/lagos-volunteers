@@ -24,19 +24,21 @@ const Home = () => {
   const fetchUserDetails = async () => {
     try {
       const url = BASE_URL as string;
-      const fetchUrl = `${url}/users/search/?email=asu284@cornell.edu`; // Note that this is bound to change based on a fix we are making to the backend
 
       // Get the user's token. Notice that auth is imported from firebase file
-      const userToken = await auth.currentUser?.getIdToken();
+      const userId = auth.currentUser?.uid;
+      const token = await auth.currentUser?.getIdToken();
+      const fetchUrl = `${url}/users/${userId}`;
+
       const response = await fetch(fetchUrl, {
         method: "GET",
         headers: {
-          Authorization: `Bearer ${userToken}`,
+          Authorization: `Bearer ${token}`,
         },
       });
       const data = await response.json();
-      console.log(data);
       setUserDetails(data);
+      console.log(data);
     } catch (error) {
       console.log(error);
     }
@@ -70,17 +72,9 @@ const Home = () => {
             <Button variant="contained" onClick={fetchUserDetails}>
               Get a user's details from Custom Backend
             </Button>
+
+            {/* <Button onClick={featureTest}>test</Button> */}
           </Stack>
-          <div>
-            {userDetails === null ? (
-              <p>Nothing yet!</p>
-            ) : (
-              <p>
-                Hi, this data was fetched from the backend. My name is{" "}
-                {userDetails["data"][0]["profile"]["firstName"]}
-              </p>
-            )}
-          </div>
         </Grid>
       </main>
     </>
