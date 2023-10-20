@@ -4,9 +4,11 @@ import TextField from "../atoms/TextField";
 import Checkbox from "../atoms/Checkbox";
 import { auth } from "@/utils/firebase";
 import { useForm, SubmitHandler } from "react-hook-form";
-import { useAuth } from "@/utils/AuthContext";
 import { useRouter } from "next/router";
 import { BASE_URL } from "@/utils/constants";
+import { useUpdatePassword } from "react-firebase-hooks/auth";
+import Alert from "../atoms/Alert";
+import { reauthenticateWithCredential, EmailAuthProvider } from "firebase/auth";
 
 type FormValues = {
   email: string;
@@ -39,8 +41,55 @@ interface ProfileFormProps {
 
 const ProfileForm = ({ userDetails }: ProfileFormProps) => {
   const router = useRouter();
+  const [updatePassword, updating, error] = useUpdatePassword(auth);
+  const [success, setSuccess] = React.useState<boolean>(false);
+  const [isLoading, setIsLoading] = React.useState<boolean>(false);
+  const [errorMessage, setErrorMessage] = React.useState<string>("");
 
-  // Future testing: What if user doesn't have a nickname, does the code break?
+  const handleErrors = (errors: any) => {
+    const errorParsed = errors?.split("/")[1].slice(0, -2);
+    switch (errorParsed) {
+      case "invalid-email":
+        return "Invalid email address format.";
+      case "user-disabled":
+        return "User with this email has been disabled.";
+      case "user-not-found":
+        return "There is no user with this email address.";
+      case "wrong-password":
+        return "Old password is incorrect.";
+      case "weak-password":
+        return "Password must be at least 6 characters.";
+      case "invalid-password":
+        return "Invalid password.";
+      case "requires-recent-login":
+        return "Please reauthenticate to change your password.";
+      case "too-many-requests":
+        return "You have made too many requests to change your password. Please try again later.";
+      default:
+        return "Something went wrong.";
+    }
+  };
+
+  const ProfileErrorComponent = (): JSX.Element | null => {
+    return error ? (
+      <Alert severity="error">Error: {handleErrors(error?.message)}</Alert>
+    ) : null;
+  };
+
+  const ProfileReauthenticationErrorComponent = (): JSX.Element | null => {
+    return errorMessage.length > 0 ? (
+      <Alert severity="error">Error: {handleErrors(errorMessage)}</Alert>
+    ) : null;
+  };
+
+  const ProfileSuccessComponent = (): JSX.Element | null => {
+    return !error && !(errorMessage.length > 0) && success ? (
+      <Alert severity="success">
+        Success: Profile update was successful. Please refresh the page to see
+        your changes!
+      </Alert>
+    ) : null;
+  };
 
   const {
     register,
@@ -61,14 +110,31 @@ const ProfileForm = ({ userDetails }: ProfileFormProps) => {
     },
   });
 
+  // Handle checkbox
+  const [checked, setChecked] = useState(false);
+  const handleCheckbox = () => {
+    setChecked((checked) => !checked);
+  };
+
   const handleChanges: SubmitHandler<FormValues> = async (data) => {
-    const { email, firstName, lastName, preferredName } = data;
+    const {
+      email,
+      firstName,
+      lastName,
+      preferredName,
+      oldPassword,
+      newPassword,
+      confirmNewPassword,
+    } = data;
 
     try {
+      setIsLoading(true);
+      // Update profile in DB
       const url = BASE_URL as string;
       const userid = userDetails.id;
       const fetchUrl = `${url}/users/` + userid + `/profile`;
-      const userToken = await auth.currentUser?.getIdToken();
+      const currentUser = auth.currentUser;
+      const userToken = await currentUser?.getIdToken();
       const body = {
         firstName: firstName,
         lastName: lastName,
@@ -83,15 +149,37 @@ const ProfileForm = ({ userDetails }: ProfileFormProps) => {
         body: JSON.stringify(body),
       });
       const data = await response.json();
-      // Refresh page to see changes.
-      router.reload();
+
+      // Update password in Firebase
+      if (newPassword !== "" && currentUser != null) {
+        // first re-authenticate the user to check if the old password is correct
+
+        const credentials = EmailAuthProvider.credential(email, oldPassword);
+        reauthenticateWithCredential(currentUser, credentials)
+          .then(() => {
+            updatePassword(newPassword).then(() => {
+              setSuccess(true);
+              setIsLoading(false);
+            });
+          })
+          .catch((error) => {
+            setErrorMessage(error.message);
+            setIsLoading(false);
+          });
+      }
+      setErrorMessage("");
+      setIsLoading(false);
     } catch (error) {
+      setIsLoading(false);
       console.log(error);
     }
   };
 
   return (
     <form onSubmit={handleSubmit(handleChanges)} className="space-y-4">
+      <ProfileErrorComponent />
+      <ProfileSuccessComponent />
+      <ProfileReauthenticationErrorComponent />
       <div>
         <TextField
           label="Email *"
@@ -122,8 +210,8 @@ const ProfileForm = ({ userDetails }: ProfileFormProps) => {
       </div>
       <div>
         <TextField
-          label="Preferred name *"
-          required={true}
+          label="Preferred name"
+          required={false}
           name="preferredName"
           register={register}
           requiredMessage={errors.preferredName ? "Required" : undefined}
@@ -163,11 +251,20 @@ const ProfileForm = ({ userDetails }: ProfileFormProps) => {
         />
       </div>
       <div>
-        <Checkbox label="Email notifications" />
+        <Checkbox
+          checked={checked}
+          onChange={handleCheckbox}
+          label="Email notifications"
+        />
       </div>
       <div className="sm:space-x-4 grid grid-cols-1 sm:grid-cols-2">
         <div className="pb-4 sm:pb-0">
-          <Button type="submit" color="gray">
+          <Button
+            isLoading={isLoading}
+            disabled={isLoading}
+            type="submit"
+            color="gray"
+          >
             Save Changes
           </Button>
         </div>

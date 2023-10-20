@@ -29,15 +29,15 @@ export const theme = createTheme({
 
 const App = ({ Component, pageProps }: AppProps) => {
   return (
-    <StyledEngineProvider injectFirst>
-      <ThemeProvider theme={theme}>
-        <AuthProvider>
+    <AuthProvider>
+      <StyledEngineProvider injectFirst>
+        <ThemeProvider theme={theme}>
           <Layout>
             <Component {...pageProps} />
           </Layout>
-        </AuthProvider>
-      </ThemeProvider>
-    </StyledEngineProvider>
+        </ThemeProvider>
+      </StyledEngineProvider>
+    </AuthProvider>
   );
 };
 

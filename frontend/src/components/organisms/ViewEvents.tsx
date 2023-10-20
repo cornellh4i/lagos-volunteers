@@ -17,27 +17,47 @@ const UpcomingEvents = () => {
     <CardList>
       <EventCard
         eventid={"000"}
-        mainAction={"rsvp"}
-        dropdownActions={["cancel rsvp"]}
-        title={"snehar"}
-        location={"jameson"}
-        datetime={"today lol"}
+        mainAction={"cancel rsvp"}
+        title={"EDUFOOD"}
+        location={"WAREHOUSE B"}
+        datetime={"02/15/2023, 9:00-11:00 AM"}
       />
       <EventCard
         eventid={"000"}
-        mainAction={"rsvp"}
-        dropdownActions={["cancel rsvp"]}
-        title={"snehar"}
-        location={"jameson"}
-        datetime={"today lol"}
+        mainAction={"cancel rsvp"}
+        title={"Malta Outreach"}
+        location={"Plot 2, Lagos Food Bank Building"}
+        datetime={"02/16/2023, 9:00-11:00 AM"}
       />
       <EventCard
         eventid={"000"}
-        mainAction={"rsvp"}
+        mainAction={"cancel rsvp"}
         dropdownActions={["cancel rsvp"]}
-        title={"snehar"}
-        location={"jameson"}
-        datetime={"today lol"}
+        title={"NUMEPLAN"}
+        location={"Plot 2, Lagos Food Bank Building"}
+        datetime={"02/19/2023, 9:00-11:00 AM"}
+      />
+      <EventCard
+        eventid={"000"}
+        mainAction={"cancel rsvp"}
+        title={"EDUFOOD"}
+        location={"WAREHOUSE B"}
+        datetime={"02/15/2023, 9:00-11:00 AM"}
+      />
+      <EventCard
+        eventid={"000"}
+        mainAction={"cancel rsvp"}
+        title={"Malta Outreach"}
+        location={"Plot 2, Lagos Food Bank Building"}
+        datetime={"02/16/2023, 9:00-11:00 AM"}
+      />
+      <EventCard
+        eventid={"000"}
+        mainAction={"cancel rsvp"}
+        dropdownActions={["cancel rsvp"]}
+        title={"NUMEPLAN"}
+        location={"Plot 2, Lagos Food Bank Building"}
+        datetime={"02/19/2023, 9:00-11:00 AM"}
       />
     </CardList>
   );

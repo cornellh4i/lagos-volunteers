@@ -1,8 +1,8 @@
-import React from "react";
+import React, { ReactElement, ReactNode } from "react";
 
 interface IconTextProps {
-  icon: React.ReactElement;
-  children: React.ReactElement;
+  icon: ReactElement;
+  children: ReactNode;
 }
 
 /**
@@ -10,12 +10,10 @@ interface IconTextProps {
  */
 const IconText = ({ icon, children }: IconTextProps) => {
   return (
-    <>
-      <div className="flex">
-        <div className="flex items-center pr-1">{icon}</div>
-        <div className="flex items-center">{children}</div>
-      </div>
-    </>
+    <div className="flex">
+      <div className="pr-1">{icon}</div>
+      <div className="truncate">{children}</div>
+    </div>
   );
 };
 
