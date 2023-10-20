@@ -5,11 +5,11 @@ import Button from "../atoms/Button";
 import { GridColDef } from "@mui/x-data-grid";
 import AccountBoxIcon from "@mui/icons-material/AccountBox";
 import SearchBar from "@/components/atoms/SearchBar";
-// ADD MINWIDTH
-interface ManageUsersProps {}
-/**
- * A ManageUsers component
- */
+import IconText from "../atoms/IconText";
+
+interface ManageUsersProps {
+  eventid: string;
+}
 
 const Active = () => {
   const eventColumns: GridColDef[] = [
@@ -63,7 +63,7 @@ const Active = () => {
       headerName: "",
       field: "actions",
       flex: 0.6,
-      minWidth: 120,
+      minWidth: 180,
       renderCell: () => (
         <div
           style={{
@@ -72,7 +72,9 @@ const Active = () => {
             justifyContent: "flex-end",
           }}
         >
-          <Button color="gray">View Profile</Button>
+          <Button color="gray">
+            <IconText icon={<AccountBoxIcon />}>View Profile</IconText>
+          </Button>
         </div>
       ),
     },
@@ -213,11 +215,14 @@ const Active = () => {
 
   return (
     <div>
-      <Table columns={eventColumns} rows={dummyRows} boldHeader={true} />
+      <Table columns={eventColumns} rows={dummyRows} />
     </div>
   );
 };
 
+/**
+ * A ManageUsers component
+ */
 const ManageUsers = ({}: ManageUsersProps) => {
   const tabs = [
     { label: "Active", panel: <Active /> },
@@ -226,7 +231,9 @@ const ManageUsers = ({}: ManageUsersProps) => {
   return (
     <>
       <div className="font-semibold text-3xl">Manage Members</div>
-      <br></br> {/* add search bar */}
+      <div className="pt-5 pb-5">
+        <SearchBar value="asdf" />
+      </div>
       <div>
         <TabContainer tabs={tabs} />
       </div>
