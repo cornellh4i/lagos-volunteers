@@ -31,11 +31,12 @@ const Status = () => {
   return (
     <div className="space-y-2">
       <div>Assign Role</div>
-      <FormControl className="w-full md:w-1/2">
+      <FormControl className="w-full sm:w-1/2">
         <Select
           value={role}
           onChange={handleChange}
           displayEmpty
+          size="small"
           className="text-lg"
         >
           <MenuItem value="Volunteer">Volunteer</MenuItem>
@@ -45,7 +46,7 @@ const Status = () => {
       </FormControl>
 
       <div className="pt-2">Blacklist</div>
-      <div className="w-full md:w-1/4">
+      <div className="w-full sm:w-1/4">
         <Button color="dark-gray">Blacklist member</Button>
       </div>
     </div>
@@ -126,7 +127,7 @@ const VerifyCertificate = () => {
         </div>
       </div>
 
-      <div className="w-full md:w-1/2">
+      <div className="w-full sm:w-1/2">
         <Button color="dark-gray">Verify Certificate Request</Button>
       </div>
     </div>
