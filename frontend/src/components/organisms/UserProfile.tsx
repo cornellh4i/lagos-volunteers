@@ -1,5 +1,4 @@
 import React from "react";
-import { useState } from "react";
 import IconText from "../atoms/IconText";
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import PersonIcon from "@mui/icons-material/Person";
@@ -11,42 +10,57 @@ export const FALLBACK_AVATAR_URL =
 export const FALLBACK_AVATOR_ALT = "avatar";
 
 interface UserProfileProps {
-  userid: string;
+  name: string;
+  role: string;
+  email: string;
+  joinDate: Date;
+  img_src?: string;
 }
 
 /**
  * A UserProfile component
  */
-const UserProfile = ({ userid }: UserProfileProps) => {
-  const [avatarSrc, setAvatarSrc] = useState(FALLBACK_AVATAR_URL);
+const UserProfile = ({
+  name,
+  role,
+  email,
+  joinDate,
+  img_src,
+}: UserProfileProps) => {
+  // Format date properly
+  const dateString = joinDate.toLocaleString("en-NG", {
+    year: "numeric",
+    month: "numeric",
+    day: "numeric",
+  });
+
+  // Set avatar
+  const avatar = img_src ? img_src : FALLBACK_AVATAR_URL;
+
   return (
-    <>
-      <div className="flex">
-        <div className="flex items-center">
-          <img
-            src={avatarSrc}
-            alt={FALLBACK_AVATOR_ALT}
-            className="rounded-full w-24 h-24"
-            onError={() => setAvatarSrc(FALLBACK_AVATAR_URL)}
-          />
-        </div>
-        <div className="flex items-center pl-4">
-          <div className="space-y-1">
-            <div className="text-2xl font-bold" >Julia Papp</div>
-            <IconText icon={<PersonIcon className="text-gray-400" />}>
-                <div>Volunteer</div>
-            </IconText>
-            <IconText icon={<EmailIcon className="text-gray-400" />}>
-                <div>jpapp@gmail.com</div>
-            </IconText>
-            <IconText icon={<CalendarMonthIcon className="text-gray-400" />}>
-                <div>Joined 5/1/2023</div>
-            </IconText>
-          </div>
-        </div>
-        
+    <div className="flex">
+      <div className="flex items-center">
+        <img
+          src={avatar}
+          alt={FALLBACK_AVATOR_ALT}
+          className="rounded-full w-24 h-24"
+        />
       </div>
-    </>
+      <div className="flex items-center pl-4">
+        <div className="space-y-1">
+          <div className="text-2xl font-bold">{name}</div>
+          <IconText icon={<PersonIcon className="text-gray-400" />}>
+            {role}
+          </IconText>
+          <IconText icon={<EmailIcon className="text-gray-400" />}>
+            {email}
+          </IconText>
+          <IconText icon={<CalendarMonthIcon className="text-gray-400" />}>
+            Joined {dateString}
+          </IconText>
+        </div>
+      </div>
+    </div>
   );
 };
 
