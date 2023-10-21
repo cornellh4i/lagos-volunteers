@@ -1,4 +1,4 @@
-import React from "react";
+import React, { ChangeEvent, FormEvent } from "react";
 import Table from "@/components/molecules/Table";
 import TabContainer from "@/components/molecules/TabContainer";
 import Button from "../atoms/Button";
@@ -229,11 +229,30 @@ const ManageUsers = ({}: ManageUsersProps) => {
     { label: "Active", panel: <Active /> },
     { label: "Blacklisted", panel: <Active /> }, // need to change panel for Blacklisted
   ];
+
+  // Search bar
+  const [value, setValue] = React.useState("");
+  const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
+    setValue(event.target.value);
+  };
+  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+    // Prevent page refresh
+    event.preventDefault();
+
+    // Actual function
+    console.log(value);
+  };
+
   return (
     <>
       <div className="font-semibold text-3xl">Manage Members</div>
-      <div className="pt-5 pb-5">
-        <SearchBar value="asdf" />
+      <div className="pt-5 pb-5 w-full sm:w-[600px]">
+        <SearchBar
+          placeholder="Search member by name, email"
+          value={value}
+          onChange={handleChange}
+          onClick={handleSubmit}
+        />
       </div>
       <div>
         <TabContainer tabs={tabs} />
