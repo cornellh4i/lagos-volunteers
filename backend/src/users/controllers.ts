@@ -5,7 +5,6 @@ import admin from "firebase-admin";
 // We are using one connection to prisma client to prevent multiple connections
 import prisma from "../../client";
 import { setVolunteerCustomClaims } from "../middleware/auth";
-import { SortOrder } from "mongoose";
 
 /**
  * Creates a new user
