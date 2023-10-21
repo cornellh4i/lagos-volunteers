@@ -144,7 +144,7 @@ const ManageUserProfile = ({ userid }: ManageUserProfileProps) => {
     <>
       <IconText
         icon={
-          <Link href="/events/view" className="no-underline">
+          <Link href="/users/view" className="no-underline">
             <IconButton>
               <ArrowBackIosNewIcon className="text-gray-400" />
             </IconButton>
