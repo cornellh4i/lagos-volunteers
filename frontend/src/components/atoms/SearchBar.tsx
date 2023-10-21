@@ -19,27 +19,24 @@ const SearchBar = ({
   onClick,
 }: SearchBarProps) => {
   return (
-    <>
-      <Box component="form" onClick={onClick}>
-        <TextField
-          onClick={onClick}
-          placeholder={placeholder}
-          value={value}
-          onChange={onChange}
-          size="small"
-          fullWidth={true}
-          InputProps={{
-            endAdornment: (
-              <InputAdornment position="end">
-                <IconButton type="submit" aria-label="search" edge="end">
-                  <SearchIcon />
-                </IconButton>
-              </InputAdornment>
-            ),
-          }}
-        />
-      </Box>
-    </>
+    <Box component="form" onClick={onClick}>
+      <TextField
+        placeholder={placeholder}
+        value={value}
+        onChange={onChange}
+        size="small"
+        fullWidth={true}
+        InputProps={{
+          endAdornment: (
+            <InputAdornment position="end">
+              <IconButton type="submit" aria-label="search" edge="end">
+                <SearchIcon />
+              </IconButton>
+            </InputAdornment>
+          ),
+        }}
+      />
+    </Box>
   );
 };
 
