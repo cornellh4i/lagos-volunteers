@@ -1,7 +1,6 @@
 import React, { ChangeEvent, FormEvent } from "react";
-import IconButton from "@mui/material/IconButton";
+import { Box, TextField, InputAdornment, IconButton } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
-import { Paper, InputBase, InputAdornment } from "@mui/material";
 
 interface SearchBarProps {
   placeholder: string;
@@ -21,26 +20,25 @@ const SearchBar = ({
 }: SearchBarProps) => {
   return (
     <>
-      <Paper
-        component="form"
-        onClick={onClick}
-        variant="outlined"
-        sx={{ display: "flex", alignItems: "center" }}
-      >
-        <InputBase
-          sx={{ ml: 1, p: 0.5, flex: 1 }}
+      <Box component="form" onClick={onClick}>
+        <TextField
+          onClick={onClick}
           placeholder={placeholder}
           value={value}
           onChange={onChange}
-          endAdornment={
-            <InputAdornment position="end">
-              <IconButton type="submit" aria-label="search">
-                <SearchIcon />
-              </IconButton>
-            </InputAdornment>
-          }
+          size="small"
+          fullWidth={true}
+          InputProps={{
+            endAdornment: (
+              <InputAdornment position="end">
+                <IconButton type="submit" aria-label="search" edge="end">
+                  <SearchIcon />
+                </IconButton>
+              </InputAdornment>
+            ),
+          }}
         />
-      </Paper>
+      </Box>
     </>
   );
 };
