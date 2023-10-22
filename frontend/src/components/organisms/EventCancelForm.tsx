@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import EventDetails from "./EventDetails";
 import Button from "../atoms/Button";
 import Modal from "@/components/molecules/Modal";
@@ -10,6 +10,9 @@ import MultilineTextField from "../atoms/MultilineTextField";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { Typography, Grid } from "@mui/material";
 import { useRouter } from "next/router";
+import { BASE_URL } from "@/utils/constants";
+import { auth } from "@/utils/firebase";
+import { useAuth } from "@/utils/AuthContext";
 
 type eventData = {
   eventid: string;
@@ -28,6 +31,7 @@ interface EventCancelFormProps {
 type FormValues = {
   cancelReason: string;
 };
+const url = BASE_URL as string;
 
 /**
  * A confirmation modal body
@@ -40,9 +44,67 @@ const ModalBody = ({
   handleClose: () => void;
 }) => {
   const router = useRouter();
-  const cancel = () => {
-    router.replace(`/events/${eventid}/confirm/cancel`);
+  // required to ensure the user is signed in
+  const { user } = useAuth();
+  // We query the userID based on the user email
+  // Because of the Prisma-Fire Base Konfusion
+  const fetchUserDetails = async () => {
+    try {
+      const fetchUrl = `${url}/users/search/?email=${user?.email}`;
+      const userToken = await auth.currentUser?.getIdToken();
+      const response = await fetch(fetchUrl, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${userToken}`,
+        },
+      });
+
+      // Response Management
+      if (response.ok) {
+        const data = await response.json();
+        // data is an array of one so we just access that element
+        return data["data"][0]["id"];
+      } else {
+        console.error("User Retrieval failed with status:", response.status);
+      }
+    } catch (error) {
+      console.log("Error in User Info Retrieval.");
+      console.log(error);
+    }
   };
+  const cancel = async () => {
+    console.log("Calling User Fetch");
+    const attendeeid = await fetchUserDetails();
+    console.log("After User Fetch");
+    console.log("FETCHED_USER");
+    console.log(attendeeid);
+
+    const userToken = await auth.currentUser?.getIdToken();
+    const fetchUrl = `${url}/events/` + eventid + `/attendees/` + attendeeid;
+    console.log("FETCHED_URL");
+    console.log(fetchUrl);
+    try {
+      const response = await fetch(fetchUrl, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${userToken}`,
+        },
+      });
+      // Response Management
+      if (response.ok) {
+        console.log("Successfully Removed Attendee from Event.");
+        console.log(response);
+      } else {
+        console.error("Unable to Remove Attendee from Event", response.status);
+      }
+    } catch (error) {
+      console.error("Network error:", error);
+    }
+
+    router.replace(`/events/${eventid}/cancel`);
+    window.location.reload();
+  };
+
   return (
     <div>
       <Typography align="center" sx={{ paddingBottom: 2 }}>

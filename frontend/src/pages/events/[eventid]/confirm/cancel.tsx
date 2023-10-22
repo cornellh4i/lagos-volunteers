@@ -92,13 +92,15 @@ const EventConfirmationPage = () => {
   }, []);
 
   return (
-    <CenteredTemplate>
-      {eventDetails ? (
-        <EventConfirmation eventDetails={eventDetails} confirmation="cancel" /> //confirmation is hard-coded
-      ) : (
-        <div>Getting your data...</div>
-      )}
-    </CenteredTemplate>
+    <div>IGNORE</div>
+
+    // <CenteredTemplate>
+    //   {eventDetails ? (
+    //     <EventConfirmation eventDetails={eventDetails} confirmation="cancel" /> //confirmation is hard-coded
+    //   ) : (
+    //     <div>Getting your data...</div>
+    //   )}
+    // </CenteredTemplate>
   );
 };
 

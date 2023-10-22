@@ -2,8 +2,10 @@ import React, { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import CenteredTemplate from "@/components/templates/CenteredTemplate";
 import EventRegisterForm from "@/components/organisms/EventRegisterForm";
+import EventConfirmation from "@/components/organisms/EventConfirmation";
 import { BASE_URL } from "@/utils/constants";
 import { auth } from "@/utils/firebase";
+import { useAuth } from "@/utils/AuthContext";
 
 type eventData = {
   eventid: string;
@@ -48,11 +50,40 @@ const EventRegistration = () => {
   const [eventDetails, setEventDetails] = useState<
     eventData | null | undefined
   >(null);
+  const [attendees, setAttendees] = useState<any[]>([]);
+
+  const { user } = useAuth();
+  const url = BASE_URL as string;
+
+  const fetchUserDetails = async () => {
+    try {
+      const fetchUrl = `${url}/users/search/?email=${user?.email}`;
+      const userToken = await auth.currentUser?.getIdToken();
+      const response = await fetch(fetchUrl, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${userToken}`,
+        },
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        return data["data"][0]["id"];
+      } else {
+        console.error("User Retrieval failed with status:", response.status);
+      }
+    } catch (error) {
+      console.log("Error in User Info Retrieval.");
+      console.log(error);
+    }
+  };
+
   const fetchEventDetails = async () => {
     try {
-      const url = BASE_URL as string;
-      const fetchUrl = `${url}/events/${eventid}`;
+      const userId = await fetchUserDetails();
+      const fetchUrl = `${url}/events/${eventid}/?userId=${userId} & status=${"true"}`;
       const userToken = await auth.currentUser?.getIdToken();
+
       console.log(userToken);
 
       const response = await fetch(fetchUrl, {
@@ -81,6 +112,9 @@ const EventRegistration = () => {
           image_src: data["data"]["imageURL"],
           tags: data["data"]["tags"],
         });
+
+        setAttendees(data["data"]["attendees"]);
+        console.log("register " + data["data"]["attendees"].length);
       }
     } catch (error) {
       console.log(error);
@@ -91,10 +125,22 @@ const EventRegistration = () => {
     fetchEventDetails();
   }, []);
 
+  const isAttendeeListEmpty = attendees.length === 0;
+
   return (
+    // if attendees empty -> default to register (React)
+    // if attendees has 1 entry (status always be true) -> show confirm (React)
+
     <CenteredTemplate>
       {eventDetails ? (
-        <EventRegisterForm eventDetails={eventDetails} />
+        isAttendeeListEmpty ? (
+          <EventRegisterForm eventDetails={eventDetails} />
+        ) : (
+          <EventConfirmation
+            eventDetails={eventDetails}
+            confirmation="register"
+          />
+        )
       ) : (
         <div>Getting your data...</div>
       )}

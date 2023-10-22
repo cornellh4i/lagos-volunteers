@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import EventDetails from "./EventDetails";
 import IconText from "../atoms/IconText";
 import CustomCheckbox from "../atoms/Checkbox";
@@ -8,6 +8,9 @@ import Link from "next/link";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { Grid } from "@mui/material";
 import { useRouter } from "next/router";
+import { auth } from "@/utils/firebase";
+import { useAuth } from "@/utils/AuthContext";
+import { BASE_URL } from "@/utils/constants";
 
 type eventData = {
   eventid: string;
@@ -23,6 +26,8 @@ interface EventRegisterFormProps {
   eventDetails: eventData;
 }
 
+const url = BASE_URL as string;
+
 /**
  * A confirmation modal body
  */
@@ -34,9 +39,75 @@ const ModalBody = ({
   handleClose: () => void;
 }) => {
   const router = useRouter();
-  const register = () => {
-    router.replace(`/events/${eventid}/confirm/register`);
+  // required to ensure the user is signed in
+  const { user } = useAuth();
+  // We query the userID based on the user email
+  // Because of the Prisma-Fire Base Konfusion
+  const fetchUserDetails = async () => {
+    try {
+      const fetchUrl = `${url}/users/search/?email=${user?.email}`;
+      const userToken = await auth.currentUser?.getIdToken();
+      const response = await fetch(fetchUrl, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${userToken}`,
+        },
+      });
+
+      // Response Management
+      if (response.ok) {
+        const data = await response.json();
+        // data is an array of one so we just access that element
+        return data["data"][0]["id"];
+      } else {
+        console.error("User Retrieval failed with status:", response.status);
+      }
+    } catch (error) {
+      console.log("Error in User Info Retrieval.");
+      console.log(error);
+    }
   };
+
+  const register = async () => {
+    console.log("Calling User Fetch");
+    const attendeeid = await fetchUserDetails();
+    console.log("After User Fetch");
+    console.log("FETCHED_USER");
+    console.log(attendeeid);
+
+    const userToken = await auth.currentUser?.getIdToken();
+    const fetchUrl = `${url}/events/` + eventid + `/attendees`;
+    console.log("FETCHED_URL");
+    console.log(fetchUrl);
+    try {
+      const body = { attendeeid: attendeeid };
+      const response = await fetch(fetchUrl, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${userToken}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(body),
+      });
+      // Response Management
+      if (response.ok) {
+        console.log("Successfully Registered Attendee to Event.");
+        console.log(response);
+        const data = await response.json();
+      } else {
+        console.error(
+          "Unable to Register Attendee from Event",
+          response.status
+        );
+      }
+    } catch (error) {
+      console.error("Network error:", error);
+    }
+
+    router.replace(`/events/${eventid}/register`);
+    window.location.reload(); // are there other ways to do this
+  };
+
   return (
     <div>
       <h2>Terms and Conditions</h2>

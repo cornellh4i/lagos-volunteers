@@ -69,7 +69,10 @@ eventRouter.get("/past", async (req: Request, res: Response) => {
 
 eventRouter.get("/:eventid", async (req: Request, res: Response) => {
   // #swagger.tags = ['Events']
-  attempt(res, 200, () => eventController.getEvent(req.params.eventid));
+  const userId = req.query.userId as string;
+  const status = req.query.status as string;
+
+  attempt(res, 200, () => eventController.getEvent(req.params.eventid, userId, status));
 });
 
 eventRouter.get("/:eventid/attendees", async (req: Request, res: Response) => {

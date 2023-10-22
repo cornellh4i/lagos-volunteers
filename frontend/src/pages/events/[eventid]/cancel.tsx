@@ -2,8 +2,10 @@ import React, { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import CenteredTemplate from "@/components/templates/CenteredTemplate";
 import EventCancelForm from "@/components/organisms/EventCancelForm";
+import EventConfirmation from "@/components/organisms/EventConfirmation";
 import { BASE_URL } from "@/utils/constants";
 import { auth } from "@/utils/firebase";
+import { useAuth } from "@/utils/AuthContext";
 
 type eventData = {
   eventid: string;
@@ -45,15 +47,46 @@ function formatUTCTime(date: Date) {
 const EventCancellation = () => {
   const router = useRouter();
   const { eventid } = router.query;
-
   const [eventDetails, setEventDetails] = useState<
     eventData | null | undefined
   >(null);
+  const [attendees, setAttendees] = useState<any[]>([]);
+  const [attendeeCanceled, setAttendeeCanceled] = useState<boolean>(false);
+
+  const { user } = useAuth();
+  const url = BASE_URL as string;
+
+  const fetchUserDetails = async () => {
+    try {
+      const fetchUrl = `${url}/users/search/?email=${user?.email}`;
+      const userToken = await auth.currentUser?.getIdToken();
+      const response = await fetch(fetchUrl, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${userToken}`,
+        },
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        return data["data"][0]["id"];
+      } else {
+        console.error("User Retrieval failed with status:", response.status);
+      }
+    } catch (error) {
+      console.log("Error in User Info Retrieval.");
+      console.log(error);
+    }
+  };
+
   const fetchEventDetails = async () => {
     try {
       const url = BASE_URL as string;
-      const fetchUrl = `${url}/events/${eventid}`;
+      const userId = await fetchUserDetails();
+      const fetchUrl = `${url}/events/${eventid}/?userId=${userId} & status=${"true"}`;
       const userToken = await auth.currentUser?.getIdToken();
+
+      console.log(userToken);
 
       const response = await fetch(fetchUrl, {
         method: "GET",
@@ -81,6 +114,12 @@ const EventCancellation = () => {
           image_src: data["data"]["imageURL"],
           tags: data["data"]["tags"],
         });
+
+        setAttendees(data["data"]["attendees"]);
+
+        if (data["data"]["attendees"].length > 0) {
+          setAttendeeCanceled(data["data"]["attendees"][0]["canceled"]);
+        }
       }
     } catch (error) {
       console.log(error);
@@ -89,28 +128,31 @@ const EventCancellation = () => {
 
   useEffect(() => {
     fetchEventDetails();
-  }, []);
+
+    console.log(attendees);
+    router.replace(`/events/${eventid}/register`);
+  }, [attendees]);
+
+  // if attendees empty -> route to register form (route)
+  // if attendees has 1 entry (status always be true) -> check if canceled of attendeeid is true or false
+  // if true -> show confirm, cancel (return React components)
+  // if false -> show canceled form (return React components)
 
   return (
     <CenteredTemplate>
       {eventDetails ? (
-        <EventCancelForm eventDetails={eventDetails} />
+        attendeeCanceled ? (
+          <EventConfirmation
+            eventDetails={eventDetails}
+            confirmation="cancel"
+          />
+        ) : (
+          <EventCancelForm eventDetails={eventDetails} />
+        )
       ) : (
         <div>Getting your data...</div>
       )}
     </CenteredTemplate>
-
-    // <CenteredTemplate>
-    //   <EventCancelForm
-    //     eventid={eventid as string}
-    //     location="Address, Building Name"
-    //     datetime="02/15/2023, 9:00AM-11:00AM"
-    //     supervisors={["Jane Doe", "Jess Lee"]}
-    //     capacity={20}
-    //     image_src="https://i0.wp.com/roadmap-tech.com/wp-content/uploads/2019/04/placeholder-image.jpg?resize=800%2C800&ssl=1"
-    //     tags={["In-person", "EDUFOOD"]}
-    //   />
-    // </CenteredTemplate>
   );
 };
 
