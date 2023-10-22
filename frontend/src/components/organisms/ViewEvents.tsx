@@ -1,43 +1,81 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import BoxText from "@/components/atoms/BoxText";
 import Chip from "@/components/atoms/Chip";
 import TabContainer from "@/components/molecules/TabContainer";
-import next from "next/types";
 import EventCard from "@/components/organisms/EventCard";
 import CardList from "@/components/molecules/CardList";
-import { GridColDef, GridValueGetterParams } from "@mui/x-data-grid";
+import { GridColDef } from "@mui/x-data-grid";
 import Table from "@/components/molecules/Table";
 import Button from "../atoms/Button";
 import Link from "next/link";
+import { BASE_URL } from "@/utils/constants";
+import { useAuth } from "@/utils/AuthContext";
+import { auth } from "@/utils/firebase";
 
 type Action = "rsvp" | "cancel rsvp" | "publish" | "manage attendees" | "edit";
+
+type eventData = {
+  id: string;
+  name: string;
+  location: string;
+  status: Action;
+  datetime: string;
+};
+
+const [eventDetails, setEventDetails] = useState<eventData | null | undefined>(
+  null
+);
 
 const UpcomingEvents = () => {
   return (
     <CardList>
       <EventCard
         eventid={"000"}
-        mainAction={"rsvp"}
-        dropdownActions={["cancel rsvp"]}
-        title={"snehar"}
-        location={"jameson"}
-        datetime={"today lol"}
+        mainAction={"cancel rsvp"}
+        title={"EDUFOOD"}
+        location={"WAREHOUSE B"}
+        datetime={"02/15/2023, 9:00-11:00 AM"}
+        dropdownActions={[]}
       />
       <EventCard
         eventid={"000"}
-        mainAction={"rsvp"}
-        dropdownActions={["cancel rsvp"]}
-        title={"snehar"}
-        location={"jameson"}
-        datetime={"today lol"}
+        mainAction={"cancel rsvp"}
+        title={"Malta Outreach"}
+        location={"Plot 2, Lagos Food Bank Building"}
+        datetime={"02/16/2023, 9:00-11:00 AM"}
+        dropdownActions={[]}
       />
       <EventCard
         eventid={"000"}
-        mainAction={"rsvp"}
+        mainAction={"cancel rsvp"}
         dropdownActions={["cancel rsvp"]}
-        title={"snehar"}
-        location={"jameson"}
-        datetime={"today lol"}
+        title={"NUMEPLAN"}
+        location={"Plot 2, Lagos Food Bank Building"}
+        datetime={"02/19/2023, 9:00-11:00 AM"}
+      />
+      <EventCard
+        eventid={"000"}
+        mainAction={"cancel rsvp"}
+        title={"EDUFOOD"}
+        location={"WAREHOUSE B"}
+        datetime={"02/15/2023, 9:00-11:00 AM"}
+        dropdownActions={[]}
+      />
+      <EventCard
+        eventid={"000"}
+        mainAction={"cancel rsvp"}
+        title={"Malta Outreach"}
+        location={"Plot 2, Lagos Food Bank Building"}
+        datetime={"02/16/2023, 9:00-11:00 AM"}
+        dropdownActions={[]}
+      />
+      <EventCard
+        eventid={"000"}
+        mainAction={"cancel rsvp"}
+        dropdownActions={["cancel rsvp"]}
+        title={"NUMEPLAN"}
+        location={"Plot 2, Lagos Food Bank Building"}
+        datetime={"02/19/2023, 9:00-11:00 AM"}
       />
     </CardList>
   );
@@ -115,6 +153,58 @@ const PastEvents = () => {
  * A ViewEvents component is where a user can view and manage their events.
  */
 const ViewEvents = () => {
+  const { user } = useAuth();
+
+  const fetchUserDetails = async () => {
+    try {
+      const url = BASE_URL as string;
+      const fetchUrl = `${url}/users/search/?email=alice@hey.com`;
+      const userToken = await auth.currentUser?.getIdToken();
+      const response = await fetch(fetchUrl, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${userToken}`,
+        },
+      });
+      const data = await response.json();
+      return data[0]["id"];
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const fetchUserEvents = async () => {
+    try {
+      // Temporarily get the user ID
+
+      const url = BASE_URL as string;
+      const userToken = await auth.currentUser?.getIdToken();
+      const userId = await fetchUserDetails();
+      const fetchUrl = `${url}/users/${userId}/registered`;
+      const response = await fetch(fetchUrl, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${userToken}`,
+        },
+      });
+      const data = await response.json();
+      console.log(data);
+
+      setEventDetails({
+        name: data["data"][0]["name"],
+        status: data["data"][0]["status"],
+        id: data["data"][0]["id"],
+        location: data["data"][0]["location"],
+        datetime: data["data"][0]["profile"]["nickname"],
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    fetchUserEvents();
+  }, []);
   const tabs = [
     { label: "Upcoming Events", panel: <UpcomingEvents /> },
     { label: "Past Events", panel: <PastEvents /> },
