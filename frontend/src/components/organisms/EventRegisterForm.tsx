@@ -103,7 +103,7 @@ const ModalBody = ({
     }
 
     router.replace(`/events/${eventid}/register`);
-    window.location.reload(); // are there other ways to do this
+    window.location.reload(); // Call on reload to reroute page
   };
 
   return (
