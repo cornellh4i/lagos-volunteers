@@ -14,6 +14,7 @@ import FormControlLabel from "@mui/material/FormControlLabel";
 import FormControl from "@mui/material/FormControl";
 import LocationPicker from "../atoms/LocationPicker";
 import { Typography } from "@mui/material";
+import { getValueFromValueOptions } from "@mui/x-data-grid/components/panel/filterPanel/filterPanelUtils";
 
 interface EventFormProps {
   eventType: string; //create or edit
@@ -41,7 +42,24 @@ const EventForm = ({ eventType }: EventFormProps) => {
     formState: { errors },
   } = useForm<FormValues>();
 
+  // For deciding whether to show "In-person" or "Virtual"
+  const [status, setStatus] = React.useState(0); // 0: no show, 1: show yes.
+  const [getStartDate, setStartDate] = React.useState("");
+  const [getEndDate, setEndDate] = React.useState("");
+  // const startDateHandler = (startDate: strin) => {
+  //   console.log("set start date", startDate);
+  //   setStartDate(startDate);
+  // };
+  // const endDateHandler = (newValue: any) => {
+  //   setEndDate(newValue);
+  // };
+
+  const radioHandler = (status: number) => {
+    setStatus(status);
+  };
+
   const handleCreateEvent: SubmitHandler<FormValues> = async (data) => {
+    console.log(getStartDate);
     const {
       eventName,
       startDate,
@@ -54,19 +72,11 @@ const EventForm = ({ eventType }: EventFormProps) => {
       eventImage,
       rsvpLinkImage,
     } = data;
-    console.log(data);
-  };
 
-  // For deciding whether to show "In-person" or "Virtual"
-  const [status, setStatus] = React.useState(0); // 0: no show, 1: show yes.
-  const [location, setLocation] = React.useState("");
-
-  const locationHandler = (newValue: any) => {
-    setLocation(newValue.label);
-  }
-
-  const radioHandler = (status: number) => {
-    setStatus(status);
+    data.startDate = getStartDate;
+    data.endDate = getEndDate;
+    data.location = location;
+    console.log("register data", data);
   };
 
   return (
@@ -86,9 +96,15 @@ const EventForm = ({ eventType }: EventFormProps) => {
       </div>
       <div className="sm:space-x-4 grid grid-cols-1 sm:grid-cols-2">
         <div className="pb-4 sm:pb-0">
-          <DatePicker label="Start Date" />
+          <DatePicker
+            label="Start Date"
+            onChange={(e) => (e.$d != "Invalid Date" ? setStartDate(e.$d) : "")}
+          />
         </div>
-        <DatePicker label="End Date" />
+        <DatePicker
+          label="End Date"
+          onChange={(e) => (e.$d != "Invalid Date" ? setEndDate(e.$d) : "")}
+        />
       </div>
       <div className="sm:space-x-4 grid grid-cols-1 sm:grid-cols-2">
         <div className="pb-4 sm:pb-0">
@@ -120,7 +136,15 @@ const EventForm = ({ eventType }: EventFormProps) => {
             />
           </RadioGroup>
         </FormControl>
-        {status == 1 && <LocationPicker label="" onChange={locationHandler} />}
+        {status == 1 && (
+          <LocationPicker
+            label=""
+            required={status == 1}
+            name="location"
+            register={register}
+            requiredMessage={errors.eventName ? "Required" : undefined}
+          />
+        )}
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 col-span-2  sm:col-span-1">
         <TextField
