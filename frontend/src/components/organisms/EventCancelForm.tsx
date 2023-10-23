@@ -44,10 +44,8 @@ const ModalBody = ({
   handleClose: () => void;
 }) => {
   const router = useRouter();
-  // required to ensure the user is signed in
   const { user } = useAuth();
-  // We query the userID based on the user email
-  // Because of the Prisma-Fire Base Konfusion
+
   const fetchUserDetails = async () => {
     try {
       const fetchUrl = `${url}/users/search/?email=${user?.email}`;
@@ -62,7 +60,6 @@ const ModalBody = ({
       // Response Management
       if (response.ok) {
         const data = await response.json();
-        // data is an array of one so we just access that element
         return data["data"][0]["id"];
       } else {
         console.error("User Retrieval failed with status:", response.status);
@@ -102,7 +99,7 @@ const ModalBody = ({
     }
 
     router.replace(`/events/${eventid}/cancel`);
-    window.location.reload();
+    window.location.reload(); // Call on reload to reroute page
   };
 
   return (
@@ -149,7 +146,9 @@ const EventCancelForm = ({ eventDetails }: EventCancelFormProps) => {
       <Modal
         open={open}
         handleClose={handleClose}
-        children={<ModalBody eventid={eventDetails.eventid} handleClose={handleClose} />}
+        children={
+          <ModalBody eventid={eventDetails.eventid} handleClose={handleClose} />
+        }
       />
 
       <div className="justify-center center-items">

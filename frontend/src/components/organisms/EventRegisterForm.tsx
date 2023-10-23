@@ -39,10 +39,8 @@ const ModalBody = ({
   handleClose: () => void;
 }) => {
   const router = useRouter();
-  // required to ensure the user is signed in
   const { user } = useAuth();
-  // We query the userID based on the user email
-  // Because of the Prisma-Fire Base Konfusion
+
   const fetchUserDetails = async () => {
     try {
       const fetchUrl = `${url}/users/search/?email=${user?.email}`;
@@ -66,7 +64,7 @@ const ModalBody = ({
       console.log("Error in User Info Retrieval.");
       console.log(error);
     }
-  };
+  };git
 
   const register = async () => {
     console.log("Calling User Fetch");

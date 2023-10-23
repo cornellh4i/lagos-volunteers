@@ -116,11 +116,11 @@ const getPastEvents = async () => {
 /**
  * Get all event info by eventID
  * @param eventID (String)
+ * @param userID (String)
+ * @param status (String), determines whether to return all attendees or 1 attendee connected to userID and eventID
  * @returns promise with all event info or error
  */
 
-// status differentiates between all attendees or just 1
-// attendees list of eventenrollment
 const getEvent = async (eventID: string, userID: string, status?: string) => {
   return prisma.event.findUnique({
     where: {

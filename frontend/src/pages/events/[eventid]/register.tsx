@@ -128,14 +128,13 @@ const EventRegistration = () => {
   const isAttendeeListEmpty = attendees.length === 0;
 
   return (
-    // if attendees empty -> default to register (React)
-    // if attendees has 1 entry (status always be true) -> show confirm (React)
-
     <CenteredTemplate>
       {eventDetails ? (
+        // If attendees is empty -> return RegisterForm
         isAttendeeListEmpty ? (
           <EventRegisterForm eventDetails={eventDetails} />
         ) : (
+          // If attendees is not empty (has 1 entry) -> return RegisterConfirmation
           <EventConfirmation
             eventDetails={eventDetails}
             confirmation="register"
