@@ -64,7 +64,7 @@ const ModalBody = ({
       console.log("Error in User Info Retrieval.");
       console.log(error);
     }
-  };git
+  };
 
   const register = async () => {
     console.log("Calling User Fetch");
