@@ -8,13 +8,14 @@ import { AccessTime } from "@mui/icons-material";
 
 interface TimePickerProps {
   label: string;
+  onChange: (newValue: any) => void;
 }
 
 /**
  * A TimePicker component is an input field that allows selecting different
  * times of day.
  */
-const CustomTimePicker = ({ label }: TimePickerProps) => {
+const CustomTimePicker = ({ label, onChange }: TimePickerProps) => {
   return (
     <div>
       <div> {label} </div>
@@ -38,6 +39,7 @@ const CustomTimePicker = ({ label }: TimePickerProps) => {
               </InputAdornment>
             ),
           }}
+          onChange={onChange}
         />
       </LocalizationProvider>
       {/* <LocalizationProvider dateAdapter={AdapterDayjs}>

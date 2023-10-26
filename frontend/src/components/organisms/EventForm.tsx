@@ -15,6 +15,7 @@ import FormControl from "@mui/material/FormControl";
 import LocationPicker from "../atoms/LocationPicker";
 import { Typography } from "@mui/material";
 import { getValueFromValueOptions } from "@mui/x-data-grid/components/panel/filterPanel/filterPanelUtils";
+import dayjs, { Dayjs } from "dayjs";
 
 interface EventFormProps {
   eventType: string; //create or edit
@@ -31,6 +32,7 @@ type FormValues = {
   eventDescription: string;
   eventImage: string;
   rsvpLinkImage: string;
+  mode: string;
 };
 
 /** An EventForm page */
@@ -44,16 +46,10 @@ const EventForm = ({ eventType }: EventFormProps) => {
 
   // For deciding whether to show "In-person" or "Virtual"
   const [status, setStatus] = React.useState(0); // 0: no show, 1: show yes.
-  const [getStartDate, setStartDate] = React.useState("");
-  const [getEndDate, setEndDate] = React.useState("");
-  // const startDateHandler = (startDate: strin) => {
-  //   console.log("set start date", startDate);
-  //   setStartDate(startDate);
-  // };
-  // const endDateHandler = (newValue: any) => {
-  //   setEndDate(newValue);
-  // };
-
+  const [getStartDate, setStartDate] = React.useState(new Date());
+  const [getEndDate, setEndDate] = React.useState(new Date());
+  const [getStartTime, setStartTime] = React.useState(new Date());
+  const [getEndTime, setEndTime] = React.useState(new Date());
   const radioHandler = (status: number) => {
     setStatus(status);
   };
@@ -72,11 +68,38 @@ const EventForm = ({ eventType }: EventFormProps) => {
       eventImage,
       rsvpLinkImage,
     } = data;
+    data.startDate = dayjs(getStartDate).format("YYYY-MM-DD");
+    data.endDate = dayjs(getEndDate).format("YYYY-MM-DD");
+    data.startTime = dayjs(getStartTime).format("mm:ssZ[Z]");
+    data.endTime = dayjs(getEndTime).format("mm:ssZ[Z]");
+    data.mode = status === 0 ? "VIRTUAL" : "IN_PERSON";
+    console.log(data);
 
-    data.startDate = getStartDate;
-    data.endDate = getEndDate;
-    data.location = location;
-    console.log("register data", data);
+    // const userToken = await auth.currentUser?.getIdToken();
+    // const fetchUrl = `${url}/events/` + eventid + `/attendees`;
+    // console.log("FETCHED_URL");
+    // console.log(fetchUrl);
+    // try {
+    //   const body = { attendeeid: attendeeid };
+    //   const response = await fetch(fetchUrl, {
+    //     method: "POST",
+    //     headers: {
+    //       Authorization: `Bearer ${userToken}`,
+    //       "Content-Type": "application/json",
+    //     },
+    //     body: JSON.stringify(body),
+    //   });
+    //   // Response Management
+    //   if (response.ok) {
+    //     console.log("Successfully Registered Attendee to Event.");
+    //     console.log(response);
+    //     const data = await response.json();
+    //   } else {
+    //     console.error(
+    //       "Unable to Register Attendee from Event",
+    //       response.status
+    //     );
+    //   }
   };
 
   return (
@@ -103,14 +126,26 @@ const EventForm = ({ eventType }: EventFormProps) => {
         </div>
         <DatePicker
           label="End Date"
-          onChange={(e) => (e.$d != "Invalid Date" ? setEndDate(e.$d) : "")}
+          onChange={(e) =>
+            e.$d != "Invalid Date" ? setEndDate(new Date(e.$d)) : ""
+          }
         />
       </div>
       <div className="sm:space-x-4 grid grid-cols-1 sm:grid-cols-2">
         <div className="pb-4 sm:pb-0">
-          <TimePicker label="Start Time" />
+          <TimePicker
+            label="Start Time"
+            onChange={(e) =>
+              e.$d != "Invalid Date" ? setStartTime(new Date(e.$d)) : ""
+            }
+          />
         </div>
-        <TimePicker label="End Time" />
+        <TimePicker
+          label="End Time"
+          onChange={(e) =>
+            e.$d != "Invalid Date" ? setEndTime(new Date(e.$d)) : ""
+          }
+        />
       </div>
       <div>
         <FormControl>
@@ -142,7 +177,7 @@ const EventForm = ({ eventType }: EventFormProps) => {
             required={status == 1}
             name="location"
             register={register}
-            requiredMessage={errors.eventName ? "Required" : undefined}
+            requiredMessage={errors.location ? "Required" : undefined}
           />
         )}
       </div>
