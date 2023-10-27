@@ -228,6 +228,33 @@
           }
         ],
         "responses": {}
+      },
+      "patch": {
+        "tags": [
+          "Users"
+        ],
+        "description": "",
+        "parameters": [
+          {
+            "name": "userid",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "role": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {}
       }
     },
     "/users/{userid}/preferences": {
@@ -311,9 +338,7 @@
           }
         ],
         "responses": {}
-      }
-    },
-    "/users/{userid}/status/{status}": {
+      },
       "patch": {
         "tags": [
           "Users"
@@ -327,16 +352,22 @@
             "type": "string"
           },
           {
-            "name": "status",
-            "in": "path",
-            "required": true,
-            "type": "string"
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "hours": {
+                  "example": "any"
+                }
+              }
+            }
           }
         ],
         "responses": {}
       }
     },
-    "/users/{userid}/role/{role}": {
+    "/users/{userid}/status": {
       "patch": {
         "tags": [
           "Users"
@@ -350,52 +381,36 @@
             "type": "string"
           },
           {
-            "name": "role",
-            "in": "path",
-            "required": true,
-            "type": "string"
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "example": "any"
+                }
+              }
+            }
           }
         ],
         "responses": {}
       }
     },
-    "/users/{userid}/hours/{hours}": {
-      "patch": {
-        "tags": [
-          "Users"
-        ],
-        "description": "",
-        "parameters": [
-          {
-            "name": "userid",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "name": "hours",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          }
-        ],
-        "responses": {}
-      }
-    },
-    "/events/{userid}": {
+    "/events/": {
       "post": {
         "tags": [
           "Events"
         ],
         "description": "",
-        "parameters": [
-          {
-            "name": "userid",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          }
+        "parameters": [],
+        "responses": {}
+      },
+      "get": {
+        "tags": [
+          "Events"
         ],
+        "description": "",
+        "parameters": [],
         "responses": {}
       }
     },
@@ -446,16 +461,6 @@
         "responses": {}
       }
     },
-    "/events/": {
-      "get": {
-        "tags": [
-          "Events"
-        ],
-        "description": "",
-        "parameters": [],
-        "responses": {}
-      }
-    },
     "/events/upcoming": {
       "get": {
         "tags": [
@@ -501,9 +506,7 @@
           }
         ],
         "responses": {}
-      }
-    },
-    "/events/{eventid}/attendees/{attendeeid}": {
+      },
       "post": {
         "tags": [
           "Events"
@@ -517,14 +520,22 @@
             "type": "string"
           },
           {
-            "name": "attendeeid",
-            "in": "path",
-            "required": true,
-            "type": "string"
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "attendeeid": {
+                  "example": "any"
+                }
+              }
+            }
           }
         ],
         "responses": {}
-      },
+      }
+    },
+    "/events/{eventid}/attendees/{attendeeid}": {
       "delete": {
         "tags": [
           "Events"
@@ -547,7 +558,7 @@
         "responses": {}
       }
     },
-    "/events/{eventid}/status/{status}": {
+    "/events/{eventid}/status": {
       "patch": {
         "tags": [
           "Events"
@@ -561,16 +572,22 @@
             "type": "string"
           },
           {
-            "name": "status",
-            "in": "path",
-            "required": true,
-            "type": "string"
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "example": "any"
+                }
+              }
+            }
           }
         ],
         "responses": {}
       }
     },
-    "/events/{eventid}/owner/{ownerid}": {
+    "/events/{eventid}/owner": {
       "patch": {
         "tags": [
           "Events"
@@ -584,10 +601,16 @@
             "type": "string"
           },
           {
-            "name": "ownerid",
-            "in": "path",
-            "required": true,
-            "type": "string"
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "ownerid": {
+                  "example": "any"
+                }
+              }
+            }
           }
         ],
         "responses": {}

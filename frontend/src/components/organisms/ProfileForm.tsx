@@ -110,6 +110,12 @@ const ProfileForm = ({ userDetails }: ProfileFormProps) => {
     },
   });
 
+  // Handle checkbox
+  const [checked, setChecked] = useState(false);
+  const handleCheckbox = () => {
+    setChecked((checked) => !checked);
+  };
+
   const handleChanges: SubmitHandler<FormValues> = async (data) => {
     const {
       email,
@@ -245,7 +251,11 @@ const ProfileForm = ({ userDetails }: ProfileFormProps) => {
         />
       </div>
       <div>
-        <Checkbox label="Email notifications" />
+        <Checkbox
+          checked={checked}
+          onChange={handleCheckbox}
+          label="Email notifications"
+        />
       </div>
       <div className="sm:space-x-4 grid grid-cols-1 sm:grid-cols-2">
         <div className="pb-4 sm:pb-0">

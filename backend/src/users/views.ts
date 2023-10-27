@@ -189,35 +189,29 @@ userRouter.put(
   }
 );
 
+userRouter.patch("/:userid/status", async (req: Request, res: Response) => {
+  // #swagger.tags = ['Users']
+  const { status } = req.body;
+  attempt(res, 200, () => userController.editStatus(req.params.userid, status));
+});
+
 userRouter.patch(
-  "/:userid/status/:status",
+  "/:userid/role",
+  useAuth,
   async (req: Request, res: Response) => {
     // #swagger.tags = ['Users']
-    attempt(res, 200, () =>
-      userController.editStatus(req.params.userid, req.params.status)
-    );
+    const { role } = req.body;
+    attempt(res, 200, () => userController.editRole(req.params.userid, role));
   }
 );
 
 userRouter.patch(
-  "/:userid/role/:role",
+  "/:userid/hours",
   useAuth,
   async (req: Request, res: Response) => {
     // #swagger.tags = ['Users']
-    attempt(res, 200, () =>
-      userController.editRole(req.params.userid, req.params.role)
-    );
-  }
-);
-
-userRouter.patch(
-  "/:userid/hours/:hours",
-  useAuth,
-  async (req: Request, res: Response) => {
-    // #swagger.tags = ['Users']
-    attempt(res, 200, () =>
-      userController.editHours(req.params.userid, req.params.hours)
-    );
+    const { hours } = req.body;
+    attempt(res, 200, () => userController.editHours(req.params.userid, hours));
   }
 );
 
