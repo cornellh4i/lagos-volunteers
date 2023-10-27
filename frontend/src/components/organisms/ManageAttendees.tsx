@@ -1,4 +1,4 @@
-import React from "react";
+import React, { ChangeEvent, FormEvent } from "react";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import TabContainer from "@/components/molecules/TabContainer";
 import { GridColDef, GridValueGetterParams } from "@mui/x-data-grid";
@@ -7,6 +7,7 @@ import Button from "../atoms/Button";
 import Link from "next/link";
 import CheckBox from "@/components/atoms/Checkbox";
 import SearchBar from "../atoms/SearchBar";
+import IconText from "../atoms/IconText";
 
 interface ManageAttendeesProps {}
 
@@ -197,20 +198,39 @@ const ManageAttendees = ({}: ManageAttendeesProps) => {
     { label: "Checked In", panel: <CheckedIn /> },
     { label: "Checked Out", panel: <CheckedOut /> },
   ];
+
+  // Search bar
+  const [value, setValue] = React.useState("");
+  const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
+    setValue(event.target.value);
+  };
+  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+    // Prevent page refresh
+    event.preventDefault();
+
+    // Actual function
+    console.log(value);
+  };
+
   return (
     <>
       <div className="flex items-center text-gray-400">
-        <ArrowBackIcon></ArrowBackIcon>
-        <Link href="/events/view/" className="text-gray-400">
-          {" "}
-          <u>Return to My Events</u>
-        </Link>
+        <IconText icon={<ArrowBackIcon />}>
+          <Link href="/events/view/" className="text-gray-400">
+            <u>Return to My Events</u>
+          </Link>
+        </IconText>
       </div>
-      <div className="font-semibold text-3xl">
+      <div className="font-semibold text-3xl pt-5">
         Manage Malta Outreach Volunteers
       </div>
-      <div className="space-y-2 col-start-1 col-end-5">
-        <SearchBar value="Search for a member by name, email" />
+      <div className="pt-5 pb-5 w-full sm:w-[600px]">
+        <SearchBar
+          placeholder="Search member by name, email"
+          value={value}
+          onChange={handleChange}
+          onClick={handleSubmit}
+        />
       </div>
 
       <div>
