@@ -26,18 +26,27 @@ const eventColumnsPending: GridColDef[] = [
     headerName: "Name",
     minWidth: 100,
     flex: 0.5,
+    renderHeader: (params) => (
+      <div style={{ fontWeight: "bold" }}>{params.colDef.headerName}</div>
+    ),
   },
   {
     field: "email",
     headerName: "Email",
     minWidth: 100,
     flex: 0.5,
+    renderHeader: (params) => (
+      <div style={{ fontWeight: "bold" }}>{params.colDef.headerName}</div>
+    ),
   },
   {
     field: "role",
     headerName: "Role",
     minWidth: 100,
     flex: 2.5,
+    renderHeader: (params) => (
+      <div style={{ fontWeight: "bold" }}>{params.colDef.headerName}</div>
+    ),
   },
   {
     field: "button",
@@ -66,18 +75,27 @@ const eventColumnsCheckedIn: GridColDef[] = [
     headerName: "Name",
     minWidth: 100,
     flex: 0.5,
+    renderHeader: (params) => (
+      <div style={{ fontWeight: "bold" }}>{params.colDef.headerName}</div>
+    ),
   },
   {
     field: "email",
     headerName: "Email",
     minWidth: 100,
     flex: 0.5,
+    renderHeader: (params) => (
+      <div style={{ fontWeight: "bold" }}>{params.colDef.headerName}</div>
+    ),
   },
   {
     field: "role",
     headerName: "Role",
     minWidth: 100,
     flex: 2.5,
+    renderHeader: (params) => (
+      <div style={{ fontWeight: "bold" }}>{params.colDef.headerName}</div>
+    ),
   },
   {
     field: "button",
@@ -118,12 +136,18 @@ const eventColumnsCheckedOut: GridColDef[] = [
     headerName: "Email",
     minWidth: 100,
     flex: 0.5,
+    renderHeader: (params) => (
+      <div style={{ fontWeight: "bold" }}>{params.colDef.headerName}</div>
+    ),
   },
   {
     field: "role",
     headerName: "Role",
     minWidth: 100,
     flex: 2.5,
+    renderHeader: (params) => (
+      <div style={{ fontWeight: "bold" }}>{params.colDef.headerName}</div>
+    ),
   },
 ];
 // below are dummy data, in the future we want to get data from backend and
