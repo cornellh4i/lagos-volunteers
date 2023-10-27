@@ -14,25 +14,22 @@ import FormControlLabel from "@mui/material/FormControlLabel";
 import FormControl from "@mui/material/FormControl";
 import LocationPicker from "../atoms/LocationPicker";
 import { Typography } from "@mui/material";
-import { getValueFromValueOptions } from "@mui/x-data-grid/components/panel/filterPanel/filterPanelUtils";
+import { BASE_URL } from "@/utils/constants";
+import { auth } from "@/utils/firebase";
+import { useAuth } from "@/utils/AuthContext";
 import dayjs, { Dayjs } from "dayjs";
 
 interface EventFormProps {
-  eventType: string; //create or edit
+  eventType: string; //create or edit IMPORTANT!!!!
 }
 
 type FormValues = {
   eventName: string;
-  startDate: string;
-  endDate: string;
-  startTime: string;
-  endTime: string;
   location: string;
   volunteerSignUpCap: string;
   eventDescription: string;
   eventImage: string;
   rsvpLinkImage: string;
-  mode: string;
 };
 
 /** An EventForm page */
@@ -46,15 +43,73 @@ const EventForm = ({ eventType }: EventFormProps) => {
 
   // For deciding whether to show "In-person" or "Virtual"
   const [status, setStatus] = React.useState(0); // 0: no show, 1: show yes.
-  const [getStartDate, setStartDate] = React.useState(new Date());
-  const [getEndDate, setEndDate] = React.useState(new Date());
-  const [getStartTime, setStartTime] = React.useState(new Date());
-  const [getEndTime, setEndTime] = React.useState(new Date());
+  const [getStartDate, setStartDate] = React.useState("");
+  const [getEndDate, setEndDate] = React.useState("");
+  const [getStartTime, setStartTime] = React.useState("");
+  const [getEndTime, setEndTime] = React.useState("");
   const radioHandler = (status: number) => {
     setStatus(status);
   };
 
+  const { user } = useAuth();
+  const url = BASE_URL as string;
+
+  const convertToISO = (time: string, date: string) => {
+    var timeIndex = 0;
+    var counter = 0;
+    for (let i = 0; i < time.length; i++) {
+      if (time[i] === " ") {
+        counter += 1;
+        if (counter === 4) {
+          timeIndex = i;
+          counter = 0;
+          break;
+        }
+      }
+    }
+    var dateIndex = 0;
+    for (let i = 0; i < time.length; i++) {
+      if (time[i] === " ") {
+        counter += 1;
+        if (counter === 4) {
+          dateIndex = i;
+          counter = 0;
+          break;
+        }
+      }
+    }
+    const rawDateTime =
+      String(date).substring(0, dateIndex) + String(time).substring(timeIndex);
+    const res=dayjs(rawDateTime).toJSON();
+    return res;
+  };
+
+  const fetchUserDetails = async () => {
+    try {
+      const fetchUrl = `${url}/users/search/?email=${user?.email}`;
+      const userToken = await auth.currentUser?.getIdToken();
+      const response = await fetch(fetchUrl, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${userToken}`,
+        },
+      });
+      if (response.ok) {
+        const data = await response.json();
+        return data["data"][0]["id"];
+      } else {
+        console.error("User Retrieval failed with status:", response.status);
+      }
+    } catch (error) {
+      console.log("Error in User Info Retrieval.");
+      console.log(error);
+    }
+  };
+
   const handleCreateEvent: SubmitHandler<FormValues> = async (data) => {
+    const mode = status === 0 ? "VIRTUAL" : "IN_PERSON";
+    const startDateTime = convertToISO(getStartTime,getStartDate);
+    const endDateTime = convertToISO(getEndTime,getEndDate);
     const {
       eventName,
       location,
@@ -63,38 +118,42 @@ const EventForm = ({ eventType }: EventFormProps) => {
       eventImage,
       rsvpLinkImage,
     } = data;
-    data.startDate = dayjs(getStartDate).format("YYYY-MM-DD");
-    data.endDate = dayjs(getEndDate).format("YYYY-MM-DD");
-    data.startTime = dayjs(getStartTime).format("mm:ssZ[Z]");
-    data.endTime = dayjs(getEndTime).format("mm:ssZ[Z]");
-    data.mode = status === 0 ? "VIRTUAL" : "IN_PERSON";
-    console.log(data);
 
-    // const userToken = await auth.currentUser?.getIdToken();
-    // const fetchUrl = `${url}/events/` + eventid + `/attendees`;
-    // console.log("FETCHED_URL");
-    // console.log(fetchUrl);
-    // try {
-    //   const body = { attendeeid: attendeeid };
-    //   const response = await fetch(fetchUrl, {
-    //     method: "POST",
-    //     headers: {
-    //       Authorization: `Bearer ${userToken}`,
-    //       "Content-Type": "application/json",
-    //     },
-    //     body: JSON.stringify(body),
-    //   });
-    //   // Response Management
-    //   if (response.ok) {
-    //     console.log("Successfully Registered Attendee to Event.");
-    //     console.log(response);
-    //     const data = await response.json();
-    //   } else {
-    //     console.error(
-    //       "Unable to Register Attendee from Event",
-    //       response.status
-    //     );
-    //   }
+    const userid = await fetchUserDetails();
+    const fetchUrl = `${url}/events`;
+    try {
+      const body = {
+        userID: `${userid}`,
+        event: {
+          name: `${eventName}`,
+          location: `${location}`,
+          description: `${eventDescription}`,
+          startDate: new Date(`${startDateTime}`),
+          endDate: new Date(`${endDateTime}`),
+          capacity: +volunteerSignUpCap,
+          mode: `${mode}`,
+        },
+      };
+      const userToken = await auth.currentUser?.getIdToken();
+      const response = await fetch(fetchUrl, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${userToken}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(body),
+      });
+      if (response.ok) {
+        console.log("Successfully Registered Attendee to Event.");
+        console.log(response);
+        const data = await response.json();
+        console.log(data);
+      } else {
+        console.error("Unable to Create Event", response.status);
+      }
+    } catch (error) {
+      console.error("Network error:", error);
+    }
   };
 
   return (
@@ -122,7 +181,7 @@ const EventForm = ({ eventType }: EventFormProps) => {
         <DatePicker
           label="End Date"
           onChange={(e) =>
-            e.$d != "Invalid Date" ? setEndDate(new Date(e.$d)) : ""
+            e.$d != "Invalid Date" ? setEndDate(e.$d) : ""
           }
         />
       </div>
@@ -131,14 +190,14 @@ const EventForm = ({ eventType }: EventFormProps) => {
           <TimePicker
             label="Start Time"
             onChange={(e) =>
-              e.$d != "Invalid Date" ? setStartTime(new Date(e.$d)) : ""
+              e.$d != "Invalid Date" ? setStartTime(e.$d) : ""
             }
           />
         </div>
         <TimePicker
           label="End Time"
           onChange={(e) =>
-            e.$d != "Invalid Date" ? setEndTime(new Date(e.$d)) : ""
+            e.$d != "Invalid Date" ? setEndTime(e.$d) : ""
           }
         />
       </div>

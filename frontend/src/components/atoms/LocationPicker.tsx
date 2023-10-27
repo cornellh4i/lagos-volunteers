@@ -35,7 +35,7 @@ const LocationPicker = ({
           margin: "dense",
         }}
         size="small"
-        isOptionEqualToValue={(option, value) => option === value}
+        isOptionEqualToValue={(option, value) => option.label === value.label}
         renderInput={(params) => (
           <TextField
             {...params}
