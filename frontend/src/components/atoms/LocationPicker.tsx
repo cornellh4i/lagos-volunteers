@@ -15,7 +15,13 @@ interface LocationPickerProps {
  * A LocationPicker component is an input field that allows selecting a specific
  * geographic location with autocomplete
  */
-const LocationPicker = ({ label, name, required, requiredMessage = "", register }: LocationPickerProps) => {
+const LocationPicker = ({
+  label,
+  name,
+  required,
+  requiredMessage = "",
+  register,
+}: LocationPickerProps) => {
   return (
     <div>
       <div> {label} </div>
@@ -29,10 +35,15 @@ const LocationPicker = ({ label, name, required, requiredMessage = "", register 
           margin: "dense",
         }}
         size="small"
-        renderInput={(params) => <TextField {...params} />}
-        {...register(name, {
-          required: required,
-        })}
+        isOptionEqualToValue={(option, value) => option === value}
+        renderInput={(params) => (
+          <TextField
+            {...params}
+            {...register(name, {
+              required: required,
+            })}
+          />
+        )}
       />
     </div>
   );

@@ -55,13 +55,8 @@ const EventForm = ({ eventType }: EventFormProps) => {
   };
 
   const handleCreateEvent: SubmitHandler<FormValues> = async (data) => {
-    console.log(getStartDate);
     const {
       eventName,
-      startDate,
-      endDate,
-      startTime,
-      endTime,
       location,
       volunteerSignUpCap,
       eventDescription,
