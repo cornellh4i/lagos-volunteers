@@ -49,6 +49,15 @@ const EventCard = ({
             Cancel RSVP
           </Link>
         );
+      case "manage attendees":
+        return (
+          <Link
+            className="text-black no-underline"
+            href={`/events/${eventid}/attendees`}
+          >
+            Manage Attendees
+          </Link>
+        );
       default:
         return <></>;
     }
@@ -58,12 +67,16 @@ const EventCard = ({
     <Card variant="outlined" className="w-full">
       <div className="p-5">
         {/* Main card body */}
-        <IconText icon={<EmojiFoodBeverageIcon color="disabled" />}>
-          <b className="text-2xl">{title.toLocaleUpperCase()}</b>
-        </IconText>
-        <IconText icon={<LocationOnIcon color="disabled" />}>
-          {location.toLocaleUpperCase()}
-        </IconText>
+        <div className="pb-1">
+          <IconText icon={<EmojiFoodBeverageIcon color="disabled" />}>
+            <b className="text-2xl">{title.toLocaleUpperCase()}</b>
+          </IconText>
+        </div>
+        <div className="pb-1">
+          <IconText icon={<LocationOnIcon color="disabled" />}>
+            {location.toLocaleUpperCase()}
+          </IconText>
+        </div>
         <IconText icon={<WatchLaterIcon color="disabled" />}>
           {datetime}
         </IconText>
