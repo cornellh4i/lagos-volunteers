@@ -11,15 +11,6 @@ interface MultilineTextFieldProps {
   requiredMessage?: string;
   name: string;
   register: (name: any, options?: RegisterOptions) => UseFormRegisterReturn;
-
-	label: string;
-	labelStyling?: string;
-	required: boolean;
-	type?: string;
-	placeholder?: string;
-	requiredMessage?: string;
-	name: string;
-	register: (name: any, options?: RegisterOptions) => UseFormRegisterReturn;
 }
 
 /** A MultilineTextField page */
@@ -32,38 +23,6 @@ const MultilineTextField = ({
   type = "text",
   requiredMessage = "",
   register,
-
-}: MultilineTextFieldProps) => {
-  return (
-    <div>
-      <div>
-        {" "}
-        <span className={labelStyling}>{label} </span>
-        <span className="text-red-500">{requiredMessage}</span>
-      </div>
-      <TextField
-        id="outlined-multiline-static"
-        multiline
-        placeholder={placeholder}
-        rows={4}
-        sx={{ borderRadius: 2, borderColor: "primary.main" }}
-        required={required}
-        fullWidth={true}
-        {...register(name, {
-          required: required,
-        })}
-        margin="dense"
-      />
-    </div>
-  );
-	label,
-	labelStyling,
-	placeholder,
-	name,
-	required,
-	type = 'text',
-	requiredMessage = '',
-	register,
 }: MultilineTextFieldProps) => {
   return (
     <div>

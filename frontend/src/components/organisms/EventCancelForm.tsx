@@ -1,20 +1,24 @@
 import React, { useState } from "react";
 import EventDetails from "./EventDetails";
 import Button from "../atoms/Button";
-import { Modal } from "@mui/material";
 import Modal from "@/components/molecules/Modal";
 import Link from "next/link";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import IconText from "../atoms/IconText";
 import AccessTimeFilledIcon from "@mui/icons-material/AccessTimeFilled";
 import MultilineTextField from "../atoms/MultilineTextField";
-import { useForm } from "react-hook-form";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { Typography, Grid } from "@mui/material";
 import { useRouter } from "next/router";
 
 interface EventCancelFormProps {
   eventid: string;
+  location: string;
+  datetime: string;
+  supervisors: string[];
+  capacity: number;
+  image_src: string;
+  tags?: string[];
 }
 type FormValues = {
   cancelReason: string;
@@ -58,24 +62,15 @@ const ModalBody = ({
 /**
  * An EventCancelForm component
  */
-const EventCancelForm = ({ eventid }: EventCancelFormProps) => {
-  //dummy data, to be replaced during full-stack
-  const image = (
-    <img
-      src={
-        "https://i0.wp.com/roadmap-tech.com/wp-content/uploads/2019/04/placeholder-image.jpg?resize=800%2C800&ssl=1"
-      }
-      className="object-cover h-56 w-96"
-    />
-  );
-
-  const {
-    register,
-    formState: { errors },
-  } = useForm<FormValues>();
-
-  const [open, setOpen] = useState(false);
-  const handleOpen = () => setOpen(true);
+const EventCancelForm = ({
+  eventid,
+  location,
+  datetime,
+  supervisors,
+  capacity,
+  image_src,
+  tags,
+}: EventCancelFormProps) => {
   const {
     register,
     handleSubmit,
@@ -92,25 +87,6 @@ const EventCancelForm = ({ eventid }: EventCancelFormProps) => {
 
   return (
     <div>
-      <Modal open={open} onClose={handleClose}>
-        <div>lalala</div>
-      </Modal>
-
-      <div className="justify-center center-items grid grid-cols-4 grid-rows-6`">
-        <div className="space-y-2 col-start-1 col-end-5">
-          <div className="flex items-center text-gray-400">
-            <ArrowBackIcon></ArrowBackIcon>
-            <Link href="/events/view/" className="text-gray-400">
-              {" "}
-              <u>Return to My Events</u>
-            </Link>
-          </div>
-
-          <div className="font-semibold text-3xl">Cancel Registration</div>
-          <div>
-            {/* dummy data, to be replaced during full-stack */}
-            <EventDetails
-              title="EDUFOOD"
       <Modal
         open={open}
         handleClose={handleClose}
@@ -130,14 +106,13 @@ const EventCancelForm = ({ eventid }: EventCancelFormProps) => {
           <div className="font-semibold text-3xl">Cancel Registration</div>
           <div className="text-2xl font-semibold mb-6">EDUFOOD</div>
           <div>
-            {/* dummy data, to be replaced during full-stack */}
             <EventDetails
-              location="Address, Building Name"
-              datetime="02/15/2023, 9:00AM-11:00AM"
-              supervisors={["Jane Doe", "Jess Lee"]}
-              capacity={20}
-              image={image}
-              image_src="https://i0.wp.com/roadmap-tech.com/wp-content/uploads/2019/04/placeholder-image.jpg?resize=800%2C800&ssl=1"
+              location={location}
+              datetime={datetime}
+              supervisors={supervisors}
+              capacity={capacity}
+              image_src={image_src}
+              tags={tags}
             />
           </div>
           <div>
@@ -152,10 +127,6 @@ const EventCancelForm = ({ eventid }: EventCancelFormProps) => {
             You are registered for this event.
           </div>
           <div>
-            <IconText
-              icon={<AccessTimeFilledIcon />}
-              text="4 hours left to cancel registration"
-            />
             <IconText icon={<AccessTimeFilledIcon />}>
               <div>4 hours left to cancel registration</div>
             </IconText>
@@ -165,28 +136,6 @@ const EventCancelForm = ({ eventid }: EventCancelFormProps) => {
             Registration must be cancelled at least 24 hours before the event
             begins.
           </div>
-          <div className="pt-4">
-            <form>
-              <MultilineTextField
-                requiredMessage={"" ? "Required" : undefined}
-                labelStyling="font-semibold"
-                placeholder="Your answer here"
-                name="email"
-                type="email"
-                register={register}
-                label="Reason for cancelling*"
-                required={true}
-              />
-            </form>
-          </div>
-        </div>
-        <div className="col-start-1 col-end-5 pt-4 md:col-start-2 md:col-end-4 md:pt-8">
-          <Button
-            children="Cancel Registration"
-            color="gray"
-            onClick={handleOpen}
-          ></Button>
-        </div>
         </div>
 
         <form onSubmit={handleSubmit(handleSubmitReason)}>
