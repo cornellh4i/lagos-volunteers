@@ -20,7 +20,7 @@ const HorizontalTabContainer = ({
   tabs,
   rightAlignedComponent,
 }: TabContainerProps) => {
-  const [value, setValue] = React.useState("1");
+  const [value, setValue] = React.useState("0");
   const handleChange = (event: React.SyntheticEvent, newValue: string) => {
     setValue(newValue);
   };
