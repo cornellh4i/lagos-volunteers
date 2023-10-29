@@ -245,7 +245,6 @@ const EventForm = ({ eventType, eventDetails }: EventFormProps) => {
             required={status == 1}
             name="location"
             register={register}
-            defaultValue={eventDetails.location ? eventDetails.location : ""}
             requiredMessage={errors.location ? "Required" : undefined}
           />
         )}
