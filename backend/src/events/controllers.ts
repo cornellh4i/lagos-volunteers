@@ -94,18 +94,35 @@ const getEvents = async (req: Request) => {
     };
     includeDict["attendees"] = true;
   }
+  let cursor = undefined;
+  let skip = undefined;
+  if (query.after) {
+    cursor = {
+      id: query.after as string,
+    };
+    skip = 1;
+  }
+  let take = undefined;
 
-  return prisma.event.findMany({
+  if (query.limit) {
+    take = parseInt(query.limit as string);
+  }
+
+  const queryResult = await prisma.event.findMany({
     where: {
       AND: [whereDict],
     },
     include: includeDict,
     orderBy: sortDict[key],
-    take: query.limit ? parseInt(query.limit as string) : 10,
-    cursor: {
-      id: query.after ? (query.after as string) : "",
-    },
+    take: take,
+    skip: skip,
+    cursor: cursor,
   });
+  const lastPostInResults = take
+    ? queryResult[take - 1]
+    : queryResult[queryResult.length - 1];
+  const myCursor = lastPostInResults ? lastPostInResults.id : undefined;
+  return { result: queryResult, cursor: myCursor };
 };
 /**
  * Updates an event

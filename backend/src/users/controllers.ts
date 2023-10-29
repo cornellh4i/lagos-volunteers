@@ -104,8 +104,21 @@ const getUsers = async (req: Request) => {
       },
     };
   }
+  let cursor = undefined;
+  let skip = undefined;
+  if (query.after) {
+    cursor = {
+      id: query.after as string,
+    };
+    skip = 1;
+  }
+  let take = undefined;
 
-  return prisma.user.findMany({
+  if (query.limit) {
+    take = parseInt(query.limit as string);
+  }
+
+  const queryResult = await prisma.user.findMany({
     where: {
       AND: [
         {
@@ -137,11 +150,17 @@ const getUsers = async (req: Request) => {
       events: eventId ? true : false,
     },
     orderBy: sortDict[key],
-    take: query.limit ? parseInt(query.limit as string) : 10,
-    cursor: {
-      id: query.after ? (query.after as string) : "",
-    },
+    
+    take: take,
+    skip: skip,
+    cursor: cursor,
+    
   });
+  const lastPostInResults = take
+    ? queryResult[take - 1]
+    : queryResult[queryResult.length - 1];
+  const myCursor = lastPostInResults ? lastPostInResults.id : undefined;
+  return { result: queryResult, cursor: myCursor };
 };
 
 /**
