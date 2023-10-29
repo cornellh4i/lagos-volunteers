@@ -2,18 +2,18 @@ import React from "react";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import { RegisterOptions, UseFormRegisterReturn } from "react-hook-form";
+import dayjs from "dayjs";
 
 interface DatePickerProps {
   label: string;
-  // value: Date;
+  value?: string;
   onChange: (newValue: any) => void;
 }
 /**
  * A DatePicker component is an input field that allows selecting a specific
  * date through a calendar popup
  */
-const CustomDatePicker = ({ label, onChange }: DatePickerProps) => {
+const CustomDatePicker = ({ label, value, onChange }: DatePickerProps) => {
   return (
     <div>
       <div> {label} </div>
@@ -21,6 +21,7 @@ const CustomDatePicker = ({ label, onChange }: DatePickerProps) => {
         <DatePicker
           label=""
           format="MM/DD/YYYY"
+          value={dayjs(value)}
           slotProps={{ textField: { size: "small", fullWidth: true } }}
           onChange={onChange}
         />

@@ -5,9 +5,11 @@ import { TimeField } from "@mui/x-date-pickers/TimeField";
 import { IconButton } from "@mui/material";
 import { InputAdornment } from "@mui/material";
 import { AccessTime } from "@mui/icons-material";
+import dayjs from "dayjs";
 
 interface TimePickerProps {
   label: string;
+  value?: string;
   onChange: (newValue: any) => void;
 }
 
@@ -15,13 +17,14 @@ interface TimePickerProps {
  * A TimePicker component is an input field that allows selecting different
  * times of day.
  */
-const CustomTimePicker = ({ label, onChange }: TimePickerProps) => {
+const CustomTimePicker = ({ label, value, onChange }: TimePickerProps) => {
   return (
     <div>
       <div> {label} </div>
       <LocalizationProvider dateAdapter={AdapterDayjs}>
         <TimeField
           label=""
+          value={dayjs(value)}
           sx={{
             borderRadius: 2,
             borderColor: "primary.main",

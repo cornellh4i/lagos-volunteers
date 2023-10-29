@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import DatePicker from "../atoms/DatePicker";
 import TimePicker from "../atoms/TimePicker";
@@ -17,10 +17,11 @@ import { Typography } from "@mui/material";
 import { BASE_URL } from "@/utils/constants";
 import { auth } from "@/utils/firebase";
 import { useAuth } from "@/utils/AuthContext";
-import dayjs, { Dayjs } from "dayjs";
+import dayjs from "dayjs";
 
 interface EventFormProps {
   eventType: string; //create or edit IMPORTANT!!!!
+  eventDetails: FormValues;
 }
 
 type FormValues = {
@@ -30,19 +31,51 @@ type FormValues = {
   eventDescription: string;
   eventImage: string;
   rsvpLinkImage: string;
+  startDate: string;
+  endDate: string;
+  mode: string;
+};
+
+/** Helper function for converting datepicker and timepicker to ISO string*/
+const convertToISO = (time: string, date: string) => {
+  var timeIndex = 0;
+  var counter = 0;
+  for (let i = 0; i < time.length; i++) {
+    if (time[i] === " ") {
+      counter += 1;
+      if (counter === 4) {
+        timeIndex = i;
+        counter = 0;
+        break;
+      }
+    }
+  }
+  var dateIndex = 0;
+  for (let i = 0; i < time.length; i++) {
+    if (time[i] === " ") {
+      counter += 1;
+      if (counter === 4) {
+        dateIndex = i;
+        counter = 0;
+        break;
+      }
+    }
+  }
+  const rawDateTime =
+    String(date).substring(0, dateIndex) + String(time).substring(timeIndex);
+  const res = dayjs(rawDateTime).toJSON();
+  return res;
 };
 
 /** An EventForm page */
-const EventForm = ({ eventType }: EventFormProps) => {
-  const {
-    register,
-    handleSubmit,
-    watch,
-    formState: { errors },
-  } = useForm<FormValues>();
-
+const EventForm = ({ eventType, eventDetails }: EventFormProps) => {
+  const { user } = useAuth();
+  const url = BASE_URL as string;
+  console.log(eventDetails);
   // For deciding whether to show "In-person" or "Virtual"
-  const [status, setStatus] = React.useState(0); // 0: no show, 1: show yes.
+  const [status, setStatus] = React.useState(
+    eventDetails.mode === "IN_PERSON" ? 1 : 0
+  ); // 0: no show, 1: show yes.
   const [getStartDate, setStartDate] = React.useState("");
   const [getEndDate, setEndDate] = React.useState("");
   const [getStartTime, setStartTime] = React.useState("");
@@ -51,38 +84,21 @@ const EventForm = ({ eventType }: EventFormProps) => {
     setStatus(status);
   };
 
-  const { user } = useAuth();
-  const url = BASE_URL as string;
-
-  const convertToISO = (time: string, date: string) => {
-    var timeIndex = 0;
-    var counter = 0;
-    for (let i = 0; i < time.length; i++) {
-      if (time[i] === " ") {
-        counter += 1;
-        if (counter === 4) {
-          timeIndex = i;
-          counter = 0;
-          break;
-        }
-      }
-    }
-    var dateIndex = 0;
-    for (let i = 0; i < time.length; i++) {
-      if (time[i] === " ") {
-        counter += 1;
-        if (counter === 4) {
-          dateIndex = i;
-          counter = 0;
-          break;
-        }
-      }
-    }
-    const rawDateTime =
-      String(date).substring(0, dateIndex) + String(time).substring(timeIndex);
-    const res=dayjs(rawDateTime).toJSON();
-    return res;
-  };
+  const {
+    register,
+    handleSubmit,
+    watch,
+    formState: { errors },
+  } = useForm<FormValues>({
+    defaultValues: {
+      eventName: eventDetails.eventName,
+      location: eventDetails.location,
+      volunteerSignUpCap: eventDetails.volunteerSignUpCap,
+      eventDescription: eventDetails.eventDescription,
+      eventImage: eventDetails.eventImage,
+      rsvpLinkImage: eventDetails.rsvpLinkImage,
+    },
+  });
 
   const fetchUserDetails = async () => {
     try {
@@ -108,8 +124,8 @@ const EventForm = ({ eventType }: EventFormProps) => {
 
   const handleCreateEvent: SubmitHandler<FormValues> = async (data) => {
     const mode = status === 0 ? "VIRTUAL" : "IN_PERSON";
-    const startDateTime = convertToISO(getStartTime,getStartDate);
-    const endDateTime = convertToISO(getEndTime,getEndDate);
+    const startDateTime = convertToISO(getStartTime, getStartDate);
+    const endDateTime = convertToISO(getEndTime, getEndDate);
     const {
       eventName,
       location,
@@ -175,30 +191,28 @@ const EventForm = ({ eventType }: EventFormProps) => {
         <div className="pb-4 sm:pb-0">
           <DatePicker
             label="Start Date"
+            value={eventDetails.startDate}
             onChange={(e) => (e.$d != "Invalid Date" ? setStartDate(e.$d) : "")}
           />
         </div>
         <DatePicker
           label="End Date"
-          onChange={(e) =>
-            e.$d != "Invalid Date" ? setEndDate(e.$d) : ""
-          }
+          value={eventDetails.endDate}
+          onChange={(e) => (e.$d != "Invalid Date" ? setEndDate(e.$d) : "")}
         />
       </div>
       <div className="sm:space-x-4 grid grid-cols-1 sm:grid-cols-2">
         <div className="pb-4 sm:pb-0">
           <TimePicker
             label="Start Time"
-            onChange={(e) =>
-              e.$d != "Invalid Date" ? setStartTime(e.$d) : ""
-            }
+            value={eventDetails.startDate}
+            onChange={(e) => (e.$d != "Invalid Date" ? setStartTime(e.$d) : "")}
           />
         </div>
         <TimePicker
           label="End Time"
-          onChange={(e) =>
-            e.$d != "Invalid Date" ? setEndTime(e.$d) : ""
-          }
+          value={eventDetails.endDate}
+          onChange={(e) => (e.$d != "Invalid Date" ? setEndTime(e.$d) : "")}
         />
       </div>
       <div>
@@ -208,17 +222,17 @@ const EventForm = ({ eventType }: EventFormProps) => {
             row
             aria-labelledby="demo-row-radio-buttons-group-label"
             name="row-radio-buttons-group"
-            defaultValue="Virtual"
+            defaultValue={eventDetails.mode ? eventDetails.mode : "VIRTUAL"}
             sx={{ borderRadius: 2, borderColor: "primary.main" }}
           >
             <FormControlLabel
-              value="Virtual"
+              value="VIRTUAL"
               control={<Radio />}
               label={<Typography sx={{ fontSize: 15 }}>Virtual</Typography>}
               onClick={() => radioHandler(0)}
             />
             <FormControlLabel
-              value="In-Person"
+              value="IN_PERSON"
               control={<Radio />}
               label={<Typography sx={{ fontSize: 15 }}>In-Person</Typography>}
               onClick={() => radioHandler(1)}
@@ -231,6 +245,7 @@ const EventForm = ({ eventType }: EventFormProps) => {
             required={status == 1}
             name="location"
             register={register}
+            defaultValue={eventDetails.location ? eventDetails.location : ""}
             requiredMessage={errors.location ? "Required" : undefined}
           />
         )}
