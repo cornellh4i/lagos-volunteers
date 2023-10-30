@@ -9,6 +9,7 @@ interface DatePickerProps {
   value?: string;
   onChange: (newValue: any) => void;
 }
+
 /**
  * A DatePicker component is an input field that allows selecting a specific
  * date through a calendar popup
@@ -21,7 +22,7 @@ const CustomDatePicker = ({ label, value, onChange }: DatePickerProps) => {
         <DatePicker
           label=""
           format="MM/DD/YYYY"
-          value={dayjs(value)}
+          defaultValue={value ? dayjs(value) : undefined}
           slotProps={{ textField: { size: "small", fullWidth: true } }}
           onChange={onChange}
         />

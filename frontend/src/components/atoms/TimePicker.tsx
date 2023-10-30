@@ -24,7 +24,7 @@ const CustomTimePicker = ({ label, value, onChange }: TimePickerProps) => {
       <LocalizationProvider dateAdapter={AdapterDayjs}>
         <TimeField
           label=""
-          value={dayjs(value)}
+          defaultValue={value ? dayjs(value) : undefined}
           sx={{
             borderRadius: 2,
             borderColor: "primary.main",
