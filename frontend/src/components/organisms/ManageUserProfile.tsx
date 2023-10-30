@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import TabContainer from "@/components/molecules/TabContainer";
 import UserProfile from "./UserProfile";
 import Button from "@/components/atoms/Button";
@@ -14,9 +14,27 @@ import Link from "next/link";
 import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
 import { IconButton } from "@mui/material";
 
+import { BASE_URL } from "@/utils/constants";
+// import { auth } from "@/utils/firebase";
+// import { useAuth } from "@/utils/AuthContext";
+// import { useRouter } from "next/router";
+
+type userProfileData = {
+  name: string;
+  role: string;
+  email: string;
+  joinDate: string;
+};
+
 interface ManageUserProfileProps {
-  userid: string;
+  userProfileDetails: userProfileData;
 }
+
+const url = BASE_URL as string;
+
+// interface ManageUserProfileProps {
+//   userid: string;
+// }
 
 /**
  * A ManageUserProfile component
@@ -134,7 +152,39 @@ const VerifyCertificate = () => {
   );
 };
 
-const ManageUserProfile = ({ userid }: ManageUserProfileProps) => {
+const ManageUserProfile = ({ userProfileDetails }: ManageUserProfileProps) => {
+  // const router = useRouter();
+  // const { user } = useAuth();
+
+  // const fetchUserDetails = async () => {
+  //   try {
+  //     const fetchUrl = `${url}/users/search/?email=${userProfileDetails.email}`;
+  //     // const fetchRegsUrl = `${url}/users/search/?email=${user?.email}`;
+  //     const userToken = await auth.currentUser?.getIdToken();
+
+  //     console.log(userToken)
+
+  //     const response = await fetch(fetchUrl, {
+  //       method: "GET",
+  //       headers: {
+  //         Authorization: `Bearer ${userToken}`,
+  //       },
+  //     });
+
+  //     // Response Management
+  //     if (response.ok) {
+  //       const data = await response.json();
+  //       // const userStatus = data["data"][0]["status"];
+  //       // const userCert = data["data"][0]["verified"];
+  //     } else {
+  //       console.error("User Retrieval failed with status:", response.status);
+  //     }
+  //   } catch (error) {
+  //     console.log("Error in User Info Retrieval.");
+  //     console.log(error);
+  //   }
+  // };
+
   const tabs = [
     { label: "Status", panel: <Status /> },
     { label: "Registrations", panel: <Registrations /> },
@@ -155,10 +205,10 @@ const ManageUserProfile = ({ userid }: ManageUserProfileProps) => {
       </IconText>
       <div className="pt-5 pb-5">
         <UserProfile
-          name="Julia Papp"
-          role="Volunteer"
-          email="jpapp@gmail.com"
-          joinDate={new Date()}
+          name={userProfileDetails.name}
+          role={userProfileDetails.role}
+          email={userProfileDetails.email}
+          joinDate={userProfileDetails.joinDate}
         />
       </div>
 

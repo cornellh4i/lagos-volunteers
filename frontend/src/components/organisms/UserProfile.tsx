@@ -3,6 +3,7 @@ import IconText from "../atoms/IconText";
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import PersonIcon from "@mui/icons-material/Person";
 import EmailIcon from "@mui/icons-material/Email";
+import { join } from "path";
 
 /** default royalty free avatar image */
 export const FALLBACK_AVATAR_URL =
@@ -13,9 +14,20 @@ interface UserProfileProps {
   name: string;
   role: string;
   email: string;
-  joinDate: Date;
+  joinDate: string;
   img_src?: string;
 }
+
+// function formatUTCTime(date: Date) {
+//   const hours = date.getUTCHours();
+//   const minutes = date.getUTCMinutes();
+
+//   const period = hours < 12 ? "AM" : "PM";
+//   const formattedHours = hours % 12 === 0 ? 12 : hours % 12;
+//   const formattedMinutes = minutes < 10 ? `0${minutes}` : minutes;
+
+//   return `${formattedHours}:${formattedMinutes} ${period}`;
+// }
 
 /**
  * A UserProfile component
@@ -27,12 +39,16 @@ const UserProfile = ({
   joinDate,
   img_src,
 }: UserProfileProps) => {
+
   // Format date properly
-  const dateString = joinDate.toLocaleString("en-NG", {
-    year: "numeric",
-    month: "numeric",
-    day: "numeric",
-  });
+
+  // const dateString = joinDate.toLocaleString("en-NG", {
+  //   year: "numeric",
+  //   month: "numeric",
+  //   day: "numeric",
+  // });
+
+  // const dateString = formatUTCTime(joinDate)
 
   // Set avatar
   const avatar = img_src ? img_src : FALLBACK_AVATAR_URL;
@@ -56,7 +72,7 @@ const UserProfile = ({
             {email}
           </IconText>
           <IconText icon={<CalendarMonthIcon className="text-gray-400" />}>
-            Joined {dateString}
+            Joined {joinDate}
           </IconText>
         </div>
       </div>
