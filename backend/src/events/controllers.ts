@@ -2,11 +2,11 @@ import { Request, Response } from "express";
 import { EventMode, EventStatus, Event, EventEnrollment } from "@prisma/client";
 import { EventDTO } from "./views";
 import userController from "../users/controllers";
-
-// We are using one connection to prisma client to prevent multiple connections
 import prisma from "../../client";
-// import sgMail from "@sendgrid/mail";
-// sgMail.setApiKey(process.env.SENDGRID_API_KEY!);
+import sgMail from "@sendgrid/mail";
+
+sgMail.setApiKey(process.env.SENDGRID_API_KEY as string);
+
 /**
  * Creates a new event and assign owner to it.
  * @param eventDTO contains the ownerID and the event body
@@ -145,17 +145,26 @@ const getEvent = async (eventID: string) => {
  */
 const getAttendees = async (eventID: string, userID: string) => {
   if (userID) {
-    return prisma.eventEnrollment.findMany({
+    // If userID is provided, return only the attendee connected to the userID and eventID
+    const checkAttendance = await prisma.eventEnrollment.findUnique({
       where: {
-        eventId: eventID,
-        userId: userID,
+        userId_eventId: {
+          userId: userID,
+          eventId: eventID,
+        },
       },
       include: {
-        event: true,
         user: true,
+        event: true,
       },
     });
+    if (checkAttendance) {
+      return checkAttendance;
+    } else {
+      return getEvent(eventID);
+    }
   }
+  // if userID is not provided, return all attendees of the event
   return prisma.eventEnrollment.findMany({
     where: {
       eventId: eventID,

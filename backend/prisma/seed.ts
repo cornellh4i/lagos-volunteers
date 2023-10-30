@@ -92,6 +92,7 @@ async function createPoolOfRandomEvents(pool: number) {
         location: event.location,
         startDate: event.startDate,
         endDate: event.endDate,
+        imageURL: event.imageURL,
         owner: {
           connect: {
             id: randomSuperVisor.id,

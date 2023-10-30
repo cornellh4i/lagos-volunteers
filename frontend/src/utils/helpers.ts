@@ -1,6 +1,13 @@
 import { BASE_URL } from "@/utils/constants";
+
 const url = BASE_URL as string;
 
+/* This functions performs a search in the DB based on the email of the user that
+is currently logged in. This is used in development because of differing seeded users
+in the database
+@param email: string
+@param token: string
+*/
 export const fetchUserIdFromDatabase = async (email: string, token: string) => {
 	try {
 		const fetchUrl = `${url}/users/search/?email=${email}`;
@@ -17,7 +24,6 @@ export const fetchUserIdFromDatabase = async (email: string, token: string) => {
 			console.error("User Retrieval failed with status:", response.status);
 		}
 	} catch (error) {
-		console.log("Error in User Info Retrieval.");
-		console.log(error);
+		console.error("Error in User Info Retrieval.");
 	}
 };
