@@ -87,12 +87,17 @@ eventRouter.post("/:eventid/attendees", async (req: Request, res: Response) => {
   );
 });
 
-eventRouter.delete(
-  "/:eventid/attendees/:attendeeid",
+eventRouter.patch(
+  "/:eventid/attendees",
   async (req: Request, res: Response) => {
     // #swagger.tags = ['Events']
+    const { attendeeid, cancelationMessage } = req.body;
     attempt(res, 200, () =>
-      eventController.deleteAttendee(req.params.eventid, req.params.attendeeid)
+      eventController.deleteAttendee(
+        req.params.eventid,
+        attendeeid,
+        cancelationMessage
+      )
     );
   }
 );

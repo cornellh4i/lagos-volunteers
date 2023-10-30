@@ -228,19 +228,27 @@ const sendEmail = async (userEmail: string | undefined, emailMsg: string) => {
  * @param attendeeID (String) id of user to add to event
  * @returns promise with eventid or error
  */
-const deleteAttendee = async (eventID: string, userID: string) => {
+const deleteAttendee = async (
+  eventID: string,
+  userID: string,
+  cancelationMessage: string
+) => {
   // grabs the user and their email for SendGrid fucntionality
   const user = await userController.getUserByID(userID);
   var userEmail = user?.email;
   // sets the email message
   const emailMsg = "USER REMOVED FROM THIS EVENT";
   sendEmail(userEmail, emailMsg);
-  return await prisma.eventEnrollment.delete({
+  return await prisma.eventEnrollment.update({
     where: {
       userId_eventId: {
         userId: userID,
         eventId: eventID,
       },
+    },
+    data: {
+      canceled: true,
+      cancelationMessage: cancelationMessage,
     },
   });
 };
