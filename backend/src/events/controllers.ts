@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { EventMode, EventStatus, Event, EventEnrollment } from "@prisma/client";
 import { EventDTO } from "./views";
+import userController from "../users/controllers";
 
 // We are using one connection to prisma client to prevent multiple connections
 import prisma from "../../client";
@@ -172,11 +173,12 @@ const getAttendees = async (eventID: string, userID: string) => {
  * @returns promise with user or error
  */
 const addAttendee = async (eventID: string, userID: string) => {
-  // first get the user email - I don't know how to do this
-  // without typescript being a .... about types
-  // var user_data = await getAttendees(eventID);
-  // var userEmail = user_data["data"][0]["email"];
-  sendEmail();
+  // grabs the user and their email for SendGrid fucntionality
+  const user = await userController.getUserByID(userID);
+  const userEmail = user?.email;
+  // sets the email message
+  const emailMsg = "USER WAS REGISTERED";
+  sendEmail(userEmail, emailMsg);
   return await prisma.eventEnrollment.create({
     data: {
       event: {
@@ -192,27 +194,23 @@ const addAttendee = async (eventID: string, userID: string) => {
     },
   });
 };
-const sendEmail = async () => {
-  // This function has a hardcoded sender and recepient. I tried to make
-  // the recepient dynamic but ....ing TYPESCRIPT!!! I assume the sender would
-  // be hard coded but in the future may want to place in an env var.
-  // Body of email will be done in later sprint.
+const sendEmail = async (userEmail: string | undefined, emailMsg: string) => {
   // Create an email message
-  // const msg = {
-  //   to: "lagosfoodbankdev@gmail.com", // Recipient's email address
-  //   from: "lagosfoodbankdev@gmail.com", // Sender's email address
-  //   subject: "Your Email Subject",
-  //   text: "USER WAS REGISTERED", // You can use HTML content as well
-  // };
-  // // Send the email
-  // sgMail
-  //   .send(msg)
-  //   .then(() => {
-  //     console.log("Email sent successfully");
-  //   })
-  //   .catch((error) => {
-  //     console.error("Error sending email:", error);
-  //   });
+  const msg = {
+    to: userEmail, // Recipient's email address
+    from: "lagosfoodbankdev@gmail.com", // Sender's email address
+    subject: "Your Email Subject",
+    text: emailMsg, // You can use HTML content as well
+  };
+  // Send the email
+  sgMail
+    .send(msg)
+    .then(() => {
+      console.log("Email sent successfully");
+    })
+    .catch((error) => {
+      console.error("Error sending email:", error);
+    });
 };
 
 /**
@@ -222,7 +220,12 @@ const sendEmail = async () => {
  * @returns promise with eventid or error
  */
 const deleteAttendee = async (eventID: string, userID: string) => {
-  sendEmail();
+  // grabs the user and their email for SendGrid fucntionality
+  const user = await userController.getUserByID(userID);
+  var userEmail = user?.email;
+  // sets the email message
+  const emailMsg = "USER REMOVED FROM THIS EVENT";
+  sendEmail(userEmail, emailMsg);
   return await prisma.eventEnrollment.delete({
     where: {
       userId_eventId: {
