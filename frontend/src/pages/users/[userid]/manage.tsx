@@ -12,6 +12,7 @@ type userProfileData = {
   role: string;
   email: string;
   joinDate: string;
+  userid: string;
 };
 
 interface ManageUserProfileProps {
@@ -88,6 +89,7 @@ const ManageUserProfilePage = () => {
           role: data["data"]["role"],
           email: data["data"]["email"],
           joinDate: formatDateString(data["data"]["createdAt"]),
+          userid: data["data"]["id"],
         });
       }
     } catch (error) {

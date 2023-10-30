@@ -15,7 +15,7 @@ import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
 import { IconButton } from "@mui/material";
 
 import { BASE_URL } from "@/utils/constants";
-// import { auth } from "@/utils/firebase";
+import { auth } from "@/utils/firebase";
 // import { useAuth } from "@/utils/AuthContext";
 // import { useRouter } from "next/router";
 
@@ -24,13 +24,34 @@ type userProfileData = {
   role: string;
   email: string;
   joinDate: string;
+  userid: string
 };
 
 interface ManageUserProfileProps {
   userProfileDetails: userProfileData;
 }
 
-const url = BASE_URL as string;
+type userStatusData = {
+  userStatus: string;
+};
+
+type userRegistrationData = {
+  userId: string;
+};
+
+function formatDateString(dateString: string) {
+  const date = new Date(dateString);
+  const month = (date.getMonth() + 1).toString().padStart(2, "0");
+  const day = date.getDate().toString().padStart(2, "0");
+  const year = date.getFullYear();
+  return `${month}/${day}/${year}`;
+}
+
+// interface userStatusProps {
+//   userStatusDetails: userStatusData;
+// }
+
+// const url = BASE_URL as string;
 
 // interface ManageUserProfileProps {
 //   userid: string;
@@ -39,8 +60,9 @@ const url = BASE_URL as string;
 /**
  * A ManageUserProfile component
  */
-const Status = () => {
-  const [role, setRole] = React.useState("Volunteer");
+
+const Status = ({ userStatus }: userStatusData) => {
+  const [role, setRole] = React.useState(userStatus);
 
   const handleChange = (event: SelectChangeEvent) => {
     setRole(event.target.value);
@@ -71,7 +93,9 @@ const Status = () => {
   );
 };
 
-const Registrations = () => {
+const Registrations = ({ userId }: userRegistrationData) => {
+  const [registeredEvents, setRegisteredEvents] = useState<any[]>([]);
+
   const eventColumns: GridColDef[] = [
     {
       field: "program",
@@ -82,7 +106,7 @@ const Registrations = () => {
     {
       field: "date",
       headerName: "Date",
-      type: "date",
+      type: "string",
       flex: 0.5,
       minWidth: 100,
     },
@@ -94,40 +118,101 @@ const Registrations = () => {
     },
   ];
 
-  let dummyDate: Date = new Date(2023, 0o1, 21);
-  let dummyDate1: Date = new Date(2023, 0o1, 23);
-  const dummyRows = [
-    {
-      id: 1,
-      program: "EDUFOOD",
-      date: dummyDate,
-      hours: 4,
-    },
-    {
-      id: 2,
-      program: "Malta Guinness Outreach",
-      date: dummyDate1,
-      hours: 4,
-    },
-    {
-      id: 3,
-      program: "EDUFOOD",
-      date: dummyDate,
-      hours: 4,
-    },
-    {
-      id: 4,
-      program: "EDUFOOD",
-      date: dummyDate,
-      hours: 4,
-    },
-  ];
+  // TODO: implement validation
+  const fetchUserDetails = async () => {
+    try {
+      const url = BASE_URL as string;
+      const fetchUrl = `${url}/users/${userId}/registered`;
+      const userToken = await auth.currentUser?.getIdToken();
+
+      console.log(userToken);
+
+      const response = await fetch(fetchUrl, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${userToken}`,
+        },
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        setRegisteredEvents(data["data"]["events"]);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    const fetchData = async () => {
+      // validation is taking a lot of time
+      // validateUser();
+      // console.log("passed validation");
+
+      // if (validUser) {
+      fetchUserDetails();
+      console.log("passed fetch user");
+      // }
+    };
+
+    fetchData();
+  }, []);
+
+  // TODO: how to ensure setRegisteredEvents is called before this is executed
+  const eventRows = registeredEvents.map(event => ({
+    id: event.event.id,
+    program: event.event.name,
+    date: formatDateString(event.event.startDate),
+    hours: "4" // TODO: how to get hours for event?
+  }));
+
+
+
+  // const dummyRows = events.map((event, index) => ({
+  //   id: index + 1, // You can adjust this if you have an actual ID to use
+  //   program: event.event.name,
+  //   date: new Date(event.event.startDate),
+  //   hours: 4, // You can set the hours as needed
+  // }));
+
+
+  // let dummyDate: Date = new Date(2023, 0o1, 21);
+  // let dummyDate1: Date = new Date(2023, 0o1, 23);
+  // const dummyRows = [
+  //   {
+  //     id: 1,
+  //     program: "EDUFOOD",
+  //     date: dummyDate,
+  //     hours: 4,
+  //   },
+  //   {
+  //     id: 2,
+  //     program: "Malta Guinness Outreach",
+  //     date: dummyDate1,
+  //     hours: 4,
+  //   },
+  //   {
+  //     id: 3,
+  //     program: "EDUFOOD",
+  //     date: dummyDate,
+  //     hours: 4,
+  //   },
+  //   {
+  //     id: 4,
+  //     program: "EDUFOOD",
+  //     date: dummyDate,
+  //     hours: 4,
+  //   },
+  // ];
+
+
   return (
     <>
       <IconText icon={<HourglassEmptyIcon className="text-gray-400" />}>
         <div className="font-bold">20 Hours Volunteered</div>
       </IconText>
-      <Table columns={eventColumns} rows={dummyRows} />
+      <Table columns={eventColumns} rows={eventRows} />
     </>
   );
 };
@@ -186,10 +271,14 @@ const ManageUserProfile = ({ userProfileDetails }: ManageUserProfileProps) => {
   // };
 
   const tabs = [
-    { label: "Status", panel: <Status /> },
-    { label: "Registrations", panel: <Registrations /> },
+    {
+      label: "Status",
+      panel: <Status userStatus={userProfileDetails.role} />,
+    },
+    { label: "Registrations", panel: <Registrations userId={userProfileDetails.userid}/> },
     { label: "Verify Certificate Request", panel: <VerifyCertificate /> },
   ];
+
   return (
     <>
       <IconText
