@@ -4,8 +4,8 @@ import { EventDTO } from "./views";
 
 // We are using one connection to prisma client to prevent multiple connections
 import prisma from "../../client";
-import sgMail from "@sendgrid/mail";
-sgMail.setApiKey(process.env.SENDGRID_API_KEY!);
+// import sgMail from "@sendgrid/mail";
+// sgMail.setApiKey(process.env.SENDGRID_API_KEY!);
 /**
  * Creates a new event and assign owner to it.
  * @param eventDTO contains the ownerID and the event body
@@ -121,7 +121,7 @@ const getPastEvents = async () => {
  * @returns promise with all event info or error
  */
 
-const getEvent = async (eventID: string, userID: string, status?: string) => {
+const getEvent = async (eventID: string) => {
   return prisma.event.findUnique({
     where: {
       id: eventID,
@@ -133,14 +133,6 @@ const getEvent = async (eventID: string, userID: string, status?: string) => {
         },
       },
       tags: true,
-      attendees: status
-        ? {
-            where: {
-              userId: userID,
-              eventId: eventID,
-            },
-          }
-        : true,
     },
   });
 };
@@ -150,7 +142,19 @@ const getEvent = async (eventID: string, userID: string, status?: string) => {
  * @param eventID (String)
  * @returns promise with all attendees of the event or error
  */
-const getAttendees = async (eventID: string) => {
+const getAttendees = async (eventID: string, userID: string) => {
+  if (userID) {
+    return prisma.eventEnrollment.findMany({
+      where: {
+        eventId: eventID,
+        userId: userID,
+      },
+      include: {
+        event: true,
+        user: true,
+      },
+    });
+  }
   return prisma.eventEnrollment.findMany({
     where: {
       eventId: eventID,
@@ -192,25 +196,23 @@ const sendEmail = async () => {
   // This function has a hardcoded sender and recepient. I tried to make
   // the recepient dynamic but ....ing TYPESCRIPT!!! I assume the sender would
   // be hard coded but in the future may want to place in an env var.
-
   // Body of email will be done in later sprint.
-
   // Create an email message
-  const msg = {
-    to: "lagosfoodbankdev@gmail.com", // Recipient's email address
-    from: "lagosfoodbankdev@gmail.com", // Sender's email address
-    subject: "Your Email Subject",
-    text: "USER WAS REGISTERED", // You can use HTML content as well
-  };
-  // Send the email
-  sgMail
-    .send(msg)
-    .then(() => {
-      console.log("Email sent successfully");
-    })
-    .catch((error) => {
-      console.error("Error sending email:", error);
-    });
+  // const msg = {
+  //   to: "lagosfoodbankdev@gmail.com", // Recipient's email address
+  //   from: "lagosfoodbankdev@gmail.com", // Sender's email address
+  //   subject: "Your Email Subject",
+  //   text: "USER WAS REGISTERED", // You can use HTML content as well
+  // };
+  // // Send the email
+  // sgMail
+  //   .send(msg)
+  //   .then(() => {
+  //     console.log("Email sent successfully");
+  //   })
+  //   .catch((error) => {
+  //     console.error("Error sending email:", error);
+  //   });
 };
 
 /**

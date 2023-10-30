@@ -68,16 +68,15 @@ eventRouter.get("/past", async (req: Request, res: Response) => {
 });
 
 eventRouter.get("/:eventid", async (req: Request, res: Response) => {
-  // #swagger.tags = ['Events']
-  const userId = req.query.userId as string;
-  const status = req.query.status as string;
-
-  attempt(res, 200, () => eventController.getEvent(req.params.eventid, userId, status));
+  attempt(res, 200, () => eventController.getEvent(req.params.eventid));
 });
 
 eventRouter.get("/:eventid/attendees", async (req: Request, res: Response) => {
   // #swagger.tags = ['Events']
-  attempt(res, 200, () => eventController.getAttendees(req.params.eventid));
+  const userId = req.query.userId as string;
+  attempt(res, 200, () =>
+    eventController.getAttendees(req.params.eventid, userId)
+  );
 });
 
 eventRouter.post("/:eventid/attendees", async (req: Request, res: Response) => {

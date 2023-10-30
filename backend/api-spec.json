@@ -446,9 +446,6 @@
         "responses": {}
       },
       "get": {
-        "tags": [
-          "Events"
-        ],
         "description": "",
         "parameters": [
           {
@@ -502,6 +499,11 @@
             "name": "eventid",
             "in": "path",
             "required": true,
+            "type": "string"
+          },
+          {
+            "name": "userId",
+            "in": "query",
             "type": "string"
           }
         ],
