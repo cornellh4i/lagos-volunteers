@@ -18,17 +18,6 @@ interface UserProfileProps {
   img_src?: string;
 }
 
-// function formatUTCTime(date: Date) {
-//   const hours = date.getUTCHours();
-//   const minutes = date.getUTCMinutes();
-
-//   const period = hours < 12 ? "AM" : "PM";
-//   const formattedHours = hours % 12 === 0 ? 12 : hours % 12;
-//   const formattedMinutes = minutes < 10 ? `0${minutes}` : minutes;
-
-//   return `${formattedHours}:${formattedMinutes} ${period}`;
-// }
-
 /**
  * A UserProfile component
  */
@@ -40,19 +29,8 @@ const UserProfile = ({
   img_src,
 }: UserProfileProps) => {
 
-  // Format date properly
-
-  // const dateString = joinDate.toLocaleString("en-NG", {
-  //   year: "numeric",
-  //   month: "numeric",
-  //   day: "numeric",
-  // });
-
-  // const dateString = formatUTCTime(joinDate)
-
   // Set avatar
   const avatar = img_src ? img_src : FALLBACK_AVATAR_URL;
-
   return (
     <div className="flex">
       <div className="flex items-center">

@@ -13,18 +13,16 @@ import LinearProgress from "@mui/material/LinearProgress";
 import Link from "next/link";
 import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
 import { IconButton } from "@mui/material";
-
 import { BASE_URL } from "@/utils/constants";
 import { auth } from "@/utils/firebase";
-// import { useAuth } from "@/utils/AuthContext";
-// import { useRouter } from "next/router";
 
 type userProfileData = {
   name: string;
   role: string;
   email: string;
   joinDate: string;
-  userid: string
+  userid: string;
+  hours: number;
 };
 
 interface ManageUserProfileProps {
@@ -37,6 +35,11 @@ type userStatusData = {
 
 type userRegistrationData = {
   userId: string;
+  totalHours: number;
+};
+
+type verifyData = {
+  totalHours: number;
 };
 
 function formatDateString(dateString: string) {
@@ -46,16 +49,6 @@ function formatDateString(dateString: string) {
   const year = date.getFullYear();
   return `${month}/${day}/${year}`;
 }
-
-// interface userStatusProps {
-//   userStatusDetails: userStatusData;
-// }
-
-// const url = BASE_URL as string;
-
-// interface ManageUserProfileProps {
-//   userid: string;
-// }
 
 /**
  * A ManageUserProfile component
@@ -79,9 +72,9 @@ const Status = ({ userStatus }: userStatusData) => {
           size="small"
           className="text-lg"
         >
-          <MenuItem value="Volunteer">Volunteer</MenuItem>
-          <MenuItem value="Supervisor">Supervisor</MenuItem>
-          <MenuItem value="Admin">Admin</MenuItem>
+          <MenuItem value="VOLUNTEER">Volunteer</MenuItem>
+          <MenuItem value="SUPERVISOR">Supervisor</MenuItem>
+          <MenuItem value="ADMIN">Admin</MenuItem>
         </Select>
       </FormControl>
 
@@ -93,7 +86,7 @@ const Status = ({ userStatus }: userStatusData) => {
   );
 };
 
-const Registrations = ({ userId }: userRegistrationData) => {
+const Registrations = ({ userId, totalHours }: userRegistrationData) => {
   const [registeredEvents, setRegisteredEvents] = useState<any[]>([]);
 
   const eventColumns: GridColDef[] = [
@@ -146,9 +139,8 @@ const Registrations = ({ userId }: userRegistrationData) => {
 
   useEffect(() => {
     const fetchData = async () => {
-      // validation is taking a lot of time
+      // TODO: address why validation is taking a lot of time
       // validateUser();
-      // console.log("passed validation");
 
       // if (validUser) {
       fetchUserDetails();
@@ -159,74 +151,37 @@ const Registrations = ({ userId }: userRegistrationData) => {
     fetchData();
   }, []);
 
-  // TODO: how to ensure setRegisteredEvents is called before this is executed
-  const eventRows = registeredEvents.map(event => ({
+  const eventRows = registeredEvents.map((event) => ({
     id: event.event.id,
     program: event.event.name,
     date: formatDateString(event.event.startDate),
-    hours: "4" // TODO: how to get hours for event?
+    hours: 4, // TODO: how to get hours for event?
   }));
-
-
-
-  // const dummyRows = events.map((event, index) => ({
-  //   id: index + 1, // You can adjust this if you have an actual ID to use
-  //   program: event.event.name,
-  //   date: new Date(event.event.startDate),
-  //   hours: 4, // You can set the hours as needed
-  // }));
-
-
-  // let dummyDate: Date = new Date(2023, 0o1, 21);
-  // let dummyDate1: Date = new Date(2023, 0o1, 23);
-  // const dummyRows = [
-  //   {
-  //     id: 1,
-  //     program: "EDUFOOD",
-  //     date: dummyDate,
-  //     hours: 4,
-  //   },
-  //   {
-  //     id: 2,
-  //     program: "Malta Guinness Outreach",
-  //     date: dummyDate1,
-  //     hours: 4,
-  //   },
-  //   {
-  //     id: 3,
-  //     program: "EDUFOOD",
-  //     date: dummyDate,
-  //     hours: 4,
-  //   },
-  //   {
-  //     id: 4,
-  //     program: "EDUFOOD",
-  //     date: dummyDate,
-  //     hours: 4,
-  //   },
-  // ];
-
 
   return (
     <>
       <IconText icon={<HourglassEmptyIcon className="text-gray-400" />}>
-        <div className="font-bold">20 Hours Volunteered</div>
+        <div className="font-bold">
+          {totalHours.toString()} Hours Volunteered
+        </div>
       </IconText>
       <Table columns={eventColumns} rows={eventRows} />
     </>
   );
 };
 
-const VerifyCertificate = () => {
+const VerifyCertificate = ({ totalHours }: verifyData) => {
   return (
     <div className="space-y-4">
       <div className="grid grid-cols-3 space-y-1">
-        <div className="grid col-span-full font-bold">TOTAL HOURS: 20</div>
+        <div className="grid col-span-full font-bold">
+          TOTAL HOURS: {totalHours.toString()}
+        </div>
         <div className="grid col-span-full sm:col-span-1">
           <LinearProgress value={50} variant="determinate" color="inherit" />
         </div>
         <div className="grid col-span-full">
-          20 more hours until eligible for certificate
+          {totalHours.toString()} more hours until eligible for certificate
         </div>
       </div>
 
@@ -238,45 +193,24 @@ const VerifyCertificate = () => {
 };
 
 const ManageUserProfile = ({ userProfileDetails }: ManageUserProfileProps) => {
-  // const router = useRouter();
-  // const { user } = useAuth();
-
-  // const fetchUserDetails = async () => {
-  //   try {
-  //     const fetchUrl = `${url}/users/search/?email=${userProfileDetails.email}`;
-  //     // const fetchRegsUrl = `${url}/users/search/?email=${user?.email}`;
-  //     const userToken = await auth.currentUser?.getIdToken();
-
-  //     console.log(userToken)
-
-  //     const response = await fetch(fetchUrl, {
-  //       method: "GET",
-  //       headers: {
-  //         Authorization: `Bearer ${userToken}`,
-  //       },
-  //     });
-
-  //     // Response Management
-  //     if (response.ok) {
-  //       const data = await response.json();
-  //       // const userStatus = data["data"][0]["status"];
-  //       // const userCert = data["data"][0]["verified"];
-  //     } else {
-  //       console.error("User Retrieval failed with status:", response.status);
-  //     }
-  //   } catch (error) {
-  //     console.log("Error in User Info Retrieval.");
-  //     console.log(error);
-  //   }
-  // };
-
   const tabs = [
     {
       label: "Status",
       panel: <Status userStatus={userProfileDetails.role} />,
     },
-    { label: "Registrations", panel: <Registrations userId={userProfileDetails.userid}/> },
-    { label: "Verify Certificate Request", panel: <VerifyCertificate /> },
+    {
+      label: "Registrations",
+      panel: (
+        <Registrations
+          userId={userProfileDetails.userid}
+          totalHours={userProfileDetails.hours}
+        />
+      ),
+    },
+    {
+      label: "Verify Certificate Request",
+      panel: <VerifyCertificate totalHours={userProfileDetails.hours} />,
+    },
   ];
 
   return (
@@ -300,7 +234,6 @@ const ManageUserProfile = ({ userProfileDetails }: ManageUserProfileProps) => {
           joinDate={userProfileDetails.joinDate}
         />
       </div>
-
       <TabContainer tabs={tabs} />
     </>
   );

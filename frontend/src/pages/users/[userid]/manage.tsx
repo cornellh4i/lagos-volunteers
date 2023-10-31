@@ -13,11 +13,8 @@ type userProfileData = {
   email: string;
   joinDate: string;
   userid: string;
+  hours: number;
 };
-
-interface ManageUserProfileProps {
-  userProfileDetails: userProfileData;
-}
 
 function formatDateString(dateString: string) {
   const date = new Date(dateString);
@@ -90,6 +87,7 @@ const ManageUserProfilePage = () => {
           email: data["data"]["email"],
           joinDate: formatDateString(data["data"]["createdAt"]),
           userid: data["data"]["id"],
+          hours: data["data"]["hours"]
         });
       }
     } catch (error) {
@@ -99,7 +97,7 @@ const ManageUserProfilePage = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-      // validation is taking a lot of time
+      // TODO: address why validation is taking a lot of time
       validateUser();
       console.log("passed validation");
 
