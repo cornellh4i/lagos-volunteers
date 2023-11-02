@@ -92,7 +92,6 @@ const getEvents = async (req: Request) => {
         userId: userId,
       },
     };
-    includeDict["attendees"] = true;
   }
   let cursor = undefined;
   let skip = undefined;
