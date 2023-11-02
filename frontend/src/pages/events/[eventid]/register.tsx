@@ -48,14 +48,15 @@ function formatUTCTime(date: Date) {
 const EventRegistration = () => {
 	const router = useRouter();
 	const { eventid } = router.query;
-	const [eventDetails, setEventDetails] = useState<
-		eventData | null | undefined
-	>(null);
+	const [eventDetails, setEventDetails] = useState<eventData | null>(null);
 	const [attendees, setAttendees] = useState<any[]>([]);
 	const [isRegistered, setIsRegistered] = useState<boolean>(false);
 
 	const { user } = useAuth();
 	const url = BASE_URL as string;
+	useEffect(() => {
+		fetchEventDetails();
+	}, []);
 
 	const fetchEventDetails = async () => {
 		const userToken = await auth.currentUser?.getIdToken();
@@ -64,7 +65,7 @@ const EventRegistration = () => {
 				user?.email as string,
 				userToken as string
 			);
-			const fetchUrl = `${url}/events/${eventid}/attendees?userid=${userId}`;
+			const fetchUrl = `${url}/users/${userId}/registered?eventid=${eventid}`;
 			const response = await fetch(fetchUrl, {
 				method: "GET",
 				headers: {
@@ -73,48 +74,42 @@ const EventRegistration = () => {
 			});
 
 			const data = await response.json();
-			console.log(data);
-			if (response.ok) {
-				if (data["data"]) {
-					setEventDetails({
-						eventid: data["data"]["id"],
-						location: data["data"]["location"],
-						datetime: formatDateTimeRange(
-							data["data"]["startDate"],
-							data["data"]["endDate"]
-						),
-						supervisors: [
-							data["data"]["owner"]["profile"]["firstName"] +
-								" " +
-								data["data"]["owner"]["profile"]["lastName"],
-						],
-						capacity: data["data"]["capacity"],
-						image_src: data["data"]["imageURL"],
-						tags: data["data"]["tags"],
-					});
-					setIsRegistered(true);
-				} else {
-					setIsRegistered(false);
-				}
 
-				// setAttendees(data["user"]["attendees"]);
+			const event = data["data"]["eventDetails"];
+			setEventDetails({
+				eventid: event["id"],
+				location: event["location"],
+				datetime: formatDateTimeRange(event["startDate"], event["endDate"]),
+				capacity: event["capacity"],
+				image_src: event["imageURL"],
+				tags: event["tags"],
+				supervisors: [
+					event["owner"]["profile"]["firstName"] +
+						" " +
+						event["owner"]["profile"]["lastName"],
+				],
+			});
+
+			if (
+				data["data"]["attendance"] &&
+				data["data"]["attendance"]["canceled"]
+			) {
+				router.push(`/events/${eventid}/cancel`);
+			} else if (data["data"]["attendance"]) {
+				setIsRegistered(true);
+			} else {
+				setIsRegistered(false);
 			}
 		} catch (error) {
 			console.log(error);
 		}
 	};
 
-	useEffect(() => {
-		fetchEventDetails();
-	}, []);
-
-	// const isAttendeeListEmpty = attendees.length === 0;
-
 	return (
 		<CenteredTemplate>
 			{eventDetails ? (
 				// If attendees is empty -> return RegisterForm
-				isRegistered ? (
+				!isRegistered ? (
 					<EventRegisterForm eventDetails={eventDetails} />
 				) : (
 					// If attendees is not empty (has 1 entry) -> return RegisterConfirmation

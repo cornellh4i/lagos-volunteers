@@ -146,7 +146,7 @@ const getEvent = async (eventID: string) => {
 const getAttendees = async (eventID: string, userID: string) => {
   if (userID) {
     // If userID is provided, return only the attendee connected to the userID and eventID
-    const checkAttendance = await prisma.eventEnrollment.findUnique({
+    return prisma.eventEnrollment.findUnique({
       where: {
         userId_eventId: {
           userId: userID,
@@ -158,11 +158,6 @@ const getAttendees = async (eventID: string, userID: string) => {
         event: true,
       },
     });
-    if (checkAttendance) {
-      return checkAttendance;
-    } else {
-      return getEvent(eventID);
-    }
   }
   // if userID is not provided, return all attendees of the event
   return prisma.eventEnrollment.findMany({

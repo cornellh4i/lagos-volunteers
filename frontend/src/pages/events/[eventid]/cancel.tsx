@@ -51,7 +51,6 @@ const EventCancellation = () => {
 	const [eventDetails, setEventDetails] = useState<
 		eventData | null | undefined
 	>(null);
-	const [attendees, setAttendees] = useState<any[]>([]);
 	const [attendeeCanceled, setAttendeeCanceled] = useState<boolean>(false);
 
 	const { user } = useAuth();
@@ -66,7 +65,7 @@ const EventCancellation = () => {
 				user?.email as string,
 				userToken as string
 			);
-			const fetchUrl = `${url}/events/${eventid}/?userId=${userId} & status=${"true"}`;
+			const fetchUrl = `${url}/users/${userId}/registered?eventid=${eventid}`;
 
 			const response = await fetch(fetchUrl, {
 				method: "GET",
@@ -77,32 +76,29 @@ const EventCancellation = () => {
 
 			const data = await response.json();
 
+			const event = data["data"]["eventDetails"];
+
 			if (response.ok) {
 				setEventDetails({
-					eventid: data["data"]["id"],
-					location: data["data"]["location"],
-					datetime: formatDateTimeRange(
-						data["data"]["startDate"],
-						data["data"]["endDate"]
-					),
+					eventid: event["id"],
+					location: event["location"],
+					datetime: formatDateTimeRange(event["startDate"], event["endDate"]),
 					supervisors: [
-						data["data"]["owner"]["profile"]["firstName"] +
+						event["owner"]["profile"]["firstName"] +
 							" " +
-							data["data"]["owner"]["profile"]["lastName"],
+							event["owner"]["profile"]["lastName"],
 					],
-					capacity: data["data"]["capacity"],
-					image_src: data["data"]["imageURL"],
-					tags: data["data"]["tags"],
+					capacity: event["capacity"],
+					image_src: event["imageURL"],
+					tags: event["tags"],
 				});
 
-				setAttendees(data["data"]["attendees"]);
-
-				if (data["data"]["attendees"].length > 0) {
-					setAttendeeCanceled(data["data"]["attendees"]["canceled"]);
+				if (data["data"]["attendance"]) {
+					setAttendeeCanceled(data["data"]["attendance"]["canceled"]);
 				}
 
 				// If attendees is empty -> route to register form
-				if (attendeeCanceled || data["data"]["attendees"].length === 0) {
+				if (attendeeCanceled || !data["data"]["attendance"]) {
 					router.replace(`/events/${eventid}/register`);
 				}
 			}

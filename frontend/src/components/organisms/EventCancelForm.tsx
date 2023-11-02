@@ -60,18 +60,20 @@ const ModalBody = ({
 		console.log("FETCHED_USER");
 		console.log(attendeeid);
 
-		const fetchUrl = `${url}/events/` + eventid + `/attendees/` + attendeeid;
+		const fetchUrl = `${url}/events/${eventid}/attendees`;
 		console.log("FETCHED_URL");
 		console.log(fetchUrl);
+
 		const cancellationData = {
 			attendeeid: attendeeid,
 			cancelationMessage: cancelationMessage,
 		};
 		try {
 			const response = await fetch(fetchUrl, {
-				method: "PATCH",
+				method: "PUT",
 				headers: {
 					Authorization: `Bearer ${userToken}`,
+					"Content-Type": "application/json",
 				},
 				body: JSON.stringify(cancellationData),
 			});
@@ -86,8 +88,7 @@ const ModalBody = ({
 			console.error("Network error:", error);
 		}
 
-		router.replace(`/events/${eventid}/cancel`);
-		window.location.reload(); // Call on reload to reroute page
+		router.reload();
 	};
 
 	return (

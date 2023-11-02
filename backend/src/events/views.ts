@@ -87,20 +87,18 @@ eventRouter.post("/:eventid/attendees", async (req: Request, res: Response) => {
   );
 });
 
-eventRouter.patch(
-  "/:eventid/attendees",
-  async (req: Request, res: Response) => {
-    // #swagger.tags = ['Events']
-    const { attendeeid, cancelationMessage } = req.body;
-    attempt(res, 200, () =>
-      eventController.deleteAttendee(
-        req.params.eventid,
-        attendeeid,
-        cancelationMessage
-      )
-    );
-  }
-);
+eventRouter.put("/:eventid/attendees", async (req: Request, res: Response) => {
+  // #swagger.tags = ['Events']
+  const { attendeeid, cancelationMessage } = req.body;
+  console.log(attendeeid, cancelationMessage);
+  attempt(res, 200, () =>
+    eventController.deleteAttendee(
+      req.params.eventid,
+      attendeeid,
+      cancelationMessage
+    )
+  );
+});
 
 eventRouter.patch("/:eventid/status", async (req: Request, res: Response) => {
   // #swagger.tags = ['Events']
