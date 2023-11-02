@@ -53,7 +53,7 @@ const getEvents = async () => {
  * @returns promise with eventID or error.
  */
 const updateEvent = async (eventID: string, event: Event) => {
-  let res = prisma.event.update({
+  return prisma.event.update({
     where: {
       id: eventID,
     },
@@ -61,7 +61,6 @@ const updateEvent = async (eventID: string, event: Event) => {
       ...event,
     },
   });
-  return res;
 };
 
 /**
