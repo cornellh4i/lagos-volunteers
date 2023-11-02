@@ -9,7 +9,7 @@ import { errorJson, successJson } from "./jsonResponses";
 export const attempt = async (
   res: Response,
   successCode: number,
-  controller: () => Promise<unknown>
+  controller: () => Promise<any>
 ) => {
   try {
     res.status(successCode).send(successJson(await controller()));

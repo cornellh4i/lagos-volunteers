@@ -1,15 +1,14 @@
-import React from "react";
+import React, { ChangeEvent, FormEvent } from "react";
 import Table from "@/components/molecules/Table";
 import TabContainer from "@/components/molecules/TabContainer";
 import Button from "../atoms/Button";
 import { GridColDef } from "@mui/x-data-grid";
 import AccountBoxIcon from "@mui/icons-material/AccountBox";
 import SearchBar from "@/components/atoms/SearchBar";
-// ADD MINWIDTH
+import IconText from "../atoms/IconText";
+import Link from "next/link";
+
 interface ManageUsersProps {}
-/**
- * A ManageUsers component
- */
 
 const Active = () => {
   const eventColumns: GridColDef[] = [
@@ -63,7 +62,7 @@ const Active = () => {
       headerName: "",
       field: "actions",
       flex: 0.6,
-      minWidth: 120,
+      minWidth: 180,
       renderCell: () => (
         <div
           style={{
@@ -72,7 +71,11 @@ const Active = () => {
             justifyContent: "flex-end",
           }}
         >
-          <Button color="gray">View Profile</Button>
+          <Link href="/users/asdf/manage" className="no-underline">
+            <Button color="gray">
+              <IconText icon={<AccountBoxIcon />}>View Profile</IconText>
+            </Button>
+          </Link>
         </div>
       ),
     },
@@ -213,20 +216,42 @@ const Active = () => {
 
   return (
     <div>
-      <Table columns={eventColumns} rows={dummyRows} boldHeader={true} />
+      <Table columns={eventColumns} rows={dummyRows} />
     </div>
   );
 };
+
 
 const ManageUsers = ({}: ManageUsersProps) => {
   const tabs = [
     { label: "Active", panel: <Active /> },
     { label: "Blacklisted", panel: <Active /> }, // need to change panel for Blacklisted
   ];
+
+  // Search bar
+  const [value, setValue] = React.useState("");
+  const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
+    setValue(event.target.value);
+  };
+  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+    // Prevent page refresh
+    event.preventDefault();
+
+    // Actual function
+    console.log(value);
+  };
+
   return (
     <>
       <div className="font-semibold text-3xl">Manage Members</div>
-      <br></br> {/* add search bar */}
+      <div className="pt-5 pb-5 w-full sm:w-[600px]">
+        <SearchBar
+          placeholder="Search member by name, email"
+          value={value}
+          onChange={handleChange}
+          onClick={handleSubmit}
+        />
+      </div>
       <div>
         <TabContainer tabs={tabs} />
       </div>

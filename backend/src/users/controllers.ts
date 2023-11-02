@@ -103,7 +103,7 @@ const getUsersPaginated = async (req: Request) => {
  */
 const getSearchedUser = async (
   req: Request,
-  email?: string,
+  email?: string | string[],
   role?: userRole,
   firstName?: string,
   lastName?: string,
