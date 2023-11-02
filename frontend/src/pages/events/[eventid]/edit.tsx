@@ -6,7 +6,9 @@ import { auth } from "@/utils/firebase";
 import { useAuth } from "@/utils/AuthContext";
 import { BASE_URL } from "@/utils/constants";
 
+
 type eventData = {
+  eventId: string | string[] | undefined;
   eventName: string;
   location: string;
   volunteerSignUpCap: string;
@@ -15,7 +17,10 @@ type eventData = {
   rsvpLinkImage: string;
   startDate: string;
   endDate: string;
+  startTime: string; 
+  endTime: string;
   mode: string;
+  
 };
 
 /** An EditEvent page */
@@ -25,7 +30,7 @@ const EditEvent = () => {
   const [eventDetails, setEventDetails] = useState<
     eventData | null | undefined
   >(null);
-  
+
   const fetchEventDetails = async () => {
     try {
       const url = BASE_URL as string;
@@ -38,7 +43,9 @@ const EditEvent = () => {
         },
       });
       const data = await response.json();
+      console.log("initial data", data);
       setEventDetails({
+        eventId: eventid,
         eventName: data["data"]["name"],
         // location: data["data"]["location"],
         location: "location2",
@@ -48,12 +55,13 @@ const EditEvent = () => {
         rsvpLinkImage: data["data"]["rsvpLinkImage"] || "",
         startDate: data["data"]["startDate"],
         endDate: data["data"]["endDate"],
+        startTime: data["data"]["startDate"],
+        endTime: data["data"]["endDate"],
         mode: data["data"]["mode"],
       });
     } catch (error) {
       console.log(error);
     }
-    
   };
 
   useEffect(() => {
@@ -63,10 +71,10 @@ const EditEvent = () => {
   return (
     <CenteredTemplate>
       {eventDetails ? (
-      <EventForm eventType="edit" eventDetails={eventDetails} />
-    ) : (
-      <div>Getting your data...</div>
-    )}
+        <EventForm eventType="edit" eventDetails={eventDetails} />
+      ) : (
+        <div>Getting your data...</div>
+      )}
     </CenteredTemplate>
   );
 };

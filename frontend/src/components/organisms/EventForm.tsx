@@ -25,6 +25,7 @@ interface EventFormProps {
 }
 
 type FormValues = {
+  eventId: string | string[] | undefined;
   eventName: string;
   location: string;
   volunteerSignUpCap: string;
@@ -33,6 +34,8 @@ type FormValues = {
   rsvpLinkImage: string;
   startDate: string;
   endDate: string;
+  startTime: string;
+  endTime: string;
   mode: string;
 };
 
@@ -63,6 +66,8 @@ const convertToISO = (inputTime: string, inputDate: string) => {
       }
     }
   }
+  console.log("new time", time.substring(timeIndex));
+  console.log("new date", date.substring(0, dateIndex));
   const rawDateTime = date.substring(0, dateIndex) + time.substring(timeIndex);
   const res = dayjs(rawDateTime).toJSON();
   return res;
@@ -85,10 +90,10 @@ const EventForm = ({ eventType, eventDetails }: EventFormProps) => {
     eventDetails ? eventDetails.endDate : ""
   );
   const [getStartTime, setStartTime] = React.useState(
-    eventDetails ? eventDetails.startDate : ""
+    eventDetails ? eventDetails.startTime : ""
   );
   const [getEndTime, setEndTime] = React.useState(
-    eventDetails ? eventDetails.endDate : ""
+    eventDetails ? eventDetails.endTime : ""
   );
   const radioHandler = (status: number) => {
     setStatus(status);
@@ -103,6 +108,7 @@ const EventForm = ({ eventType, eventDetails }: EventFormProps) => {
     eventDetails
       ? {
           defaultValues: {
+            eventId: eventDetails.eventId,
             eventName: eventDetails.eventName,
             location: eventDetails.location,
             volunteerSignUpCap: eventDetails.volunteerSignUpCap,
@@ -114,6 +120,7 @@ const EventForm = ({ eventType, eventDetails }: EventFormProps) => {
       : {}
   );
 
+  /*fetch userId for ownerId*/
   const fetchUserDetails = async () => {
     try {
       const fetchUrl = `${url}/users/search/?email=${user?.email}`;
@@ -140,7 +147,12 @@ const EventForm = ({ eventType, eventDetails }: EventFormProps) => {
     const mode = status === 0 ? "VIRTUAL" : "IN_PERSON";
     const startDateTime = convertToISO(getStartTime, getStartDate);
     const endDateTime = convertToISO(getEndTime, getEndDate);
+    console.log("start time", getStartTime, " start date", getStartDate);
+    console.log("end time", getEndTime, " end date", getEndDate);
+    console.log("startdatetime:", startDateTime)
+    console.log("enddatetime", endDateTime);
     const {
+      eventId,
       eventName,
       location,
       volunteerSignUpCap,
@@ -150,9 +162,12 @@ const EventForm = ({ eventType, eventDetails }: EventFormProps) => {
     } = data;
 
     const userid = await fetchUserDetails();
-    const fetchUrl = `${url}/events`;
+    const fetchCreateEventsUrl = `${url}/events`;
+    const fetchEditEventsUrl = `${url}/events/${eventId}`;
+    console.log("eventId", eventId);
+    console.log("edit endpoint", fetchCreateEventsUrl);
     try {
-      const body = {
+      const createBody = {
         userID: `${userid}`,
         event: {
           name: `${eventName}`,
@@ -164,22 +179,49 @@ const EventForm = ({ eventType, eventDetails }: EventFormProps) => {
           mode: `${mode}`,
         },
       };
+      const editBody = {
+          name: `${eventName}`,
+          location: `${location}`,
+          description: `${eventDescription}`,
+          startDate: `${startDateTime}`,
+          endDate: `${endDateTime}`,
+          capacity: +volunteerSignUpCap,
+          mode: `${mode}`,
+      };
       const userToken = await auth.currentUser?.getIdToken();
-      const response = await fetch(fetchUrl, {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${userToken}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(body),
-      });
-      if (response.ok) {
-        console.log("Successfully Registered Attendee to Event.");
-        console.log(response);
+      eventType == "edit"
+        ? console.log("edit", editBody)
+        : console.log("create", createBody);
+      const response =
+        eventType == "create"
+          ? await fetch(fetchCreateEventsUrl, {
+              method: "POST",
+              headers: {
+                Authorization: `Bearer ${userToken}`,
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify(createBody),
+            })
+          : await fetch(fetchEditEventsUrl, {
+              method: "PUT",
+              headers: {
+                Authorization: `Bearer ${userToken}`,
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify(editBody),
+            });
+      console.log(response);
+
+      if (eventType == "create") {
+          response.ok
+          ? console.log("Successfully Created Event.")
+          : console.error("Unable to Create Event with Status", response.status);
         const data = await response.json();
         console.log(data);
       } else {
-        console.error("Unable to Create Event", response.status);
+        response.ok
+          ? console.log("Successfully Updated Event")
+          : console.error("Unable to Update Event with Status:", response.status);
       }
     } catch (error) {
       console.error("Network error:", error);
@@ -189,8 +231,7 @@ const EventForm = ({ eventType, eventDetails }: EventFormProps) => {
   return (
     <form onSubmit={handleSubmit(handleCreateEvent)} className="space-y-4">
       <div className="font-bold text-3xl">
-        {" "}
-        {eventType == "create" ? "Create Event" : "Edit Event "}{" "}
+        {eventType == "create" ? "Create Event" : "Edit Event"}{" "}
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2  col-span-2  sm:col-span-1">
         <TextField
@@ -219,13 +260,13 @@ const EventForm = ({ eventType, eventDetails }: EventFormProps) => {
         <div className="pb-4 sm:pb-0">
           <TimePicker
             label="Start Time"
-            value={eventDetails ? eventDetails.startDate : undefined}
+            value={eventDetails ? eventDetails.startTime : undefined}
             onChange={(e) => (e.$d != "Invalid Date" ? setStartTime(e.$d) : "")}
           />
         </div>
         <TimePicker
           label="End Time"
-          value={eventDetails ? eventDetails.endDate : undefined}
+          value={eventDetails ? eventDetails.endTime : undefined}
           onChange={(e) => (e.$d != "Invalid Date" ? setEndTime(e.$d) : "")}
         />
       </div>
