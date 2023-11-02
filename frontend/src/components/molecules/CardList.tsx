@@ -1,8 +1,7 @@
 import React, { ReactElement, Children } from "react";
-import EventCard from "@/components/molecules/EventCard";
 
 interface CardListProps {
-  children: ReactElement[];
+  children: any;
 }
 
 /**

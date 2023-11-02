@@ -1,10 +1,11 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import BoxText from "@/components/atoms/BoxText";
 import Chip from "@/components/atoms/Chip";
 import TabContainer from "@/components/molecules/TabContainer";
+import next from "next/types";
 import EventCard from "@/components/organisms/EventCard";
 import CardList from "@/components/molecules/CardList";
-import { GridColDef } from "@mui/x-data-grid";
+import { GridColDef, GridValueGetterParams } from "@mui/x-data-grid";
 import Table from "@/components/molecules/Table";
 import Button from "../atoms/Button";
 import Link from "next/link";
@@ -14,69 +15,65 @@ import { auth } from "@/utils/firebase";
 
 type Action = "rsvp" | "cancel rsvp" | "publish" | "manage attendees" | "edit";
 
-type eventData = {
+type event = {
   id: string;
   name: string;
   location: string;
-  status: Action;
-  datetime: string;
+  actions: Action[];
+  startDate: string;
+  endDate: string;
 };
 
-const [eventDetails, setEventDetails] = useState<eventData | null | undefined>(
-  null
-);
+interface EventCardProps {
+  eventDetails: event[] | null;
+}
 
-const UpcomingEvents = () => {
+function formatDateTimeRange(startDateString: string, endDateString: string) {
+  const startDate = new Date(startDateString);
+  const endDate = new Date(endDateString);
+
+  const startDateFormatted = `${
+    startDate.getUTCMonth() + 1
+  }/${startDate.getUTCDate()}/${startDate.getUTCFullYear()}`;
+  const startTimeFormatted = formatUTCTime(startDate);
+  const endTimeFormatted = formatUTCTime(endDate);
+
+  const formattedDateTimeRange = `${startDateFormatted}, ${startTimeFormatted} - ${endTimeFormatted}`;
+
+  return formattedDateTimeRange;
+}
+function formatUTCTime(date: Date) {
+  const hours = date.getUTCHours();
+  const minutes = date.getUTCMinutes();
+
+  const period = hours < 12 ? "AM" : "PM";
+  const formattedHours = hours % 12 === 0 ? 12 : hours % 12;
+  const formattedMinutes = minutes < 10 ? `0${minutes}` : minutes;
+
+  return `${formattedHours}:${formattedMinutes} ${period}`;
+}
+
+const UpcomingEvents = ({ eventDetails }: EventCardProps) => {
   return (
     <CardList>
-      <EventCard
-        eventid={"000"}
-        mainAction={"cancel rsvp"}
-        title={"EDUFOOD"}
-        location={"WAREHOUSE B"}
-        datetime={"02/15/2023, 9:00-11:00 AM"}
-        dropdownActions={[]}
-      />
-      <EventCard
-        eventid={"000"}
-        mainAction={"cancel rsvp"}
-        title={"Malta Outreach"}
-        location={"Plot 2, Lagos Food Bank Building"}
-        datetime={"02/16/2023, 9:00-11:00 AM"}
-        dropdownActions={[]}
-      />
-      <EventCard
-        eventid={"000"}
-        mainAction={"cancel rsvp"}
-        dropdownActions={["cancel rsvp"]}
-        title={"NUMEPLAN"}
-        location={"Plot 2, Lagos Food Bank Building"}
-        datetime={"02/19/2023, 9:00-11:00 AM"}
-      />
-      <EventCard
-        eventid={"000"}
-        mainAction={"cancel rsvp"}
-        title={"EDUFOOD"}
-        location={"WAREHOUSE B"}
-        datetime={"02/15/2023, 9:00-11:00 AM"}
-        dropdownActions={[]}
-      />
-      <EventCard
-        eventid={"000"}
-        mainAction={"cancel rsvp"}
-        title={"Malta Outreach"}
-        location={"Plot 2, Lagos Food Bank Building"}
-        datetime={"02/16/2023, 9:00-11:00 AM"}
-        dropdownActions={[]}
-      />
-      <EventCard
-        eventid={"000"}
-        mainAction={"cancel rsvp"}
-        dropdownActions={["cancel rsvp"]}
-        title={"NUMEPLAN"}
-        location={"Plot 2, Lagos Food Bank Building"}
-        datetime={"02/19/2023, 9:00-11:00 AM"}
-      />
+      {eventDetails?.map(
+        (event) => (
+          console.log("Event"),
+          console.log(event),
+          console.log(event.startDate, event.endDate),
+          (
+            <EventCard
+              key={event.id}
+              eventid={event.id}
+              title={event.name}
+              location={event.location}
+              datetime={formatDateTimeRange(event.startDate, event.endDate)}
+              dropdownActions={["manage attendees", "edit"]}
+              mainAction="rsvp"
+            />
+          )
+        )
+      )}
     </CardList>
   );
 };
@@ -154,11 +151,15 @@ const PastEvents = () => {
  */
 const ViewEvents = () => {
   const { user } = useAuth();
+  const [events, setEvents] = useState<event[] | null>(null);
 
-  const fetchUserDetails = async () => {
+  /**
+   * Returns the id of the current user
+   */
+  const getUserId = async () => {
     try {
       const url = BASE_URL as string;
-      const fetchUrl = `${url}/users/search/?email=alice@hey.com`;
+      const fetchUrl = `${url}/users/search/?email=${user?.email}`;
       const userToken = await auth.currentUser?.getIdToken();
       const response = await fetch(fetchUrl, {
         method: "GET",
@@ -166,8 +167,8 @@ const ViewEvents = () => {
           Authorization: `Bearer ${userToken}`,
         },
       });
-      const data = await response.json();
-      return data[0]["id"];
+      const json = await response.json();
+      return json["data"][0]["id"];
     } catch (error) {
       console.log(error);
     }
@@ -175,28 +176,34 @@ const ViewEvents = () => {
 
   const fetchUserEvents = async () => {
     try {
-      // Temporarily get the user ID
-
       const url = BASE_URL as string;
       const userToken = await auth.currentUser?.getIdToken();
-      const userId = await fetchUserDetails();
+      const userId = await getUserId();
       const fetchUrl = `${url}/users/${userId}/registered`;
+      console.log(fetchUrl);
       const response = await fetch(fetchUrl, {
         method: "GET",
         headers: {
           Authorization: `Bearer ${userToken}`,
         },
       });
-      const data = await response.json();
-      console.log(data);
+      const json = await response.json();
+      const apiEvents = json["data"]["events"];
+      console.log("event lol");
+      console.log(apiEvents);
 
-      setEventDetails({
-        name: data["data"][0]["name"],
-        status: data["data"][0]["status"],
-        id: data["data"][0]["id"],
-        location: data["data"][0]["location"],
-        datetime: data["data"][0]["profile"]["nickname"],
+      let events: event[] = [];
+      apiEvents.map((event: any) => {
+        events.push({
+          id: event["event"]["id"],
+          name: event["event"]["name"],
+          location: event["event"]["location"],
+          startDate: event["event"]["startDate"],
+          endDate: event["event"]["endDate"],
+          actions: ["manage attendees", "edit"],
+        });
       });
+      setEvents(events);
     } catch (error) {
       console.log(error);
     }
@@ -205,23 +212,27 @@ const ViewEvents = () => {
   useEffect(() => {
     fetchUserEvents();
   }, []);
-  const tabs = [
-    { label: "Upcoming Events", panel: <UpcomingEvents /> },
-    { label: "Past Events", panel: <PastEvents /> },
-    { label: "Drafts", panel: <Drafts /> },
-  ];
-  return (
-    <>
-      <TabContainer
-        tabs={tabs}
-        rightAlignedComponent={
-          <Link href="/events/create">
-            <Button color="dark-gray">Create New Event</Button>
-          </Link>
-        }
-      />
-    </>
-  );
+  {
+    const tabs = [
+      {
+        label: "Upcoming Events",
+        panel: <UpcomingEvents eventDetails={events} />,
+      },
+      { label: "Past Events", panel: <PastEvents /> },
+      { label: "Drafts", panel: <Drafts /> },
+    ];
+    return (
+      <>
+        <TabContainer
+          tabs={tabs}
+          rightAlignedComponent={
+            <Link href="/events/create">
+              <Button color="dark-gray">Create New Event</Button>
+            </Link>
+          }
+        />
+      </>
+    );
+  }
 };
-
 export default ViewEvents;

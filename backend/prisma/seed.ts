@@ -145,8 +145,8 @@ const eventData: Prisma.EventCreateInput[] = [
     endDate: pastDate2,
     owner: {
       connect: {
-        id: userData[2].id,
-        email: userData[2].email,
+        id: userData[1].id,
+        email: userData[1].email,
       },
     },
     capacity: 100,
@@ -159,8 +159,8 @@ const eventData: Prisma.EventCreateInput[] = [
     endDate: pastDate3,
     owner: {
       connect: {
-        id: userData[2].id,
-        email: userData[2].email,
+        id: userData[1].id,
+        email: userData[1].email,
       },
     },
     capacity: 10,
@@ -173,8 +173,8 @@ const eventData: Prisma.EventCreateInput[] = [
     endDate: futureDate1,
     owner: {
       connect: {
-        id: userData[2].id,
-        email: userData[2].email,
+        id: userData[1].id,
+        email: userData[1].email,
       },
     },
     capacity: 10,
@@ -187,8 +187,8 @@ const eventData: Prisma.EventCreateInput[] = [
     endDate: futureDate3,
     owner: {
       connect: {
-        id: userData[2].id,
-        email: userData[2].email,
+        id: userData[1].id,
+        email: userData[1].email,
       },
     },
     capacity: 20,
@@ -250,6 +250,32 @@ async function enrollAlice() {
   });
 }
 
+// Enroll Prisma in Future Event
+async function enrollPrisma() {
+  const prismaNotAlice = await prisma.user.findFirst({
+    where: {
+      id: userData[2].id,
+    },
+  });
+
+  const event = await prisma.event.findFirst({
+    where: {
+      id: eventData[5].id,
+    },
+  });
+
+  await prisma.eventEnrollment.create({
+    data: {
+      user: {
+        connect: { id: prismaNotAlice?.id },
+      },
+      event: {
+        connect: { id: event?.id },
+      },
+    },
+  });
+}
+
 async function main() {
   console.log(`Start seeding ...`);
 
@@ -271,6 +297,28 @@ async function main() {
     const event = await prisma.event.create({
       data: e,
     });
+
+    const prisma_u = await prisma.user.findFirst({
+      where: {
+        email: "prisma@hey.com",
+      },
+    });
+
+    // Enroll Prisma in all they didn't create
+    if (event.ownerId !== prisma_u?.id) {
+      console.log("Enrolling Prisma in event");
+      await prisma.eventEnrollment.create({
+        data: {
+          user: {
+            connect: { id: prisma_u?.id },
+          },
+          event: {
+            connect: { id: event.id },
+          },
+        },
+      });
+    }
+
     console.log(`Created event with id: ${event.id}`);
   }
 
@@ -292,6 +340,7 @@ async function main() {
   }
 
   await enrollAlice();
+  // await enrollPrisma();
   console.log(`Seeding finished.`);
 }
 // This is for demo purposes only. Everytime we start the server, our seed script will run.
