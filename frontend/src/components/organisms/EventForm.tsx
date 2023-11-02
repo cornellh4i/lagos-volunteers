@@ -321,7 +321,7 @@ const EventForm = ({ eventType, eventDetails }: EventFormProps) => {
         requiredMessage={errors.eventDescription ? "Required" : undefined}
       />
       <Upload label="Event Image" />
-      <TextCopy label="RSVP Link Image" text="www.lagos/event/rsvp.com" />
+      <TextCopy label="RSVP Link Image" text={`www.lagos/event/${eventDetails?.eventId}/rsvp.com`} />
       <div>
         {eventType == "create" ? (
           <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
