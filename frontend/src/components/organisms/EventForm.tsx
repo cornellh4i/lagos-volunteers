@@ -84,16 +84,16 @@ const EventForm = ({ eventType, eventDetails }: EventFormProps) => {
     eventDetails ? (eventDetails.mode === "IN_PERSON" ? 1 : 0) : 0
   );
   const [getStartDate, setStartDate] = React.useState(
-    eventDetails ? eventDetails.startDate : ""
+    eventDetails ? String(dayjs(eventDetails.startDate)) : ""
   );
   const [getEndDate, setEndDate] = React.useState(
-    eventDetails ? eventDetails.endDate : ""
+    eventDetails ? String(dayjs(eventDetails.endDate)) : ""
   );
   const [getStartTime, setStartTime] = React.useState(
-    eventDetails ? eventDetails.startTime : ""
+    eventDetails ? String(dayjs(eventDetails.startTime)) : ""
   );
   const [getEndTime, setEndTime] = React.useState(
-    eventDetails ? eventDetails.endTime : ""
+    eventDetails ? String(dayjs(eventDetails.endTime)) : ""
   );
   const radioHandler = (status: number) => {
     setStatus(status);
