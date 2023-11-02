@@ -53,9 +53,6 @@ const getEvents = async () => {
  * @returns promise with eventID or error.
  */
 const updateEvent = async (eventID: string, event: Event) => {
-  console.log("reached controller");
-  console.log("event", event);
-  console.log("eventId", eventID);
   let res = prisma.event.update({
     where: {
       id: eventID,
@@ -64,7 +61,6 @@ const updateEvent = async (eventID: string, event: Event) => {
       ...event,
     },
   });
-  console.log("res", res);
   return res;
 };
 

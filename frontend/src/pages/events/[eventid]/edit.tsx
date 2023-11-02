@@ -8,7 +8,6 @@ import { BASE_URL } from "@/utils/constants";
 
 
 type eventData = {
-  eventId: string | string[] | undefined;
   eventName: string;
   location: string;
   volunteerSignUpCap: string;
@@ -43,9 +42,7 @@ const EditEvent = () => {
         },
       });
       const data = await response.json();
-      console.log("initial data", data);
       setEventDetails({
-        eventId: eventid,
         eventName: data["data"]["name"],
         // location: data["data"]["location"],
         location: "location2",
@@ -71,7 +68,7 @@ const EditEvent = () => {
   return (
     <CenteredTemplate>
       {eventDetails ? (
-        <EventForm eventType="edit" eventDetails={eventDetails} />
+        <EventForm eventId = {eventid} eventType="edit" eventDetails={eventDetails} />
       ) : (
         <div>Getting your data...</div>
       )}
