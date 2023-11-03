@@ -22,6 +22,8 @@ type event = {
   actions: Action[];
   startDate: string;
   endDate: string;
+  role: string;
+  hours: number;
 };
 
 interface EventCardProps {
@@ -82,7 +84,7 @@ const Drafts = () => {
   return <>Hello drafts</>;
 };
 
-const PastEvents = () => {
+const PastEvents = ({ eventDetails }: EventCardProps) => {
   const eventColumns: GridColDef[] = [
     {
       field: "role",
@@ -118,25 +120,23 @@ const PastEvents = () => {
     },
   ];
 
+  let dummyRows: event[] = [];
   // below are dummy data, in the future we want to get data from backend and
   // format them like this
-  let dummyDate: Date = new Date(2023, 0o1, 21);
-  const dummyRows = [
-    {
-      id: 1,
-      role: "Supervisor",
-      program: "EDUFOOD",
-      date: dummyDate,
-      hours: 4,
-    },
-    {
-      id: 2,
-      role: "Volunteer",
-      program: "Malta Outreach",
-      date: dummyDate,
-      hours: 4,
-    },
-  ];
+  {
+    eventDetails?.map((event) => [
+      dummyRows.push({
+        id: event.id,
+        role: "Supervisor",
+        name: event.name,
+        startDate: event.startDate,
+        hours: 4,
+        location: event.location,
+        actions: [],
+        endDate: event.endDate,
+      }),
+    ]);
+  }
 
   return (
     <div>
@@ -201,6 +201,8 @@ const ViewEvents = () => {
           startDate: event["event"]["startDate"],
           endDate: event["event"]["endDate"],
           actions: ["manage attendees", "edit"],
+          role: event["event"]["role"],
+          hours: 0,
         });
       });
       setEvents(events);
@@ -218,7 +220,7 @@ const ViewEvents = () => {
         label: "Upcoming Events",
         panel: <UpcomingEvents eventDetails={events} />,
       },
-      { label: "Past Events", panel: <PastEvents /> },
+      { label: "Past Events", panel: <PastEvents eventDetails={events} /> },
       { label: "Drafts", panel: <Drafts /> },
     ];
     return (
