@@ -37,8 +37,8 @@ type userStatusData = {
 };
 
 type userRegistrationData = {
-  userId: string;
   totalHours: number;
+  userRegistrations: any[];
 };
 
 type verifyData = {
@@ -56,7 +56,6 @@ function formatDateString(dateString: string) {
 /**
  * A ManageUserProfile component
  */
-
 const Status = ({ userRole, userStatus, userID }: userStatusData) => {
   const [role, setRole] = React.useState(userRole);
   const [status, setStatus] = React.useState(userStatus);
@@ -94,6 +93,7 @@ const Status = ({ userRole, userStatus, userID }: userStatusData) => {
   };
 
   const handleClick = async () => {
+    // this stores what value the Status of the user is
     var bodyval = "";
     try {
       const url = BASE_URL as string;
@@ -110,8 +110,6 @@ const Status = ({ userRole, userStatus, userID }: userStatusData) => {
         bodyval = "INACTIVE";
       }
       const body = { status: bodyval };
-      console.log(body);
-
       const response = await fetch(fetchUrl, {
         method: "PATCH",
         headers: {
@@ -122,13 +120,13 @@ const Status = ({ userRole, userStatus, userID }: userStatusData) => {
       });
 
       if (response.ok) {
-        console.error("User Successfully BlackListed", response.status);
+        console.log("User Successfully BlackListed", response.status);
         const data = await response.json();
       } else {
         console.error("User PATCH failed with status:", response.status);
       }
     } catch (error) {
-      console.log("Error in PATCH.");
+      console.error("Error in PATCH.");
       console.log(error);
     }
     // I did this because wasn't able to pass in the "event" through the OnClick
@@ -164,9 +162,10 @@ const Status = ({ userRole, userStatus, userID }: userStatusData) => {
   );
 };
 
-const Registrations = ({ userId, totalHours }: userRegistrationData) => {
-  const [registeredEvents, setRegisteredEvents] = useState<any[]>([]);
-
+const Registrations = ({
+  totalHours,
+  userRegistrations,
+}: userRegistrationData) => {
   const eventColumns: GridColDef[] = [
     {
       field: "program",
@@ -189,47 +188,7 @@ const Registrations = ({ userId, totalHours }: userRegistrationData) => {
     },
   ];
 
-  // TODO: implement validation
-  const fetchUserDetails = async () => {
-    try {
-      const url = BASE_URL as string;
-      const fetchUrl = `${url}/users/${userId}/registered`;
-      const userToken = await auth.currentUser?.getIdToken();
-
-      console.log(userToken);
-
-      const response = await fetch(fetchUrl, {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${userToken}`,
-        },
-      });
-
-      const data = await response.json();
-
-      if (response.ok) {
-        setRegisteredEvents(data["data"]["events"]);
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  useEffect(() => {
-    const fetchData = async () => {
-      // TODO: address why validation is taking a lot of time
-      // validateUser();
-
-      // if (validUser) {
-      fetchUserDetails();
-      console.log("passed fetch user");
-      // }
-    };
-
-    fetchData();
-  }, []);
-
-  const eventRows = registeredEvents.map((event) => ({
+  const eventRows = userRegistrations.map((event) => ({
     id: event.event.id,
     program: event.event.name,
     date: formatDateString(event.event.startDate),
@@ -271,6 +230,39 @@ const VerifyCertificate = ({ totalHours }: verifyData) => {
 };
 
 const ManageUserProfile = ({ userProfileDetails }: ManageUserProfileProps) => {
+  // TODO: implement validation
+  const [registeredEvents, setRegisteredEvents] = useState<any[]>([]);
+  const fetchUserDetails = async () => {
+    try {
+      const url = BASE_URL as string;
+      const fetchUrl = `${url}/users/${userProfileDetails.userid}/registered`;
+      const userToken = await auth.currentUser?.getIdToken();
+
+      const response = await fetch(fetchUrl, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${userToken}`,
+        },
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        setRegisteredEvents(data["data"]["events"]);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    const fetchData = async () => {
+      fetchUserDetails();
+      console.log("passed fetch user");
+    };
+    fetchData();
+  }, []);
+
   const tabs = [
     {
       label: "Status",
@@ -286,8 +278,8 @@ const ManageUserProfile = ({ userProfileDetails }: ManageUserProfileProps) => {
       label: "Registrations",
       panel: (
         <Registrations
-          userId={userProfileDetails.userid}
           totalHours={userProfileDetails.hours}
+          userRegistrations={registeredEvents}
         />
       ),
     },
