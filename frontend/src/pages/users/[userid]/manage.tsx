@@ -14,6 +14,7 @@ type userProfileData = {
   joinDate: string;
   userid: string;
   hours: number;
+  status: string;
 };
 
 function formatDateString(dateString: string) {
@@ -87,7 +88,8 @@ const ManageUserProfilePage = () => {
           email: data["data"]["email"],
           joinDate: formatDateString(data["data"]["createdAt"]),
           userid: data["data"]["id"],
-          hours: data["data"]["hours"]
+          hours: data["data"]["hours"],
+          status: data["data"]["status"],
         });
       }
     } catch (error) {

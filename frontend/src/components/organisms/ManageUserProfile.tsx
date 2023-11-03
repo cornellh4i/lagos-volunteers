@@ -23,6 +23,7 @@ type userProfileData = {
   joinDate: string;
   userid: string;
   hours: number;
+  status: string;
 };
 
 interface ManageUserProfileProps {
@@ -30,7 +31,9 @@ interface ManageUserProfileProps {
 }
 
 type userStatusData = {
+  userRole: string;
   userStatus: string;
+  userID: string;
 };
 
 type userRegistrationData = {
@@ -54,12 +57,85 @@ function formatDateString(dateString: string) {
  * A ManageUserProfile component
  */
 
-const Status = ({ userStatus }: userStatusData) => {
-  const [role, setRole] = React.useState(userStatus);
+const Status = ({ userRole, userStatus, userID }: userStatusData) => {
+  const [role, setRole] = React.useState(userRole);
+  const [status, setStatus] = React.useState(userStatus);
 
-  const handleChange = (event: SelectChangeEvent) => {
+  const handleChange = async (event: SelectChangeEvent) => {
+    //call the PATCH request here to change the ROLE
+    try {
+      const url = BASE_URL as string;
+      const fetchUrl = `${url}/users/` + userID + `/role`;
+      const currentUser = auth.currentUser;
+      const userToken = await currentUser?.getIdToken();
+
+      const val = event.target.value;
+      // CHANGES THE USER ROLE
+      const body = { role: val };
+      const response = await fetch(fetchUrl, {
+        method: "PATCH",
+        headers: {
+          Authorization: `Bearer ${userToken}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(body),
+      });
+      if (response.ok) {
+        console.error("User Role Changed Successfully", response.status);
+        const data = await response.json();
+      } else {
+        console.error("User PATCH failed with status:", response.status);
+      }
+    } catch (error) {
+      console.log("Error in PATCH.");
+      console.log(error);
+    }
     setRole(event.target.value);
   };
+
+  const handleClick = async () => {
+    var bodyval = "";
+    try {
+      const url = BASE_URL as string;
+      const fetchUrl = `${url}/users/` + userID + `/status`;
+      const currentUser = auth.currentUser;
+      const userToken = await currentUser?.getIdToken();
+
+      // BLACKLISTS THE USER
+      if (status == "ACTIVE") {
+        bodyval = "HOLD";
+      } else if (status == "HOLD") {
+        bodyval = "ACTIVE";
+      } else {
+        bodyval = "INACTIVE";
+      }
+      const body = { status: bodyval };
+      console.log(body);
+
+      const response = await fetch(fetchUrl, {
+        method: "PATCH",
+        headers: {
+          Authorization: `Bearer ${userToken}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(body),
+      });
+
+      if (response.ok) {
+        console.error("User Successfully BlackListed", response.status);
+        const data = await response.json();
+      } else {
+        console.error("User PATCH failed with status:", response.status);
+      }
+    } catch (error) {
+      console.log("Error in PATCH.");
+      console.log(error);
+    }
+    // I did this because wasn't able to pass in the "event" through the OnClick
+    setStatus(bodyval);
+  };
+  // also create an OnClick event for the blacklist button
+  // which will change the user STATUS
 
   return (
     <div className="space-y-2">
@@ -80,7 +156,9 @@ const Status = ({ userStatus }: userStatusData) => {
 
       <div className="pt-2">Blacklist</div>
       <div className="w-full sm:w-1/4">
-        <Button color="dark-gray">Blacklist member</Button>
+        <Button color="dark-gray" onClick={() => handleClick()}>
+          Blacklist member
+        </Button>
       </div>
     </div>
   );
@@ -196,7 +274,13 @@ const ManageUserProfile = ({ userProfileDetails }: ManageUserProfileProps) => {
   const tabs = [
     {
       label: "Status",
-      panel: <Status userStatus={userProfileDetails.role} />,
+      panel: (
+        <Status
+          userRole={userProfileDetails.role}
+          userStatus={userProfileDetails.status}
+          userID={userProfileDetails.userid}
+        />
+      ),
     },
     {
       label: "Registrations",
