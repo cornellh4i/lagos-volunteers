@@ -11,7 +11,7 @@ import Button from "../atoms/Button";
 import Link from "next/link";
 
 type Action = "rsvp" | "cancel rsvp" | "publish" | "manage attendees" | "edit";
-
+ 
 const UpcomingEvents = () => {
   return (
     <CardList>
