@@ -7,6 +7,8 @@ import AccountBoxIcon from "@mui/icons-material/AccountBox";
 import SearchBar from "@/components/atoms/SearchBar";
 import IconText from "../atoms/IconText";
 import Link from "next/link";
+import { auth } from "@/utils/firebase";
+import { BASE_URL } from "@/utils/constants";
 
 interface ManageUsersProps {}
 
@@ -214,9 +216,66 @@ const Active = () => {
     },
   ];
 
+  // Dummy FETCH function
+  const fetchPrevUsers = async () => {
+    try {
+      const url = BASE_URL as string;
+      const fetchUrl = `${url}/users`;
+      const userToken = await auth.currentUser?.getIdToken();
+
+      const response = await fetch(fetchUrl, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${userToken}`,
+        },
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        // TODO: what should go here?
+        console.log("Previous users fetched");
+        return data["data"]
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  // Dummy FETCH function
+  const fetchNextUsers = async () => {
+    try {
+      const url = BASE_URL as string;
+      const fetchUrl = `${url}/events`;
+      const userToken = await auth.currentUser?.getIdToken();
+
+      const response = await fetch(fetchUrl, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${userToken}`,
+        },
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        // TODO: what should go here?
+        console.log("Next users fetched");
+        return data["data"]
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   return (
     <div>
-      <Table columns={eventColumns} rows={dummyRows} />
+      <Table
+        columns={eventColumns}
+        rows={dummyRows}
+        prevFunction={fetchPrevUsers}
+        nextFunction={fetchNextUsers}
+      />
     </div>
   );
 };
