@@ -5,7 +5,6 @@ import userController from "../users/controllers";
 import prisma from "../../client";
 import sgMail from "@sendgrid/mail";
 
-sgMail.setApiKey(process.env.SENDGRID_API_KEY as string);
 
 /**
  * Creates a new event and assign owner to it.

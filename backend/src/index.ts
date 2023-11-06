@@ -1,5 +1,8 @@
 import app from "./server";
 import admin from "firebase-admin";
+import sgMail from "@sendgrid/mail";
+
+
 
 const server = app.listen(process.env.PORT || 8000);
 
@@ -19,6 +22,8 @@ const serviceAccount = {
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount as admin.ServiceAccount),
 });
+
+sgMail.setApiKey(process.env.SENDGRID_API_KEY as string);
 
 server.on("listening", () => {
   console.log("✅ Server is up and running at http://localhost:8000");
