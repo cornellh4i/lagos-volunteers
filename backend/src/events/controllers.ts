@@ -105,6 +105,9 @@ const getEvents = async (req: Request) => {
 
   if (query.limit) {
     take = parseInt(query.limit as string);
+  }else{
+    // default take is 10
+    take = 10;
   }
 
   const queryResult = await prisma.event.findMany({

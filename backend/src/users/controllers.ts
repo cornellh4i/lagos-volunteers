@@ -116,6 +116,9 @@ const getUsers = async (req: Request) => {
 
   if (query.limit) {
     take = parseInt(query.limit as string);
+  }else{
+    // default limit
+    take = 10;
   }
 
   const queryResult = await prisma.user.findMany({

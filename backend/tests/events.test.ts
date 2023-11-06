@@ -34,7 +34,7 @@ describe("Testing POST /events/:userid", () => {
   test("POST Create a new event", async () => {
     const users = await request(app).get("/users");
     const eventDTO = {
-      userID: `${users.body.data[1].id}`,
+      userID: `${users.body.data.result[1].id}`,
       event: {
         name: "Cool Event",
         location: "Hack Hall",
@@ -55,7 +55,7 @@ describe("Testing POST /events/:userid", () => {
   test("POST Create a new event with an empty name", async () => {
     const users = await request(app).get("/users");
     const eventDTO = {
-      userID: `${users.body.data[0].id}`,
+      userID: `${users.body.data.result[0].id}`,
       event: {},
     };
     const response = await request(app).post("/events").send(eventDTO);
@@ -69,7 +69,7 @@ describe("Testing PUT /events/:eventid", () => {
       name: "New Event",
     };
     const events = await request(app).get("/events");
-    const eventid = events.body.data[1].id;
+    const eventid = events.body.data.result[1].id;
     const response = await request(app)
       .put("/events/" + eventid)
       .send(event);
@@ -82,7 +82,7 @@ describe("Testing PUT /events/:eventid", () => {
 describe("Testing GET /events/:eventid", () => {
   test("Get existing event", async () => {
     const events = await request(app).get("/events");
-    const eventid = events.body.data[1].id;
+    const eventid = events.body.data.result[1].id;
     const response = await request(app).get("/events/" + eventid);
     expect(response.status).toBe(200);
   });
@@ -97,7 +97,7 @@ describe("Testing GET /events/:eventid", () => {
 describe("Testing GET /events/:eventid/attendees", () => {
   test("Get attendees for existing event", async () => {
     const events = await request(app).get("/events");
-    const eventid = events.body.data[0].id;
+    const eventid = events.body.data.result[0].id;
     const response = await request(app).get(
       "/events/" + eventid + "/attendees"
     );
@@ -116,7 +116,7 @@ describe("Testing GET /events/:eventid/attendees", () => {
 describe("Testing PATCH /events/:eventid/status", () => {
   test("Update event status to active", async () => {
     const events = await request(app).get("/events");
-    const eventid = events.body.data[0].id;
+    const eventid = events.body.data.result[0].id;
     const status = "ACTIVE";
     const response = await request(app)
       .patch(`/events/${eventid}/status`)
@@ -128,7 +128,7 @@ describe("Testing PATCH /events/:eventid/status", () => {
 
   test("Event status invalid", async () => {
     const events = await request(app).get("/events");
-    const eventid = events.body.data[0].id;
+    const eventid = events.body.data.result[0].id;
     const status = "COMPLETE";
     const response = await request(app)
       .patch("/events/" + eventid + "/status")
@@ -140,21 +140,20 @@ describe("Testing PATCH /events/:eventid/status", () => {
 describe("Testing PATCH /events/:eventid/owner", () => {
   test("Change current owner", async () => {
     const events = await request(app).get("/events");
-    const eventid = events.body.data[1].id;
-    const event = events.body.data[1];
+    const eventid = events.body.data.result[1].id;
     const users = await request(app).get("/users");
-    const ownerid = users.body.data[1].id;
+    const ownerid = users.body.data.result[1].id;
     const response = await request(app)
       .patch("/events/" + eventid + "/owner")
       .send({ ownerid: `${ownerid}` });
     const data = response.body.data;
     expect(response.status).toBe(200);
-    expect(data.ownerId).toBe(users.body.data[1].id);
+    expect(data.ownerId).toBe(users.body.data.result[1].id);
   });
 
   test("Change current owner to invalid", async () => {
     const events = await request(app).get("/events");
-    const eventid = events.body.data[1].id;
+    const eventid = events.body.data.result[1].id;
     const users = await request(app).get("/users");
     const ownerid = users.body.data[-1];
     const response = await request(app)
@@ -168,9 +167,9 @@ describe("Testing POST /events/:eventid/attendees", () => {
   test("Add attendee for existing event", async () => {
     const events = await request(app).get("/events");
     const users = await request(app).get("/users");
-    const eventid = events.body.data[1].id;
-    const attendeeid_1 = users.body.data[1].id;
-    const attendeeid_2 = users.body.data[2].id;
+    const eventid = events.body.data.result[1].id;
+    const attendeeid_1 = users.body.data.result[1].id;
+    const attendeeid_2 = users.body.data.result[2].id;
     const attendee1 = {
       attendeeid: `${attendeeid_1}`,
     };
@@ -185,6 +184,7 @@ describe("Testing POST /events/:eventid/attendees", () => {
       .send(attendee2);
     expect(response.status).toBe(200);
     expect(response_too.status).toBe(200);
+    
   });
 });
 
@@ -192,8 +192,8 @@ describe("Testing PATCH /events/:eventid/attendees/:attendeeid/confirm", () => {
   test("Update attendee as showed up", async () => {
     const events = await request(app).get("/events");
     const attendees = await request(app).get("/users");
-    const eventid = events.body.data[1].id;
-    const attendeeid = attendees.body.data[1].id;
+    const eventid = events.body.data.result[1].id;
+    const attendeeid = attendees.body.data.result[1].id;
     const response = await request(app).patch(
       "/events/" + eventid + "/attendees/" + attendeeid + "/confirm"
     );
@@ -204,7 +204,7 @@ describe("Testing PATCH /events/:eventid/attendees/:attendeeid/confirm", () => {
 
   test("Invalid update attendee as showed up", async () => {
     const attendees = await request(app).get("/users");
-    const attendeeid = attendees.body.data[0].id;
+    const attendeeid = attendees.body.data.result[0].id;
     const response = await request(app).patch(
       "/events/" + -1 + "/attendees/" + attendeeid + "/confirm"
     );
@@ -216,8 +216,8 @@ describe("Testing DELETE /events/:eventid/attendees/:attendeeid", () => {
   test("Delete an attendee", async () => {
     const events = await request(app).get("/events");
     const attendees = await request(app).get("/users");
-    const eventid = events.body.data[1].id;
-    const attendeeid = attendees.body.data[1].id;
+    const eventid = events.body.data.result[1].id;
+    const attendeeid = attendees.body.data.result[1].id;
     const response = await request(app).delete(
       "/events/" + eventid + "/attendees/" + attendeeid
     );
@@ -227,8 +227,8 @@ describe("Testing DELETE /events/:eventid/attendees/:attendeeid", () => {
 
   test("Delete an invalid attendee", async () => {
     const events = await request(app).get("/events");
-    const eventid = events.body.data[1].id;
-    const attendeeid = events.body.data[1].userID;
+    const eventid = events.body.data.result[1].id;
+    const attendeeid = events.body.data.result[1].userID;
     const response = await request(app).delete(
       "/events/" + eventid + "/attendees/" + attendeeid
     );
@@ -240,7 +240,7 @@ describe("Testing DELETE /events/:eventid/attendees/:attendeeid", () => {
 describe("Testing DELETE event", () => {
   test("Delete valid event", async () => {
     const events = await request(app).get("/events");
-    const eventid = events.body.data[2].id;
+    const eventid = events.body.data.result[2].id;
     const response = await request(app).delete("/events/" + eventid);
     expect(response.status).toBe(200);
     const deletedEvent = await request(app).get("/events/" + eventid);

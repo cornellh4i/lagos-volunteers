@@ -38,8 +38,8 @@ describe("Testing PUT /users/:userid", () => {
     };
 
     // This is temporary till we create an endpoint to get a specific user
-    const users = await request(app).get("/users");
-    const userid = users.body.data[1].id;
+    const users = await request(app).get("/users?limit=10");
+    const userid = users.body.data.result[9].id;
 
     const response = await request(app)
       .put("/users/" + userid)
@@ -120,7 +120,7 @@ describe("Testing PATCH /users/:userid/role", () => {
   test("PATCH edit a user's role with an existing role", async () => {
     // This is temporary till we create an endpoint to get a specific user
     const users = await request(app).get("/users");
-    const userid = users.body.data[1].id;
+    const userid = users.body.data.result[9].id;
     const response = await request(app)
       .patch("/users/" + userid + "/role")
       .send({ role: "SUPERVISOR" });
@@ -133,8 +133,8 @@ describe("Testing PATCH /users/:userid/role", () => {
 describe("Testing PATCH /users/:userid/status", () => {
   test("PATCH edit a user's status with an existing status", async () => {
     // This is temporary till we create an endpoint to get a specific user
-    const users = await request(app).get("/users");
-    const userid = users.body.data[1].id;
+    const users = await request(app).get("/users?limit=10");
+    const userid = users.body.data.result[9].id;
     const response = await request(app)
       .patch("/users/" + userid + "/status")
       .send({ status: "INACTIVE" });
@@ -147,8 +147,8 @@ describe("Testing PATCH /users/:userid/status", () => {
 describe("Testing PATCH /users/:userid/hours", () => {
   test("PATCH edit a user's hours with an existing hours", async () => {
     // This is temporary till we create an endpoint to get a specific user
-    const users = await request(app).get("/users");
-    const userid = users.body.data[1].id;
+    const users = await request(app).get("/users?limit=10");
+    const userid = users.body.data.result[9].id;
     const response = await request(app)
       .patch("/users/" + userid + "/hours")
       .send({ hours: 10 });
@@ -223,38 +223,30 @@ describe("Testing /users/search", () => {
 describe("Testing GET /users/:userid/profile", () => {
   test("GET user's profile", async () => {
     // This is temporary till we create an endpoint to get a specific user
-    const users = await request(app).get("/users");
-    const userid = users.body.data[0].id;
+    const users = await request(app).get("/users?limit=10");
+    const userid = users.body.data.result[9].id;
+    const userProfile = users.body.data.result[9].profile;
 
     const response = await request(app).get("/users/" + userid + "/profile");
     expect(response.status).toBe(200);
+    expect(response.body.data.profile.firstName).toEqual(userProfile.firstName);
+    expect(response.body.data.profile.lastName).toEqual(userProfile.lastName);
   });
 
-  test("GET 2nd user's profile", async () => {
-    const user = {
-      email: "jdo583@cornell.edu",
-    };
-
-    const users = await request(app).get("/users");
-    const userid = users.body.data[1].id;
-
-    const response = await request(app).get("/users/" + userid + "/profile");
-    expect(response.status).toBe(200);
-  });
 });
 
 describe("Testing GET /users/:userid/role", () => {
   test("GET supervisor user's role", async () => {
-    const users = await request(app).get("/users");
-    const userid = users.body.data[1].id;
+    const users = await request(app).get("/users?limit=2");
+    const userid = users.body.data.result[1].id;
 
     const response = await request(app).get("/users/" + userid + "/role");
     expect(response.status).toBe(200);
   });
 
   test("GET user's default role", async () => {
-    const users = await request(app).get("/users");
-    const userid = users.body.data[0].id;
+    const users = await request(app).get("/users?limit=2");
+    const userid = users.body.data.result[0].id;
 
     const response = await request(app).get("/users/" + userid + "/role");
     expect(response.status).toBe(200);
@@ -263,8 +255,8 @@ describe("Testing GET /users/:userid/role", () => {
 
 describe("Testing GET /users/:userid/preferences", () => {
   test("GET user's default preferences", async () => {
-    const users = await request(app).get("/users");
-    const userid = users.body.data[0].id;
+    const users = await request(app).get("/users?limit=2");
+    const userid = users.body.data.result[0].id;
 
     const response = await request(app).get(
       "/users/" + userid + "/preferences"
@@ -273,72 +265,13 @@ describe("Testing GET /users/:userid/preferences", () => {
   });
 
   test("GET user's non-default preferences", async () => {
-    const users = await request(app).get("/users");
-    const userid = users.body.data[1].id;
+    const users = await request(app).get("/users?limit=2");
+    const userid = users.body.data.result[1].id;
 
     const response = await request(app).get(
       "/users/" + userid + "/preferences"
     );
     const data = response.body.data;
-    expect(response.status).toBe(200);
-  });
-});
-
-describe("Testing GET /users/:userid/profile", () => {
-  test("GET user's profile", async () => {
-    // This is temporary till we create an endpoint to get a specific user
-    const users = await request(app).get("/users");
-    const userid = users.body.data[0].id;
-
-    const response = await request(app).get("/users/" + userid + "/profile");
-    expect(response.status).toBe(200);
-  });
-
-  test("GET 2nd user's profile", async () => {
-    const users = await request(app).get("/users");
-    const userid = users.body.data[1].id;
-
-    const response = await request(app).get("/users/" + userid + "/profile");
-    expect(response.status).toBe(200);
-  });
-});
-
-describe("Testing GET /users/:userid/role", () => {
-  test("GET supervisor user's role", async () => {
-    const users = await request(app).get("/users");
-    const userid = users.body.data[1].id;
-
-    const response = await request(app).get("/users/" + userid + "/role");
-    expect(response.status).toBe(200);
-  });
-
-  test("GET user's default role", async () => {
-    const users = await request(app).get("/users");
-    const userid = users.body.data[0].id;
-
-    const response = await request(app).get("/users/" + userid + "/role");
-    expect(response.status).toBe(200);
-  });
-});
-
-describe("Testing GET /users/:userid/preferences", () => {
-  test("GET user's default preferences", async () => {
-    const users = await request(app).get("/users");
-    const userid = users.body.data[0].id;
-
-    const response = await request(app).get(
-      "/users/" + userid + "/preferences"
-    );
-    expect(response.status).toBe(200);
-  });
-
-  test("GET user's non-default preferences", async () => {
-    const users = await request(app).get("/users");
-    const userid = users.body.data[1].id;
-
-    const response = await request(app).get(
-      "/users/" + userid + "/preferences"
-    );
     expect(response.status).toBe(200);
   });
 });
@@ -368,43 +301,33 @@ describe("Testing /users/:userID", () => {
 describe("Testing /users/sorting/", () => {
   test("GET users sorted by firstName in ascending order with null profiles", async () => {
     const response = await request(app).get(
-      "/users/sorting?sort=firstName:asc"
+      "/users/?sort=firstName:asc"
     );
-    const data = response.body.data;
+    const data = response.body.data.result;
     expect(data[0].profile.firstName >= data[1].profile.firstName);
     expect(response.status).toBe(200);
   });
 
   test("GET users sorted by firstName in descending order with null profiles", async () => {
     const response = await request(app).get(
-      "/users/sorting?sort=firstName:desc"
+      "/users?sort=firstName:desc"
     );
-    const data = response.body.data;
+    const data = response.body.data.result;
     expect(data[0].profile == null); //any null profiles should show up first
     expect(data[0].profile.firstName <= data[1].profile.firstName);
     expect(response.status).toBe(200);
   });
 
-  test("GET users sorted by lastName in descending order wkith null profiles", async () => {
-    const response = await request(app).get(
-      "/users/sorting?sort=firstName:desc"
-    );
-    const data = response.body.data;
-    expect(data[0].profile == null); //any null profiles should show up first
-    expect(data[0].profile.lastName <= data[1].profile.lastName);
-    expect(response.status).toBe(200);
-  });
-
   test("GET users sorted by hours in descending order", async () => {
-    const response = await request(app).get("/users/sorting?sort=hours:desc");
-    const data = response.body.data;
+    const response = await request(app).get("/users?sort=hours:desc");
+    const data = response.body.data.result;
     expect(data[0].hours <= data[1].hours);
     expect(response.status).toBe(200);
   });
 
   test("GET users sorted by email in ascending order", async () => {
-    const response = await request(app).get("/users/sorting?sort=email:asc");
-    const data = response.body.data;
+    const response = await request(app).get("/users?sort=email:asc");
+    const data = response.body.data.result;
     expect(data[0].email <= data[1].email);
     expect(response.status).toBe(200);
   });
@@ -413,12 +336,11 @@ describe("Testing /users/sorting/", () => {
 describe("Testing /users/:userID/created", () => {
   test("GET createdEvents of user with created events", async () => {
     const POSTresponse = await request(app).get(
-      "/users/search?firstName=Prisma"
+      "/users?firstName=Prisma"
     );
-    const userID = POSTresponse.body.data[0].id;
+    const userID = POSTresponse.body.data.result[0].id;
 
     const response = await request(app).get("/users/" + userID + "/created");
-    const data = response.body.data;
     expect(response.status).toBe(200);
   });
 
@@ -432,13 +354,10 @@ describe("Testing /users/:userID/created", () => {
 describe("Testing /users/:userID/registered", () => {
   test("GET registeredEvents of user with registered events", async () => {
     const POSTresponse = await request(app).get(
-      "/users/search?firstName=Alice"
+      "/users?firstName=Alice"
     );
-    const userID = POSTresponse.body.data[0].id;
-
-    const GETresponse = await request(app).get(
-      "/users/" + userID + "/registered"
-    );
+    const userID = POSTresponse.body.data.result[0].id;
+    const GETresponse = await request(app).get("/users?userId=" + userID);
     expect(GETresponse.status).toBe(200);
   });
 
@@ -452,9 +371,9 @@ describe("Testing /users/:userID/registered", () => {
 describe("Testing /users/:userID/hours", () => {
   test("GET hours of user", async () => {
     const POSTresponse = await request(app).get(
-      "/users/search?firstName=Prisma"
+      "/users?firstName=Prisma"
     );
-    const userID = POSTresponse.body.data[0].id;
+    const userID = POSTresponse.body.data.result[0].id;
 
     const GETresponse = await request(app).get("/users/" + userID + "/hours");
     const data = GETresponse.body.data;
@@ -471,24 +390,36 @@ describe("Testing /users/:userID/hours", () => {
 
 describe("Testing GET /users/pagination", () => {
   test("Get 2 users after the second use", async () => {
-    const users = await request(app).get("/users");
-    const userid = users.body.data[2].id;
+    const users = await request(app).get("/users?limit=3");
+    const cursor = users.body.data.cursor;
     const response = await request(app).get(
-      "/users/pagination?limit=2&after=" + userid
+      "/users?limit=2&after=" + cursor
     );
-    const data = response.body.data;
+    const data = response.body.data.result;
     expect(response.status).toBe(200);
     expect(data.length).toBe(2);
   });
 
+  test("Pagination without /pagination" , async () => {
+    const users = await request(app).get("/users?limit=3");
+    const data = users.body.data;
+    expect(users.status).toBe(200);
+    expect(data.result.length).toBe(3);
+  }
+  );
+
   test("Get 10 users after the second use", async () => {
     // limit should be defaulted to 10
     const users = await request(app).get("/users");
-    const userid = users.body.data[2].id;
+    const cursor = users.body.data.cursor;
     const response = await request(app).get(
-      "/users/pagination?after=" + userid
+      "/users?after=" + cursor
     );
     expect(response.status).toBe(200);
+    expect(users.body.data.result.length).toBe(10);
+    expect(response.body.data.result.length).toBe(10);
+    // check that next fecth with cursor is different from prev
+    expect(users.body.data.result[0].id).not.toBe(response.body.data.result[0].id);
   });
 });
 
@@ -496,7 +427,7 @@ describe("Testing GET /users/pagination", () => {
 describe("Testing DELETE /users/:userid", () => {
   test("Delete valid user", async () => {
     const users = await request(app).get("/users");
-    const userid = users.body.data[0].id;
+    const userid = users.body.data.result[0].id;
     const response = await request(app).delete("/users/" + userid);
     expect(response.status).toBe(200);
 
