@@ -90,7 +90,6 @@ eventRouter.post("/:eventid/attendees", async (req: Request, res: Response) => {
 eventRouter.put("/:eventid/attendees", async (req: Request, res: Response) => {
   // #swagger.tags = ['Events']
   const { attendeeid, cancelationMessage } = req.body;
-  console.log(attendeeid, cancelationMessage);
   attempt(res, 200, () =>
     eventController.deleteAttendee(
       req.params.eventid,

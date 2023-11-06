@@ -182,7 +182,10 @@ const addAttendee = async (eventID: string, userID: string) => {
   const userEmail = user?.email;
   // sets the email message
   const emailMsg = "USER WAS REGISTERED";
+  if(process.env.NODE_ENV != "test"){
+    await
   sendEmail(userEmail, emailMsg);
+  }
   return await prisma.eventEnrollment.create({
     data: {
       event: {
@@ -233,7 +236,9 @@ const deleteAttendee = async (
   var userEmail = user?.email;
   // sets the email message
   const emailMsg = "USER REMOVED FROM THIS EVENT";
-  sendEmail(userEmail, emailMsg);
+  if(process.env.NODE_ENV != "test"){
+      await sendEmail(userEmail, emailMsg);
+  } 
   return await prisma.eventEnrollment.update({
     where: {
       userId_eventId: {
