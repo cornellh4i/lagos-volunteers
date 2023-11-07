@@ -220,7 +220,7 @@ const Active = () => {
   const fetchPrevUsers = async () => {
     try {
       const url = BASE_URL as string;
-      const fetchUrl = `${url}/users`;
+      const fetchUrl = `${url}/users/`;
       const userToken = await auth.currentUser?.getIdToken();
 
       const response = await fetch(fetchUrl, {
@@ -230,12 +230,20 @@ const Active = () => {
         },
       });
 
-      const data = await response.json();
-
       if (response.ok) {
-        // TODO: what should go here?
-        console.log("Previous users fetched");
-        return data["data"]
+        // Dummy function placed here just to make sure
+        // front end pagination works
+        const data = await response.json();
+        const clean_data = data["data"];
+        const result = clean_data.map((element: any) => ({
+          id: element["id"],
+          name: element["email"], // problem: the ${url}/users/ request does not provide name
+          email: element["email"],
+          role: element["role"],
+          date: dummyDate,
+          hours: element["hours"] + " hours",
+        }));
+        return result;
       }
     } catch (error) {
       console.log(error);
@@ -256,12 +264,20 @@ const Active = () => {
         },
       });
 
-      const data = await response.json();
-
       if (response.ok) {
-        // TODO: what should go here?
-        console.log("Next users fetched");
-        return data["data"]
+        // Dummy function placed here just to make sure
+        // front end pagination works
+        const data = await response.json();
+        const clean_data = data["data"];
+        const result = clean_data.map((element: any) => ({
+          id: element["id"],
+          name: element["name"],
+          email: element["location"],
+          role: element["status"],
+          date: dummyDate,
+          hours: 20 + " hours",
+        }));
+        return result;
       }
     } catch (error) {
       console.log(error);
@@ -272,7 +288,7 @@ const Active = () => {
     <div>
       <Table
         columns={eventColumns}
-        rows={dummyRows}
+        rowData={dummyRows}
         prevFunction={fetchPrevUsers}
         nextFunction={fetchNextUsers}
       />
