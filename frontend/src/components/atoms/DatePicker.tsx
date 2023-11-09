@@ -23,6 +23,7 @@ const CustomDatePicker = ({ label, value, onChange }: DatePickerProps) => {
           label=""
           format="MM/DD/YYYY"
           defaultValue={value ? dayjs(value) : undefined}
+          disablePast={true}
           slotProps={{ textField: { size: "small", fullWidth: true } }}
           onChange={onChange}
         />

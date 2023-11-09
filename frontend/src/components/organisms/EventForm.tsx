@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
+import Alert from "../atoms/Alert";
 import DatePicker from "../atoms/DatePicker";
 import TimePicker from "../atoms/TimePicker";
 import Upload from "../atoms/Upload";
@@ -18,6 +19,8 @@ import { BASE_URL } from "@/utils/constants";
 import { auth } from "@/utils/firebase";
 import { useAuth } from "@/utils/AuthContext";
 import dayjs from "dayjs";
+import { error } from "console";
+import router from "next/router";
 
 interface EventFormProps {
   eventId?: string | string[] | undefined;
@@ -75,6 +78,7 @@ const convertToISO = (inputTime: string, inputDate: string) => {
 const EventForm = ({ eventId, eventType, eventDetails }: EventFormProps) => {
   const { user } = useAuth();
   const url = BASE_URL as string;
+  const [isLoading, setIsLoading] = useState(false);
 
   // For deciding whether to show "In-person" or "Virtual"
   // 0: no show, 1: show yes.
@@ -140,16 +144,45 @@ const EventForm = ({ eventId, eventType, eventDetails }: EventFormProps) => {
     }
   };
 
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
+
+  const handleErrors = (errors: any) => {};
+
+  const CreateErrorComponent = (): JSX.Element | null => {
+    return errorMessage ? (
+      <Alert severity="error">Error: {errorMessage}</Alert>
+    ) : null;
+  };
+
+  const CreateSuccessComponent = (): JSX.Element | null => {
+    return successMessage ? (
+      <Alert severity="success">Success: {successMessage}</Alert>
+    ) : null;
+  };
   /**Helper for handling creating events */
   const handleCreateEvent: SubmitHandler<FormValues> = async (data) => {
+    setIsLoading(true);
     const mode = status === 0 ? "VIRTUAL" : "IN_PERSON";
     const startDateTime = convertToISO(getStartTime, getStartDate);
     const endDateTime = convertToISO(getEndTime, getEndDate);
+    var dateValidation =
+      new Date(startDateTime) > new Date(endDateTime) ||
+      new Date(endDateTime) < new Date(startDateTime);
+    if (dateValidation) {
+      setErrorMessage("End Date cannot be earlier than Start Date");
+    } else {
+      setErrorMessage(null);
+    }
     const { eventName, location, volunteerSignUpCap, eventDescription } = data;
 
     const userid = await fetchUserDetails();
     const fetchCreateEventsUrl = `${url}/events`;
     try {
+      if (errorMessage) {
+        setIsLoading(false);
+        return;
+      }
       const createBody = {
         userID: `${userid}`,
         event: {
@@ -171,26 +204,49 @@ const EventForm = ({ eventId, eventType, eventDetails }: EventFormProps) => {
         },
         body: JSON.stringify(createBody),
       });
+      const r = await response.json();
 
-      response.ok
-        ? console.log("Successfully Created Event.")
-        : console.error("Unable to Create Event with Status", response.status);
-      const data = await response.json();
-    } catch (error) {
+      if (response.ok) {
+        console.log("Successfully Created Event.");
+        setSuccessMessage("Successfully Created Event!")
+        //TODO: implement timer wait delay 
+        router.replace("/events/view");
+        setIsLoading(false);
+      } else {
+        console.error("Unable to Create Event with Status", response.status);
+        console.log(r);
+        setErrorMessage(r.error);
+      }
+    } catch (error: any) {
       console.error("Network error:", error);
+      setErrorMessage(error.message);
     }
+    setIsLoading(false);
   };
 
   /**Helper for handling editing events */
   const handleEditEvent: SubmitHandler<FormValues> = async (data) => {
+    setIsLoading(true);
     const mode = status === 0 ? "VIRTUAL" : "IN_PERSON";
     const startDateTime = convertToISO(getStartTime, getStartDate);
     const endDateTime = convertToISO(getEndTime, getEndDate);
+    var dateValidation =
+      new Date(startDateTime) > new Date(endDateTime) ||
+      new Date(endDateTime) < new Date(startDateTime);
+    if (dateValidation) {
+      setErrorMessage("End Date cannot be earlier than Start Date");
+    } else {
+      setErrorMessage(null);
+    }
     const { eventName, location, volunteerSignUpCap, eventDescription } = data;
 
     const userid = await fetchUserDetails();
     const fetchEditEventsUrl = `${url}/events/${eventId}`;
     try {
+      if (errorMessage) {
+        setIsLoading(false);
+        return;
+      }
       const editBody = {
         name: `${eventName}`,
         location: `${location}`,
@@ -210,16 +266,35 @@ const EventForm = ({ eventId, eventType, eventDetails }: EventFormProps) => {
         body: JSON.stringify(editBody),
       });
 
-      response.ok
-        ? console.log("Successfully Updated Event")
-        : console.error("Unable to Update Event with Status:", response.status);
-    } catch (error) {
+      const r = await response.json();
+
+      if (response.ok) {
+        console.log("Successfully Edited Event.");
+        router.replace("/events/view");
+        setIsLoading(false);
+      } else {
+        console.error("Unable to Edit Event with Status", response.status);
+        console.log(r);
+        setErrorMessage(r.error);
+      }
+    } catch (error: any) {
       console.error("Network error:", error);
+      setErrorMessage(error.message);
     }
+    setIsLoading(false);
   };
 
   return (
-    <form onSubmit={eventType == "create" ? handleSubmit(handleCreateEvent) : handleSubmit(handleEditEvent)} className="space-y-4">
+    <form
+      onSubmit={
+        eventType == "create"
+          ? handleSubmit(handleCreateEvent)
+          : handleSubmit(handleEditEvent)
+      }
+      className="space-y-4"
+    >
+      <CreateErrorComponent />
+      <CreateSuccessComponent />
       <div className="font-bold text-3xl">
         {eventType == "create" ? "Create Event" : "Edit Event"}{" "}
       </div>
@@ -328,7 +403,7 @@ const EventForm = ({ eventId, eventType, eventDetails }: EventFormProps) => {
               </Link>
             </div>
             <div className="col-start-1 col-span-1 sm:col-start-4 sm:col-span-1">
-              <Button type="submit" color="dark-gray">
+              <Button isLoading={isLoading} type="submit" color="dark-gray">
                 Create
               </Button>
             </div>
@@ -344,7 +419,7 @@ const EventForm = ({ eventId, eventType, eventDetails }: EventFormProps) => {
               <Button color="gray">Cancel Event</Button>
             </div>
             <div className="sm:col-start-10 sm:col-span-3">
-              <Button type="submit" color="dark-gray">
+              <Button type="submit" color="dark-gray" isLoading={isLoading}>
                 Save Changes
               </Button>
             </div>

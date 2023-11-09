@@ -45,20 +45,6 @@ const CustomTimePicker = ({ label, value, onChange }: TimePickerProps) => {
           onChange={onChange}
         />
       </LocalizationProvider>
-      {/* <LocalizationProvider dateAdapter={AdapterDayjs}>
-        <TimePicker
-          label=""
-          data-mdb-toggle="timepicker"
-          sx={{
-            borderRadius: 2,
-            borderColor: "primary.main",
-            size: "small",
-            margin: "dense",
-            width: 1,
-          }}
-          slotProps={{ textField: { size: "small" } }}
-        />
-      </LocalizationProvider> */}
     </div>
   );
 };
