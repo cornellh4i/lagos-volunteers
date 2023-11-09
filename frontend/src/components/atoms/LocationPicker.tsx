@@ -1,7 +1,5 @@
 import React from "react";
-import Autocomplete from "@mui/material/Autocomplete";
-import { TextField } from "@mui/material";
-
+import Autocomplete from "react-google-autocomplete";
 interface LocationPickerProps {
   label: string;
 }
@@ -15,26 +13,13 @@ const LocationPicker = ({ label }: LocationPickerProps) => {
     <div>
       <div> {label} </div>
       <Autocomplete
-        disablePortal
-        options={LocationOptions}
-        sx={{
-          borderRadius: 2,
-          borderColor: "primary.main",
-          size: "small",
-          margin: "dense",
+        apiKey={process.env.GOOGLE_API_KEY}
+        onPlaceSelected={(place) => {
+          console.log(place);
         }}
-        size="small"
-        renderInput={(params) => <TextField {...params} />}
       />
     </div>
   );
 };
 
-const LocationOptions = [
-  { label: "location1" },
-  { label: "location2" },
-  { label: "location3" },
-  { label: "location4" },
-  { label: "location5" },
-];
 export default LocationPicker;
