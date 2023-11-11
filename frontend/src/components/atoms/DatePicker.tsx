@@ -17,14 +17,16 @@ interface DatePickerProps {
 const CustomDatePicker = ({ label, value, onChange }: DatePickerProps) => {
   return (
     <div>
-      <div> {label} </div>
+      <div> {label}</div>
       <LocalizationProvider dateAdapter={AdapterDayjs}>
         <DatePicker
           label=""
           format="MM/DD/YYYY"
           defaultValue={value ? dayjs(value) : undefined}
           disablePast={true}
-          slotProps={{ textField: { size: "small", fullWidth: true } }}
+          slotProps={{
+            textField: { size: "small", fullWidth: true },
+          }}
           onChange={onChange}
         />
       </LocalizationProvider>

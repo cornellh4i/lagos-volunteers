@@ -79,12 +79,12 @@ const EventForm = ({ eventId, eventType, eventDetails }: EventFormProps) => {
   const { user } = useAuth();
   const url = BASE_URL as string;
   const [isLoading, setIsLoading] = useState(false);
-
   // For deciding whether to show "In-person" or "Virtual"
   // 0: no show, 1: show yes.
   const [status, setStatus] = React.useState(
     eventDetails ? (eventDetails.mode === "IN_PERSON" ? 1 : 0) : 0
   );
+
   const [getStartDate, setStartDate] = React.useState(
     eventDetails ? String(dayjs(eventDetails.startDate)) : ""
   );
@@ -120,6 +120,10 @@ const EventForm = ({ eventId, eventType, eventDetails }: EventFormProps) => {
         }
       : {}
   );
+  const back = () => {
+    router.replace("/events/view");
+    setIsLoading(false);
+  };
 
   /*fetch userId for ownerId*/
   const fetchUserDetails = async () => {
@@ -137,6 +141,7 @@ const EventForm = ({ eventId, eventType, eventDetails }: EventFormProps) => {
         return data["data"][0]["id"];
       } else {
         console.error("User Retrieval failed with status:", response.status);
+        setIsLoading(false);
       }
     } catch (error) {
       console.log("Error in User Info Retrieval.");
@@ -166,13 +171,24 @@ const EventForm = ({ eventId, eventType, eventDetails }: EventFormProps) => {
     const mode = status === 0 ? "VIRTUAL" : "IN_PERSON";
     const startDateTime = convertToISO(getStartTime, getStartDate);
     const endDateTime = convertToISO(getEndTime, getEndDate);
-    var dateValidation =
-      new Date(startDateTime) > new Date(endDateTime) ||
-      new Date(endDateTime) < new Date(startDateTime);
-    if (dateValidation) {
-      setErrorMessage("End Date cannot be earlier than Start Date");
+    console.log("start time", getStartTime);
+    if (getStartTime == "") {
+      setErrorMessage("Start Time is required.");
+    } else if (getEndTime == "") {
+      setErrorMessage("End Time is required.");
+    } else if (getStartDate == "") {
+      setErrorMessage("Start Date is required.");
+    } else if (getEndDate == "") {
+      setErrorMessage("End Date is required.");
     } else {
-      setErrorMessage(null);
+      var dateValidation =
+        new Date(startDateTime) > new Date(endDateTime) ||
+        new Date(endDateTime) < new Date(startDateTime);
+      if (dateValidation) {
+        setErrorMessage("End Date cannot be earlier than Start Date");
+      } else {
+        setErrorMessage(null);
+      }
     }
     const { eventName, location, volunteerSignUpCap, eventDescription } = data;
 
@@ -208,18 +224,18 @@ const EventForm = ({ eventId, eventType, eventDetails }: EventFormProps) => {
 
       if (response.ok) {
         console.log("Successfully Created Event.");
-        setSuccessMessage("Successfully Created Event!")
-        //TODO: implement timer wait delay 
-        router.replace("/events/view");
-        setIsLoading(false);
+        setSuccessMessage("Successfully Created Event!");
+        setTimeout(back, 7000);
       } else {
         console.error("Unable to Create Event with Status", response.status);
-        console.log(r);
-        setErrorMessage(r.error);
+        console.log("Unable to create event with status", response.status);
+        setErrorMessage(
+          `Unable to create event with status: ${response.status}`
+        );
       }
     } catch (error: any) {
       console.error("Network error:", error);
-      setErrorMessage(error.message);
+      setErrorMessage("Network Error");
     }
     setIsLoading(false);
   };
@@ -230,14 +246,26 @@ const EventForm = ({ eventId, eventType, eventDetails }: EventFormProps) => {
     const mode = status === 0 ? "VIRTUAL" : "IN_PERSON";
     const startDateTime = convertToISO(getStartTime, getStartDate);
     const endDateTime = convertToISO(getEndTime, getEndDate);
-    var dateValidation =
-      new Date(startDateTime) > new Date(endDateTime) ||
-      new Date(endDateTime) < new Date(startDateTime);
-    if (dateValidation) {
-      setErrorMessage("End Date cannot be earlier than Start Date");
+    console.log("start time", getStartTime);
+    if (getStartTime == "") {
+      setErrorMessage("Start Time is required.");
+    } else if (getEndTime == "") {
+      setErrorMessage("End Time is required.");
+    } else if (getStartDate == "") {
+      setErrorMessage("Start Date is required.");
+    } else if (getEndDate == "") {
+      setErrorMessage("End Date is required.");
     } else {
-      setErrorMessage(null);
+      var dateValidation =
+        new Date(startDateTime) > new Date(endDateTime) ||
+        new Date(endDateTime) < new Date(startDateTime);
+      if (dateValidation) {
+        setErrorMessage("End Date cannot be earlier than Start Date");
+      } else {
+        setErrorMessage(null);
+      }
     }
+
     const { eventName, location, volunteerSignUpCap, eventDescription } = data;
 
     const userid = await fetchUserDetails();
@@ -270,16 +298,14 @@ const EventForm = ({ eventId, eventType, eventDetails }: EventFormProps) => {
 
       if (response.ok) {
         console.log("Successfully Edited Event.");
-        router.replace("/events/view");
-        setIsLoading(false);
+        setTimeout(back, 2000);
       } else {
         console.error("Unable to Edit Event with Status", response.status);
-        console.log(r);
-        setErrorMessage(r.error);
+        setErrorMessage(`Unable to edit event with status: ${response.status}`);
       }
     } catch (error: any) {
       console.error("Network error:", error);
-      setErrorMessage(error.message);
+      setErrorMessage("Network error");
     }
     setIsLoading(false);
   };
@@ -373,6 +399,7 @@ const EventForm = ({ eventId, eventType, eventDetails }: EventFormProps) => {
         <TextField
           label="Volunteer Sign Up Cap"
           required={true}
+          type="number"
           name="volunteerSignUpCap"
           register={register}
           requiredMessage={errors.volunteerSignUpCap ? "Required" : undefined}
