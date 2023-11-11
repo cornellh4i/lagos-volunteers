@@ -45,18 +45,12 @@ const ModalBody = ({
 	const register = async () => {
 		const userToken = await auth.currentUser?.getIdToken();
 
-		console.log("Calling User Fetch");
 		const attendeeid = await fetchUserIdFromDatabase(
 			user?.email as string,
 			userToken as string
 		);
-		console.log("After User Fetch");
-		console.log("FETCHED_USER");
-		console.log(attendeeid);
 
 		const fetchUrl = `${url}/events/` + eventid + `/attendees`;
-		console.log("FETCHED_URL");
-		console.log(fetchUrl);
 		try {
 			const body = { attendeeid: attendeeid };
 			const response = await fetch(fetchUrl, {
@@ -69,17 +63,9 @@ const ModalBody = ({
 			});
 			// Response Management
 			if (response.ok) {
-				console.log("Successfully Registered Attendee to Event.");
-				console.log(response);
 				const data = await response.json();
-			} else {
-				console.error(
-					"Unable to Register Attendee from Event",
-					response.status
-				);
 			}
 		} catch (error) {
-			console.error("Network error:", error);
 		}
 
 		router.replace(`/events/${eventid}/register`);

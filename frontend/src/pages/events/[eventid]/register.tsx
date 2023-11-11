@@ -6,7 +6,7 @@ import EventConfirmation from "@/components/organisms/EventConfirmation";
 import { BASE_URL } from "@/utils/constants";
 import { auth } from "@/utils/firebase";
 import { useAuth } from "@/utils/AuthContext";
-import { fetchUserIdFromDatabase } from "@/utils/helpers";
+import { fetchUserIdFromDatabase, formatDateTimeRange } from "@/utils/helpers";
 
 type eventData = {
 	eventid: string;
@@ -17,32 +17,6 @@ type eventData = {
 	image_src: string;
 	tags: string[] | undefined;
 };
-
-function formatDateTimeRange(startDateString: string, endDateString: string) {
-	const startDate = new Date(startDateString);
-	const endDate = new Date(endDateString);
-
-	const startDateFormatted = `${
-		startDate.getUTCMonth() + 1
-	}/${startDate.getUTCDate()}/${startDate.getUTCFullYear()}`;
-	const startTimeFormatted = formatUTCTime(startDate);
-	const endTimeFormatted = formatUTCTime(endDate);
-
-	const formattedDateTimeRange = `${startDateFormatted}, ${startTimeFormatted} - ${endTimeFormatted}`;
-
-	return formattedDateTimeRange;
-}
-
-function formatUTCTime(date: Date) {
-	const hours = date.getUTCHours();
-	const minutes = date.getUTCMinutes();
-
-	const period = hours < 12 ? "AM" : "PM";
-	const formattedHours = hours % 12 === 0 ? 12 : hours % 12;
-	const formattedMinutes = minutes < 10 ? `0${minutes}` : minutes;
-
-	return `${formattedHours}:${formattedMinutes} ${period}`;
-}
 
 /** An EventRegistration page */
 const EventRegistration = () => {
@@ -85,8 +59,8 @@ const EventRegistration = () => {
 				tags: event["tags"],
 				supervisors: [
 					event["owner"]["profile"]["firstName"] +
-						" " +
-						event["owner"]["profile"]["lastName"],
+					" " +
+					event["owner"]["profile"]["lastName"],
 				],
 			});
 
@@ -101,7 +75,6 @@ const EventRegistration = () => {
 				setIsRegistered(false);
 			}
 		} catch (error) {
-			console.log(error);
 		}
 	};
 

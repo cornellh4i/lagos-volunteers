@@ -27,3 +27,36 @@ export const fetchUserIdFromDatabase = async (email: string, token: string) => {
 		console.error("Error in User Info Retrieval.");
 	}
 };
+
+/* This functions formats 2 date strings in the format: 00:00 AM - 00:00 PM
+@param startDateString: string
+@param endDateString: string
+*/
+export const formatDateTimeRange = (startDateString: string, endDateString: string) => {
+
+	const formatUTCTime = (date: Date) => {
+		const hours = date.getUTCHours();
+		const minutes = date.getUTCMinutes();
+
+		const period = hours < 12 ? "AM" : "PM";
+		const formattedHours = hours % 12 === 0 ? 12 : hours % 12;
+		const formattedMinutes = minutes < 10 ? `0${minutes}` : minutes;
+
+		return `${formattedHours}:${formattedMinutes} ${period}`;
+	}
+
+	const startDate = new Date(startDateString);
+	const endDate = new Date(endDateString);
+
+	const startDateFormatted = `${startDate.getUTCMonth() + 1
+		}/${startDate.getUTCDate()}/${startDate.getUTCFullYear()}`;
+	const startTimeFormatted = formatUTCTime(startDate);
+	const endTimeFormatted = formatUTCTime(endDate);
+
+	const formattedDateTimeRange = `${startDateFormatted}, ${startTimeFormatted} - ${endTimeFormatted}`;
+
+	return formattedDateTimeRange;
+}
+
+
+

@@ -50,19 +50,13 @@ const ModalBody = ({
 	const { user } = useAuth();
 
 	const cancel = async () => {
-		console.log("Calling User Fetch");
 		const userToken = await auth.currentUser?.getIdToken();
 		const attendeeid = await fetchUserIdFromDatabase(
 			user?.email as string,
 			userToken as string
 		);
-		console.log("After User Fetch");
-		console.log("FETCHED_USER");
-		console.log(attendeeid);
 
 		const fetchUrl = `${url}/events/${eventid}/attendees`;
-		console.log("FETCHED_URL");
-		console.log(fetchUrl);
 
 		const cancellationData = {
 			attendeeid: attendeeid,
@@ -79,13 +73,9 @@ const ModalBody = ({
 			});
 			// Response Management
 			if (response.ok) {
-				console.log("Successfully Removed Attendee from Event.");
-				console.log(response);
 			} else {
-				console.error("Unable to Remove Attendee from Event", response.status);
 			}
 		} catch (error) {
-			console.error("Network error:", error);
 		}
 
 		router.reload();
