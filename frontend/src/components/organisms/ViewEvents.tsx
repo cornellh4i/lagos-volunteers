@@ -105,9 +105,6 @@ const PastEvents = ({ eventDetails }: EventCardProps) => {
       headerName: "Program Name",
       flex: 2,
       minWidth: 100,
-      renderCell: (params) => {
-        return <h6 color={params.value} />;
-      },
     },
     {
       field: "date",
@@ -128,7 +125,7 @@ const PastEvents = ({ eventDetails }: EventCardProps) => {
   // below are dummy data, in the future we want to get data from backend and
   // format them like this
   {
-    eventDetails?.forEach((event) => [
+    eventDetails?.map((event) => [
       dummyRows.push({
         id: event.id,
         role: "Supervisor",
@@ -143,10 +140,10 @@ const PastEvents = ({ eventDetails }: EventCardProps) => {
   }
 
   return (
-    <div>
+    <>
       <BoxText text="Volunteer Hours" textRight="30" />
       <Table columns={eventColumns} rows={dummyRows} />
-    </div>
+    </>
   );
 };
 
