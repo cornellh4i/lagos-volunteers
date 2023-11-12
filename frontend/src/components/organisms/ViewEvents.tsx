@@ -12,6 +12,7 @@ import Link from "next/link";
 import { BASE_URL } from "@/utils/constants";
 import { useAuth } from "@/utils/AuthContext";
 import { auth } from "@/utils/firebase";
+import { PanoramaSharp } from "@mui/icons-material";
 
 type Action = "rsvp" | "cancel rsvp" | "publish" | "manage attendees" | "edit";
 
@@ -104,6 +105,9 @@ const PastEvents = ({ eventDetails }: EventCardProps) => {
       headerName: "Program Name",
       flex: 2,
       minWidth: 100,
+      renderCell: (params) => {
+        return <h6 color={params.value} />;
+      },
     },
     {
       field: "date",
@@ -124,13 +128,13 @@ const PastEvents = ({ eventDetails }: EventCardProps) => {
   // below are dummy data, in the future we want to get data from backend and
   // format them like this
   {
-    eventDetails?.map((event) => [
+    eventDetails?.forEach((event) => [
       dummyRows.push({
         id: event.id,
         role: "Supervisor",
         name: event.name,
         startDate: event.startDate,
-        hours: 4,
+        hours: event.hours,
         location: event.location,
         actions: [],
         endDate: event.endDate,
