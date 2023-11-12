@@ -10,7 +10,7 @@ interface AboutProps {
 const About = ({ edit }: AboutProps) => {
   return (
     <>
-      <div>Lorem</div>
+      <div>Lorem ipsum</div>
     </>
   );
 };
