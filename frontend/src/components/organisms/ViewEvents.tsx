@@ -27,6 +27,14 @@ type event = {
   hours: number;
 };
 
+type pastEvent = {
+  id: string;
+  name: string;
+  startDate: Date;
+  role: string;
+  hours: number;
+};
+
 interface EventCardProps {
   eventDetails: event[] | null;
 }
@@ -101,16 +109,15 @@ const PastEvents = ({ eventDetails }: EventCardProps) => {
       },
     },
     {
-      field: "program",
+      field: "name",
       headerName: "Program Name",
       flex: 2,
       minWidth: 100,
     },
     {
-      field: "date",
+      field: "startDate",
       headerName: "Date",
-      type: "date",
-      flex: 0.5,
+      flex: 2,
       minWidth: 100,
     },
     {
@@ -121,7 +128,7 @@ const PastEvents = ({ eventDetails }: EventCardProps) => {
     },
   ];
 
-  let dummyRows: event[] = [];
+  let dummyRows: pastEvent[] = [];
   // below are dummy data, in the future we want to get data from backend and
   // format them like this
   {
@@ -130,14 +137,14 @@ const PastEvents = ({ eventDetails }: EventCardProps) => {
         id: event.id,
         role: "Supervisor",
         name: event.name,
-        startDate: event.startDate,
+        startDate: new Date(event.startDate),
+        // startDate: formatUTCTime(event.startDate);
         hours: event.hours,
-        location: event.location,
-        actions: [],
-        endDate: event.endDate,
       }),
     ]);
   }
+
+  console.log("dummyRows " + dummyRows);
 
   return (
     <>
