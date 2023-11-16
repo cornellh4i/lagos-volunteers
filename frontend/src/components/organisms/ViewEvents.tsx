@@ -67,24 +67,17 @@ function formatUTCTime(date: Date) {
 const UpcomingEvents = ({ eventDetails }: EventCardProps) => {
   return (
     <CardList>
-      {eventDetails?.map(
-        (event) => (
-          console.log("Event"),
-          console.log(event),
-          console.log(event.startDate, event.endDate),
-          (
-            <EventCard
-              key={event.id}
-              eventid={event.id}
-              title={event.name}
-              location={event.location}
-              datetime={formatDateTimeRange(event.startDate, event.endDate)}
-              dropdownActions={["manage attendees", "edit"]}
-              mainAction="rsvp"
-            />
-          )
-        )
-      )}
+      {eventDetails?.map((event) => (
+        <EventCard
+          key={event.id}
+          eventid={event.id}
+          title={event.name}
+          location={event.location}
+          datetime={formatDateTimeRange(event.startDate, event.endDate)}
+          dropdownActions={["manage attendees", "edit"]}
+          mainAction="rsvp"
+        />
+      ))}
     </CardList>
   );
 };
@@ -133,6 +126,7 @@ const PastEvents = ({ eventDetails }: EventCardProps) => {
   // format them like this
   {
     eventDetails?.map((event) => [
+      console.log("hours " + event.hours),
       dummyRows.push({
         id: event.id,
         role: "Supervisor",
@@ -143,8 +137,6 @@ const PastEvents = ({ eventDetails }: EventCardProps) => {
       }),
     ]);
   }
-
-  console.log("dummyRows " + dummyRows);
 
   return (
     <>
@@ -197,8 +189,6 @@ const ViewEvents = () => {
       });
       const json = await response.json();
       const apiEvents = json["data"]["events"];
-      console.log("event lol");
-      console.log(apiEvents);
 
       let events: event[] = [];
       apiEvents.map((event: any) => {
