@@ -16,22 +16,14 @@ type ActiveProps = {
   initalRowData: Object[];
   usersLength: number;
   initialUserID: string;
-  progressCounter: string;
   /** The function called to obtain the next elements */
-  progressFunction: (cursor: string) => Promise<
-    | {
-        result: any[];
-        last_user_id: string; // Adjust the type as needed
-      }
-    | undefined
-  >;
+  progressFunction: (cursor: string) => Promise<any[]>;
 };
 
 const Active = ({
   initalRowData,
   usersLength,
   initialUserID,
-  progressCounter,
   progressFunction,
 }: ActiveProps) => {
   const eventColumns: GridColDef[] = [
@@ -110,7 +102,6 @@ const Active = ({
         columns={eventColumns}
         rowData={initalRowData}
         dataSetLength={usersLength}
-        progressCursor={progressCounter}
         initialID={initialUserID}
         nextFunction={progressFunction}
       />
@@ -126,7 +117,6 @@ const ManageUsers = ({}: ManageUsersProps) => {
   const [initialrows, setInitialRows] = React.useState<any[]>([]);
   const [usersLength, setUsersLength] = React.useState(0);
   const [initialID, setInitialID] = React.useState("");
-  const [progressCounter, setProgressCounter] = React.useState("");
   // dummy date
   let dummyDate: Date = new Date(2023, 0o1, 21);
 
@@ -179,10 +169,8 @@ const ManageUsers = ({}: ManageUsersProps) => {
           date: dummyDate,
           hours: 20 + " hours",
         }));
-        var last_user_id = result.pop()["id"];
-        setInitialRows(result);
-        setProgressCounter(last_user_id);
-        return { result, last_user_id };
+
+        return result;
       }
     } catch (error) {
       console.log(error);
@@ -196,7 +184,6 @@ const ManageUsers = ({}: ManageUsersProps) => {
           initalRowData={initialrows}
           usersLength={usersLength}
           initialUserID={initialID}
-          progressCounter={progressCounter}
           progressFunction={fetchUsers}
         />
       ),
@@ -208,7 +195,6 @@ const ManageUsers = ({}: ManageUsersProps) => {
           initalRowData={initialrows}
           usersLength={usersLength}
           initialUserID={initialID}
-          progressCounter={progressCounter}
           progressFunction={fetchUsers}
         />
       ),
@@ -231,8 +217,9 @@ const ManageUsers = ({}: ManageUsersProps) => {
     const fetchData = async () => {
       const result = await firstUserID_and_usersLength();
       if (result != undefined) {
-        await fetchUsers(result.first_user_id);
+        const final_result = await fetchUsers(result.first_user_id);
         console.log("passed fetch user");
+        setInitialRows(final_result);
         setInitialID(result.first_user_id);
         setUsersLength(result.length);
       }

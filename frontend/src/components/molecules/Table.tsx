@@ -11,16 +11,8 @@ interface TableProps {
   dataSetLength: number;
   /** Initial ID */
   initialID: string;
-  /** The cursor that will progress through each page */
-  progressCursor: string;
   /** The function called to obtain the next elements */
-  nextFunction: (cursor: string) => Promise<
-    | {
-        result: any[];
-        last_user_id: string; // Adjust the type as needed
-      }
-    | undefined
-  >;
+  nextFunction: (cursor: string) => Promise<any[]>;
 }
 /**
  * A Table component
@@ -31,21 +23,17 @@ const Table = ({
   rowData,
   dataSetLength,
   initialID,
-  progressCursor,
   nextFunction,
 }: TableProps) => {
   const PAGE_SIZE = 5;
   const [rows, setRows] = React.useState<any[]>(rowData);
-  // Using the cursor mdo
+  const [cursor, setCursor] = React.useState<any[]>([initialID]);
+  const [lastElementID, setlastElementID] = React.useState<string>("");
   const [paginationModel, setPaginationModel] = React.useState({
     page: 0,
     pageSize: PAGE_SIZE,
   });
-
-  const [cursor, setCursor] = React.useState<any[]>([initialID]);
   const [rowCountState, setRowCountState] = React.useState(dataSetLength);
-  const [currentCursor, setCurrentCursor] =
-    React.useState<string>(progressCursor);
 
   const handlePaginationModelChange = async (
     newPaginationModel: GridPaginationModel
@@ -54,39 +42,41 @@ const Table = ({
     var userData = [];
     // tracks which page we on ["","userid1","userid2"...] --> [page1,page2,page3...]
     var cursorArray = cursor;
-    // stores which id we are using to call the pagination request.
-    var current_cursor_id: string = "";
 
     if (paginationModel.page < newPaginationModel.page) {
-      // means going to next
       console.log("going forwards");
-      // get the last_user_id from rows and add to cursor list
-      const output = await nextFunction(currentCursor);
-      if (output !== undefined) {
-        cursorArray.push(currentCursor);
-        current_cursor_id = output.last_user_id;
-        userData = output.result;
-      }
+      cursorArray.push(lastElementID);
+      userData = await nextFunction(lastElementID);
     } else {
-      //means going to previous
       console.log("going previous");
-      // another pop to get the current user_id. It must be followed by a push.
+      // one pop to get rid of last element
       cursorArray.pop();
-      // second pop
-      var t = cursorArray.pop();
-      cursorArray.push(t);
-      const output = await nextFunction(t);
-      if (output !== undefined) {
-        current_cursor_id = output.last_user_id;
-        userData = output.result;
-      }
+      // second pop to get the details of last element
+      var cursor_after_pop = cursorArray.pop();
+      // push the cursor back on
+      cursorArray.push(cursor_after_pop);
+      userData = await nextFunction(cursor_after_pop);
     }
-    setRows(userData);
+    adjustRows(userData);
     setCursor(cursorArray);
-    setCurrentCursor(current_cursor_id);
     setPaginationModel(newPaginationModel);
   };
 
+  const adjustRows = async (rows: any[]) => {
+    var userData = [...rows];
+    console.log(userData);
+    const last_element_id = userData.pop().id;
+    console.log(last_element_id);
+    setRows(userData);
+    setlastElementID(last_element_id);
+  };
+  useEffect(() => {
+    adjustRows(rows);
+    console.log("HEREERE");
+  }, []);
+
+  console.log(rows);
+  console.log(cursor);
   return (
     <div>
       {rows.length > 0 && (
