@@ -1,6 +1,7 @@
 import React from "react";
-import About from "@/components/organisms/About";
-const Test = () => {
-  return <About edit={true} />;
-};
-export default Test;
+import dynamic from "next/dynamic";
+
+const DynamicAboutPage = dynamic(() => import("../components/organisms/About"), {
+	ssr: false,
+});
+export default DynamicAboutPage;
