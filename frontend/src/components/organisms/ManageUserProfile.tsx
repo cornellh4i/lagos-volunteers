@@ -15,6 +15,11 @@ import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
 import { IconButton } from "@mui/material";
 import { BASE_URL } from "@/utils/constants";
 import { auth } from "@/utils/firebase";
+import Alert from "../atoms/Alert";
+import { useRouter } from "next/router";
+import { Grid } from "@mui/material";
+import { useAuth } from "@/utils/AuthContext";
+import Modal from "@/components/molecules/Modal";
 
 type userProfileData = {
   name: string;
@@ -53,13 +58,95 @@ function formatDateString(dateString: string) {
   return `${month}/${day}/${year}`;
 }
 
+const ModalBody = ({
+  userid,
+  status,
+  statusSetter,
+  handleClose,
+}: {
+  userid: string;
+  status: string;
+  statusSetter: React.Dispatch<React.SetStateAction<string>>;
+  handleClose: () => void;
+}) => {
+  const router = useRouter();
+  const { user } = useAuth();
+  const blacklist = async () => {
+    console.log(status);
+    // BLACKLISTS THE USER
+    var bodyval = "";
+    if (status == "ACTIVE") {
+      bodyval = "HOLD";
+    } else if (status == "HOLD") {
+      bodyval = "ACTIVE";
+    } else {
+      bodyval = "INACTIVE";
+    }
+    try {
+      const url = BASE_URL as string;
+      const fetchUrl = `${url}/users/` + userid + `/status`;
+      const currentUser = auth.currentUser;
+      const userToken = await currentUser?.getIdToken();
+      const body = { status: bodyval };
+      const response = await fetch(fetchUrl, {
+        method: "PATCH",
+        headers: {
+          Authorization: `Bearer ${userToken}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(body),
+      });
+      if (response.ok) {
+        <Alert severity="success">
+          Success: {"User was successfully Blacklisted"}
+        </Alert>;
+      }
+    } catch (error) {
+      <Alert severity="error">
+        Error: {`User NOT Successfully Blacklisted ${error}`}
+      </Alert>;
+    }
+    statusSetter(bodyval);
+    handleClose();
+  };
+  return (
+    <div>
+      <h2></h2>
+      <p>
+        {status == "ACTIVE"
+          ? "Are you sure you want to blacklist this user?"
+          : "Are you sure you want to remove this member from the blacklist?"}
+      </p>
+      <Grid container spacing={2}>
+        <Grid item md={6} xs={12}>
+          <Button color="gray" type="button" onClick={handleClose}>
+            Cancel
+          </Button>
+        </Grid>
+        <Grid item md={6} xs={12}>
+          <Button color="dark-gray" type="button" onClick={blacklist}>
+            {status == "ACTIVE" ? "YES,Blacklist" : "YES,Remove"}
+          </Button>
+        </Grid>
+      </Grid>
+    </div>
+  );
+};
+
 /**
  * A ManageUserProfile component
  */
 const Status = ({ userRole, userStatus, userID }: userStatusData) => {
   const [role, setRole] = React.useState(userRole);
   const [status, setStatus] = React.useState(userStatus);
+  // Confirmation modal
+  const [open, setOpen] = useState(false);
+  const handleOpen = () => {
+    setOpen(true);
+  };
+  const handleClose = () => setOpen(false);
 
+  // To Change the user role
   const handleChange = async (event: SelectChangeEvent) => {
     //call the PATCH request here to change the ROLE
     try {
@@ -81,7 +168,7 @@ const Status = ({ userRole, userStatus, userID }: userStatusData) => {
       });
       if (response.ok) {
         console.error("User Role Changed Successfully", response.status);
-        const data = await response.json();
+        <Alert severity="error">Error: {"Error"}</Alert>;
       } else {
         console.error("User PATCH failed with status:", response.status);
       }
@@ -92,51 +179,20 @@ const Status = ({ userRole, userStatus, userID }: userStatusData) => {
     setRole(event.target.value);
   };
 
-  const handleClick = async () => {
-    // this stores what value the Status of the user is
-    var bodyval = "";
-    try {
-      const url = BASE_URL as string;
-      const fetchUrl = `${url}/users/` + userID + `/status`;
-      const currentUser = auth.currentUser;
-      const userToken = await currentUser?.getIdToken();
-
-      // BLACKLISTS THE USER
-      if (status == "ACTIVE") {
-        bodyval = "HOLD";
-      } else if (status == "HOLD") {
-        bodyval = "ACTIVE";
-      } else {
-        bodyval = "INACTIVE";
-      }
-      const body = { status: bodyval };
-      const response = await fetch(fetchUrl, {
-        method: "PATCH",
-        headers: {
-          Authorization: `Bearer ${userToken}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(body),
-      });
-
-      if (response.ok) {
-        console.log("User Successfully BlackListed", response.status);
-        const data = await response.json();
-      } else {
-        console.error("User PATCH failed with status:", response.status);
-      }
-    } catch (error) {
-      console.error("Error in PATCH.");
-      console.log(error);
-    }
-    // I did this because wasn't able to pass in the "event" through the OnClick
-    setStatus(bodyval);
-  };
-  // also create an OnClick event for the blacklist button
-  // which will change the user STATUS
-
   return (
     <div className="space-y-2">
+      <Modal
+        open={open}
+        handleClose={handleClose}
+        children={
+          <ModalBody
+            userid={userID}
+            status={status}
+            statusSetter={setStatus}
+            handleClose={handleClose}
+          />
+        }
+      />
       <div>Assign Role</div>
       <FormControl className="w-full sm:w-1/2">
         <Select
@@ -154,8 +210,10 @@ const Status = ({ userRole, userStatus, userID }: userStatusData) => {
 
       <div className="pt-2">Blacklist</div>
       <div className="w-full sm:w-1/4">
-        <Button color="dark-gray" onClick={() => handleClick()}>
-          Blacklist member
+        <Button color="dark-gray" onClick={handleOpen}>
+          {status == "ACTIVE"
+            ? "Blacklist Member"
+            : "Remove Member from Blacklist"}
         </Button>
       </div>
     </div>
@@ -257,7 +315,7 @@ const ManageUserProfile = ({ userProfileDetails }: ManageUserProfileProps) => {
 
   useEffect(() => {
     const fetchData = async () => {
-      fetchUserDetails();
+      await fetchUserDetails();
       console.log("passed fetch user");
     };
     fetchData();
