@@ -7,11 +7,11 @@ interface TableProps {
   columns: GridColDef<object>[];
   /** The table rows represented as an object array */
   rowData: Object[];
-  /** The length of the entire dataset if paginated */
+  /** The length of the entire dataset [NEEDED FOR PAGINATION] */
   dataSetLength: number;
-  /** Initial ID */
+  /** The ID of the first element [NEEDED FOR PAGINATION] */
   initialID: string;
-  /** The function called to obtain the next elements */
+  /** The function called to obtain the next elements [NEEDED FOR PAGINATION] */
   nextFunction: (cursor: string) => Promise<any[]>;
 }
 /**
@@ -44,11 +44,9 @@ const Table = ({
     var cursorArray = cursor;
 
     if (paginationModel.page < newPaginationModel.page) {
-      console.log("going forwards");
       cursorArray.push(lastElementID);
       userData = await nextFunction(lastElementID);
     } else {
-      console.log("going previous");
       // one pop to get rid of last element
       cursorArray.pop();
       // second pop to get the details of last element
@@ -57,26 +55,21 @@ const Table = ({
       cursorArray.push(cursor_after_pop);
       userData = await nextFunction(cursor_after_pop);
     }
-    adjustRows(userData);
     setCursor(cursorArray);
     setPaginationModel(newPaginationModel);
+    adjustRows(userData);
   };
 
   const adjustRows = async (rows: any[]) => {
     var userData = [...rows];
-    console.log(userData);
     const last_element_id = userData.pop().id;
-    console.log(last_element_id);
     setRows(userData);
     setlastElementID(last_element_id);
   };
   useEffect(() => {
     adjustRows(rows);
-    console.log("HEREERE");
   }, []);
 
-  console.log(rows);
-  console.log(cursor);
   return (
     <div>
       {rows.length > 0 && (
