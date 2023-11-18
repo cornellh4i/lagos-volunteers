@@ -122,6 +122,13 @@ const PastEvents = ({ eventDetails }: EventCardProps) => {
     },
   ];
 
+  function getFormattedDate(date: string) {
+    const month = date.substring(5, 7);
+    const year = date.substring(0, 4);
+    const day = date.substring(8, 10);
+    return month + "/" + day + "/" + year;
+  }
+
   let dummyRows: pastEvent[] = [];
   // below are dummy data, in the future we want to get data from backend and
   // format them like this
@@ -131,7 +138,7 @@ const PastEvents = ({ eventDetails }: EventCardProps) => {
         id: event.id,
         role: "Supervisor",
         name: event.name,
-        startDate: event.startDate,
+        startDate: getFormattedDate(event.startDate),
         hours: event.hours,
       }),
     ]);
@@ -173,13 +180,34 @@ const ViewEvents = () => {
     }
   };
 
+  const getUserRole = async () => {
+    try {
+      const url = BASE_URL as string;
+      const fetchUrl = `${url}/users/search/?email=${user?.email}`;
+      const userToken = await auth.currentUser?.getIdToken();
+      const response = await fetch(fetchUrl, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${userToken}`,
+        },
+      });
+      const json = await response.json();
+      return json["data"][0]["role"];
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   const fetchUserEvents = async () => {
     try {
       const url = BASE_URL as string;
       const userToken = await auth.currentUser?.getIdToken();
       const userId = await getUserId();
+      const userRole = await getUserRole();
       const fetchUrl = `${url}/users/${userId}/registered`;
-      console.log(fetchUrl);
+      const fetchUrlRole = `${url}/users/${userRole}/registered`;
+      console.log("user id" + fetchUrl);
+      console.log("user role" + fetchUrlRole);
       const response = await fetch(fetchUrl, {
         method: "GET",
         headers: {
