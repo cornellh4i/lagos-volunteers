@@ -7,8 +7,10 @@ import EmojiFoodBeverageIcon from "@mui/icons-material/EmojiFoodBeverage";
 import WatchLaterIcon from "@mui/icons-material/WatchLater";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import Link from "next/link";
+import MenuItem from "@mui/material/MenuItem";
+import Menu from "@mui/material/Menu";
 
-type Action = "rsvp" | "cancel rsvp" | "publish" | "manage attendees" | "edit";
+type Action = "Rsvp" | "Cancel Rsvp" | "Publish" | "Manage Attendees" | "Edit";
 
 interface EventCardProps {
   eventid: string;
@@ -38,9 +40,19 @@ const EventCard = ({
   location,
   datetime,
 }: EventCardProps) => {
+  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+  const handleClick = (event: any) => {
+    setAnchorEl(event.currentTarget);
+  };
+  const open = Boolean(anchorEl);
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
   const MainAction = () => {
     switch (mainAction) {
-      case "cancel rsvp":
+      case "Cancel Rsvp":
         return (
           <Link
             className="text-black no-underline"
@@ -49,7 +61,7 @@ const EventCard = ({
             Cancel RSVP
           </Link>
         );
-      case "manage attendees":
+      case "Manage Attendees":
         return (
           <Link
             className="text-black no-underline"
@@ -86,9 +98,36 @@ const EventCard = ({
           <div className="pt-4 flex flex-row">
             <Button color="gray">{mainAction}</Button>
             <div className="pl-1">
-              <IconButton className="bg-gray-300 rounded-md">
+              {/* <IconButton className="bg-gray-300 rounded-md">
+                <MoreVertIcon />
+              </IconButton> */}
+
+              <IconButton
+                className="bg-gray-300 rounded-md"
+                onClick={handleClick}
+              >
                 <MoreVertIcon />
               </IconButton>
+
+              <Menu
+                id="demo-positioned-menu"
+                aria-labelledby="demo-positioned-button"
+                anchorEl={anchorEl}
+                onClose={handleClose}
+                anchorOrigin={{
+                  vertical: "top",
+                  horizontal: "left",
+                }}
+                transformOrigin={{
+                  vertical: "top",
+                  horizontal: "left",
+                }}
+                open={open}
+              >
+                {dropdownActions?.map((action) => (
+                  <MenuItem onClick={handleClose}>{action}</MenuItem>
+                ))}
+              </Menu>
             </div>
           </div>
         ) : (

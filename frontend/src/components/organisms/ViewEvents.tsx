@@ -14,7 +14,7 @@ import { useAuth } from "@/utils/AuthContext";
 import { auth } from "@/utils/firebase";
 import { PanoramaSharp } from "@mui/icons-material";
 
-type Action = "rsvp" | "cancel rsvp" | "publish" | "manage attendees" | "edit";
+type Action = "Rsvp" | "Cancel Rsvp" | "Publish" | "Manage Attendees" | "Edit";
 
 type event = {
   id: string;
@@ -30,7 +30,7 @@ type event = {
 type pastEvent = {
   id: string;
   name: string;
-  startDate: Date;
+  startDate: string;
   role: string;
   hours: number;
 };
@@ -74,8 +74,9 @@ const UpcomingEvents = ({ eventDetails }: EventCardProps) => {
           title={event.name}
           location={event.location}
           datetime={formatDateTimeRange(event.startDate, event.endDate)}
-          dropdownActions={["manage attendees", "edit"]}
-          mainAction="rsvp"
+          dropdownActions={["Manage Attendees", "Edit"]}
+          // hard-coded for now but main-action is determined based on the user and their status
+          mainAction="Rsvp"
         />
       ))}
     </CardList>
@@ -126,13 +127,11 @@ const PastEvents = ({ eventDetails }: EventCardProps) => {
   // format them like this
   {
     eventDetails?.map((event) => [
-      console.log("hours " + event.hours),
       dummyRows.push({
         id: event.id,
         role: "Supervisor",
         name: event.name,
-        startDate: new Date(event.startDate),
-        // startDate: formatUTCTime(event.startDate);
+        startDate: event.startDate,
         hours: event.hours,
       }),
     ]);
@@ -198,7 +197,7 @@ const ViewEvents = () => {
           location: event["event"]["location"],
           startDate: event["event"]["startDate"],
           endDate: event["event"]["endDate"],
-          actions: ["manage attendees", "edit"],
+          actions: ["Manage Attendees", "Edit"],
           role: event["event"]["role"],
           hours: 0,
         });
