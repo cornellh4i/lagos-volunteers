@@ -37,6 +37,7 @@ type pastEvent = {
 
 interface EventCardProps {
   eventDetails: event[] | null;
+  userRole?: string;
 }
 
 function formatDateTimeRange(startDateString: string, endDateString: string) {
@@ -87,7 +88,7 @@ const Drafts = () => {
   return <>Hello drafts</>;
 };
 
-const PastEvents = ({ eventDetails }: EventCardProps) => {
+const PastEvents = ({ eventDetails, userRole }: EventCardProps) => {
   const eventColumns: GridColDef[] = [
     {
       field: "role",
@@ -136,7 +137,7 @@ const PastEvents = ({ eventDetails }: EventCardProps) => {
     eventDetails?.map((event) => [
       dummyRows.push({
         id: event.id,
-        role: "Supervisor",
+        role: userRole,
         name: event.name,
         startDate: getFormattedDate(event.startDate),
         hours: event.hours,
@@ -146,7 +147,7 @@ const PastEvents = ({ eventDetails }: EventCardProps) => {
 
   function totalHours() {
     let numOfHours = 0;
-    eventDetails?.map((event) => numOfHours + event.hours);
+    eventDetails?.map((event) => (numOfHours = numOfHours + event.hours));
     return numOfHours.toString();
   }
 
@@ -163,7 +164,17 @@ const PastEvents = ({ eventDetails }: EventCardProps) => {
  */
 const ViewEvents = () => {
   const { user } = useAuth();
-  const [events, setEvents] = useState<event[] | null>(null);
+  const [events, setEvents] = useState<event[]>({[
+    id: "",
+    name: "",
+    location: "",
+    actions: [],
+    startDate: "",
+    endDate: "",
+    role: "",
+    hours: 0,
+  ]});
+  const [userRole, setUserRole] = useState<string>("");
 
   /**
    * Returns the id of the current user
@@ -180,25 +191,8 @@ const ViewEvents = () => {
         },
       });
       const json = await response.json();
+      setUserRole(json["data"][0]["role"]);
       return json["data"][0]["id"];
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  const getUserRole = async () => {
-    try {
-      const url = BASE_URL as string;
-      const fetchUrl = `${url}/users/search/?email=${user?.email}`;
-      const userToken = await auth.currentUser?.getIdToken();
-      const response = await fetch(fetchUrl, {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${userToken}`,
-        },
-      });
-      const json = await response.json();
-      return json["data"][0]["role"];
     } catch (error) {
       console.log(error);
     }
@@ -209,11 +203,8 @@ const ViewEvents = () => {
       const url = BASE_URL as string;
       const userToken = await auth.currentUser?.getIdToken();
       const userId = await getUserId();
-      const userRole = await getUserRole();
       const fetchUrl = `${url}/users/${userId}/registered`;
-      const fetchUrlRole = `${url}/users/${userRole}/registered`;
       console.log("user id" + fetchUrl);
-      console.log("user role" + fetchUrlRole);
       const response = await fetch(fetchUrl, {
         method: "GET",
         headers: {
@@ -251,7 +242,10 @@ const ViewEvents = () => {
         label: "Upcoming Events",
         panel: <UpcomingEvents eventDetails={events} />,
       },
-      { label: "Past Events", panel: <PastEvents eventDetails={events} /> },
+      {
+        label: "Past Events",
+        panel: <PastEvents eventDetails={events} userRole={userRole} />,
+      },
       { label: "Drafts", panel: <Drafts /> },
     ];
     return (
