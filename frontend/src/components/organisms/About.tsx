@@ -44,8 +44,11 @@ const About = ({ edit }: AboutProps) => {
     pariatur. Excepteur sint occaecat cupidatat non proident, sunt in
     culpa qui officia deserunt mollit anim id est laborum.
   </p>
-  <h2>Programs</h2>
-  {/* <ViewEvents /> */}
+  <h2>Programs</h2>`;
+  {
+    <ViewEvents />;
+  }
+  +`
   <h2>Certificate Request Process</h2>
   <p>
     Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
