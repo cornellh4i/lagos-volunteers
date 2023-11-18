@@ -36,8 +36,7 @@ type pastEvent = {
 };
 
 interface EventCardProps {
-  eventDetails: event[];
-  userRole?: string;
+  eventDetails: event[] | null;
 }
 
 function formatDateTimeRange(startDateString: string, endDateString: string) {
@@ -88,7 +87,7 @@ const Drafts = () => {
   return <>Hello drafts</>;
 };
 
-const PastEvents = ({ eventDetails, userRole }: EventCardProps) => {
+const PastEvents = ({ eventDetails }: EventCardProps) => {
   const eventColumns: GridColDef[] = [
     {
       field: "role",
@@ -164,20 +163,7 @@ const PastEvents = ({ eventDetails, userRole }: EventCardProps) => {
  */
 const ViewEvents = () => {
   const { user } = useAuth();
-  const [events, setEvents] = useState<event[]>([
-    {
-      id: "",
-      name: "",
-      location: "",
-      actions: ["Edit"],
-      startDate: "",
-      endDate: "",
-      role: "",
-      hours: 0,
-    },
-  ]);
-  const [userRole, setUserRole] = useState<string>("");
-  const [userId, setUserId] = useState<string>("");
+  const [events, setEvents] = useState<event[] | null>(null);
 
   /**
    * Returns the id of the current user
@@ -194,7 +180,6 @@ const ViewEvents = () => {
         },
       });
       const json = await response.json();
-      setUserId(json["data"][0]["id"]);
       return json["data"][0]["id"];
     } catch (error) {
       console.log(error);
@@ -247,7 +232,7 @@ const ViewEvents = () => {
       },
       {
         label: "Past Events",
-        panel: <PastEvents eventDetails={events} userRole={userRole} />,
+        panel: <PastEvents eventDetails={events} />,
       },
       { label: "Drafts", panel: <Drafts /> },
     ];
