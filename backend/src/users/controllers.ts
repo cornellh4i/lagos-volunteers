@@ -84,6 +84,9 @@ const getUsersPaginated = async (req: Request) => {
     orderBy: {
       id: "asc",
     },
+    include: {
+      profile: true,
+    },
   });
 };
 

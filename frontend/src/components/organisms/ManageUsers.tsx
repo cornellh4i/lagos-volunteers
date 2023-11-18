@@ -1,4 +1,4 @@
-import React, { ChangeEvent, FormEvent } from "react";
+import React, { ChangeEvent, FormEvent, useEffect } from "react";
 import Table from "@/components/molecules/Table";
 import TabContainer from "@/components/molecules/TabContainer";
 import Button from "../atoms/Button";
@@ -12,7 +12,28 @@ import { BASE_URL } from "@/utils/constants";
 
 interface ManageUsersProps {}
 
-const Active = () => {
+type ActiveProps = {
+  initalRowData: Object[];
+  usersLength: number;
+  initialUserID: string;
+  progressCounter: string;
+  /** The function called to obtain the next elements */
+  progressFunction: (cursor: string) => Promise<
+    | {
+        result: any[];
+        last_user_id: string; // Adjust the type as needed
+      }
+    | undefined
+  >;
+};
+
+const Active = ({
+  initalRowData,
+  usersLength,
+  initialUserID,
+  progressCounter,
+  progressFunction,
+}: ActiveProps) => {
   const eventColumns: GridColDef[] = [
     {
       field: "name",
@@ -83,214 +104,15 @@ const Active = () => {
     },
   ];
 
-  let dummyDate: Date = new Date(2023, 0o1, 21);
-
-  const dummyRows = [
-    {
-      id: 1,
-      name: "Julia Papp",
-      email: "jpapp@gmail.com",
-      role: "Volunteer",
-      date: dummyDate,
-      hours: 20 + " hours",
-    },
-    {
-      id: 2,
-      name: "Julia Papp",
-      email: "jpapp@gmail.com",
-      role: "Volunteer",
-      date: dummyDate,
-      hours: 20 + " hours",
-    },
-    {
-      id: 3,
-      name: "Julia Papp",
-      email: "jpapp@gmail.com",
-      role: "Volunteer",
-      date: dummyDate,
-      hours: 20 + " hours",
-    },
-    {
-      id: 4,
-      name: "Julia Papp",
-      email: "jpapp@gmail.com",
-      role: "Volunteer",
-      date: dummyDate,
-      hours: 20 + " hours",
-    },
-    {
-      id: 5,
-      name: "Julia Papp",
-      email: "jpapp@gmail.com",
-      role: "Volunteer",
-      date: dummyDate,
-      hours: 20 + " hours",
-    },
-    {
-      id: 6,
-      name: "Julia Papp",
-      email: "jpapp@gmail.com",
-      role: "Volunteer",
-      date: dummyDate,
-      hours: 20 + " hours",
-    },
-    {
-      id: 7,
-      name: "Julia Papp",
-      email: "jpapp@gmail.com",
-      role: "Volunteer",
-      date: dummyDate,
-      hours: 20 + " hours",
-    },
-    {
-      id: 8,
-      name: "Julia Papp",
-      email: "jpapp@gmail.com",
-      role: "Volunteer",
-      date: dummyDate,
-      hours: 20 + " hours",
-    },
-    {
-      id: 9,
-      name: "Julia Papp",
-      email: "jpapp@gmail.com",
-      role: "Volunteer",
-      date: dummyDate,
-      hours: 20 + " hours",
-    },
-    {
-      id: 10,
-      name: "Julia Papp",
-      email: "jpapp@gmail.com",
-      role: "Volunteer",
-      date: dummyDate,
-      hours: 20 + " hours",
-    },
-    {
-      id: 11,
-      name: "Julia Papp",
-      email: "jpapp@gmail.com",
-      role: "Volunteer",
-      date: dummyDate,
-      hours: 20 + " hours",
-    },
-    {
-      id: 12,
-      name: "Julia Papp",
-      email: "jpapp@gmail.com",
-      role: "Volunteer",
-      date: dummyDate,
-      hours: 20 + " hours",
-    },
-    {
-      id: 13,
-      name: "Julia Papp",
-      email: "jpapp@gmail.com",
-      role: "Volunteer",
-      date: dummyDate,
-      hours: 20 + " hours",
-    },
-    {
-      id: 14,
-      name: "Julia Papp",
-      email: "jpapp@gmail.com",
-      role: "Volunteer",
-      date: dummyDate,
-      hours: 20 + " hours",
-    },
-    {
-      id: 15,
-      name: "Julia Papp",
-      email: "jpapp@gmail.com",
-      role: "Volunteer",
-      date: dummyDate,
-      hours: 20 + " hours",
-    },
-    {
-      id: 16,
-      name: "Julia Papp",
-      email: "jpapp@gmail.com",
-      role: "Volunteer",
-      date: dummyDate,
-      hours: 20 + " hours",
-    },
-  ];
-
-  // Dummy FETCH function
-  const fetchPrevUsers = async () => {
-    try {
-      const url = BASE_URL as string;
-      const fetchUrl = `${url}/users/`;
-      const userToken = await auth.currentUser?.getIdToken();
-
-      const response = await fetch(fetchUrl, {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${userToken}`,
-        },
-      });
-
-      if (response.ok) {
-        // Dummy function placed here just to make sure
-        // front end pagination works
-        const data = await response.json();
-        const clean_data = data["data"];
-        const result = clean_data.map((element: any) => ({
-          id: element["id"],
-          name: element["email"], // problem: the ${url}/users/ request does not provide name
-          email: element["email"],
-          role: element["role"],
-          date: dummyDate,
-          hours: element["hours"] + " hours",
-        }));
-        return result;
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  // Dummy FETCH function
-  const fetchNextUsers = async () => {
-    try {
-      const url = BASE_URL as string;
-      const fetchUrl = `${url}/events`;
-      const userToken = await auth.currentUser?.getIdToken();
-
-      const response = await fetch(fetchUrl, {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${userToken}`,
-        },
-      });
-
-      if (response.ok) {
-        // Dummy function placed here just to make sure
-        // front end pagination works
-        const data = await response.json();
-        const clean_data = data["data"];
-        const result = clean_data.map((element: any) => ({
-          id: element["id"],
-          name: element["name"],
-          email: element["location"],
-          role: element["status"],
-          date: dummyDate,
-          hours: 20 + " hours",
-        }));
-        return result;
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
   return (
     <div>
       <Table
         columns={eventColumns}
-        rowData={dummyRows}
-        prevFunction={fetchPrevUsers}
-        nextFunction={fetchNextUsers}
+        rowData={initalRowData}
+        dataSetLength={usersLength}
+        progressCursor={progressCounter}
+        initialID={initialUserID}
+        nextFunction={progressFunction}
       />
     </div>
   );
@@ -300,9 +122,97 @@ const Active = () => {
  * A ManageUsers component
  */
 const ManageUsers = ({}: ManageUsersProps) => {
+  // the initial rowData
+  const [initialrows, setInitialRows] = React.useState<any[]>([]);
+  const [usersLength, setUsersLength] = React.useState(0);
+  const [initialID, setInitialID] = React.useState("");
+  const [progressCounter, setProgressCounter] = React.useState("");
+  // dummy date
+  let dummyDate: Date = new Date(2023, 0o1, 21);
+
+  const firstUserID_and_usersLength = async () => {
+    const url = BASE_URL as string;
+    try {
+      const fetchUrl = `${url}/users/`;
+      const userToken = await auth.currentUser?.getIdToken();
+      const response = await fetch(fetchUrl, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${userToken}`,
+        },
+      });
+      if (response.ok) {
+        const data = await response.json();
+
+        const length = data["data"].length;
+        const first_user_id = data["data"][0]["id"];
+        return { length, first_user_id };
+      }
+    } catch (error) {}
+  };
+
+  // Dummy FETCH function
+  const fetchUsers = async (cursor: string) => {
+    const url = BASE_URL as string;
+    const PAGE_SIZE = 6;
+    try {
+      const after = cursor == "" ? "" : `&after=${cursor}`;
+      const fetchUrl = `${url}/users/pagination?limit=${PAGE_SIZE}${after}`;
+      const userToken = await auth.currentUser?.getIdToken();
+      const response = await fetch(fetchUrl, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${userToken}`,
+        },
+      });
+      if (response.ok) {
+        // Dummy function placed here just to make sure
+        // front end pagination works
+        const data = await response.json();
+        const clean_data = data["data"];
+        const result = clean_data.map((element: any) => ({
+          id: element["id"],
+          name:
+            element["profile"]["firstName"] + element["profile"]["lastName"],
+          email: element["email"],
+          role: element["status"],
+          date: dummyDate,
+          hours: 20 + " hours",
+        }));
+        var last_user_id = result.pop()["id"];
+        setInitialRows(result);
+        setProgressCounter(last_user_id);
+        return { result, last_user_id };
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
   const tabs = [
-    { label: "Active", panel: <Active /> },
-    { label: "Blacklisted", panel: <Active /> }, // need to change panel for Blacklisted
+    {
+      label: "Active",
+      panel: (
+        <Active
+          initalRowData={initialrows}
+          usersLength={usersLength}
+          initialUserID={initialID}
+          progressCounter={progressCounter}
+          progressFunction={fetchUsers}
+        />
+      ),
+    },
+    {
+      label: "Blacklisted",
+      panel: (
+        <Active
+          initalRowData={initialrows}
+          usersLength={usersLength}
+          initialUserID={initialID}
+          progressCounter={progressCounter}
+          progressFunction={fetchUsers}
+        />
+      ),
+    }, // need to change panel for Blacklisted
   ];
 
   // Search bar
@@ -313,10 +223,22 @@ const ManageUsers = ({}: ManageUsersProps) => {
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     // Prevent page refresh
     event.preventDefault();
-
     // Actual function
     console.log(value);
   };
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const result = await firstUserID_and_usersLength();
+      if (result != undefined) {
+        await fetchUsers(result.first_user_id);
+        console.log("passed fetch user");
+        setInitialID(result.first_user_id);
+        setUsersLength(result.length);
+      }
+    };
+    fetchData();
+  }, []);
 
   return (
     <>
@@ -329,9 +251,11 @@ const ManageUsers = ({}: ManageUsersProps) => {
           onClick={handleSubmit}
         />
       </div>
-      <div>
-        <TabContainer tabs={tabs} />
-      </div>
+      {initialrows.length > 0 && (
+        <div>
+          <TabContainer tabs={tabs} />
+        </div>
+      )}
     </>
   );
 };
