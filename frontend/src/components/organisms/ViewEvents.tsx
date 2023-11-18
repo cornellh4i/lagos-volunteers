@@ -36,7 +36,7 @@ type pastEvent = {
 };
 
 interface EventCardProps {
-  eventDetails: event[] | null;
+  eventDetails: event[];
   userRole?: string;
 }
 
@@ -137,7 +137,7 @@ const PastEvents = ({ eventDetails, userRole }: EventCardProps) => {
     eventDetails?.map((event) => [
       dummyRows.push({
         id: event.id,
-        role: userRole,
+        role: event.role,
         name: event.name,
         startDate: getFormattedDate(event.startDate),
         hours: event.hours,
@@ -164,17 +164,20 @@ const PastEvents = ({ eventDetails, userRole }: EventCardProps) => {
  */
 const ViewEvents = () => {
   const { user } = useAuth();
-  const [events, setEvents] = useState<event[]>({[
-    id: "",
-    name: "",
-    location: "",
-    actions: [],
-    startDate: "",
-    endDate: "",
-    role: "",
-    hours: 0,
-  ]});
+  const [events, setEvents] = useState<event[]>([
+    {
+      id: "",
+      name: "",
+      location: "",
+      actions: ["Edit"],
+      startDate: "",
+      endDate: "",
+      role: "",
+      hours: 0,
+    },
+  ]);
   const [userRole, setUserRole] = useState<string>("");
+  const [userId, setUserId] = useState<string>("");
 
   /**
    * Returns the id of the current user
@@ -191,7 +194,7 @@ const ViewEvents = () => {
         },
       });
       const json = await response.json();
-      setUserRole(json["data"][0]["role"]);
+      setUserId(json["data"][0]["id"]);
       return json["data"][0]["id"];
     } catch (error) {
       console.log(error);
@@ -204,7 +207,6 @@ const ViewEvents = () => {
       const userToken = await auth.currentUser?.getIdToken();
       const userId = await getUserId();
       const fetchUrl = `${url}/users/${userId}/registered`;
-      console.log("user id" + fetchUrl);
       const response = await fetch(fetchUrl, {
         method: "GET",
         headers: {
@@ -223,7 +225,8 @@ const ViewEvents = () => {
           startDate: event["event"]["startDate"],
           endDate: event["event"]["endDate"],
           actions: ["Manage Attendees", "Edit"],
-          role: event["event"]["role"],
+          role:
+            userId === event["event"]["ownerId"] ? "Supervisor" : "Volunteer",
           hours: 0,
         });
       });
