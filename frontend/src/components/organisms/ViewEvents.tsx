@@ -144,9 +144,15 @@ const PastEvents = ({ eventDetails }: EventCardProps) => {
     ]);
   }
 
+  function totalHours() {
+    let numOfHours = 0;
+    eventDetails?.map((event) => numOfHours + event.hours);
+    return numOfHours.toString();
+  }
+
   return (
     <>
-      <BoxText text="Volunteer Hours" textRight="30" />
+      <BoxText text="Volunteer Hours" textRight={totalHours()} />
       <Table columns={eventColumns} rows={dummyRows} />
     </>
   );
