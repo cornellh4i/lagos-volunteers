@@ -12,8 +12,8 @@ interface AboutProps {
  */
 
 const About = ({ edit }: AboutProps) => {
-  var default = "<div><h2>About Lagos Food Bank</h2> \n <h3>Mission</h3> \n <h3> Why Volunteer?</h3> \n <h2>Sign Up Process</h2> \n <h2>Programs</h2> \n";
-  const [value, setValue] = useState(default);
+  var default_text = "<h2>About Lagos Food Bank</h2>";
+  const [value, setValue] = useState(default_text);
   return <ReactQuill theme="snow" value={value} onChange={setValue} />;
   // if (edit == false) {
   //   return (
