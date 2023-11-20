@@ -20,6 +20,14 @@ type ActiveProps = {
   progressFunction: (cursor: string) => Promise<any[]>;
 };
 
+function formatDateString(dateString: string) {
+  const date = new Date(dateString);
+  const month = (date.getMonth() + 1).toString().padStart(2, "0");
+  const day = date.getDate().toString().padStart(2, "0");
+  const year = date.getFullYear();
+  return `${month}/${day}/${year}`;
+}
+
 const Active = ({
   initalRowData,
   usersLength,
@@ -117,11 +125,6 @@ const ManageUsers = ({}: ManageUsersProps) => {
   const [initialrows, setInitialRows] = React.useState<any[]>([]);
   const [usersLength, setUsersLength] = React.useState(0);
   const [initialID, setInitialID] = React.useState("");
-  // dummy date
-  let dummyDate: Date = new Date(2023, 0o1, 21);
-  const firstUserID = (input: any[]) => {
-    return input[0].id;
-  };
 
   const fetchUserCount = async () => {
     const url = BASE_URL as string;
@@ -138,8 +141,7 @@ const ManageUsers = ({}: ManageUsersProps) => {
       if (response.ok) {
         const data = await response.json();
         const length = data["data"];
-        const first_user_id = "";
-        return { length, first_user_id };
+        return length;
       }
     } catch (error) {}
   };
@@ -169,8 +171,8 @@ const ManageUsers = ({}: ManageUsersProps) => {
             element["profile"]["firstName"] + element["profile"]["lastName"],
           email: element["email"],
           role: element["status"],
-          date: dummyDate,
-          hours: 20 + " hours",
+          date: new Date(formatDateString(element["createdAt"])),
+          hours: element["hours"].toString() + " hours",
         }));
 
         return result;
@@ -218,14 +220,14 @@ const ManageUsers = ({}: ManageUsersProps) => {
 
   useEffect(() => {
     const fetchData = async () => {
-      const result = await fetchUserCount();
-      if (result != undefined) {
-        const final_result = await fetchUsers(result.first_user_id);
-        const first_user_id = firstUserID(final_result);
+      const length = await fetchUserCount();
+      if (length != undefined) {
+        const final_result = await fetchUsers("");
+        const first_user_id = final_result[0].id;
         console.log("passed fetch user");
         setInitialRows(final_result);
         setInitialID(first_user_id);
-        setUsersLength(result.length);
+        setUsersLength(length);
       }
     };
     fetchData();
