@@ -1,3 +1,4 @@
+import { Box, Button, Modal } from "@mui/material";
 import ViewEvents from "./ViewEvents";
 import React, { useState } from "react";
 import ReactQuill from "react-quill";
@@ -46,7 +47,7 @@ const About = ({ edit }: AboutProps) => {
   </p>
   <h2>Programs</h2>`;
   {
-    <ViewEvents />;
+    // <ViewEvents />;
   }
   +`
   <h2>Certificate Request Process</h2>
@@ -63,7 +64,43 @@ const About = ({ edit }: AboutProps) => {
   <p>Fill out this form. Login first</p>
   `;
   const [value, setValue] = useState(default_text);
-  return <ReactQuill theme="snow" value={value} onChange={setValue} />;
+  const [open, setOpen] = React.useState(false);
+  const handleOpen = () => setOpen(true);
+  const handleClose = () => setOpen(false);
+
+  <Modal open={open} onClose={handleClose}>
+    <Box>Hello</Box>
+  </Modal>;
+
+  if (edit == true) {
+    return (
+      <>
+        <ReactQuill theme="snow" value={value} onChange={setValue} />
+        <br></br>
+        <div className="object-right justify-items-end">
+          <button type="button">Cancel</button>
+        </div>
+      </>
+    );
+  } else {
+    return (
+      <>
+        <ReactQuill
+          theme="snow"
+          value={value}
+          onChange={setValue}
+          readOnly={true}
+        />
+        <br></br>
+        <div className="text-right">
+          <button type="button">Cancel</button>
+          <button className="ml-4" type="button" onClick={handleOpen}>
+            Publish Changes
+          </button>
+        </div>
+      </>
+    );
+  }
   // if (edit == false) {
   //   return (
   //     <>
