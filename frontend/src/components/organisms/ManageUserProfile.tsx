@@ -72,7 +72,6 @@ const ModalBody = ({
   const router = useRouter();
   const { user } = useAuth();
   const blacklist = async () => {
-    console.log(status);
     // BLACKLISTS THE USER
     var bodyval = "";
     if (status == "ACTIVE") {
@@ -125,7 +124,7 @@ const ModalBody = ({
         </Grid>
         <Grid item md={6} xs={12}>
           <Button color="dark-gray" type="button" onClick={blacklist}>
-            {status == "ACTIVE" ? "YES,Blacklist" : "YES,Remove"}
+            {status == "ACTIVE" ? "Yes, Blacklist" : "Yes, Remove"}
           </Button>
         </Grid>
       </Grid>
@@ -167,14 +166,14 @@ const Status = ({ userRole, userStatus, userID }: userStatusData) => {
         body: JSON.stringify(body),
       });
       if (response.ok) {
-        console.error("User Role Changed Successfully", response.status);
-        <Alert severity="error">Error: {"Error"}</Alert>;
-      } else {
-        console.error("User PATCH failed with status:", response.status);
+        <Alert severity="success">
+          Success: {"User Role Changed Successfully"}
+        </Alert>;
       }
     } catch (error) {
-      console.log("Error in PATCH.");
-      console.log(error);
+      <Alert severity="error">
+        Error: {`User Role NOT Changed: ${error}`}
+      </Alert>;
     }
     setRole(event.target.value);
   };
