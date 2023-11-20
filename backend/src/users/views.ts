@@ -71,6 +71,11 @@ userRouter.put("/:userid", useAuth, async (req: Request, res: Response) => {
   );
 });
 
+userRouter.get("/count", useAuth, async (req: Request, res: Response) => {
+  // #swagger.tags = ['Users']
+  attempt(res, 200, userController.getCountUsers);
+});
+
 userRouter.get("/", useAuth, async (req: Request, res: Response) => {
   // #swagger.tags = ['Users']
   attempt(res, 200, userController.getAllUsers);

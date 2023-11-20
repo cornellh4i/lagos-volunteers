@@ -119,11 +119,15 @@ const ManageUsers = ({}: ManageUsersProps) => {
   const [initialID, setInitialID] = React.useState("");
   // dummy date
   let dummyDate: Date = new Date(2023, 0o1, 21);
+  const firstUserID = (input: any[]) => {
+    return input[0].id;
+  };
 
-  const firstUserID_and_usersLength = async () => {
+  const fetchUserCount = async () => {
     const url = BASE_URL as string;
     try {
-      const fetchUrl = `${url}/users/`;
+      // call the get count insdtead of this
+      const fetchUrl = `${url}/users/count`;
       const userToken = await auth.currentUser?.getIdToken();
       const response = await fetch(fetchUrl, {
         method: "GET",
@@ -133,9 +137,8 @@ const ManageUsers = ({}: ManageUsersProps) => {
       });
       if (response.ok) {
         const data = await response.json();
-
-        const length = data["data"].length;
-        const first_user_id = data["data"][0]["id"];
+        const length = data["data"];
+        const first_user_id = "";
         return { length, first_user_id };
       }
     } catch (error) {}
@@ -215,12 +218,13 @@ const ManageUsers = ({}: ManageUsersProps) => {
 
   useEffect(() => {
     const fetchData = async () => {
-      const result = await firstUserID_and_usersLength();
+      const result = await fetchUserCount();
       if (result != undefined) {
         const final_result = await fetchUsers(result.first_user_id);
+        const first_user_id = firstUserID(final_result);
         console.log("passed fetch user");
         setInitialRows(final_result);
-        setInitialID(result.first_user_id);
+        setInitialID(first_user_id);
         setUsersLength(result.length);
       }
     };
