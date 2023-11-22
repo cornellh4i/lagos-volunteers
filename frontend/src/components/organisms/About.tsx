@@ -7,6 +7,7 @@ import "react-quill/dist/quill.snow.css";
 import { renderToStaticMarkup } from "react-dom/server";
 import EventCard from "./EventCard";
 import MultilineTextField from "../atoms/MultilineTextField";
+import CardList from "../molecules/CardList";
 
 interface AboutProps {
   edit: boolean;
@@ -82,48 +83,56 @@ const About = ({ edit }: AboutProps) => {
         readOnly={!edit}
       />
       <br></br>
-      <Grid container item>
-        <Grid xs={6}>
-          <EventCard
-            eventid={""}
-            mainAction={"edit"}
-            dropdownActions={[]}
-            title={""}
-            location={""}
-            datetime={""}
-          ></EventCard>
-        </Grid>
-        <Grid xs={6}>
-          <EventCard
-            eventid={""}
-            mainAction={"edit"}
-            dropdownActions={[]}
-            title={""}
-            location={""}
-            datetime={""}
-          ></EventCard>
-        </Grid>
-        <Grid xs={6}>
-          <EventCard
-            eventid={""}
-            mainAction={"edit"}
-            dropdownActions={[]}
-            title={""}
-            location={""}
-            datetime={""}
-          ></EventCard>
-        </Grid>
-        <Grid xs={6}>
-          <EventCard
-            eventid={""}
-            mainAction={"edit"}
-            dropdownActions={[]}
-            title={""}
-            location={""}
-            datetime={""}
-          ></EventCard>
-        </Grid>
-      </Grid>
+      <CardList>
+        <EventCard
+          eventid={"000"}
+          mainAction={"cancel rsvp"}
+          title={"EDUFOOD"}
+          location={"WAREHOUSE B"}
+          datetime={"02/15/2023, 9:00-11:00 AM"}
+          dropdownActions={[]}
+        />
+        <EventCard
+          eventid={"000"}
+          mainAction={"cancel rsvp"}
+          title={"Malta Outreach"}
+          location={"Plot 2, Lagos Food Bank Building"}
+          datetime={"02/16/2023, 9:00-11:00 AM"}
+          dropdownActions={[]}
+        />
+        <EventCard
+          eventid={"000"}
+          mainAction={"cancel rsvp"}
+          dropdownActions={["cancel rsvp"]}
+          title={"NUMEPLAN"}
+          location={"Plot 2, Lagos Food Bank Building"}
+          datetime={"02/19/2023, 9:00-11:00 AM"}
+        />
+        <EventCard
+          eventid={"000"}
+          mainAction={"cancel rsvp"}
+          title={"EDUFOOD"}
+          location={"WAREHOUSE B"}
+          datetime={"02/15/2023, 9:00-11:00 AM"}
+          dropdownActions={[]}
+        />
+        <EventCard
+          eventid={"000"}
+          mainAction={"cancel rsvp"}
+          title={"Malta Outreach"}
+          location={"Plot 2, Lagos Food Bank Building"}
+          datetime={"02/16/2023, 9:00-11:00 AM"}
+          dropdownActions={[]}
+        />
+        <EventCard
+          eventid={"000"}
+          mainAction={"cancel rsvp"}
+          dropdownActions={["cancel rsvp"]}
+          title={"NUMEPLAN"}
+          location={"Plot 2, Lagos Food Bank Building"}
+          datetime={"02/19/2023, 9:00-11:00 AM"}
+        />
+      </CardList>
 
       <div className="text-right">
         <button type="button">Cancel</button>
