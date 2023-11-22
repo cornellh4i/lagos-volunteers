@@ -1,10 +1,12 @@
-import { Box, Button, Modal } from "@mui/material";
+import { Box, Button, Modal, Grid } from "@mui/material";
 import ViewEvents from "./ViewEvents";
 import React, { useState } from "react";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 
 import { renderToStaticMarkup } from "react-dom/server";
+import EventCard from "./EventCard";
+import MultilineTextField from "../atoms/MultilineTextField";
 
 interface AboutProps {
   edit: boolean;
@@ -63,9 +65,7 @@ const About = ({ edit }: AboutProps) => {
   <h2>Request Certificate</h2>
   <p>Fill out this form. Login first</p>
   `;
-  const [value, setValue] = useState(
-    `${default_text} ${(<Button>hello</Button>)} ${default_text_two}`
-  );
+  const [value, setValue] = useState(`${default_text} ${default_text_two}`);
   const [open, setOpen] = React.useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
@@ -82,6 +82,49 @@ const About = ({ edit }: AboutProps) => {
         readOnly={!edit}
       />
       <br></br>
+      <Grid container item>
+        <Grid xs={6}>
+          <EventCard
+            eventid={""}
+            mainAction={"edit"}
+            dropdownActions={[]}
+            title={""}
+            location={""}
+            datetime={""}
+          ></EventCard>
+        </Grid>
+        <Grid xs={6}>
+          <EventCard
+            eventid={""}
+            mainAction={"edit"}
+            dropdownActions={[]}
+            title={""}
+            location={""}
+            datetime={""}
+          ></EventCard>
+        </Grid>
+        <Grid xs={6}>
+          <EventCard
+            eventid={""}
+            mainAction={"edit"}
+            dropdownActions={[]}
+            title={""}
+            location={""}
+            datetime={""}
+          ></EventCard>
+        </Grid>
+        <Grid xs={6}>
+          <EventCard
+            eventid={""}
+            mainAction={"edit"}
+            dropdownActions={[]}
+            title={""}
+            location={""}
+            datetime={""}
+          ></EventCard>
+        </Grid>
+      </Grid>
+
       <div className="text-right">
         <button type="button">Cancel</button>
         <button className="ml-4" type="button" onClick={handleOpen}>
