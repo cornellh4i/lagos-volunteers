@@ -50,6 +50,12 @@ type verifyData = {
   totalHours: number;
 };
 
+type modalBodyProps = {
+  status: string;
+  blacklistFunc: () => Promise<void>;
+  handleClose: () => void;
+};
+
 function formatDateString(dateString: string) {
   const date = new Date(dateString);
   const month = (date.getMonth() + 1).toString().padStart(2, "0");
@@ -57,60 +63,9 @@ function formatDateString(dateString: string) {
   const year = date.getFullYear();
   return `${month}/${day}/${year}`;
 }
-
-const ModalBody = ({
-  userid,
-  status,
-  statusSetter,
-  handleClose,
-}: {
-  userid: string;
-  status: string;
-  statusSetter: React.Dispatch<React.SetStateAction<string>>;
-  handleClose: () => void;
-}) => {
-  const router = useRouter();
-  const { user } = useAuth();
-  const blacklist = async () => {
-    // BLACKLISTS THE USER
-    var bodyval = "";
-    if (status == "ACTIVE") {
-      bodyval = "HOLD";
-    } else if (status == "HOLD") {
-      bodyval = "ACTIVE";
-    } else {
-      bodyval = "INACTIVE";
-    }
-    try {
-      const url = BASE_URL as string;
-      const fetchUrl = `${url}/users/` + userid + `/status`;
-      const currentUser = auth.currentUser;
-      const userToken = await currentUser?.getIdToken();
-      const body = { status: bodyval };
-      const response = await fetch(fetchUrl, {
-        method: "PATCH",
-        headers: {
-          Authorization: `Bearer ${userToken}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(body),
-      });
-      if (response.ok) {
-        <Alert severity="success">
-          Success: {"User was successfully Blacklisted"}
-        </Alert>;
-      }
-    } catch (error) {
-      <Alert severity="error">
-        Error: {`User NOT Successfully Blacklisted ${error}`}
-      </Alert>;
-    }
-    statusSetter(bodyval);
-    handleClose();
-  };
+const ModalBody = ({ status, blacklistFunc, handleClose }: modalBodyProps) => {
   return (
     <div>
-      <h2></h2>
       <p>
         {status == "ACTIVE"
           ? "Are you sure you want to blacklist this user?"
@@ -123,8 +78,8 @@ const ModalBody = ({
           </Button>
         </Grid>
         <Grid item md={6} xs={12}>
-          <Button color="dark-gray" type="button" onClick={blacklist}>
-            {status == "ACTIVE" ? "Yes, Blacklist" : "Yes, Remove"}
+          <Button color="dark-gray" type="button" onClick={blacklistFunc}>
+            {status == "ACTIVE" ? "Blacklist" : "Remove"}
           </Button>
         </Grid>
       </Grid>
@@ -136,10 +91,11 @@ const ModalBody = ({
  * A ManageUserProfile component
  */
 const Status = ({ userRole, userStatus, userID }: userStatusData) => {
-  const [role, setRole] = React.useState(userRole);
-  const [status, setStatus] = React.useState(userStatus);
+  const [role, setRole] = useState(userRole);
+  const [status, setStatus] = useState(userStatus);
   // Confirmation modal
   const [open, setOpen] = useState(false);
+  const [roleMessage, setRoleMessage] = useState<string | null>(null);
   const handleOpen = () => {
     setOpen(true);
   };
@@ -166,56 +122,105 @@ const Status = ({ userRole, userStatus, userID }: userStatusData) => {
         body: JSON.stringify(body),
       });
       if (response.ok) {
+        // set time out and then reload the page
+        // set userres = true
+        // put this in a func and render func
+        setRoleMessage("yes");
+      }
+    } catch (error) {
+      setRoleMessage("no");
+    }
+
+    setRole(event.target.value);
+  };
+  const blacklist = async () => {
+    // BLACKLISTS THE USER
+    var bodyval = "";
+    if (status == "ACTIVE") {
+      bodyval = "HOLD";
+    } else if (status == "HOLD") {
+      bodyval = "ACTIVE";
+    } else {
+      bodyval = "INACTIVE";
+    }
+    try {
+      const url = BASE_URL as string;
+      const fetchUrl = `${url}/users/` + userID + `/status`;
+      const currentUser = auth.currentUser;
+      const userToken = await currentUser?.getIdToken();
+      const body = { status: bodyval };
+      const response = await fetch(fetchUrl, {
+        method: "PATCH",
+        headers: {
+          Authorization: `Bearer ${userToken}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(body),
+      });
+      if (response.ok) {
         <Alert severity="success">
-          Success: {"User Role Changed Successfully"}
+          Success: {"User was successfully Blacklisted"}
         </Alert>;
       }
     } catch (error) {
       <Alert severity="error">
-        Error: {`User Role NOT Changed: ${error}`}
+        Error: {`User NOT Successfully Blacklisted`}
       </Alert>;
     }
-    setRole(event.target.value);
+    setStatus(bodyval);
+    handleClose();
   };
-
+  const ChangeRoleIndicatorComponent = (): JSX.Element | null => {
+    return roleMessage ? (
+      roleMessage === "yes" ? (
+        <Alert severity="success">
+          Success: {"User Role Changed Successfully"}
+        </Alert>
+      ) : (
+        <Alert severity="error">Error: {`User Role NOT Changed`}</Alert>
+      )
+    ) : null;
+  };
   return (
-    <div className="space-y-2">
-      <Modal
-        open={open}
-        handleClose={handleClose}
-        children={
-          <ModalBody
-            userid={userID}
-            status={status}
-            statusSetter={setStatus}
-            handleClose={handleClose}
-          />
-        }
-      />
-      <div>Assign Role</div>
-      <FormControl className="w-full sm:w-1/2">
-        <Select
-          value={role}
-          onChange={handleChange}
-          displayEmpty
-          size="small"
-          className="text-lg"
-        >
-          <MenuItem value="VOLUNTEER">Volunteer</MenuItem>
-          <MenuItem value="SUPERVISOR">Supervisor</MenuItem>
-          <MenuItem value="ADMIN">Admin</MenuItem>
-        </Select>
-      </FormControl>
+    <>
+      <ChangeRoleIndicatorComponent />
+      <div className="space-y-2">
+        <Modal
+          open={open}
+          handleClose={handleClose}
+          children={
+            <ModalBody
+              status={status}
+              blacklistFunc={blacklist}
+              handleClose={handleClose}
+            />
+          }
+        />
+        <div>Assign Role</div>
+        <FormControl className="w-full sm:w-1/2">
+          <Select
+            value={role}
+            onChange={handleChange}
+            displayEmpty
+            size="small"
+            className="text-lg"
+          >
+            <MenuItem value="VOLUNTEER">Volunteer</MenuItem>
+            <MenuItem value="SUPERVISOR">Supervisor</MenuItem>
+            <MenuItem value="ADMIN">Admin</MenuItem>
+          </Select>
+        </FormControl>
 
-      <div className="pt-2">Blacklist</div>
-      <div className="w-full sm:w-1/4">
-        <Button color="dark-gray" onClick={handleOpen}>
-          {status == "ACTIVE"
-            ? "Blacklist Member"
-            : "Remove Member from Blacklist"}
-        </Button>
+        <div className="pt-2">Blacklist</div>
+        <div className="w-full sm:w-1/4">
+          <Button color="dark-gray" onClick={handleOpen}>
+            {status == "ACTIVE"
+              ? "Blacklist Member"
+              : "Remove Member from Blacklist"}
+          </Button>
+        </div>
       </div>
-    </div>
+    </>
   );
 };
 
@@ -286,13 +291,19 @@ const VerifyCertificate = ({ totalHours }: verifyData) => {
   );
 };
 
-const ManageUserProfile = ({ userProfileDetails }: ManageUserProfileProps) => {
-  // TODO: implement validation
+const ManageUserProfile = () => {
+  const router = useRouter();
+  const { userid } = router.query;
+  const [userProfileDetails, setUserProfileDetails] = useState<
+    userProfileData | null | undefined
+  >(null);
   const [registeredEvents, setRegisteredEvents] = useState<any[]>([]);
+
   const fetchUserDetails = async () => {
     try {
       const url = BASE_URL as string;
-      const fetchUrl = `${url}/users/${userProfileDetails.userid}/registered`;
+      const fetchUrl = `${url}/users/${userid}/profile`;
+      console.log(`USERID + ${userid}`);
       const userToken = await auth.currentUser?.getIdToken();
 
       const response = await fetch(fetchUrl, {
@@ -305,6 +316,41 @@ const ManageUserProfile = ({ userProfileDetails }: ManageUserProfileProps) => {
       const data = await response.json();
 
       if (response.ok) {
+        const result = {
+          name:
+            data["data"]["profile"]["firstName"] +
+            " " +
+            data["data"]["profile"]["lastName"],
+          role: data["data"]["role"],
+          email: data["data"]["email"],
+          joinDate: formatDateString(data["data"]["createdAt"]),
+          userid: data["data"]["id"],
+          hours: data["data"]["hours"],
+          status: data["data"]["status"],
+        };
+        setUserProfileDetails(result);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  const fetchUserRegistrations = async () => {
+    try {
+      const url = BASE_URL as string;
+      const fetchUrl = `${url}/users/${userid}/registered`;
+      const userToken = await auth.currentUser?.getIdToken();
+
+      const response = await fetch(fetchUrl, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${userToken}`,
+        },
+      });
+
+      const data = await response.json();
+      console.log("REFGGGGGGGSIIEJIONIFNini");
+      console.log(data["data"]);
+      if (response.ok) {
         setRegisteredEvents(data["data"]["events"]);
       }
     } catch (error) {
@@ -314,37 +360,44 @@ const ManageUserProfile = ({ userProfileDetails }: ManageUserProfileProps) => {
 
   useEffect(() => {
     const fetchData = async () => {
-      await fetchUserDetails();
-      console.log("passed fetch user");
+      if (router.isReady) {
+        await fetchUserDetails();
+        console.log("passed fetch user");
+        await fetchUserRegistrations();
+      }
     };
     fetchData();
-  }, []);
+  }, [router.isReady]);
 
-  const tabs = [
-    {
-      label: "Status",
-      panel: (
-        <Status
-          userRole={userProfileDetails.role}
-          userStatus={userProfileDetails.status}
-          userID={userProfileDetails.userid}
-        />
-      ),
-    },
-    {
-      label: "Registrations",
-      panel: (
-        <Registrations
-          totalHours={userProfileDetails.hours}
-          userRegistrations={registeredEvents}
-        />
-      ),
-    },
-    {
-      label: "Verify Certificate Request",
-      panel: <VerifyCertificate totalHours={userProfileDetails.hours} />,
-    },
-  ];
+  // do the if condition before lpading the component
+  const tabs =
+    userProfileDetails != undefined && userProfileDetails != null
+      ? [
+          {
+            label: "Status",
+            panel: (
+              <Status
+                userRole={userProfileDetails.role}
+                userStatus={userProfileDetails.status}
+                userID={userProfileDetails.userid}
+              />
+            ),
+          },
+          {
+            label: "Registrations",
+            panel: (
+              <Registrations
+                totalHours={userProfileDetails.hours}
+                userRegistrations={registeredEvents}
+              />
+            ),
+          },
+          {
+            label: "Verify Certificate Request",
+            panel: <VerifyCertificate totalHours={userProfileDetails.hours} />,
+          },
+        ]
+      : [];
 
   return (
     <>
@@ -359,15 +412,21 @@ const ManageUserProfile = ({ userProfileDetails }: ManageUserProfileProps) => {
       >
         <div className="pl-2 text-3xl font-bold text-black">Member Profile</div>
       </IconText>
-      <div className="pt-5 pb-5">
-        <UserProfile
-          name={userProfileDetails.name}
-          role={userProfileDetails.role}
-          email={userProfileDetails.email}
-          joinDate={userProfileDetails.joinDate}
-        />
-      </div>
-      <TabContainer tabs={tabs} />
+      {userProfileDetails ? (
+        <div>
+          <div className="pt-5 pb-5">
+            <UserProfile
+              name={userProfileDetails.name}
+              role={userProfileDetails.role}
+              email={userProfileDetails.email}
+              joinDate={userProfileDetails.joinDate}
+            />
+          </div>{" "}
+          <TabContainer tabs={tabs} />
+        </div>
+      ) : (
+        <div>Getting your data...</div>
+      )}
     </>
   );
 };
