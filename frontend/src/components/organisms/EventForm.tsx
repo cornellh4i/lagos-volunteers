@@ -152,8 +152,6 @@ const EventForm = ({ eventId, eventType, eventDetails }: EventFormProps) => {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
-  const handleErrors = (errors: any) => {};
-
   const CreateErrorComponent = (): JSX.Element | null => {
     return errorMessage ? (
       <Alert severity="error">Error: {errorMessage}</Alert>
@@ -165,40 +163,54 @@ const EventForm = ({ eventId, eventType, eventDetails }: EventFormProps) => {
       <Alert severity="success">Success: {successMessage}</Alert>
     ) : null;
   };
+
+  const timeValidation = () => {
+    if (getStartTime == "") {
+      setErrorMessage("Start Time is required.");
+      return false;
+    }
+    if (getEndTime == "") {
+      setErrorMessage("End Time is required.");
+      return false;
+    }
+    if (getStartDate == "") {
+      setErrorMessage("Start Date is required.");
+      return false;
+    }
+    if (getEndDate == "") {
+      setErrorMessage("End Date is required.");
+      return false;
+    }
+    const startDateTime = convertToISO(getStartTime, getStartDate);
+    const endDateTime = convertToISO(getEndTime, getEndDate);
+    var dateValidation =
+      new Date(startDateTime) > new Date(endDateTime) ||
+      new Date(endDateTime) < new Date(startDateTime);
+    if (dateValidation) {
+      setErrorMessage("End Date cannot be earlier than Start Date");
+      return false;
+    } else {
+      setErrorMessage(null);
+    }
+    return true;
+  };
+
   /**Helper for handling creating events */
   const handleCreateEvent: SubmitHandler<FormValues> = async (data) => {
+    const validation = timeValidation();
+    if (!validation) {
+      console.log("caught!");
+      return;
+    }
+
     setIsLoading(true);
     const mode = status === 0 ? "VIRTUAL" : "IN_PERSON";
     const startDateTime = convertToISO(getStartTime, getStartDate);
     const endDateTime = convertToISO(getEndTime, getEndDate);
-    console.log("start time", getStartTime);
-    if (getStartTime == "") {
-      setErrorMessage("Start Time is required.");
-    } else if (getEndTime == "") {
-      setErrorMessage("End Time is required.");
-    } else if (getStartDate == "") {
-      setErrorMessage("Start Date is required.");
-    } else if (getEndDate == "") {
-      setErrorMessage("End Date is required.");
-    } else {
-      var dateValidation =
-        new Date(startDateTime) > new Date(endDateTime) ||
-        new Date(endDateTime) < new Date(startDateTime);
-      if (dateValidation) {
-        setErrorMessage("End Date cannot be earlier than Start Date");
-      } else {
-        setErrorMessage(null);
-      }
-    }
     const { eventName, location, volunteerSignUpCap, eventDescription } = data;
-
     const userid = await fetchUserDetails();
     const fetchCreateEventsUrl = `${url}/events`;
     try {
-      if (errorMessage) {
-        setIsLoading(false);
-        return;
-      }
       const createBody = {
         userID: `${userid}`,
         event: {
@@ -230,7 +242,7 @@ const EventForm = ({ eventId, eventType, eventDetails }: EventFormProps) => {
         console.error("Unable to Create Event with Status", response.status);
         console.log("Unable to create event with status", response.status);
         setErrorMessage(
-          `Unable to create event with status: ${response.status}`
+          `We were unable to create this event. Please try again.`
         );
       }
     } catch (error: any) {
@@ -242,39 +254,19 @@ const EventForm = ({ eventId, eventType, eventDetails }: EventFormProps) => {
 
   /**Helper for handling editing events */
   const handleEditEvent: SubmitHandler<FormValues> = async (data) => {
+    const validation = timeValidation();
+    if (!validation) {
+      console.log("caught!");
+      return;
+    }
     setIsLoading(true);
     const mode = status === 0 ? "VIRTUAL" : "IN_PERSON";
     const startDateTime = convertToISO(getStartTime, getStartDate);
     const endDateTime = convertToISO(getEndTime, getEndDate);
-    console.log("start time", getStartTime);
-    if (getStartTime == "") {
-      setErrorMessage("Start Time is required.");
-    } else if (getEndTime == "") {
-      setErrorMessage("End Time is required.");
-    } else if (getStartDate == "") {
-      setErrorMessage("Start Date is required.");
-    } else if (getEndDate == "") {
-      setErrorMessage("End Date is required.");
-    } else {
-      var dateValidation =
-        new Date(startDateTime) > new Date(endDateTime) ||
-        new Date(endDateTime) < new Date(startDateTime);
-      if (dateValidation) {
-        setErrorMessage("End Date cannot be earlier than Start Date");
-      } else {
-        setErrorMessage(null);
-      }
-    }
-
     const { eventName, location, volunteerSignUpCap, eventDescription } = data;
-
-    const userid = await fetchUserDetails();
     const fetchEditEventsUrl = `${url}/events/${eventId}`;
+
     try {
-      if (errorMessage) {
-        setIsLoading(false);
-        return;
-      }
       const editBody = {
         name: `${eventName}`,
         location: `${location}`,
@@ -338,13 +330,15 @@ const EventForm = ({ eventId, eventType, eventDetails }: EventFormProps) => {
           <DatePicker
             label="Start Date"
             value={eventDetails ? eventDetails.startDate : undefined}
-            onChange={(e) => (e.$d != "Invalid Date" ? setStartDate(e.$d) : "")}
+            onChange={(e) =>
+              e?.$d != "Invalid Date" ? setStartDate(e.$d) : ""
+            }
           />
         </div>
         <DatePicker
           label="End Date"
           value={eventDetails ? eventDetails.endDate : undefined}
-          onChange={(e) => (e.$d != "Invalid Date" ? setEndDate(e.$d) : "")}
+          onChange={(e) => (e?.$d != "Invalid Date" ? setEndDate(e.$d) : "")}
         />
       </div>
       <div className="sm:space-x-4 grid grid-cols-1 sm:grid-cols-2">
@@ -352,13 +346,15 @@ const EventForm = ({ eventId, eventType, eventDetails }: EventFormProps) => {
           <TimePicker
             label="Start Time"
             value={eventDetails ? eventDetails.startTime : undefined}
-            onChange={(e) => (e.$d != "Invalid Date" ? setStartTime(e.$d) : "")}
+            onChange={(e) =>
+              e?.$d != "Invalid Date" ? setStartTime(e.$d) : ""
+            }
           />
         </div>
         <TimePicker
           label="End Time"
           value={eventDetails ? eventDetails.endTime : undefined}
-          onChange={(e) => (e.$d != "Invalid Date" ? setEndTime(e.$d) : "")}
+          onChange={(e) => (e?.$d != "Invalid Date" ? setEndTime(e.$d) : "")}
         />
       </div>
       <div>
