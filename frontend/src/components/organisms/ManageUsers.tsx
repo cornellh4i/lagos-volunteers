@@ -221,7 +221,9 @@ const Active = () => {
   );
 };
 
-
+/**
+ * A ManageUsers component
+ */
 const ManageUsers = ({}: ManageUsersProps) => {
   const tabs = [
     { label: "Active", panel: <Active /> },
