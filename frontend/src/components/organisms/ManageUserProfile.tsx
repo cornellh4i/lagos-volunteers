@@ -325,7 +325,6 @@ const ManageUserProfile = () => {
       //FETCH Prep
       const url = BASE_URL as string;
       const fetchUrl = `${url}/users/${userid}/profile`;
-      console.log(`USERID + ${userid}`);
       const userToken = await auth.currentUser?.getIdToken();
 
       //FETCH Call
@@ -386,9 +385,7 @@ const ManageUserProfile = () => {
     const fetchData = async () => {
       if (router.isReady) {
         await fetchUserDetails();
-        console.log("PASSED FETCH USER");
         await fetchUserRegistrations();
-        console.log("PASSED FETCH USER REGS");
       }
     };
     fetchData();
