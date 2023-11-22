@@ -4,6 +4,8 @@ import React, { useState } from "react";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 
+import { renderToStaticMarkup } from "react-dom/server";
+
 interface AboutProps {
   edit: boolean;
 }
@@ -46,13 +48,8 @@ const About = ({ edit }: AboutProps) => {
     culpa qui officia deserunt mollit anim id est laborum.
   </p>
   <h2>Programs</h2>`;
-  {
-    <div>
-      <EventCard>hello</EventCard>
-    </div>;
-    //<ViewEvents />;
-  }
-  +`
+  var button = <Button>hello</Button>;
+  var default_text_two = `
   <h2>Certificate Request Process</h2>
   <p>
     Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
@@ -66,7 +63,9 @@ const About = ({ edit }: AboutProps) => {
   <h2>Request Certificate</h2>
   <p>Fill out this form. Login first</p>
   `;
-  const [value, setValue] = useState(default_text);
+  const [value, setValue] = useState(
+    `${default_text} ${(<Button>hello</Button>)} ${default_text_two}`
+  );
   const [open, setOpen] = React.useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
