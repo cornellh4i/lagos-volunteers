@@ -18,7 +18,6 @@ import { auth } from "@/utils/firebase";
 import Alert from "../atoms/Alert";
 import { useRouter } from "next/router";
 import { Grid } from "@mui/material";
-import { useAuth } from "@/utils/AuthContext";
 import Modal from "@/components/molecules/Modal";
 
 type userProfileData = {
@@ -31,14 +30,12 @@ type userProfileData = {
   status: string;
 };
 
-interface ManageUserProfileProps {
-  userProfileDetails: userProfileData;
-}
-
 type userStatusData = {
   userRole: string;
   userStatus: string;
   userID: string;
+  handleBlacklistIndicator: React.Dispatch<React.SetStateAction<string>>;
+  handleRoleIndicator: React.Dispatch<React.SetStateAction<string>>;
 };
 
 type userRegistrationData = {
@@ -90,29 +87,32 @@ const ModalBody = ({ status, blacklistFunc, handleClose }: modalBodyProps) => {
 /**
  * A ManageUserProfile component
  */
-const Status = ({ userRole, userStatus, userID }: userStatusData) => {
-  const [role, setRole] = useState(userRole);
-  const [status, setStatus] = useState(userStatus);
-  // Confirmation modal
+const Status = ({
+  userRole,
+  userStatus,
+  userID,
+  handleBlacklistIndicator,
+  handleRoleIndicator,
+}: userStatusData) => {
+  /* State Vars for the Blacklist Confirmation modal */
   const [open, setOpen] = useState(false);
-  const [roleMessage, setRoleMessage] = useState<string | null>(null);
-  const handleOpen = () => {
-    setOpen(true);
-  };
+  const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
 
-  // To Change the user role
-  const handleChange = async (event: SelectChangeEvent) => {
-    //call the PATCH request here to change the ROLE
+  /* State Vars for Specific to Status Tab */
+  const [role, setRole] = useState(userRole);
+  const [status, setStatus] = useState(userStatus);
+  const handleUserRoleChange = async (event: SelectChangeEvent) => {
     try {
+      // FETCH Prep
       const url = BASE_URL as string;
       const fetchUrl = `${url}/users/` + userID + `/role`;
       const currentUser = auth.currentUser;
       const userToken = await currentUser?.getIdToken();
-
       const val = event.target.value;
-      // CHANGES THE USER ROLE
       const body = { role: val };
+
+      // FETCH Call
       const response = await fetch(fetchUrl, {
         method: "PATCH",
         headers: {
@@ -121,20 +121,20 @@ const Status = ({ userRole, userStatus, userID }: userStatusData) => {
         },
         body: JSON.stringify(body),
       });
+
+      // FETCH Response
       if (response.ok) {
-        // set time out and then reload the page
-        // set userres = true
-        // put this in a func and render func
-        setRoleMessage("yes");
+        handleRoleIndicator("SUCCESS");
+        setTimeout(() => {}, 100);
+        window.location.reload(); // relaod the window to reset the indicator
       }
     } catch (error) {
-      setRoleMessage("no");
+      handleRoleIndicator("FAILURE");
     }
-
     setRole(event.target.value);
   };
-  const blacklist = async () => {
-    // BLACKLISTS THE USER
+
+  const handleBlacklist = async () => {
     var bodyval = "";
     if (status == "ACTIVE") {
       bodyval = "HOLD";
@@ -144,11 +144,14 @@ const Status = ({ userRole, userStatus, userID }: userStatusData) => {
       bodyval = "INACTIVE";
     }
     try {
+      // FETCH Prep
       const url = BASE_URL as string;
       const fetchUrl = `${url}/users/` + userID + `/status`;
       const currentUser = auth.currentUser;
       const userToken = await currentUser?.getIdToken();
       const body = { status: bodyval };
+
+      // FETCH Call
       const response = await fetch(fetchUrl, {
         method: "PATCH",
         headers: {
@@ -157,33 +160,22 @@ const Status = ({ userRole, userStatus, userID }: userStatusData) => {
         },
         body: JSON.stringify(body),
       });
+
+      // FETCH Response
       if (response.ok) {
-        <Alert severity="success">
-          Success: {"User was successfully Blacklisted"}
-        </Alert>;
+        handleBlacklistIndicator("SUCCESS");
+        setTimeout(() => {}, 100);
+        window.location.reload(); // reload the window to reset the indicator
       }
     } catch (error) {
-      <Alert severity="error">
-        Error: {`User NOT Successfully Blacklisted`}
-      </Alert>;
+      handleBlacklistIndicator("FAILURE");
     }
     setStatus(bodyval);
-    handleClose();
+    handleClose(); // closes the modal
   };
-  const ChangeRoleIndicatorComponent = (): JSX.Element | null => {
-    return roleMessage ? (
-      roleMessage === "yes" ? (
-        <Alert severity="success">
-          Success: {"User Role Changed Successfully"}
-        </Alert>
-      ) : (
-        <Alert severity="error">Error: {`User Role NOT Changed`}</Alert>
-      )
-    ) : null;
-  };
+
   return (
     <>
-      <ChangeRoleIndicatorComponent />
       <div className="space-y-2">
         <Modal
           open={open}
@@ -191,7 +183,7 @@ const Status = ({ userRole, userStatus, userID }: userStatusData) => {
           children={
             <ModalBody
               status={status}
-              blacklistFunc={blacklist}
+              blacklistFunc={handleBlacklist}
               handleClose={handleClose}
             />
           }
@@ -200,7 +192,7 @@ const Status = ({ userRole, userStatus, userID }: userStatusData) => {
         <FormControl className="w-full sm:w-1/2">
           <Select
             value={role}
-            onChange={handleChange}
+            onChange={handleUserRoleChange}
             displayEmpty
             size="small"
             className="text-lg"
@@ -294,18 +286,49 @@ const VerifyCertificate = ({ totalHours }: verifyData) => {
 const ManageUserProfile = () => {
   const router = useRouter();
   const { userid } = router.query;
+
+  /* State Vars for ManageUserProfile */
   const [userProfileDetails, setUserProfileDetails] = useState<
     userProfileData | null | undefined
   >(null);
   const [registeredEvents, setRegisteredEvents] = useState<any[]>([]);
 
+  /* State Vars for Blacklist and UserRoleChange Indicators  */
+  const [userRoleIndicator, setUserRoleIndicator] = useState<string>("");
+  const [blacklistIndicator, setBlacklistIndicator] = useState<string>("");
+  const ChangeIndicatorComponent = (): JSX.Element | null => {
+    if (userRoleIndicator != "") {
+      return userRoleIndicator === "SUCCESS" ? (
+        <Alert severity="success">
+          Success: {"User Role Changed Successfully"}
+        </Alert>
+      ) : (
+        <Alert severity="error">Error: {"User Role NOT Changed"}</Alert>
+      );
+    } else if (blacklistIndicator != "") {
+      return blacklistIndicator === "SUCCESS" ? (
+        <Alert severity="success">
+          Success: {"User Status Successfully Updated"}
+        </Alert>
+      ) : (
+        <Alert severity="error">
+          Error: {"User Status NOT Successfully Updated"}
+        </Alert>
+      );
+    } else {
+      return null;
+    }
+  };
+
   const fetchUserDetails = async () => {
     try {
+      //FETCH Prep
       const url = BASE_URL as string;
       const fetchUrl = `${url}/users/${userid}/profile`;
       console.log(`USERID + ${userid}`);
       const userToken = await auth.currentUser?.getIdToken();
 
+      //FETCH Call
       const response = await fetch(fetchUrl, {
         method: "GET",
         headers: {
@@ -313,9 +336,9 @@ const ManageUserProfile = () => {
         },
       });
 
-      const data = await response.json();
-
+      //FETCH Response
       if (response.ok) {
+        const data = await response.json();
         const result = {
           name:
             data["data"]["profile"]["firstName"] +
@@ -336,10 +359,12 @@ const ManageUserProfile = () => {
   };
   const fetchUserRegistrations = async () => {
     try {
+      //FETCH Prep
       const url = BASE_URL as string;
       const fetchUrl = `${url}/users/${userid}/registered`;
       const userToken = await auth.currentUser?.getIdToken();
 
+      //FETCH Call
       const response = await fetch(fetchUrl, {
         method: "GET",
         headers: {
@@ -347,10 +372,9 @@ const ManageUserProfile = () => {
         },
       });
 
-      const data = await response.json();
-      console.log("REFGGGGGGGSIIEJIONIFNini");
-      console.log(data["data"]);
+      //FETCH Response
       if (response.ok) {
+        const data = await response.json();
         setRegisteredEvents(data["data"]["events"]);
       }
     } catch (error) {
@@ -362,15 +386,16 @@ const ManageUserProfile = () => {
     const fetchData = async () => {
       if (router.isReady) {
         await fetchUserDetails();
-        console.log("passed fetch user");
+        console.log("PASSED FETCH USER");
         await fetchUserRegistrations();
+        console.log("PASSED FETCH USER REGS");
       }
     };
     fetchData();
   }, [router.isReady]);
 
-  // do the if condition before lpading the component
   const tabs =
+    // ensures that there is data in userProfileDetails
     userProfileDetails != undefined && userProfileDetails != null
       ? [
           {
@@ -380,6 +405,8 @@ const ManageUserProfile = () => {
                 userRole={userProfileDetails.role}
                 userStatus={userProfileDetails.status}
                 userID={userProfileDetails.userid}
+                handleRoleIndicator={setUserRoleIndicator}
+                handleBlacklistIndicator={setBlacklistIndicator}
               />
             ),
           },
@@ -401,6 +428,7 @@ const ManageUserProfile = () => {
 
   return (
     <>
+      <ChangeIndicatorComponent />
       <IconText
         icon={
           <Link href="/users/view" className="no-underline">
