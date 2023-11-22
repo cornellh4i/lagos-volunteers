@@ -1,15 +1,21 @@
 import React from "react";
 import IconText from "@/components/atoms/IconText";
 import Button from "@/components/atoms/Button";
-import IconButton from "@mui/material/IconButton";
+import { Card, Grid, Icon, IconButton } from "@mui/material";
+import LocationOnIcon from "@mui/icons-material/LocationOn";
+import EmojiFoodBeverageIcon from "@mui/icons-material/EmojiFoodBeverage";
+import WatchLaterIcon from "@mui/icons-material/WatchLater";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
+import Link from "next/link";
+import MenuItem from "@mui/material/MenuItem";
+import Menu from "@mui/material/Menu";
 
-type Action = "rsvp" | "cancel rsvp" | "publish" | "manage attendees" | "edit";
+type Action = "Rsvp" | "Cancel Rsvp" | "Publish" | "Manage Attendees" | "Edit";
 
 interface EventCardProps {
   eventid: string;
   mainAction: Action;
-  dropdownActions: Action[];
+  dropdownActions?: Action[];
   title: string;
   location: string;
   datetime: string;
@@ -29,47 +35,108 @@ interface EventCardProps {
 const EventCard = ({
   eventid,
   mainAction,
-  dropdownActions,
+  dropdownActions = [],
   title,
   location,
   datetime,
 }: EventCardProps) => {
+  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+  const handleClick = (event: any) => {
+    setAnchorEl(event.currentTarget);
+  };
+  const open = Boolean(anchorEl);
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
+  const MainAction = () => {
+    switch (mainAction) {
+      case "Cancel Rsvp":
+        return (
+          <Link
+            className="text-black no-underline"
+            href={`/events/${eventid}/cancel`}
+          >
+            Cancel RSVP
+          </Link>
+        );
+      case "Manage Attendees":
+        return (
+          <Link
+            className="text-black no-underline"
+            href={`/events/${eventid}/attendees`}
+          >
+            Manage Attendees
+          </Link>
+        );
+      default:
+        return <></>;
+    }
+  };
+
   return (
-    <>
-      {
-        <div className="flex flex-col h-32">
-          {" "}
-          <div className="grid grid-cols-12 grow">
-            <div className="block rounded-lg items-center bg-white p-6 sm:col-span-2 shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)] dark:bg-neutral-700">
-              <h5
-                text-left
-                item-center
-                className="mb-2 text-xl font-medium leading-tight text-neutral-800 dark:text-neutral-50"
+    <Card variant="outlined" className="w-full">
+      <div className="p-5">
+        {/* Main card body */}
+        <div className="pb-1">
+          <IconText icon={<EmojiFoodBeverageIcon color="disabled" />}>
+            <b className="text-2xl">{title.toLocaleUpperCase()}</b>
+          </IconText>
+        </div>
+        <div className="pb-1">
+          <IconText icon={<LocationOnIcon color="disabled" />}>
+            {location.toLocaleUpperCase()}
+          </IconText>
+        </div>
+        <IconText icon={<WatchLaterIcon color="disabled" />}>
+          {datetime}
+        </IconText>
+
+        {/* Card buttons */}
+        {dropdownActions.length > 0 ? (
+          <div className="pt-4 flex flex-row">
+            <Button color="gray">{mainAction}</Button>
+            <div className="pl-1">
+              {/* <IconButton className="bg-gray-300 rounded-md">
+                <MoreVertIcon />
+              </IconButton> */}
+
+              <IconButton
+                className="bg-gray-300 rounded-md"
+                onClick={handleClick}
               >
-                {title}
-              </h5>
-              <p text-left item-center>
-                {location}
-              </p>
-              <p text-left item-center>
-                {datetime}
-              </p>
-              <div className="inline-flex">
-                <Button color="gray">{mainAction}</Button>
-                <IconButton
-                  onClick={() => {
-                    dropdownActions;
-                  }}
-                  aria-label="dropdown"
-                >
-                  <MoreVertIcon />
-                </IconButton>
-              </div>
+                <MoreVertIcon />
+              </IconButton>
+
+              <Menu
+                id="demo-positioned-menu"
+                aria-labelledby="demo-positioned-button"
+                anchorEl={anchorEl}
+                onClose={handleClose}
+                anchorOrigin={{
+                  vertical: "top",
+                  horizontal: "left",
+                }}
+                transformOrigin={{
+                  vertical: "top",
+                  horizontal: "left",
+                }}
+                open={open}
+              >
+                {dropdownActions?.map((action) => (
+                  <MenuItem onClick={handleClose}>{action}</MenuItem>
+                ))}
+              </Menu>
             </div>
           </div>
-        </div>
-      }
-    </>
+        ) : (
+          <div className="pt-4">
+            <Button color="gray">{mainAction}</Button>
+          </div>
+        )}
+      </div>
+    </Card>
   );
 };
 export default EventCard;
