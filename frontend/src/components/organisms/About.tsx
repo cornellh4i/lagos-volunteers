@@ -73,36 +73,23 @@ const About = ({ edit }: AboutProps) => {
   <Modal open={open} onClose={handleClose}>
     <Box>Hello</Box>
   </Modal>;
-
-  if (edit == true) {
-    return (
-      <>
-        <ReactQuill theme="snow" value={value} onChange={setValue} />
-        <br></br>
-        <div className="object-right justify-items-end">
-          <button type="button">Cancel</button>
-        </div>
-      </>
-    );
-  } else {
-    return (
-      <>
-        <ReactQuill
-          theme="snow"
-          value={value}
-          onChange={setValue}
-          readOnly={true}
-        />
-        <br></br>
-        <div className="text-right">
-          <button type="button">Cancel</button>
-          <button className="ml-4" type="button" onClick={handleOpen}>
-            Publish Changes
-          </button>
-        </div>
-      </>
-    );
-  }
+  return (
+    <>
+      <ReactQuill
+        theme="snow"
+        value={value}
+        onChange={setValue}
+        readOnly={!edit}
+      />
+      <br></br>
+      <div className="text-right">
+        <button type="button">Cancel</button>
+        <button className="ml-4" type="button" onClick={handleOpen}>
+          Publish Changes
+        </button>
+      </div>
+    </>
+  );
 };
 
 export default About;
