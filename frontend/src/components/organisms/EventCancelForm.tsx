@@ -23,6 +23,8 @@ type eventData = {
 	capacity: number;
 	image_src: string;
 	tags: string[] | undefined;
+	description: string;
+	name: string;
 };
 
 interface EventCancelFormProps {
@@ -75,8 +77,7 @@ const ModalBody = ({
 			if (response.ok) {
 			} else {
 			}
-		} catch (error) {
-		}
+		} catch (error) {}
 
 		router.reload();
 	};
@@ -147,7 +148,7 @@ const EventCancelForm = ({ eventDetails }: EventCancelFormProps) => {
 					</div>
 
 					<div className="font-semibold text-3xl">Cancel Registration</div>
-					<div className="text-2xl font-semibold mb-6">EDUFOOD</div>
+					<div className="text-2xl font-semibold mb-6">{eventDetails.name}</div>
 					<div>
 						<EventDetails
 							location={eventDetails.location}
@@ -158,14 +159,7 @@ const EventCancelForm = ({ eventDetails }: EventCancelFormProps) => {
 							tags={eventDetails.tags}
 						/>
 					</div>
-					<div>
-						Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut et massa
-						mi. Aliquam in hendrerit urna. Pellentesque sit amet sapien
-						fringilla, mattis ligula consectetur, ultrices mauris. Lorem ipsum
-						dolor sit amet, consectetur adipiscing elit. Ut et massa mi. Aliquam
-						in hendrerit urna. Pellentesque sit amet sapien fringilla, mattis
-						ligula consectetur, ultrices mauris.
-					</div>
+					<div>{eventDetails.description}</div>
 					<div className="font-bold text-xl pt-6">
 						You are registered for this event.
 					</div>

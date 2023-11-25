@@ -21,6 +21,8 @@ type eventData = {
 	capacity: number;
 	image_src: string;
 	tags: string[] | undefined;
+	description: string;
+	name: string;
 };
 
 interface EventRegisterFormProps {
@@ -65,8 +67,7 @@ const ModalBody = ({
 			if (response.ok) {
 				const data = await response.json();
 			}
-		} catch (error) {
-		}
+		} catch (error) {}
 
 		router.replace(`/events/${eventid}/register`);
 		window.location.reload(); // Call on reload to reroute page
@@ -135,7 +136,7 @@ const EventRegisterForm = ({ eventDetails }: EventRegisterFormProps) => {
 						</IconText>
 					</div>
 					<div className="font-semibold text-3xl">Event Registration</div>
-					<div className="text-2xl font-semibold mb-6">EDUFOOD</div>
+					<div className="text-2xl font-semibold mb-6">{eventDetails.name}</div>
 					<EventDetails
 						location={eventDetails.location}
 						datetime={eventDetails.datetime}
@@ -144,14 +145,7 @@ const EventRegisterForm = ({ eventDetails }: EventRegisterFormProps) => {
 						image_src={eventDetails.image_src}
 						tags={eventDetails.tags}
 					/>
-					<div>
-						Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut et massa
-						mi. Aliquam in hendrerit urna. Pellentesque sit amet sapien
-						fringilla, mattis ligula consectetur, ultrices mauris. Lorem ipsum
-						dolor sit amet, consectetur adipiscing elit. Ut et massa mi. Aliquam
-						in hendrerit urna. Pellentesque sit amet sapien fringilla, mattis
-						ligula consectetur, ultrices mauris.
-					</div>
+					<div>{eventDetails.description}</div>
 					<div className="font-bold pt-4">Terms and Conditions</div>
 					<div>
 						By registering, I agree that I will attend the event. If I cannot

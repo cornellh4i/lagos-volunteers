@@ -7,6 +7,7 @@ import { BASE_URL } from "@/utils/constants";
 import { auth } from "@/utils/firebase";
 import { useAuth } from "@/utils/AuthContext";
 import { fetchUserIdFromDatabase, formatDateTimeRange } from "@/utils/helpers";
+import Loading from "@/components/molecules/Loading";
 
 type eventData = {
 	eventid: string;
@@ -16,6 +17,8 @@ type eventData = {
 	capacity: number;
 	image_src: string;
 	tags: string[] | undefined;
+	description: string;
+	name: string;
 };
 
 /** An EventRegistration page */
@@ -23,11 +26,12 @@ const EventRegistration = () => {
 	const router = useRouter();
 	const { eventid } = router.query;
 	const [eventDetails, setEventDetails] = useState<eventData | null>(null);
-	const [attendees, setAttendees] = useState<any[]>([]);
 	const [isRegistered, setIsRegistered] = useState<boolean>(false);
 
 	const { user } = useAuth();
 	const url = BASE_URL as string;
+
+	// This can be fetched from the server to prevent flashing of unregister form
 	useEffect(() => {
 		fetchEventDetails();
 	}, []);
@@ -59,9 +63,11 @@ const EventRegistration = () => {
 				tags: event["tags"],
 				supervisors: [
 					event["owner"]["profile"]["firstName"] +
-					" " +
-					event["owner"]["profile"]["lastName"],
+						" " +
+						event["owner"]["profile"]["lastName"],
 				],
+				description: event["description"],
+				name: event["name"],
 			});
 
 			if (
@@ -74,25 +80,22 @@ const EventRegistration = () => {
 			} else {
 				setIsRegistered(false);
 			}
-		} catch (error) {
-		}
+		} catch (error) {}
 	};
 
 	return (
 		<CenteredTemplate>
 			{eventDetails ? (
-				// If attendees is empty -> return RegisterForm
 				!isRegistered ? (
 					<EventRegisterForm eventDetails={eventDetails} />
 				) : (
-					// If attendees is not empty (has 1 entry) -> return RegisterConfirmation
 					<EventConfirmation
 						eventDetails={eventDetails}
 						confirmation="register"
 					/>
 				)
 			) : (
-				<div>Getting your data...</div>
+				<Loading />
 			)}
 		</CenteredTemplate>
 	);

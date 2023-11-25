@@ -7,6 +7,7 @@ import { BASE_URL } from "@/utils/constants";
 import { auth } from "@/utils/firebase";
 import { useAuth } from "@/utils/AuthContext";
 import { fetchUserIdFromDatabase, formatDateTimeRange } from "@/utils/helpers";
+import Loading from "@/components/molecules/Loading";
 
 type eventData = {
 	eventid: string;
@@ -16,6 +17,8 @@ type eventData = {
 	capacity: number;
 	image_src: string;
 	tags: string[] | undefined;
+	description: string;
+	name: string;
 };
 
 /** An EventCancellation page */
@@ -59,25 +62,25 @@ const EventCancellation = () => {
 					datetime: formatDateTimeRange(event["startDate"], event["endDate"]),
 					supervisors: [
 						event["owner"]["profile"]["firstName"] +
-						" " +
-						event["owner"]["profile"]["lastName"],
+							" " +
+							event["owner"]["profile"]["lastName"],
 					],
 					capacity: event["capacity"],
 					image_src: event["imageURL"],
 					tags: event["tags"],
+					description: event["description"],
+					name: event["name"],
 				});
 
 				if (data["data"]["attendance"]) {
 					setAttendeeCanceled(data["data"]["attendance"]["canceled"]);
 				}
 
-				// If attendees is empty -> route to register form
 				if (attendeeCanceled || !data["data"]["attendance"]) {
 					router.replace(`/events/${eventid}/register`);
 				}
 			}
-		} catch (error) {
-		}
+		} catch (error) {}
 	};
 
 	useEffect(() => {
@@ -87,18 +90,16 @@ const EventCancellation = () => {
 	return (
 		<CenteredTemplate>
 			{eventDetails ? (
-				// if attendees has 1 entry and if canceled is True -> return EventCofirmation
 				attendeeCanceled ? (
 					<EventConfirmation
 						eventDetails={eventDetails}
 						confirmation="cancel"
 					/>
 				) : (
-					// if attendees has 1 entry and if canceled is False -> return EventCancelForm
 					<EventCancelForm eventDetails={eventDetails} />
 				)
 			) : (
-				<div>Getting your data...</div>
+				<Loading />
 			)}
 		</CenteredTemplate>
 	);

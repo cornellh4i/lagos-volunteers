@@ -8,18 +8,20 @@ import { grey } from "@mui/material/colors";
 type confirmation = "register" | "cancel";
 
 type eventData = {
-  eventid: string;
-  location: string;
-  datetime: string;
-  supervisors: string[];
-  capacity: number;
-  image_src: string;
-  tags: string[] | undefined;
+	eventid: string;
+	location: string;
+	datetime: string;
+	supervisors: string[];
+	capacity: number;
+	image_src: string;
+	tags: string[] | undefined;
+	description: string;
+	name: string;
 };
 
 interface EventConfirmationProps {
-  eventDetails: eventData;
-  confirmation: confirmation;
+	eventDetails: eventData;
+	confirmation: confirmation;
 }
 
 /**
@@ -30,64 +32,65 @@ interface EventConfirmationProps {
  */
 
 const EventConfirmation = ({
-  eventDetails,
-  confirmation,
+	eventDetails,
+	confirmation,
 }: EventConfirmationProps) => {
-  switch (confirmation) {
-    case "register":
-      return (
-        <div>
-          <div className="flex m-7 justify-center">
-            {<CheckCircleOutlineIcon sx={{ fontSize: 60, color: grey[500] }} />}
-          </div>
-          <h1 className="text-center">You are registered!</h1>
-          <div>
-            <div className="text-2xl font-semibold mb-6">EDUFOOD</div>
-            <EventDetails
-              location={eventDetails.location}
-              datetime={eventDetails.datetime}
-              supervisors={eventDetails.supervisors}
-              capacity={eventDetails.capacity}
-              image_src={eventDetails.image_src}
-              tags={eventDetails.tags}
-            />
-            <p>
-              If you can no longer attend,{" "}
-              <Link href={`/events/${eventDetails.eventid}/cancel`} rel="noreferrer">
-                cancel here
-              </Link>{" "}
-              or on the "My Events" page.
-            </p>
-          </div>
-        </div>
-      );
-    case "cancel":
-      return (
-        <div>
-          <h1>You are no longer registered.</h1>
-          <h3>
-            {" "}
-            We're sorry you can't make it! Thank you for letting us know.
-          </h3>
-          <p>
-            Explore other volunteer opportunities on the{" "}
-            <Link href="/events/view"> home page</Link>.
-          </p>
-          <div className="text-2xl font-semibold mb-6">EDUFOOD</div>
-          <EventDetails
-              location={eventDetails.location}
-              datetime={eventDetails.datetime}
-              supervisors={eventDetails.supervisors}
-              capacity={eventDetails.capacity}
-              image_src={eventDetails.image_src}
-              tags={eventDetails.tags}
-            />
-          <Grid item xs={6}></Grid>
-        </div>
-      );
-    default:
-      return <div></div>;
-  }
+	switch (confirmation) {
+		case "register":
+			return (
+				<div>
+					<div className="flex m-7 justify-center">
+						{<CheckCircleOutlineIcon sx={{ fontSize: 60, color: grey[500] }} />}
+					</div>
+					<h1 className="text-center">You are registered!</h1>
+					<div>
+						<div className="text-2xl font-semibold mb-6">
+							{eventDetails.name}
+						</div>
+						<EventDetails
+							location={eventDetails.location}
+							datetime={eventDetails.datetime}
+							supervisors={eventDetails.supervisors}
+							capacity={eventDetails.capacity}
+							image_src={eventDetails.image_src}
+							tags={eventDetails.tags}
+						/>
+						<p>
+							If you can no longer attend,
+							<Link
+								href={`/events/${eventDetails.eventid}/cancel`}
+								rel="noreferrer">
+								cancel here
+							</Link>{" "}
+							or on the "My Events" page.
+						</p>
+					</div>
+				</div>
+			);
+		case "cancel":
+			return (
+				<div>
+					<h1>You are no longer registered.</h1>
+					<h3>We're sorry you can't make it! Thank you for letting us know.</h3>
+					<p>
+						Explore other volunteer opportunities on the{" "}
+						<Link href="/events/view">home page</Link>.
+					</p>
+					<div className="text-2xl font-semibold mb-6">{eventDetails.name}</div>
+					<EventDetails
+						location={eventDetails.location}
+						datetime={eventDetails.datetime}
+						supervisors={eventDetails.supervisors}
+						capacity={eventDetails.capacity}
+						image_src={eventDetails.image_src}
+						tags={eventDetails.tags}
+					/>
+					<Grid item xs={6}></Grid>
+				</div>
+			);
+		default:
+			return <div></div>;
+	}
 };
 
 export default EventConfirmation;
