@@ -84,7 +84,7 @@ const getAllUsers = async () => {
 const getUsersPaginated = async (req: Request) => {
   const query = req.query;
   // if no after is supplied make the request independent of that paramter
-  return query.after
+  return query.after === undefined
     ? prisma.user.findMany({
         take: query.limit ? parseInt(query.limit as string) : 10,
         orderBy: {
