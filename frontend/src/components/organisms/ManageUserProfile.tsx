@@ -233,11 +233,21 @@ const Registrations = ({
 		},
 	];
 
+	// use EndTime and StartTime to calculate hours
+	const eventHours = (endTime: string, startTime: string) => {
+		const end = new Date(endTime);
+		const start = new Date(startTime);
+		const diff = end.getTime() - start.getTime();
+		const hours = diff / (1000 * 3600);
+		return hours;
+	};
+	console.log(userRegistrations);
+
 	const eventRows = userRegistrations.map((event) => ({
 		id: event.event.id,
 		program: event.event.name,
 		date: formatDateString(event.event.startDate),
-		hours: 4, // TODO: how to get hours for event?
+		hours: eventHours(event.event.endDate, event.event.startDate), // TODO: how to get hours for event?
 	}));
 
 	return (
