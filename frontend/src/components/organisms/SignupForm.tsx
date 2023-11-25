@@ -66,12 +66,6 @@ const SignupForm = () => {
     ) : null;
   };
 
-  const CreateSuccessComponent = (): JSX.Element | null => {
-    return errorMessage ? (
-      <Alert severity="success">Success: {errorMessage}</Alert>
-    ) : null;
-  };
-
   const handleSubmitUser: SubmitHandler<FormValues> = async (data, event) => {
     setIsLoading(true);
 
