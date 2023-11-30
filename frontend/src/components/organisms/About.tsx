@@ -1,8 +1,10 @@
-import { Box, Button, Modal, Grid, Typography } from "@mui/material";
+import { Box, Grid, Typography } from "@mui/material";
 import ViewEvents from "./ViewEvents";
 import React, { useState } from "react";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
+import Button from "../atoms/Button";
+import Modal from "../molecules/Modal";
 
 import { renderToStaticMarkup } from "react-dom/server";
 import EventCard from "./EventCard";
@@ -13,6 +15,33 @@ import { handleSmoothScroll } from "next/dist/shared/lib/router/router";
 interface AboutProps {
   edit: boolean;
 }
+
+type modalBodyProps = {
+  handleModal: () => void;
+  handleClose: () => void;
+};
+
+const ModalBody = ({ handleModal, handleClose }: modalBodyProps) => {
+  return (
+    <div>
+      <p>
+        Are you sure you want to publish changes to this page?
+      </p>
+      <Grid container spacing={2}>
+        <Grid item md={6} xs={12}>
+          <Button color="gray" onClick={handleModal}>
+            Yes, publish.
+          </Button>
+        </Grid>
+        <Grid item md={6} xs={12}>
+          <Button color="dark-gray" onClick={handleClose}>
+            No, cancel.
+          </Button>
+        </Grid>
+      </Grid>
+    </div >
+  );
+};
 
 /**
  * An About component
@@ -89,21 +118,41 @@ const About = ({ edit }: AboutProps) => {
       boxShadow: 24,
       p: 4,
     };
+
+
     return (
       <>
-        < Modal open={open} onClose={handleModalClick} >
+        {/* < Modal open={open} onClose={handleModalClick} >
           <Box sx={style}>
             <Typography id="modal-modal-title" variant="h6" component="h2">
               Are you sure you want to publish changes to this page?
             </Typography>
             <div className="text-center">
-              <button type="button" onClick={handleModalClick}>Yes, publish.</button>
-              <button className="ml-4" type="button" onClick={handleClose}>
-                No, cancel.
-              </button>
+              <Grid item container>
+                <Grid xs={5}>
+                  <CustomButton color={"gray"} onClick={handleModalClick}>Yes, publish.</CustomButton>
+                </Grid>
+                <Grid xs={5}>
+                </Grid>
+                <Grid xs={1}>
+                  <CustomButton color={"gray"} onClick={handleClose}>No, Cancel.</CustomButton>
+                </Grid>
+              </Grid>
             </div>
           </Box>
-        </Modal >
+        </Modal > */}
+        <div className="space-y-2">
+          <Modal
+            open={open}
+            handleClose={handleClose}
+            children={
+              <ModalBody
+                handleModal={handleModalClick}
+                handleClose={handleClose}
+              />
+            }
+          />
+        </div>
         <ReactQuill
           theme="snow"
           value={value}
@@ -114,10 +163,13 @@ const About = ({ edit }: AboutProps) => {
         <br></br>
 
         <div className="text-right">
-          <button type="button" disabled>Cancel</button>
-          <button className="ml-4" type="button" onClick={handleOpen}>
-            Publish Changes
-          </button>
+          <Grid item container>
+            <Grid xs={10}>
+            </Grid>
+            <Grid xs={2}>
+              <Button color={"gray"} onClick={handleOpen}>Publish Changes</Button>
+            </Grid>
+          </Grid>
         </div>
       </>
     );
@@ -126,7 +178,13 @@ const About = ({ edit }: AboutProps) => {
     return (
       <div>
         <div dangerouslySetInnerHTML={{ __html: value }} />
-        <button type="button" onClick={handleClick}>Edit</button>
+        <Grid item container>
+          <Grid xs={11}>
+          </Grid>
+          <Grid xs={1}>
+            <Button color={"gray"} onClick={handleClick}>Edit</Button>
+          </Grid>
+        </Grid>
       </div >
     );
   }
