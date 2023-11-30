@@ -1,16 +1,11 @@
-import { Box, Grid, Typography } from "@mui/material";
-import ViewEvents from "./ViewEvents";
+import { Grid } from "@mui/material";
 import React, { useState } from "react";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import Button from "../atoms/Button";
 import Modal from "../molecules/Modal";
+import ReactHtmlParser from 'react-html-parser';
 
-import { renderToStaticMarkup } from "react-dom/server";
-import EventCard from "./EventCard";
-import MultilineTextField from "../atoms/MultilineTextField";
-import CardList from "../molecules/CardList";
-import { handleSmoothScroll } from "next/dist/shared/lib/router/router";
 
 interface AboutProps {
   edit: boolean;
@@ -93,54 +88,21 @@ const About = ({ edit }: AboutProps) => {
   </p>
   <h2>Request Certificate</h2>
   <p>Fill out this form. Login first</p>
-  `;
+  `
   const [value, setValue] = useState(`${default_text}`);
   const [open, setOpen] = React.useState(false);
   const [editMode, setEditMode] = React.useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
   const handleClick = () => setEditMode(true);
-  const handleClickText = () => setEditMode(false);
   const handleModalClick = () => {
-    handleClickText()
+    setEditMode(false)
     handleClose()
   }
 
   if (editMode == true) {
-    const style = {
-      position: 'absolute' as 'absolute',
-      top: '50%',
-      left: '50%',
-      transform: 'translate(-50%, -50%)',
-      width: 400,
-      bgcolor: 'background.paper',
-      border: '2px solid #000',
-      boxShadow: 24,
-      p: 4,
-    };
-
-
     return (
       <>
-        {/* < Modal open={open} onClose={handleModalClick} >
-          <Box sx={style}>
-            <Typography id="modal-modal-title" variant="h6" component="h2">
-              Are you sure you want to publish changes to this page?
-            </Typography>
-            <div className="text-center">
-              <Grid item container>
-                <Grid xs={5}>
-                  <CustomButton color={"gray"} onClick={handleModalClick}>Yes, publish.</CustomButton>
-                </Grid>
-                <Grid xs={5}>
-                </Grid>
-                <Grid xs={1}>
-                  <CustomButton color={"gray"} onClick={handleClose}>No, Cancel.</CustomButton>
-                </Grid>
-              </Grid>
-            </div>
-          </Box>
-        </Modal > */}
         <div className="space-y-2">
           <Modal
             open={open}
@@ -157,7 +119,6 @@ const About = ({ edit }: AboutProps) => {
           theme="snow"
           value={value}
           onChange={setValue}
-          // readOnly={!edit}
           readOnly={false}
         />
         <br></br>
@@ -176,9 +137,10 @@ const About = ({ edit }: AboutProps) => {
   }
   else {
     return (
+
       <div>
-        <div dangerouslySetInnerHTML={{ __html: value }} />
-        <Grid item container>
+        <div>{ReactHtmlParser(value)}</div>;
+        < Grid item container>
           <Grid xs={11}>
           </Grid>
           <Grid xs={1}>
