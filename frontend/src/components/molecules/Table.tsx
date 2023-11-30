@@ -1,5 +1,4 @@
 import React, { useEffect } from "react";
-import Box from "@mui/material/Box";
 import { DataGrid, GridColDef, GridPaginationModel } from "@mui/x-data-grid";
 
 interface TableProps {
