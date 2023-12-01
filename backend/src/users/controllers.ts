@@ -279,6 +279,31 @@ const getUserPreferences = async (userId: string) => {
 };
 
 /**
+ * Gets the contents of a specified about page's id
+ * @param pageid about page id
+ * @returns the contents of the specified about page
+ */
+const getAbout = async (pageid: string) => {
+  return prisma.aboutPage.findUnique({
+    where: {
+      id: pageid,
+    },
+    select: {
+      content: true,
+    },
+  });
+};
+
+const editAbout = async (pageid: string, pageContent: string) => {
+  return prisma.aboutPage.update({
+    where: { id: pageid },
+    data: {
+      content: pageContent,
+    },
+  });
+};
+
+/**
  * Updates a user preferences
  * @param Preferences (UserPreferences)
  * @param userId: id of user to be updated
@@ -478,6 +503,8 @@ export default {
   getUserProfile,
   getUserRole,
   getUserPreferences,
+  getAbout,
+  editAbout,
   editProfile,
   editPreferences,
   editStatus,

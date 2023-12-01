@@ -133,6 +133,14 @@ userRouter.get(
   }
 );
 
+userRouter.get(
+  "/:userid/about",
+  useAuth,
+  async (req: Request, res: Response) => {
+    attempt(res, 200, () => userController.getAbout(req.params.pageid));
+  }
+);
+
 userRouter.get("/:userid", useAuth, async (req: Request, res: Response) => {
   // #swagger.tags = ['Users']
   attempt(res, 200, () => userController.getUserByID(req.params.userid));
@@ -164,6 +172,16 @@ userRouter.get(
   async (req: Request, res: Response) => {
     // #swagger.tags = ['Users']
     attempt(res, 200, () => userController.getHours(req.params.userid));
+  }
+);
+
+userRouter.put(
+  "/:pageid/about",
+  useAuth,
+  async (req: Request, res: Response) => {
+    attempt(res, 200, () =>
+      userController.editAbout(req.params.id, req.params.pageid)
+    );
   }
 );
 
