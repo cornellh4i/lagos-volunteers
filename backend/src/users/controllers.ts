@@ -283,11 +283,9 @@ const getUserPreferences = async (userId: string) => {
  * @param pageid about page id
  * @returns the contents of the specified about page
  */
-const getAbout = async (pageid: string) => {
-  return prisma.aboutPage.findUnique({
-    where: {
-      id: pageid,
-    },
+const getAbout = async () => {
+  return prisma.aboutPage.findMany({
+    where: {},
     select: {
       content: true,
     },

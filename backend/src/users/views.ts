@@ -133,13 +133,9 @@ userRouter.get(
   }
 );
 
-userRouter.get(
-  "/:userid/about",
-  useAuth,
-  async (req: Request, res: Response) => {
-    attempt(res, 200, () => userController.getAbout(req.params.pageid));
-  }
-);
+userRouter.get("/about", useAuth, async (req: Request, res: Response) => {
+  attempt(res, 200, () => userController.getAbout());
+});
 
 userRouter.get("/:userid", useAuth, async (req: Request, res: Response) => {
   // #swagger.tags = ['Users']
@@ -175,15 +171,11 @@ userRouter.get(
   }
 );
 
-userRouter.put(
-  "/:pageid/about",
-  useAuth,
-  async (req: Request, res: Response) => {
-    attempt(res, 200, () =>
-      userController.editAbout(req.params.id, req.params.pageid)
-    );
-  }
-);
+userRouter.put("/about", useAuth, async (req: Request, res: Response) => {
+  attempt(res, 200, () =>
+    userController.editAbout(req.params.id, req.params.content)
+  );
+});
 
 userRouter.put(
   "/:userid/profile",
