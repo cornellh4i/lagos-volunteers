@@ -309,14 +309,14 @@ const EventForm = ({ eventId, eventType, eventDetails }: EventFormProps) => {
 						label="Start Date"
 						value={eventDetails ? eventDetails.startDate : undefined}
 						onChange={(e) =>
-							e?.$d != "Invalid Date" ? setStartDate(e.$d) : ""
+							e?.$d  ? setStartDate(e.$d) : ""
 						}
 					/>
 				</div>
 				<DatePicker
 					label="End Date"
 					value={eventDetails ? eventDetails.endDate : undefined}
-					onChange={(e) => (e?.$d != "Invalid Date" ? setEndDate(e.$d) : "")}
+					onChange={(e) => (e?.$d ? setEndDate(e.$d) : "")}
 				/>
 			</div>
 			<div className="sm:space-x-4 grid grid-cols-1 sm:grid-cols-2">
@@ -325,14 +325,14 @@ const EventForm = ({ eventId, eventType, eventDetails }: EventFormProps) => {
 						label="Start Time"
 						value={eventDetails ? eventDetails.startTime : undefined}
 						onChange={(e) =>
-							e?.$d != "Invalid Date" ? setStartTime(e.$d) : ""
+							e?.$d  ? setStartTime(e.$d) : ""
 						}
 					/>
 				</div>
 				<TimePicker
 					label="End Time"
 					value={eventDetails ? eventDetails.endTime : undefined}
-					onChange={(e) => (e?.$d != "Invalid Date" ? setEndTime(e.$d) : "")}
+					onChange={(e) => (e?.$d  ? setEndTime(e.$d) : "")}
 				/>
 			</div>
 			<div>
