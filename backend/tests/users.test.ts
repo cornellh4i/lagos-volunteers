@@ -517,11 +517,13 @@ describe("Testing DELETE /users/:userid", () => {
   });
 
   test("Testing PUT /users/about", async () => {
-    const response = await request(app).put("/users/about").send({
-      id: "user-id",
-      content: "value",
-    });
-    console.log(response);
+    const currentText = await request(app).get("/users/about");
+    const pageId = currentText.body.data[0].id;
+    const response = await request(app)
+      .put("/users/" + pageId + "/about")
+      .send({
+        content: "value",
+      });
     expect(response.status).toBe(200);
   });
 });

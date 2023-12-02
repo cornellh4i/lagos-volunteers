@@ -284,12 +284,7 @@ const getUserPreferences = async (userId: string) => {
  * @returns the contents of the specified about page
  */
 const getAbout = async () => {
-  return prisma.aboutPage.findMany({
-    where: {},
-    select: {
-      content: true,
-    },
-  });
+  return prisma.aboutPage.findMany({});
 };
 
 const editAbout = async (pageid: string, pageContent: string) => {

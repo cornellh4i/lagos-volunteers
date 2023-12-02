@@ -2,6 +2,7 @@ import { Router, RequestHandler, Request, Response } from "express";
 import userController from "./controllers";
 import { auth, setVolunteerCustomClaims, NoAuth } from "../middleware/auth";
 const userRouter = Router();
+const axios = require("axios");
 import * as firebase from "firebase-admin";
 
 import { attempt } from "../utils/helpers";
@@ -171,11 +172,16 @@ userRouter.get(
   }
 );
 
-userRouter.put("/about", useAuth, async (req: Request, res: Response) => {
-  attempt(res, 200, () =>
-    userController.editAbout(req.params.id, req.params.content)
-  );
-});
+userRouter.put(
+  "/:pageid/about",
+  useAuth,
+  async (req: Request, res: Response) => {
+    attempt(res, 200, async () => {
+      const { newContent } = req.body;
+      userController.editAbout(req.params.pageid, newContent);
+    });
+  }
+);
 
 userRouter.put(
   "/:userid/profile",
