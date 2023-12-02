@@ -6,8 +6,5 @@
     "build": "(cd backend && yarn run build) && (cd frontend && yarn run build)",
     "test": "cd backend && yarn run test",
     "start": "(cd backend && yarn run start) & (cd frontend && yarn run start)"
-  },
-  "dependencies": {
-    "react-html-parser": "^2.0.2"
   }
 }
