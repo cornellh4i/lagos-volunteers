@@ -116,28 +116,42 @@ describe("Testing PUT /users/:userid/preferences", () => {
   });
 });
 
-describe("Testing PATCH /users/:userid/status/:status", () => {
+describe("Testing PATCH /users/:userid/role", () => {
   test("PATCH edit a user's role with an existing role", async () => {
     // This is temporary till we create an endpoint to get a specific user
     const users = await request(app).get("/users");
     const userid = users.body.data[1].id;
-    const response = await request(app).patch(
-      "/users/" + userid + "/role" + "/SUPERVISOR"
-    );
+    const response = await request(app)
+      .patch("/users/" + userid + "/role")
+      .send({ role: "SUPERVISOR" });
     const data = response.body.data;
     expect(data.role).toBe("SUPERVISOR");
     expect(response.status).toBe(200);
   });
 });
 
-describe("Testing PATCH /users/:userid/hours/:hours", () => {
+describe("Testing PATCH /users/:userid/status", () => {
+  test("PATCH edit a user's status with an existing status", async () => {
+    // This is temporary till we create an endpoint to get a specific user
+    const users = await request(app).get("/users");
+    const userid = users.body.data[1].id;
+    const response = await request(app)
+      .patch("/users/" + userid + "/status")
+      .send({ status: "INACTIVE" });
+    const data = response.body.data;
+    expect(data.status).toBe("INACTIVE");
+    expect(response.status).toBe(200);
+  });
+});
+
+describe("Testing PATCH /users/:userid/hours", () => {
   test("PATCH edit a user's hours with an existing hours", async () => {
     // This is temporary till we create an endpoint to get a specific user
     const users = await request(app).get("/users");
     const userid = users.body.data[1].id;
-    const response = await request(app).patch(
-      "/users/" + userid + "/hours" + "/10"
-    );
+    const response = await request(app)
+      .patch("/users/" + userid + "/hours")
+      .send({ hours: 10 });
     const data = response.body.data;
     expect(data.hours).toBe(10);
     expect(response.status).toBe(200);
