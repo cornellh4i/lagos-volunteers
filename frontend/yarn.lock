@@ -1025,6 +1025,28 @@
   dependencies:
     tslib "^2.4.0"
 
+"@types/domhandler@^2.4.0", "@types/domhandler@^2.4.3":
+  version "2.4.5"
+  resolved "https://registry.yarnpkg.com/@types/domhandler/-/domhandler-2.4.5.tgz#600961de950e090bcd8a6eb324c354466e25eaa0"
+  integrity sha512-lANhC2grmFG1gBac/8sDAKdIXx+TzAdkJIAjEOSMA+qW3297ybACEbacJnG15aNYfrzDO6fdcoouokqAKsy6aQ==
+
+"@types/domutils@*":
+  version "1.7.8"
+  resolved "https://registry.yarnpkg.com/@types/domutils/-/domutils-1.7.8.tgz#478009f6b495bd204058934d9aca27b9dd56f5b5"
+  integrity sha512-iZGboDV79ibrO3D625p9yD+VgmMDnyJocdIRJvu9Xz66R8SHfOY/XNgdjY5SFoFiLgILceVfSLt7IUhlk1Vhhg==
+  dependencies:
+    "@types/domhandler" "^2.4.0"
+
+"@types/htmlparser2@*":
+  version "3.10.7"
+  resolved "https://registry.yarnpkg.com/@types/htmlparser2/-/htmlparser2-3.10.7.tgz#861a7609bdc9468ce55751fe6f737abfbd584f73"
+  integrity sha512-ycBs4PNr9rY9XFFp4WkP+M1UcO49ahn0+9b24cmIY6KWy0w35rW0G8+JTTe9Rp6Wnyqn5SEHZrhCBMa0TIOxBw==
+  dependencies:
+    "@types/domhandler" "^2.4.3"
+    "@types/domutils" "*"
+    "@types/node" "*"
+    domhandler "^2.4.0"
+
 "@types/json5@^0.0.29":
   version "0.0.29"
   resolved "https://registry.npmjs.org/@types/json5/-/json5-0.0.29.tgz"
@@ -1034,6 +1056,13 @@
   version "4.0.2"
   resolved "https://registry.npmjs.org/@types/long/-/long-4.0.2.tgz"
   integrity sha512-MqTGEo5bj5t157U6fA/BiDynNkn0YknVdh48CMPkTSpFTVmvao5UQmm7uEF6xBEo7qIMAlY/JSleYaE6VOdpaA==
+
+"@types/node@*":
+  version "20.10.2"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-20.10.2.tgz#32a5e8228357f57714ad28d52229ab04880c2814"
+  integrity sha512-37MXfxkb0vuIlRKHNxwCkb60PNBpR94u4efQuN4JgIAm66zfCDXGSAFCef9XUWFovX2R1ok6Z7MHhtdVXXkkIw==
+  dependencies:
+    undici-types "~5.26.4"
 
 "@types/node@18.11.19", "@types/node@>=12.12.47", "@types/node@>=13.7.0":
   version "18.11.19"
@@ -1067,6 +1096,14 @@
   resolved "https://registry.npmjs.org/@types/react-dom/-/react-dom-18.0.10.tgz"
   integrity sha512-E42GW/JA4Qv15wQdqJq8DL4JhNpB3prJgjgapN3qJT9K2zO5IIAQh4VXvCEDupoqAwnz0cY4RlXeC/ajX5SFHg==
   dependencies:
+    "@types/react" "*"
+
+"@types/react-html-parser@^2.0.6":
+  version "2.0.6"
+  resolved "https://registry.yarnpkg.com/@types/react-html-parser/-/react-html-parser-2.0.6.tgz#b57174bb738e3432e3df1b9f485c106ed9fd8b4e"
+  integrity sha512-xqo8u7iqr5eOIulM1BFAlpoBgdhVleLcDHySy8/k7Le9wgdRgZY1UdKtEcdlc2jMS8cqEx8+U4Mz/e5Ves66Fg==
+  dependencies:
+    "@types/htmlparser2" "*"
     "@types/react" "*"
 
 "@types/react-is@^16.7.1 || ^17.0.0":
@@ -1649,6 +1686,18 @@ dom-helpers@^5.0.1:
   dependencies:
     "@babel/runtime" "^7.8.7"
     csstype "^3.0.2"
+
+domelementtype@1:
+  version "1.3.1"
+  resolved "https://registry.yarnpkg.com/domelementtype/-/domelementtype-1.3.1.tgz#d048c44b37b0d10a7f2a3d5fee3f4333d790481f"
+  integrity sha512-BSKB+TSpMpFI/HOxCNr1O8aMOTZ8hT3pM3GQ0w/mWRmkhEDSFJkkyzz4XQsBV44BChwGkrDfMyjVD0eA2aFV3w==
+
+domhandler@^2.4.0:
+  version "2.4.2"
+  resolved "https://registry.yarnpkg.com/domhandler/-/domhandler-2.4.2.tgz#8805097e933d65e85546f726d60f5eb88b44f803"
+  integrity sha512-JiK04h0Ht5u/80fdLMCEmV4zkNh2BcoMFBmZ/91WtYZ8qVXSKjiw7fXMgFPnHcSZgOo3XdinHvmnDUeMf5R4wA==
+  dependencies:
+    domelementtype "1"
 
 electron-to-chromium@^1.4.284:
   version "1.4.286"
@@ -3607,6 +3656,11 @@ unbox-primitive@^1.0.2:
     has-bigints "^1.0.2"
     has-symbols "^1.0.3"
     which-boxed-primitive "^1.0.2"
+
+undici-types@~5.26.4:
+  version "5.26.5"
+  resolved "https://registry.yarnpkg.com/undici-types/-/undici-types-5.26.5.tgz#bcd539893d00b56e964fd2657a4866b221a65617"
+  integrity sha512-JlCMO+ehdEIKqlFxk6IfVoAUVmgz7cU7zD/h9XZ0qzeosSHmUJVOzSQvvYSYWXkFXC+IfLKSIffhv0sVZup6pA==
 
 update-browserslist-db@^1.0.10:
   version "1.0.10"
