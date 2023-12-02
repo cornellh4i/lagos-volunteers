@@ -259,6 +259,7 @@ async function main() {
   await prisma.profile.deleteMany({});
   await prisma.permission.deleteMany({});
   await prisma.user.deleteMany({});
+  await prisma.aboutPage.deleteMany({});
 
   for (const u of userData) {
     const user = await prisma.user.create({
@@ -292,6 +293,12 @@ async function main() {
   }
 
   await enrollAlice();
+
+  const page = await prisma.aboutPage.create({
+    data: {
+      content: "Hello",
+    },
+  });
   console.log(`Seeding finished.`);
 }
 // This is for demo purposes only. Everytime we start the server, our seed script will run.

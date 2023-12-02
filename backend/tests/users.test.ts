@@ -510,4 +510,20 @@ describe("Testing DELETE /users/:userid", () => {
     const response = await request(app).delete("/users/" + userid);
     expect(response.status).toBe(500);
   });
+
+  test("Testing GET /users/about", async () => {
+    const response = await request(app).get("/users/about");
+    expect(response.status).toBe(200);
+  });
+
+  test("Testing PUT /users/about", async () => {
+    const currentText = await request(app).get("/users/about");
+    const pageId = currentText.body.data[0].id;
+    const response = await request(app)
+      .put("/users/" + pageId + "/about")
+      .send({
+        content: "value",
+      });
+    expect(response.status).toBe(200);
+  });
 });
