@@ -17,190 +17,190 @@ import { fetchUserIdFromDatabase, formatDateTimeRange } from "@/utils/helpers";
 type Action = "Rsvp" | "Cancel Rsvp" | "Publish" | "Manage Attendees" | "Edit";
 
 type event = {
-	id: string;
-	name: string;
-	location: string;
-	actions: Action[];
-	startDate: string;
-	endDate: string;
-	role: string;
-	hours: number;
+  id: string;
+  name: string;
+  location: string;
+  actions: Action[];
+  startDate: string;
+  endDate: string;
+  role: string;
+  hours: number;
 };
 
 type pastEvent = {
-	id: string;
-	name: string;
-	startDate: string;
-	role: string;
-	hours: number;
+  id: string;
+  name: string;
+  startDate: string;
+  role: string;
+  hours: number;
 };
 
 interface EventCardProps {
-	eventDetails: event[] | null;
+  eventDetails: event[] | null;
 }
 
 const UpcomingEvents = ({ eventDetails }: EventCardProps) => {
-	return (
-		<CardList>
-			{eventDetails?.map((event) => (
-				<EventCard
-					key={event.id}
-					eventid={event.id}
-					title={event.name}
-					location={event.location}
-					datetime={formatDateTimeRange(event.startDate, event.endDate)}
-					dropdownActions={["Manage Attendees", "Edit"]}
-					// hard-coded for now but main-action is determined based on the user and their status
-					mainAction="Rsvp"
-				/>
-			))}
-		</CardList>
-	);
+  return (
+    <CardList>
+      {eventDetails?.map((event) => (
+        <EventCard
+          key={event.id}
+          eventid={event.id}
+          title={event.name}
+          location={event.location}
+          datetime={formatDateTimeRange(event.startDate, event.endDate)}
+          dropdownActions={["Manage Attendees", "Edit"]}
+          // hard-coded for now but main-action is determined based on the user and their status
+          mainAction="Rsvp"
+        />
+      ))}
+    </CardList>
+  );
 };
 
 const Drafts = () => {
-	return <>Hello drafts</>;
+  return <>Hello drafts</>;
 };
 
 const PastEvents = ({ eventDetails }: EventCardProps) => {
-	const eventColumns: GridColDef[] = [
-		{
-			field: "role",
-			headerName: "Role",
-			minWidth: 120,
-			renderCell: (params) => {
-				return (
-					<Chip
-						color={params.value == "Supervisor" ? "primary" : "success"}
-						label={params.value}
-					/>
-				);
-			},
-		},
-		{
-			field: "name",
-			headerName: "Program Name",
-			flex: 2,
-			minWidth: 100,
-		},
-		{
-			field: "startDate",
-			headerName: "Date",
-			flex: 2,
-			minWidth: 100,
-		},
-		{
-			field: "hours",
-			headerName: "Hours",
-			type: "number",
-			flex: 0.5,
-		},
-	];
+  const eventColumns: GridColDef[] = [
+    {
+      field: "role",
+      headerName: "Role",
+      minWidth: 120,
+      renderCell: (params) => {
+        return (
+          <Chip
+            color={params.value == "Supervisor" ? "primary" : "success"}
+            label={params.value}
+          />
+        );
+      },
+    },
+    {
+      field: "name",
+      headerName: "Program Name",
+      flex: 2,
+      minWidth: 100,
+    },
+    {
+      field: "startDate",
+      headerName: "Date",
+      flex: 2,
+      minWidth: 100,
+    },
+    {
+      field: "hours",
+      headerName: "Hours",
+      type: "number",
+      flex: 0.5,
+    },
+  ];
 
-	function getFormattedDate(date: string) {
-		const month = date.substring(5, 7);
-		const year = date.substring(0, 4);
-		const day = date.substring(8, 10);
-		return month + "/" + day + "/" + year;
-	}
+  function getFormattedDate(date: string) {
+    const month = date.substring(5, 7);
+    const year = date.substring(0, 4);
+    const day = date.substring(8, 10);
+    return month + "/" + day + "/" + year;
+  }
 
-	let dummyRows: pastEvent[] = [];
-	{
-		eventDetails?.map((event) => [
-			dummyRows.push({
-				id: event.id,
-				role: event.role,
-				name: event.name,
-				startDate: getFormattedDate(event.startDate),
-				hours: event.hours,
-			}),
-		]);
-	}
+  let dummyRows: pastEvent[] = [];
+  {
+    eventDetails?.map((event) => [
+      dummyRows.push({
+        id: event.id,
+        role: event.role,
+        name: event.name,
+        startDate: getFormattedDate(event.startDate),
+        hours: event.hours,
+      }),
+    ]);
+  }
 
-	function totalHours() {
-		let numOfHours = 0;
-		eventDetails?.map((event) => (numOfHours = numOfHours + event.hours));
-		return numOfHours.toString();
-	}
+  function totalHours() {
+    let numOfHours = 0;
+    eventDetails?.map((event) => (numOfHours = numOfHours + event.hours));
+    return numOfHours.toString();
+  }
 
-	return (
-		<>
-			<BoxText text="Volunteer Hours" textRight={totalHours()} />
-			<Table columns={eventColumns} rows={dummyRows} />
-		</>
-	);
+  return (
+    <>
+      <BoxText text="Volunteer Hours" textRight={totalHours()} />
+      <Table columns={eventColumns} rows={dummyRows} />
+    </>
+  );
 };
 
 /**
  * A ViewEvents component is where a user can view and manage their events.
  */
 const ViewEvents = () => {
-	const { user } = useAuth();
-	const [events, setEvents] = useState<event[] | null>(null);
+  const { user } = useAuth();
+  const [events, setEvents] = useState<event[] | null>(null);
 
-	const fetchUserEvents = async () => {
-		try {
-			const url = BASE_URL as string;
-			const userToken = await auth.currentUser?.getIdToken();
-			const userId = await fetchUserIdFromDatabase(
-				user?.email as string,
-				userToken as string
-			);
-			const fetchUrl = `${url}/users/${userId}/registered`;
-			const response = await fetch(fetchUrl, {
-				method: "GET",
-				headers: {
-					Authorization: `Bearer ${userToken}`,
-				},
-			});
-			const json = await response.json();
-			const apiEvents = json["data"]["events"];
+  const fetchUserEvents = async () => {
+    try {
+      const url = BASE_URL as string;
+      const userToken = await auth.currentUser?.getIdToken();
+      const userId = await fetchUserIdFromDatabase(
+        user?.email as string,
+        userToken as string
+      );
+      const fetchUrl = `${url}/users/${userId}/registered`;
+      const response = await fetch(fetchUrl, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${userToken}`,
+        },
+      });
+      const json = await response.json();
+      const apiEvents = json["data"]["events"];
 
-			let events: event[] = [];
-			apiEvents.map((event: any) => {
-				events.push({
-					id: event["event"]["id"],
-					name: event["event"]["name"],
-					location: event["event"]["location"],
-					startDate: event["event"]["startDate"],
-					endDate: event["event"]["endDate"],
-					actions: ["Manage Attendees", "Edit"],
-					role:
-						userId === event["event"]["ownerId"] ? "Supervisor" : "Volunteer",
-					hours: 0, // hard-coded for now
-				});
-			});
-			setEvents(events);
-		} catch (error) {}
-	};
+      let events: event[] = [];
+      apiEvents.map((event: any) => {
+        events.push({
+          id: event["event"]["id"],
+          name: event["event"]["name"],
+          location: event["event"]["location"],
+          startDate: event["event"]["startDate"],
+          endDate: event["event"]["endDate"],
+          actions: ["Manage Attendees", "Edit"],
+          role:
+            userId === event["event"]["ownerId"] ? "Supervisor" : "Volunteer",
+          hours: 0, // hard-coded for now
+        });
+      });
+      setEvents(events);
+    } catch (error) {}
+  };
 
-	useEffect(() => {
-		fetchUserEvents();
-	}, []);
-	{
-		const tabs = [
-			{
-				label: "Upcoming Events",
-				panel: <UpcomingEvents eventDetails={events} />,
-			},
-			{
-				label: "Past Events",
-				panel: <PastEvents eventDetails={events} />,
-			},
-			{ label: "Drafts", panel: <Drafts /> },
-		];
-		return (
-			<>
-				<TabContainer
-					tabs={tabs}
-					rightAlignedComponent={
-						<Link href="/events/create">
-							<Button color="dark-gray">Create New Event</Button>
-						</Link>
-					}
-				/>
-			</>
-		);
-	}
+  useEffect(() => {
+    fetchUserEvents();
+  }, []);
+  {
+    const tabs = [
+      {
+        label: "Upcoming Events",
+        panel: <UpcomingEvents eventDetails={events} />,
+      },
+      {
+        label: "Past Events",
+        panel: <PastEvents eventDetails={events} />,
+      },
+      { label: "Drafts", panel: <Drafts /> },
+    ];
+    return (
+      <>
+        <TabContainer
+          tabs={tabs}
+          rightAlignedComponent={
+            <Link href="/events/create">
+              <Button color="dark-gray">Create New Event</Button>
+            </Link>
+          }
+        />
+      </>
+    );
+  }
 };
 export default ViewEvents;
