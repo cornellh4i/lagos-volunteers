@@ -5,7 +5,6 @@ import userController from "../users/controllers";
 import prisma from "../../client";
 import sgMail from "@sendgrid/mail";
 
-
 /**
  * Creates a new event and assign owner to it.
  * @param eventDTO contains the ownerID and the event body
@@ -181,9 +180,8 @@ const addAttendee = async (eventID: string, userID: string) => {
   const userEmail = user?.email;
   // sets the email message
   const emailMsg = "USER WAS REGISTERED";
-  if(process.env.NODE_ENV != "test"){
-    await
-  sendEmail(userEmail, emailMsg);
+  if (process.env.NODE_ENV != "test") {
+    await sendEmail(userEmail, emailMsg);
   }
   return await prisma.eventEnrollment.create({
     data: {
@@ -235,9 +233,9 @@ const deleteAttendee = async (
   var userEmail = user?.email;
   // sets the email message
   const emailMsg = "USER REMOVED FROM THIS EVENT";
-  if(process.env.NODE_ENV != "test"){
-      await sendEmail(userEmail, emailMsg);
-  } 
+  if (process.env.NODE_ENV != "test") {
+    await sendEmail(userEmail, emailMsg);
+  }
   return await prisma.eventEnrollment.update({
     where: {
       userId_eventId: {

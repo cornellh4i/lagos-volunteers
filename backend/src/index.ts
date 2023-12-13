@@ -2,8 +2,6 @@ import app from "./server";
 import admin from "firebase-admin";
 import sgMail from "@sendgrid/mail";
 
-
-
 const server = app.listen(process.env.PORT || 8000);
 
 const serviceAccount = {

@@ -218,12 +218,12 @@ describe("Testing DELETE /events/:eventid/attendees/:attendeeid", () => {
     const attendees = await request(app).get("/users");
     const eventid = events.body.data[1].id;
     const attendeeid = attendees.body.data[1].id;
-    const response = await request(app).put(
-      "/events/" + eventid + "/attendees/"
-    ).send({
-      attendeeid: attendeeid,
-      cancelationMessage: "I can't go anymore"
-    })
+    const response = await request(app)
+      .put("/events/" + eventid + "/attendees/")
+      .send({
+        attendeeid: attendeeid,
+        cancelationMessage: "I can't go anymore",
+      });
 
     expect(response.body.data.canceled).toBe(true);
     expect(response.body.data.cancelationMessage).toBe("I can't go anymore");

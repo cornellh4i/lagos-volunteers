@@ -10,99 +10,99 @@ import { fetchUserIdFromDatabase, formatDateTimeRange } from "@/utils/helpers";
 import Loading from "@/components/molecules/Loading";
 
 type eventData = {
-	eventid: string;
-	location: string;
-	datetime: string;
-	supervisors: string[];
-	capacity: number;
-	image_src: string;
-	tags: string[] | undefined;
-	description: string;
-	name: string;
+  eventid: string;
+  location: string;
+  datetime: string;
+  supervisors: string[];
+  capacity: number;
+  image_src: string;
+  tags: string[] | undefined;
+  description: string;
+  name: string;
 };
 
 /** An EventCancellation page */
 const EventCancellation = () => {
-	const router = useRouter();
-	const { eventid } = router.query;
-	const [eventDetails, setEventDetails] = useState<
-		eventData | null | undefined
-	>(null);
-	const [attendeeCanceled, setAttendeeCanceled] = useState<boolean>(false);
+  const router = useRouter();
+  const { eventid } = router.query;
+  const [eventDetails, setEventDetails] = useState<
+    eventData | null | undefined
+  >(null);
+  const [attendeeCanceled, setAttendeeCanceled] = useState<boolean>(false);
 
-	const { user } = useAuth();
-	const url = BASE_URL as string;
+  const { user } = useAuth();
+  const url = BASE_URL as string;
 
-	const fetchEventDetails = async () => {
-		const userToken = await auth.currentUser?.getIdToken();
+  const fetchEventDetails = async () => {
+    const userToken = await auth.currentUser?.getIdToken();
 
-		try {
-			const url = BASE_URL as string;
-			const userId = await fetchUserIdFromDatabase(
-				user?.email as string,
-				userToken as string
-			);
-			const fetchUrl = `${url}/users/${userId}/registered?eventid=${eventid}`;
+    try {
+      const url = BASE_URL as string;
+      const userId = await fetchUserIdFromDatabase(
+        user?.email as string,
+        userToken as string
+      );
+      const fetchUrl = `${url}/users/${userId}/registered?eventid=${eventid}`;
 
-			const response = await fetch(fetchUrl, {
-				method: "GET",
-				headers: {
-					Authorization: `Bearer ${userToken}`,
-				},
-			});
+      const response = await fetch(fetchUrl, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${userToken}`,
+        },
+      });
 
-			const data = await response.json();
+      const data = await response.json();
 
-			const event = data["data"]["eventDetails"];
+      const event = data["data"]["eventDetails"];
 
-			if (response.ok) {
-				setEventDetails({
-					eventid: event["id"],
-					location: event["location"],
-					datetime: formatDateTimeRange(event["startDate"], event["endDate"]),
-					supervisors: [
-						event["owner"]["profile"]["firstName"] +
-							" " +
-							event["owner"]["profile"]["lastName"],
-					],
-					capacity: event["capacity"],
-					image_src: event["imageURL"],
-					tags: event["tags"],
-					description: event["description"],
-					name: event["name"],
-				});
+      if (response.ok) {
+        setEventDetails({
+          eventid: event["id"],
+          location: event["location"],
+          datetime: formatDateTimeRange(event["startDate"], event["endDate"]),
+          supervisors: [
+            event["owner"]["profile"]["firstName"] +
+              " " +
+              event["owner"]["profile"]["lastName"],
+          ],
+          capacity: event["capacity"],
+          image_src: event["imageURL"],
+          tags: event["tags"],
+          description: event["description"],
+          name: event["name"],
+        });
 
-				if (data["data"]["attendance"]) {
-					setAttendeeCanceled(data["data"]["attendance"]["canceled"]);
-				}
+        if (data["data"]["attendance"]) {
+          setAttendeeCanceled(data["data"]["attendance"]["canceled"]);
+        }
 
-				if (attendeeCanceled || !data["data"]["attendance"]) {
-					router.replace(`/events/${eventid}/register`);
-				}
-			}
-		} catch (error) {}
-	};
+        if (attendeeCanceled || !data["data"]["attendance"]) {
+          router.replace(`/events/${eventid}/register`);
+        }
+      }
+    } catch (error) {}
+  };
 
-	useEffect(() => {
-		fetchEventDetails();
-	}, []);
+  useEffect(() => {
+    fetchEventDetails();
+  }, []);
 
-	return (
-		<CenteredTemplate>
-			{eventDetails ? (
-				attendeeCanceled ? (
-					<EventConfirmation
-						eventDetails={eventDetails}
-						confirmation="cancel"
-					/>
-				) : (
-					<EventCancelForm eventDetails={eventDetails} />
-				)
-			) : (
-				<Loading />
-			)}
-		</CenteredTemplate>
-	);
+  return (
+    <CenteredTemplate>
+      {eventDetails ? (
+        attendeeCanceled ? (
+          <EventConfirmation
+            eventDetails={eventDetails}
+            confirmation="cancel"
+          />
+        ) : (
+          <EventCancelForm eventDetails={eventDetails} />
+        )
+      ) : (
+        <Loading />
+      )}
+    </CenteredTemplate>
+  );
 };
 
 export default EventCancellation;
