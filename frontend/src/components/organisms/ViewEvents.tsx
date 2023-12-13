@@ -17,7 +17,7 @@ const UpcomingEvents = () => {
     <CardList>
       <EventCard
         eventid={"000"}
-        mainAction={"cancel rsvp"}
+        mainAction={"manage attendees"}
         title={"EDUFOOD"}
         location={"WAREHOUSE B"}
         datetime={"02/15/2023, 9:00-11:00 AM"}
