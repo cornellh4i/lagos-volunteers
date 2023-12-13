@@ -105,7 +105,7 @@ const getEvents = async (req: Request) => {
 
   if (query.limit) {
     take = parseInt(query.limit as string);
-  }else{
+  } else {
     // default take is 10
     take = 10;
   }

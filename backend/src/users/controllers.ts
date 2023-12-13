@@ -116,7 +116,7 @@ const getUsers = async (req: Request) => {
 
   if (query.limit) {
     take = parseInt(query.limit as string);
-  }else{
+  } else {
     // default limit
     take = 10;
   }
@@ -153,11 +153,10 @@ const getUsers = async (req: Request) => {
       events: eventId ? true : false,
     },
     orderBy: sortDict[key],
-    
+
     take: take,
     skip: skip,
     cursor: cursor,
-    
   });
   const lastPostInResults = take
     ? queryResult[take - 1]

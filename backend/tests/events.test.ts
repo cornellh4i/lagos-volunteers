@@ -184,7 +184,6 @@ describe("Testing POST /events/:eventid/attendees", () => {
       .send(attendee2);
     expect(response.status).toBe(200);
     expect(response_too.status).toBe(200);
-    
   });
 });
 

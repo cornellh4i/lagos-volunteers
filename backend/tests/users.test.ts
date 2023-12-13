@@ -232,7 +232,6 @@ describe("Testing GET /users/:userid/profile", () => {
     expect(response.body.data.profile.firstName).toEqual(userProfile.firstName);
     expect(response.body.data.profile.lastName).toEqual(userProfile.lastName);
   });
-
 });
 
 describe("Testing GET /users/:userid/role", () => {
@@ -300,18 +299,14 @@ describe("Testing /users/:userID", () => {
 
 describe("Testing /users/sorting/", () => {
   test("GET users sorted by firstName in ascending order with null profiles", async () => {
-    const response = await request(app).get(
-      "/users/?sort=firstName:asc"
-    );
+    const response = await request(app).get("/users/?sort=firstName:asc");
     const data = response.body.data.result;
     expect(data[0].profile.firstName >= data[1].profile.firstName);
     expect(response.status).toBe(200);
   });
 
   test("GET users sorted by firstName in descending order with null profiles", async () => {
-    const response = await request(app).get(
-      "/users?sort=firstName:desc"
-    );
+    const response = await request(app).get("/users?sort=firstName:desc");
     const data = response.body.data.result;
     expect(data[0].profile == null); //any null profiles should show up first
     expect(data[0].profile.firstName <= data[1].profile.firstName);
@@ -335,9 +330,7 @@ describe("Testing /users/sorting/", () => {
 
 describe("Testing /users/:userID/created", () => {
   test("GET createdEvents of user with created events", async () => {
-    const POSTresponse = await request(app).get(
-      "/users?firstName=Prisma"
-    );
+    const POSTresponse = await request(app).get("/users?firstName=Prisma");
     const userID = POSTresponse.body.data.result[0].id;
 
     const response = await request(app).get("/users/" + userID + "/created");
@@ -353,9 +346,7 @@ describe("Testing /users/:userID/created", () => {
 
 describe("Testing /users/:userID/registered", () => {
   test("GET registeredEvents of user with registered events", async () => {
-    const POSTresponse = await request(app).get(
-      "/users?firstName=Alice"
-    );
+    const POSTresponse = await request(app).get("/users?firstName=Alice");
     const userID = POSTresponse.body.data.result[0].id;
     const GETresponse = await request(app).get("/users?userId=" + userID);
     expect(GETresponse.status).toBe(200);
@@ -370,9 +361,7 @@ describe("Testing /users/:userID/registered", () => {
 
 describe("Testing /users/:userID/hours", () => {
   test("GET hours of user", async () => {
-    const POSTresponse = await request(app).get(
-      "/users?firstName=Prisma"
-    );
+    const POSTresponse = await request(app).get("/users?firstName=Prisma");
     const userID = POSTresponse.body.data.result[0].id;
 
     const GETresponse = await request(app).get("/users/" + userID + "/hours");
@@ -392,34 +381,31 @@ describe("Testing GET /users/pagination", () => {
   test("Get 2 users after the second use", async () => {
     const users = await request(app).get("/users?limit=3");
     const cursor = users.body.data.cursor;
-    const response = await request(app).get(
-      "/users?limit=2&after=" + cursor
-    );
+    const response = await request(app).get("/users?limit=2&after=" + cursor);
     const data = response.body.data.result;
     expect(response.status).toBe(200);
     expect(data.length).toBe(2);
   });
 
-  test("Pagination without /pagination" , async () => {
+  test("Pagination without /pagination", async () => {
     const users = await request(app).get("/users?limit=3");
     const data = users.body.data;
     expect(users.status).toBe(200);
     expect(data.result.length).toBe(3);
-  }
-  );
+  });
 
   test("Get 10 users after the second use", async () => {
     // limit should be defaulted to 10
     const users = await request(app).get("/users");
     const cursor = users.body.data.cursor;
-    const response = await request(app).get(
-      "/users?after=" + cursor
-    );
+    const response = await request(app).get("/users?after=" + cursor);
     expect(response.status).toBe(200);
     expect(users.body.data.result.length).toBe(10);
     expect(response.body.data.result.length).toBe(10);
     // check that next fecth with cursor is different from prev
-    expect(users.body.data.result[0].id).not.toBe(response.body.data.result[0].id);
+    expect(users.body.data.result[0].id).not.toBe(
+      response.body.data.result[0].id
+    );
   });
 });
 
