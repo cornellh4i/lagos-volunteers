@@ -5,8 +5,8 @@ import Checkbox from "@mui/material/Checkbox";
 
 interface CheckboxProps {
   label: string;
-  checked: boolean;
-  onChange: () => void;
+  checked?: boolean;
+  onChange?: () => void;
 }
 const CustomCheckbox = ({ label, onChange, checked }: CheckboxProps) => {
   return (

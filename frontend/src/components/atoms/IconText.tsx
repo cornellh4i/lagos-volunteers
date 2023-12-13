@@ -11,8 +11,8 @@ interface IconTextProps {
 const IconText = ({ icon, children }: IconTextProps) => {
   return (
     <div className="flex">
-      <div className="pr-1">{icon}</div>
-      <div className="truncate">{children}</div>
+      <div className="flex items-center pr-1">{icon}</div>
+      <div className="flex items-center truncate">{children}</div>
     </div>
   );
 };
