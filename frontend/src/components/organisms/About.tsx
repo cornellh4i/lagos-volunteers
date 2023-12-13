@@ -4,8 +4,7 @@ import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import Button from "../atoms/Button";
 import Modal from "../molecules/Modal";
-import ReactHtmlParser from 'react-html-parser';
-
+import ReactHtmlParser from "react-html-parser";
 
 interface AboutProps {
   edit: boolean;
@@ -19,9 +18,7 @@ type modalBodyProps = {
 const ModalBody = ({ handleModal, handleClose }: modalBodyProps) => {
   return (
     <div>
-      <p>
-        Are you sure you want to publish changes to this page?
-      </p>
+      <p>Are you sure you want to publish changes to this page?</p>
       <Grid container spacing={2}>
         <Grid item md={6} xs={12}>
           <Button color="gray" onClick={handleModal}>
@@ -34,7 +31,7 @@ const ModalBody = ({ handleModal, handleClose }: modalBodyProps) => {
           </Button>
         </Grid>
       </Grid>
-    </div >
+    </div>
   );
 };
 
@@ -88,7 +85,7 @@ const About = ({ edit }: AboutProps) => {
   </p>
   <h2>Request Certificate</h2>
   <p>Fill out this form. Login first</p>
-  `
+  `;
   const [value, setValue] = useState(`${default_text}`);
   const [open, setOpen] = React.useState(false);
   const [editMode, setEditMode] = React.useState(false);
@@ -96,9 +93,9 @@ const About = ({ edit }: AboutProps) => {
   const handleClose = () => setOpen(false);
   const handleClick = () => setEditMode(true);
   const handleModalClick = () => {
-    setEditMode(false)
-    handleClose()
-  }
+    setEditMode(false);
+    handleClose();
+  };
 
   if (editMode == true) {
     return (
@@ -125,29 +122,29 @@ const About = ({ edit }: AboutProps) => {
 
         <div className="text-right">
           <Grid item container>
-            <Grid xs={10}>
-            </Grid>
+            <Grid xs={10}></Grid>
             <Grid xs={2}>
-              <Button color={"gray"} onClick={handleOpen}>Publish Changes</Button>
+              <Button color={"gray"} onClick={handleOpen}>
+                Publish Changes
+              </Button>
             </Grid>
           </Grid>
         </div>
       </>
     );
-  }
-  else {
+  } else {
     return (
-
       <div>
         <div>{ReactHtmlParser(value)}</div>;
-        < Grid item container>
-          <Grid xs={11}>
-          </Grid>
+        <Grid item container>
+          <Grid xs={11}></Grid>
           <Grid xs={1}>
-            <Button color={"gray"} onClick={handleClick}>Edit</Button>
+            <Button color={"gray"} onClick={handleClick}>
+              Edit
+            </Button>
           </Grid>
         </Grid>
-      </div >
+      </div>
     );
   }
 };
