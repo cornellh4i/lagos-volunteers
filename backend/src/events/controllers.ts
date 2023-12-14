@@ -100,7 +100,7 @@ const getEvents = async (
   let whereDict: { [key: string]: any } = {};
   let includeDict: { [key: string]: any } = {};
 
-  // GET /events?upcoming=true
+  // Handles GET /events?upcoming=true
   if (filter.upcoming === "true") {
     const dateTime = new Date();
     whereDict["startDate"] = {
