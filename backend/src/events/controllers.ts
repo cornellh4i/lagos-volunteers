@@ -1,5 +1,11 @@
 import { Request, Response } from "express";
-import { EventMode, EventStatus, Event, EventEnrollment } from "@prisma/client";
+import {
+  EventMode,
+  EventStatus,
+  Event,
+  EventEnrollment,
+  Prisma,
+} from "@prisma/client";
 import { EventDTO } from "./views";
 
 // We are using one connection to prisma client to prevent multiple connections
@@ -39,11 +45,100 @@ const deleteEvent = async (eventID: string) => {
 };
 
 /**
- * Get all events in DB
- * @returns promise with all events or error
+ * Search, sort and pagination for events
+ * @param filter are the filter params passed in
+ * @param sort are sort params passed in
+ * @param pagination are the pagination params passed in
+ * @returns promise with list of events
  */
-const getEvents = async () => {
-  return prisma.event.findMany({});
+const getEvents = async (
+  filter: {
+    upcoming?: string;
+    ownerId?: string;
+    userId?: string;
+  },
+  sort: {
+    key: string;
+    order: Prisma.SortOrder;
+  },
+  pagination: {
+    after: string;
+    limit: string;
+  }
+) => {
+  /* SORTING */
+
+  // Handles GET /events?sort=location:desc
+  const defaultCursor = { id: "asc" };
+  const sortDict: { [key: string]: any } = {
+    default: { id: sort.order },
+    name: [{ name: sort.order }, defaultCursor],
+    location: [{ location: sort.order }, defaultCursor],
+  };
+
+  /* PAGINATION */
+
+  // Handles GET /events?limit=20&after=asdf
+  let cursor = undefined;
+  let skip = undefined;
+  if (pagination.after) {
+    cursor = {
+      id: pagination.after as string,
+    };
+    skip = 1;
+  }
+  let take = undefined;
+  if (pagination.limit) {
+    take = parseInt(pagination.limit as string);
+  } else {
+    // default take is 10
+    take = 10;
+  }
+
+  /* FILTERING */
+
+  let whereDict: { [key: string]: any } = {};
+  let includeDict: { [key: string]: any } = {};
+
+  // Handles GET /events?upcoming=true
+  if (filter.upcoming === "true") {
+    const dateTime = new Date();
+    whereDict["startDate"] = {
+      gt: dateTime,
+    };
+  }
+
+  // Handles GET /events?ownerId=asdf
+  if (filter.ownerId) {
+    whereDict["ownerId"] = filter.ownerId;
+  }
+
+  // Handles GET /events?userId=asdf
+  if (filter.userId) {
+    whereDict["attendees"] = {
+      some: {
+        userId: filter.userId,
+      },
+    };
+  }
+
+  /* RESULT */
+
+  const queryResult = await prisma.event.findMany({
+    where: {
+      AND: [whereDict],
+    },
+    include: includeDict,
+    orderBy: sortDict[sort.key],
+    take: take,
+    skip: skip,
+    cursor: cursor,
+  });
+  const lastPostInResults = take
+    ? queryResult[take - 1]
+    : queryResult[queryResult.length - 1];
+  const myCursor = lastPostInResults ? lastPostInResults.id : undefined;
+  return { result: queryResult, cursor: myCursor };
 };
 
 /**

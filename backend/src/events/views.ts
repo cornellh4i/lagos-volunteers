@@ -4,7 +4,7 @@ import { auth } from "../middleware/auth";
 import { attempt } from "../utils/helpers";
 
 import { errorJson, successJson } from "../utils/jsonResponses";
-import { EventMode, EventStatus } from "@prisma/client";
+import { EventMode, EventStatus, Prisma } from "@prisma/client";
 
 const eventRouter = Router();
 
@@ -49,7 +49,27 @@ eventRouter.delete("/:eventid", async (req: Request, res: Response) => {
 
 eventRouter.get("/", async (req: Request, res: Response) => {
   // #swagger.tags = ['Events']
-  attempt(res, 200, eventController.getEvents);
+  const filter = {
+    upcoming: req.query.upcoming as string,
+    ownerId: req.query.ownerid as string,
+    userId: req.query.userid as string,
+  };
+
+  const sortQuery = req.query.sort as string;
+  const querySplit = sortQuery ? sortQuery.split(":") : ["default", "asc"];
+  const key = querySplit[0];
+  const order = querySplit[1] as Prisma.SortOrder;
+  const sort = {
+    key: key,
+    order: order,
+  };
+
+  const pagination = {
+    after: req.query.after as string,
+    limit: req.query.limit as string,
+  };
+
+  attempt(res, 200, () => eventController.getEvents(filter, sort, pagination));
 });
 
 eventRouter.get("/upcoming", async (req: Request, res: Response) => {
