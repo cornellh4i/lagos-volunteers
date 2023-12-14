@@ -66,7 +66,7 @@ const updateUser = async (userID: string, user: User) => {
  * @param filter are the filter params passed in
  * @param sort are sort params passed in
  * @param pagination are the pagination params passed in
- * @returns promise with list of all users where [option] is [value]
+ * @returns promise with list of users
  */
 const getUsers = async (
   filter: {
@@ -147,34 +147,34 @@ const getUsers = async (
   }
 
   // Handles all other filtering
+  let whereDict = {
+    events: events,
+    email: Array.isArray(filter.email) ? { in: filter.email } : filter.email,
+    role: {
+      equals: filter.role,
+    },
+    hours: filter.hours,
+    status: {
+      equals: filter.status,
+    },
+    profile: {
+      firstName: Array.isArray(filter.firstName)
+        ? { in: filter.firstName }
+        : filter.firstName,
+      lastName: Array.isArray(filter.lastName)
+        ? { in: filter.lastName }
+        : filter.lastName,
+      nickname: Array.isArray(filter.nickname)
+        ? { in: filter.nickname }
+        : filter.nickname,
+    },
+  };
+
+  /* RESULT */
+
   const queryResult = await prisma.user.findMany({
     where: {
-      AND: [
-        {
-          events: events,
-          email: Array.isArray(filter.email)
-            ? { in: filter.email }
-            : filter.email,
-          role: {
-            equals: filter.role,
-          },
-          hours: filter.hours,
-          status: {
-            equals: filter.status,
-          },
-          profile: {
-            firstName: Array.isArray(filter.firstName)
-              ? { in: filter.firstName }
-              : filter.firstName,
-            lastName: Array.isArray(filter.lastName)
-              ? { in: filter.lastName }
-              : filter.lastName,
-            nickname: Array.isArray(filter.nickname)
-              ? { in: filter.nickname }
-              : filter.nickname,
-          },
-        },
-      ],
+      AND: [whereDict],
     },
     include: {
       profile: true,
@@ -185,9 +185,6 @@ const getUsers = async (
     skip: skip,
     cursor: cursor,
   });
-
-  /* RESULT */
-
   const lastPostInResults = take
     ? queryResult[take - 1]
     : queryResult[queryResult.length - 1];

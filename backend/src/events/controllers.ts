@@ -46,13 +46,10 @@ const deleteEvent = async (eventID: string) => {
 
 /**
  * Search, sort and pagination for events
- * [option] corresponds to the columns in the Event table.
- * Search supports multiple queries
- * The following options are supported:
  * @param filter are the filter params passed in
  * @param sort are sort params passed in
  * @param pagination are the pagination params passed in
- * @returns promise with list of all events where [option] is [value]
+ * @returns promise with list of events
  */
 const getEvents = async (
   filter: {
