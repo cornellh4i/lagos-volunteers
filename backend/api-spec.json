@@ -83,7 +83,58 @@
           "Users"
         ],
         "description": "",
-        "parameters": [],
+        "parameters": [
+          {
+            "name": "eventid",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "after",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "email",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "role",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "hours",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "firstName",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "lastName",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "nickname",
+            "in": "query",
+            "type": "string"
+          }
+        ],
         "responses": {}
       }
     },
@@ -410,7 +461,38 @@
           "Events"
         ],
         "description": "",
-        "parameters": [],
+        "parameters": [
+          {
+            "name": "upcoming",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "sort",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "ownerid",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "userid",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "after",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "type": "string"
+          }
+        ],
         "responses": {}
       }
     },
