@@ -85,17 +85,17 @@
         "description": "",
         "parameters": [
           {
-            "name": "eventid",
+            "name": "firstName",
             "in": "query",
             "type": "string"
           },
           {
-            "name": "after",
+            "name": "lastName",
             "in": "query",
             "type": "string"
           },
           {
-            "name": "limit",
+            "name": "nickname",
             "in": "query",
             "type": "string"
           },
@@ -120,17 +120,22 @@
             "type": "string"
           },
           {
-            "name": "firstName",
+            "name": "eventId",
             "in": "query",
             "type": "string"
           },
           {
-            "name": "lastName",
+            "name": "sort",
             "in": "query",
             "type": "string"
           },
           {
-            "name": "nickname",
+            "name": "after",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "limit",
             "in": "query",
             "type": "string"
           }
@@ -468,17 +473,17 @@
             "type": "string"
           },
           {
-            "name": "sort",
-            "in": "query",
-            "type": "string"
-          },
-          {
             "name": "ownerid",
             "in": "query",
             "type": "string"
           },
           {
             "name": "userid",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "sort",
             "in": "query",
             "type": "string"
           },

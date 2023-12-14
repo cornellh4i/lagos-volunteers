@@ -62,25 +62,44 @@ const updateUser = async (userID: string, user: User) => {
 };
 
 /**
- * Gets all Users in database and all data associated with each user
- * @returns promise with all users or error
+ * Gets all users in database and all data associated with each user
+ * @param filter are the filter params passed in
+ * @param sort are sort params passed in
+ * @param pagination are the pagination params passed in
+ * @returns promise with list of all users where [option] is [value]
  */
-const getUsers = async (req: Request) => {
-  const query = req.query;
+const getUsers = async (
+  filter: {
+    firstName?: string;
+    lastName?: string;
+    nickname?: string;
+    email?: string;
+    role?: userRole;
+    hours?: number;
+    status?: UserStatus;
+    eventId?: string;
+  },
+  sort: {
+    key: string;
+    order: Prisma.SortOrder;
+  },
+  pagination: {
+    after: string;
+    limit: string;
+  }
+) => {
+  /* SORTING */
 
-  const sortQuery = req.query.sort as string;
+  // Handles GET /users?sort=firstName:asc
   const defaultCursor = { id: "asc" };
-  const querySplit = sortQuery ? sortQuery.split(":") : ["default", "asc"];
-  const key: string = querySplit[0];
-  const order = querySplit[1] as Prisma.SortOrder;
   const sortDict: { [key: string]: any } = {
-    default: { id: order },
-    email: [{ email: order }, defaultCursor],
-    hours: [{ hours: order }, defaultCursor],
+    default: { id: sort.order },
+    email: [{ email: sort.order }, defaultCursor],
+    hours: [{ hours: sort.order }, defaultCursor],
     firstName: [
       {
         profile: {
-          firstName: order,
+          firstName: sort.order,
         },
       },
       defaultCursor,
@@ -88,14 +107,36 @@ const getUsers = async (req: Request) => {
     lastName: [
       {
         profile: {
-          lastName: order,
+          lastName: sort.order,
         },
       },
       defaultCursor,
     ],
   };
 
-  const eventId = query.eventid;
+  /* PAGINATION */
+
+  // Handles GET /users?limit=20&after=asdf
+  let cursor = undefined;
+  let skip = undefined;
+  if (pagination.after) {
+    cursor = {
+      id: pagination.after as string,
+    };
+    skip = 1;
+  }
+  let take = undefined;
+  if (pagination.limit) {
+    take = parseInt(pagination.limit as string);
+  } else {
+    // default limit
+    take = 10;
+  }
+
+  /* FILTERING */
+
+  // Handles GET /events?eventid=asdf
+  const eventId = filter.eventId;
   let events: { [key: string]: any } = {};
   if (eventId) {
     events = {
@@ -104,46 +145,33 @@ const getUsers = async (req: Request) => {
       },
     };
   }
-  let cursor = undefined;
-  let skip = undefined;
-  if (query.after) {
-    cursor = {
-      id: query.after as string,
-    };
-    skip = 1;
-  }
-  let take = undefined;
 
-  if (query.limit) {
-    take = parseInt(query.limit as string);
-  } else {
-    // default limit
-    take = 10;
-  }
-
+  // Handles all other filtering
   const queryResult = await prisma.user.findMany({
     where: {
       AND: [
         {
           events: events,
-          email: Array.isArray(query.email) ? { in: query.email } : query.email,
+          email: Array.isArray(filter.email)
+            ? { in: filter.email }
+            : filter.email,
           role: {
-            equals: query.role as userRole,
+            equals: filter.role,
           },
-          hours: query.hours ? parseInt(query.hours as any) : undefined,
+          hours: filter.hours,
           status: {
-            equals: query.status as UserStatus,
+            equals: filter.status,
           },
           profile: {
-            firstName: Array.isArray(query.firstName)
-              ? { in: query.firstName }
-              : query.firstName,
-            lastName: Array.isArray(query.lastName)
-              ? { in: query.lastName }
-              : query.lastName,
-            nickname: Array.isArray(query.nickname)
-              ? { in: query.nickname }
-              : query.nickname,
+            firstName: Array.isArray(filter.firstName)
+              ? { in: filter.firstName }
+              : filter.firstName,
+            lastName: Array.isArray(filter.lastName)
+              ? { in: filter.lastName }
+              : filter.lastName,
+            nickname: Array.isArray(filter.nickname)
+              ? { in: filter.nickname }
+              : filter.nickname,
           },
         },
       ],
@@ -152,12 +180,14 @@ const getUsers = async (req: Request) => {
       profile: true,
       events: eventId ? true : false,
     },
-    orderBy: sortDict[key],
-
+    orderBy: sortDict[sort.key],
     take: take,
     skip: skip,
     cursor: cursor,
   });
+
+  /* RESULT */
+
   const lastPostInResults = take
     ? queryResult[take - 1]
     : queryResult[queryResult.length - 1];

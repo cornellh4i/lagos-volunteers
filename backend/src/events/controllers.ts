@@ -45,77 +45,94 @@ const deleteEvent = async (eventID: string) => {
 };
 
 /**
- * Search, Sort and Pagination for Events
+ * Search, sort and pagination for events
  * [option] corresponds to the columns in the Event table.
  * Search supports multiple queries
  * The following options are supported:
- * @param upcoming if the event is upcoming then true, else false
- * @param sort possible sort columns: name, location
- * @param ownerid all events that were created by ownerid
- * @param userid all events such that userid is registered 
- * @param req: Request paramters to get query used for search
- * @returns  promise with list of all events where [option] is [value]
-
+ * @param filter are the filter params passed in
+ * @param sort are sort params passed in
+ * @param pagination are the pagination params passed in
+ * @returns promise with list of all events where [option] is [value]
  */
-const getEvents = async (req: Request) => {
-  const query = req.query;
-  let upcoming = query.upcoming;
-  let whereDict: { [key: string]: any } = {};
-  let includeDict: { [key: string]: any } = {};
-  if (upcoming) {
-    if (upcoming == "true") {
-      const dateTime = new Date();
-      whereDict["startDate"] = {
-        gt: dateTime,
-      };
-    }
+const getEvents = async (
+  filter: {
+    upcoming?: string;
+    ownerId?: string;
+    userId?: string;
+  },
+  sort: {
+    key: string;
+    order: Prisma.SortOrder;
+  },
+  pagination: {
+    after: string;
+    limit: string;
   }
-  const sortQuery = query.sort as string;
+) => {
+  /* SORTING */
+
+  // Handles GET /events?sort=location:desc
   const defaultCursor = { id: "asc" };
-  const querySplit = sortQuery ? sortQuery.split(":") : ["default", "asc"];
-  const key: string = querySplit[0];
-  const order = querySplit[1] as Prisma.SortOrder;
   const sortDict: { [key: string]: any } = {
-    default: { id: order },
-    name: [{ name: order }, defaultCursor],
-    location: [{ location: order }, defaultCursor],
+    default: { id: sort.order },
+    name: [{ name: sort.order }, defaultCursor],
+    location: [{ location: sort.order }, defaultCursor],
   };
 
-  const ownerId = query.ownerid;
-  if (ownerId) {
-    whereDict["ownerId"] = ownerId;
-  }
-  const userId = query.userid;
-  if (userId) {
-    whereDict["attendees"] = {
-      some: {
-        userId: userId,
-      },
-    };
-  }
+  /* PAGINATION */
+
+  // Handles GET /events?limit=20&after=asdf
   let cursor = undefined;
   let skip = undefined;
-  if (query.after) {
+  if (pagination.after) {
     cursor = {
-      id: query.after as string,
+      id: pagination.after as string,
     };
     skip = 1;
   }
   let take = undefined;
-
-  if (query.limit) {
-    take = parseInt(query.limit as string);
+  if (pagination.limit) {
+    take = parseInt(pagination.limit as string);
   } else {
     // default take is 10
     take = 10;
   }
+
+  /* FILTERING */
+
+  let whereDict: { [key: string]: any } = {};
+  let includeDict: { [key: string]: any } = {};
+
+  // GET /events?upcoming=true
+  if (filter.upcoming === "true") {
+    const dateTime = new Date();
+    whereDict["startDate"] = {
+      gt: dateTime,
+    };
+  }
+
+  // Handles GET /events?ownerId=asdf
+  if (filter.ownerId) {
+    whereDict["ownerId"] = filter.ownerId;
+  }
+
+  // Handles GET /events?userId=asdf
+  if (filter.userId) {
+    whereDict["attendees"] = {
+      some: {
+        userId: filter.userId,
+      },
+    };
+  }
+
+  /* RESULT */
 
   const queryResult = await prisma.event.findMany({
     where: {
       AND: [whereDict],
     },
     include: includeDict,
-    orderBy: sortDict[key],
+    orderBy: sortDict[sort.key],
     take: take,
     skip: skip,
     cursor: cursor,
@@ -126,6 +143,7 @@ const getEvents = async (req: Request) => {
   const myCursor = lastPostInResults ? lastPostInResults.id : undefined;
   return { result: queryResult, cursor: myCursor };
 };
+
 /**
  * Updates an event
  * @param event (Event) event body
