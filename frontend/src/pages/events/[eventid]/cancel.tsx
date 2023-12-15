@@ -87,10 +87,7 @@ const EventCancellation = () => {
     <CenteredTemplate>
       {eventDetails ? (
         attendeeCanceled ? (
-          <EventConfirmation
-            eventDetails={eventDetails}
-            confirmation="cancel"
-          />
+          <EventConfirmation event={eventDetails} confirmation="cancel" />
         ) : (
           <EventCancelForm eventDetails={eventDetails} />
         )

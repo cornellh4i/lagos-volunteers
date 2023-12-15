@@ -89,12 +89,9 @@ const EventRegistration = () => {
     <CenteredTemplate>
       {eventDetails ? (
         !isRegistered ? (
-          <EventRegisterForm eventDetails={eventDetails} />
+          <EventRegisterForm event={eventDetails} />
         ) : (
-          <EventConfirmation
-            eventDetails={eventDetails}
-            confirmation="register"
-          />
+          <EventConfirmation event={eventDetails} confirmation="register" />
         )
       ) : (
         <Loading />

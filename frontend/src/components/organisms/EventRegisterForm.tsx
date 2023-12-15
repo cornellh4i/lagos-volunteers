@@ -28,7 +28,7 @@ type eventData = {
 };
 
 interface EventRegisterFormProps {
-  eventDetails: eventData;
+  event: eventData;
 }
 
 /**
@@ -85,7 +85,7 @@ const ModalBody = ({
 /**
  * An EventRegisterForm component
  */
-const EventRegisterForm = ({ eventDetails }: EventRegisterFormProps) => {
+const EventRegisterForm = ({ event }: EventRegisterFormProps) => {
   const [checked, setChecked] = useState(false);
   const handleChange = () => {
     setChecked((checked) => !checked);
@@ -106,7 +106,7 @@ const EventRegisterForm = ({ eventDetails }: EventRegisterFormProps) => {
         open={open}
         handleClose={handleClose}
         children={
-          <ModalBody eventid={eventDetails.eventid} handleClose={handleClose} />
+          <ModalBody eventid={event.eventid} handleClose={handleClose} />
         }
       />
 
@@ -120,16 +120,16 @@ const EventRegisterForm = ({ eventDetails }: EventRegisterFormProps) => {
             </IconText>
           </div>
           <div className="font-semibold text-3xl">Event Registration</div>
-          <div className="text-2xl font-semibold mb-6">{eventDetails.name}</div>
+          <div className="text-2xl font-semibold mb-6">{event.name}</div>
           <EventDetails
-            location={eventDetails.location}
-            datetime={eventDetails.datetime}
-            supervisors={eventDetails.supervisors}
-            capacity={eventDetails.capacity}
-            image_src={eventDetails.image_src}
-            tags={eventDetails.tags}
+            location={event.location}
+            datetime={event.datetime}
+            supervisors={event.supervisors}
+            capacity={event.capacity}
+            image_src={event.image_src}
+            tags={event.tags}
           />
-          <div>{eventDetails.description}</div>
+          <div>{event.description}</div>
           <div className="font-bold pt-4">Terms and Conditions</div>
           <div>
             By registering, I agree that I will attend the event. If I cannot
