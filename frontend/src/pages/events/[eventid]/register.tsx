@@ -29,7 +29,6 @@ const EventRegistration = () => {
   const [isRegistered, setIsRegistered] = useState<boolean>(false);
 
   const { user } = useAuth();
-  const url = BASE_URL as string;
 
   // This can be fetched from the server to prevent flashing of unregister form
   useEffect(() => {
@@ -43,7 +42,7 @@ const EventRegistration = () => {
         user?.email as string,
         userToken as string
       );
-      const fetchUrl = `${url}/users/${userId}/registered?eventid=${eventid}`;
+      const fetchUrl = `${BASE_URL}/users/${userId}/registered?eventid=${eventid}`;
       const response = await fetch(fetchUrl, {
         method: "GET",
         headers: {

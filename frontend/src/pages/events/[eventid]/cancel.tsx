@@ -31,18 +31,16 @@ const EventCancellation = () => {
   const [attendeeCanceled, setAttendeeCanceled] = useState<boolean>(false);
 
   const { user } = useAuth();
-  const url = BASE_URL as string;
 
   const fetchEventDetails = async () => {
     const userToken = await auth.currentUser?.getIdToken();
 
     try {
-      const url = BASE_URL as string;
       const userId = await fetchUserIdFromDatabase(
         user?.email as string,
         userToken as string
       );
-      const fetchUrl = `${url}/users/${userId}/registered?eventid=${eventid}`;
+      const fetchUrl = `${BASE_URL}/users/${userId}/registered?eventid=${eventid}`;
 
       const response = await fetch(fetchUrl, {
         method: "GET",

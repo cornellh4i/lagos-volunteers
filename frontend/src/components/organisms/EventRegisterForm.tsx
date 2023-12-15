@@ -29,8 +29,6 @@ interface EventRegisterFormProps {
   eventDetails: eventData;
 }
 
-const url = BASE_URL as string;
-
 /**
  * A confirmation modal body
  */
@@ -52,7 +50,7 @@ const ModalBody = ({
       userToken as string
     );
 
-    const fetchUrl = `${url}/events/` + eventid + `/attendees`;
+    const fetchUrl = `${BASE_URL}/events/` + eventid + `/attendees`;
     try {
       const body = { attendeeid: attendeeid };
       const response = await fetch(fetchUrl, {

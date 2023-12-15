@@ -34,7 +34,6 @@ interface EventCancelFormProps {
 type FormValues = {
   cancelReason: string;
 };
-const url = BASE_URL as string;
 
 /**
  * A confirmation modal body
@@ -58,7 +57,7 @@ const ModalBody = ({
       userToken as string
     );
 
-    const fetchUrl = `${url}/events/${eventid}/attendees`;
+    const fetchUrl = `${BASE_URL}/events/${eventid}/attendees`;
 
     const cancellationData = {
       attendeeid: attendeeid,
