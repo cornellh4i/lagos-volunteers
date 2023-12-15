@@ -8,7 +8,7 @@ import { BASE_URL } from "@/utils/constants";
  * @param email is the email of the user
  * @returns the userid
  */
-export const fetchUserIdFromDatabase = async (email: string, token: string) => {
+export const fetchUserIdFromDatabase = async (token: string, email: string) => {
   try {
     const fetchUrl = `${BASE_URL}/users/search/?email=${email}`;
     const response = await fetch(fetchUrl, {

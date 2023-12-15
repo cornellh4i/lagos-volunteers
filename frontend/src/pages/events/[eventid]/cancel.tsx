@@ -37,8 +37,8 @@ const EventCancellation = () => {
 
     try {
       const userId = await fetchUserIdFromDatabase(
-        user?.email as string,
-        userToken as string
+        userToken as string,
+        user?.email as string
       );
       const fetchUrl = `${BASE_URL}/users/${userId}/registered?eventid=${eventid}`;
 

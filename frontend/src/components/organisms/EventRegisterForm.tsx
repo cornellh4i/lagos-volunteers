@@ -46,8 +46,8 @@ const ModalBody = ({
     const userToken = await auth.currentUser?.getIdToken();
 
     const attendeeid = await fetchUserIdFromDatabase(
-      user?.email as string,
-      userToken as string
+      userToken as string,
+      user?.email as string
     );
 
     const fetchUrl = `${BASE_URL}/events/` + eventid + `/attendees`;
