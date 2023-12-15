@@ -32,14 +32,15 @@ const EventCancellation = () => {
     eventData | null | undefined
   >(null);
   const [attendeeCanceled, setAttendeeCanceled] = useState<boolean>(false);
-
   const { user } = useAuth();
 
-  const fetchEventDetails = async () => {
-    const token = await retrieveToken();
-
+  /**
+   * Fetches and updates the event details
+   */
+  const updateEventDetails = async () => {
     try {
       // Make API call
+      const token = await retrieveToken();
       const userid = await fetchUserIdFromDatabase(
         token,
         user?.email as string
@@ -79,7 +80,7 @@ const EventCancellation = () => {
   };
 
   useEffect(() => {
-    fetchEventDetails();
+    updateEventDetails();
   }, []);
 
   return (

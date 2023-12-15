@@ -30,18 +30,15 @@ const EventRegistration = () => {
   const eventid = router.query.eventid as string;
   const [eventDetails, setEventDetails] = useState<eventData | null>(null);
   const [isRegistered, setIsRegistered] = useState<boolean>(false);
-
   const { user } = useAuth();
 
-  // This can be fetched from the server to prevent flashing of unregister form
-  useEffect(() => {
-    fetchEventDetails();
-  }, []);
-
-  const fetchEventDetails = async () => {
-    const token = await retrieveToken();
+  /**
+   * Fetches and updates the event details
+   */
+  const updateEventDetails = async () => {
     try {
       // Make API call
+      const token = await retrieveToken();
       const userid = await fetchUserIdFromDatabase(
         token,
         user?.email as string
@@ -82,6 +79,11 @@ const EventRegistration = () => {
       }
     } catch (error) {}
   };
+
+  // This can be fetched from the server to prevent flashing of unregister form
+  useEffect(() => {
+    updateEventDetails();
+  }, []);
 
   return (
     <CenteredTemplate>

@@ -44,16 +44,17 @@ const ModalBody = ({
   const router = useRouter();
   const { user } = useAuth();
 
-  const register = async () => {
+  /**
+   * Handles clicking the Register button
+   */
+  const handleRegister = async () => {
     const token = await retrieveToken();
     const attendeeid = await fetchUserIdFromDatabase(
       token,
       user?.email as string
     );
-    const data = await registerUserForEvent(token, eventid, attendeeid);
-
-    router.replace(`/events/${eventid}/register`);
-    window.location.reload(); // Call on reload to reroute page
+    await registerUserForEvent(token, eventid, attendeeid);
+    router.reload();
   };
 
   return (
@@ -72,7 +73,7 @@ const ModalBody = ({
           </Button>
         </Grid>
         <Grid item md={6} xs={12}>
-          <Button color="dark-gray" type="button" onClick={register}>
+          <Button color="dark-gray" type="button" onClick={handleRegister}>
             Agree & Continue
           </Button>
         </Grid>

@@ -52,19 +52,21 @@ const ModalBody = ({
   const router = useRouter();
   const { user } = useAuth();
 
-  const cancel = async () => {
+  /**
+   * Handles clicking the Cancel button
+   */
+  const handleCancel = async () => {
     const token = await retrieveToken();
     const attendeeid = await fetchUserIdFromDatabase(
       token,
       user?.email as string
     );
-    const data = await cancelUserRegistrationForEvent(
+    await cancelUserRegistrationForEvent(
       token,
       eventid,
       attendeeid,
       cancelationMessage
     );
-
     router.reload();
   };
 
@@ -80,7 +82,7 @@ const ModalBody = ({
           </Button>
         </Grid>
         <Grid item md={6} xs={12}>
-          <Button color="dark-gray" type="button" onClick={cancel}>
+          <Button color="dark-gray" type="button" onClick={handleCancel}>
             Yes, cancel
           </Button>
         </Grid>
