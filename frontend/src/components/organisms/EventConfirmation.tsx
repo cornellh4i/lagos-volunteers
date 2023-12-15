@@ -37,7 +37,7 @@ const EventConfirmation = ({ event, confirmation }: EventConfirmationProps) => {
               tags={event.tags}
             />
             <p>
-              If you can no longer attend,
+              If you can no longer attend,&nbsp;
               <Link href={`/events/${event.eventid}/cancel`} rel="noreferrer">
                 cancel here
               </Link>{" "}
