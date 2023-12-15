@@ -299,9 +299,35 @@ const getCreatedEvents = async (userID: string) => {
 /**
  * Gets all events the requested user is registered for in the database.
  * @param userID: id of user to be retrieved
+ * @param eventID: id of event to be retrieved
  * @returns promise with event or error
  */
-const getRegisteredEvents = async (userID: string) => {
+const getRegisteredEvents = async (userID: string, eventID: string) => {
+  // First check attendance record for this event
+  if (eventID) {
+    const attendance = await prisma.eventEnrollment.findFirst({
+      where: {
+        userId: userID,
+        eventId: eventID,
+      },
+    });
+
+    const eventDetails = await prisma.event.findUnique({
+      where: {
+        id: eventID,
+      },
+      include: {
+        owner: {
+          select: {
+            profile: true,
+          },
+        },
+      },
+    });
+
+    return { attendance, eventDetails };
+  }
+
   return prisma.user.findUnique({
     where: {
       id: userID,

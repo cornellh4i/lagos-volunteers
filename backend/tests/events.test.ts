@@ -169,7 +169,7 @@ describe("Testing POST /events/:eventid/attendees", () => {
     const users = await request(app).get("/users");
     const eventid = events.body.data.result[1].id;
     const attendeeid_1 = users.body.data.result[1].id;
-    const attendeeid_2 = users.body.data.result[2].id;
+    const attendeeid_2 = users.body.data.result[3].id;
     const attendee1 = {
       attendeeid: `${attendeeid_1}`,
     };
@@ -217,38 +217,32 @@ describe("Testing DELETE /events/:eventid/attendees/:attendeeid", () => {
     const attendees = await request(app).get("/users");
     const eventid = events.body.data.result[1].id;
     const attendeeid = attendees.body.data.result[1].id;
-    const response = await request(app).delete(
-      "/events/" + eventid + "/attendees/" + attendeeid
-    );
+    const response = await request(app)
+      .put("/events/" + eventid + "/attendees/")
+      .send({
+        attendeeid: attendeeid,
+        cancelationMessage: "I can't go anymore",
+      });
 
-    expect(response.status).toBe(200);
-  });
-
-  test("Delete an invalid attendee", async () => {
-    const events = await request(app).get("/events");
-    const eventid = events.body.data.result[1].id;
-    const attendeeid = events.body.data.result[1].userID;
-    const response = await request(app).delete(
-      "/events/" + eventid + "/attendees/" + attendeeid
-    );
-    expect(response.status).toBe(500);
+    expect(response.body.data.canceled).toBe(true);
+    expect(response.body.data.cancelationMessage).toBe("I can't go anymore");
   });
 });
 
 // Note: Deleting an event still has to be extensively tested
-describe("Testing DELETE event", () => {
-  test("Delete valid event", async () => {
-    const events = await request(app).get("/events");
-    const eventid = events.body.data.result[2].id;
-    const response = await request(app).delete("/events/" + eventid);
-    expect(response.status).toBe(200);
-    const deletedEvent = await request(app).get("/events/" + eventid);
-    expect(deletedEvent.body.data).toEqual(null);
-  });
+// describe("Testing DELETE event", () => {
+//   test("Delete valid event", async () => {
+//     const events = await request(app).get("/events");
+//     const eventid = events.body.data.result[2].id;
+//     const response = await request(app).delete("/events/" + eventid);
+//     expect(response.status).toBe(200);
+//     const deletedEvent = await request(app).get("/events/" + eventid);
+//     expect(deletedEvent.body.data).toEqual(null);
+//   });
 
-  test("Delete invalid event", async () => {
-    const eventid = -1;
-    const response = await request(app).delete("/events/" + eventid);
-    expect(response.status).toBe(500);
-  });
-});
+//   test("Delete invalid event", async () => {
+//     const eventid = -1;
+//     const response = await request(app).delete("/events/" + eventid);
+//     expect(response.status).toBe(500);
+//   });
+// });

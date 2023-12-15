@@ -88,13 +88,14 @@ eventRouter.get("/past", async (req: Request, res: Response) => {
 });
 
 eventRouter.get("/:eventid", async (req: Request, res: Response) => {
-  // #swagger.tags = ['Events']
   attempt(res, 200, () => eventController.getEvent(req.params.eventid));
 });
 
 eventRouter.get("/:eventid/attendees", async (req: Request, res: Response) => {
   // #swagger.tags = ['Events']
-  attempt(res, 200, () => eventController.getAttendees(req.params.eventid));
+  attempt(res, 200, () =>
+    eventController.getAttendees(req.params.eventid, req.query.userid as string)
+  );
 });
 
 eventRouter.post("/:eventid/attendees", async (req: Request, res: Response) => {
@@ -105,15 +106,17 @@ eventRouter.post("/:eventid/attendees", async (req: Request, res: Response) => {
   );
 });
 
-eventRouter.delete(
-  "/:eventid/attendees/:attendeeid",
-  async (req: Request, res: Response) => {
-    // #swagger.tags = ['Events']
-    attempt(res, 200, () =>
-      eventController.deleteAttendee(req.params.eventid, req.params.attendeeid)
-    );
-  }
-);
+eventRouter.put("/:eventid/attendees", async (req: Request, res: Response) => {
+  // #swagger.tags = ['Events']
+  const { attendeeid, cancelationMessage } = req.body;
+  attempt(res, 200, () =>
+    eventController.deleteAttendee(
+      req.params.eventid,
+      attendeeid,
+      cancelationMessage
+    )
+  );
+});
 
 eventRouter.patch("/:eventid/status", async (req: Request, res: Response) => {
   // #swagger.tags = ['Events']

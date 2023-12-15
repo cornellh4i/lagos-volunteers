@@ -374,6 +374,11 @@
             "in": "path",
             "required": true,
             "type": "string"
+          },
+          {
+            "name": "eventid",
+            "in": "query",
+            "type": "string"
           }
         ],
         "responses": {}
@@ -533,9 +538,6 @@
         "responses": {}
       },
       "get": {
-        "tags": [
-          "Events"
-        ],
         "description": "",
         "parameters": [
           {
@@ -590,6 +592,11 @@
             "in": "path",
             "required": true,
             "type": "string"
+          },
+          {
+            "name": "userid",
+            "in": "query",
+            "type": "string"
           }
         ],
         "responses": {}
@@ -620,10 +627,8 @@
           }
         ],
         "responses": {}
-      }
-    },
-    "/events/{eventid}/attendees/{attendeeid}": {
-      "delete": {
+      },
+      "put": {
         "tags": [
           "Events"
         ],
@@ -636,10 +641,19 @@
             "type": "string"
           },
           {
-            "name": "attendeeid",
-            "in": "path",
-            "required": true,
-            "type": "string"
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "attendeeid": {
+                  "example": "any"
+                },
+                "cancelationMessage": {
+                  "example": "any"
+                }
+              }
+            }
           }
         ],
         "responses": {}
