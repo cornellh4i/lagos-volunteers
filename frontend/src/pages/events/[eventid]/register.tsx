@@ -3,8 +3,6 @@ import { useRouter } from "next/router";
 import CenteredTemplate from "@/components/templates/CenteredTemplate";
 import EventRegisterForm from "@/components/organisms/EventRegisterForm";
 import EventConfirmation from "@/components/organisms/EventConfirmation";
-import { BASE_URL } from "@/utils/constants";
-import { auth } from "@/utils/firebase";
 import { useAuth } from "@/utils/AuthContext";
 import {
   fetchUserIdFromDatabase,

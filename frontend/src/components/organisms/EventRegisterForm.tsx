@@ -8,9 +8,7 @@ import Link from "next/link";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { Grid } from "@mui/material";
 import { useRouter } from "next/router";
-import { auth } from "@/utils/firebase";
 import { useAuth } from "@/utils/AuthContext";
-import { BASE_URL } from "@/utils/constants";
 import {
   fetchUserIdFromDatabase,
   retrieveToken,

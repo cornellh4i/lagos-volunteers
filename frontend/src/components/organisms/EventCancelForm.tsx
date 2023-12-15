@@ -10,8 +10,6 @@ import MultilineTextField from "../atoms/MultilineTextField";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { Typography, Grid } from "@mui/material";
 import { useRouter } from "next/router";
-import { BASE_URL } from "@/utils/constants";
-import { auth } from "@/utils/firebase";
 import { useAuth } from "@/utils/AuthContext";
 import {
   fetchUserIdFromDatabase,
