@@ -1,4 +1,5 @@
 import { Router, RequestHandler, Request, Response } from "express";
+import { Prisma, userRole, UserStatus } from "@prisma/client";
 import userController from "./controllers";
 import { auth, setVolunteerCustomClaims, NoAuth } from "../middleware/auth";
 const userRouter = Router();
@@ -73,7 +74,32 @@ userRouter.put("/:userid", useAuth, async (req: Request, res: Response) => {
 
 userRouter.get("/", useAuth, async (req: Request, res: Response) => {
   // #swagger.tags = ['Users']
-  attempt(res, 200, userController.getAllUsers);
+  const filter = {
+    firstName: req.query.firstName as string,
+    lastName: req.query.lastName as string,
+    nickname: req.query.nickname as string,
+    email: req.query.email as string,
+    role: req.query.role as userRole,
+    hours: req.query.hours ? parseInt(req.query.hours as string) : undefined,
+    status: req.query.status as UserStatus,
+    eventId: req.query.eventId as string,
+  };
+
+  const sortQuery = req.query.sort as string;
+  const querySplit = sortQuery ? sortQuery.split(":") : ["default", "asc"];
+  const key = querySplit[0];
+  const order = querySplit[1] as Prisma.SortOrder;
+  const sort = {
+    key: key,
+    order: order,
+  };
+
+  const pagination = {
+    after: req.query.after as string,
+    limit: req.query.limit as string,
+  };
+
+  attempt(res, 200, () => userController.getUsers(filter, sort, pagination));
 });
 
 userRouter.get("/pagination", useAuth, async (req: Request, res: Response) => {

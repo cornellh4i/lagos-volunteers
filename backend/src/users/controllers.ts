@@ -62,11 +62,134 @@ const updateUser = async (userID: string, user: User) => {
 };
 
 /**
- * Gets all Users in database and all data associated with each user
- * @returns promise with all users or error
+ * Gets all users in database and all data associated with each user
+ * @param filter are the filter params passed in
+ * @param sort are sort params passed in
+ * @param pagination are the pagination params passed in
+ * @returns promise with list of users
  */
-const getAllUsers = async () => {
-  return prisma.user.findMany({});
+const getUsers = async (
+  filter: {
+    firstName?: string;
+    lastName?: string;
+    nickname?: string;
+    email?: string;
+    role?: userRole;
+    hours?: number;
+    status?: UserStatus;
+    eventId?: string;
+  },
+  sort: {
+    key: string;
+    order: Prisma.SortOrder;
+  },
+  pagination: {
+    after: string;
+    limit: string;
+  }
+) => {
+  /* SORTING */
+
+  // Handles GET /users?sort=firstName:asc
+  const defaultCursor = { id: "asc" };
+  const sortDict: { [key: string]: any } = {
+    default: { id: sort.order },
+    email: [{ email: sort.order }, defaultCursor],
+    hours: [{ hours: sort.order }, defaultCursor],
+    firstName: [
+      {
+        profile: {
+          firstName: sort.order,
+        },
+      },
+      defaultCursor,
+    ],
+    lastName: [
+      {
+        profile: {
+          lastName: sort.order,
+        },
+      },
+      defaultCursor,
+    ],
+  };
+
+  /* PAGINATION */
+
+  // Handles GET /users?limit=20&after=asdf
+  let cursor = undefined;
+  let skip = undefined;
+  if (pagination.after) {
+    cursor = {
+      id: pagination.after as string,
+    };
+    skip = 1;
+  }
+  let take = undefined;
+  if (pagination.limit) {
+    take = parseInt(pagination.limit as string);
+  } else {
+    // default limit
+    take = 10;
+  }
+
+  /* FILTERING */
+
+  // Handles GET /events?eventid=asdf
+  const eventId = filter.eventId;
+  let events: { [key: string]: any } = {};
+  if (eventId) {
+    events = {
+      some: {
+        eventId: eventId,
+      },
+    };
+  }
+
+  // Handles all other filtering
+  let whereDict = {
+    events: events,
+    email: Array.isArray(filter.email) ? { in: filter.email } : filter.email,
+    role: {
+      equals: filter.role,
+    },
+    hours: filter.hours,
+    status: {
+      equals: filter.status,
+    },
+    profile: {
+      firstName: Array.isArray(filter.firstName)
+        ? { in: filter.firstName }
+        : filter.firstName,
+      lastName: Array.isArray(filter.lastName)
+        ? { in: filter.lastName }
+        : filter.lastName,
+      nickname: Array.isArray(filter.nickname)
+        ? { in: filter.nickname }
+        : filter.nickname,
+    },
+  };
+
+  /* RESULT */
+
+  const queryResult = await prisma.user.findMany({
+    where: {
+      AND: [whereDict],
+    },
+    include: {
+      profile: true,
+      events: eventId ? true : false,
+    },
+    orderBy: sortDict[sort.key],
+    take: take,
+    skip: skip,
+    cursor: cursor,
+  });
+  const lastPostInResults = take
+    ? queryResult[take - 1]
+    : queryResult[queryResult.length - 1];
+  const myCursor = lastPostInResults ? lastPostInResults.id : undefined;
+  return { result: queryResult, cursor: myCursor };
 };
 
 /**
@@ -493,7 +616,7 @@ export default {
   createUser,
   deleteUser,
   updateUser,
-  getAllUsers,
+  getUsers,
   getUsersPaginated,
   getSearchedUser,
   getUserByID,
