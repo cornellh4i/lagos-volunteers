@@ -13,7 +13,7 @@ import { useRouter } from "next/router";
 import { BASE_URL } from "@/utils/constants";
 import { auth } from "@/utils/firebase";
 import { useAuth } from "@/utils/AuthContext";
-import { fetchUserIdFromDatabase } from "@/utils/helpers";
+import { fetchUserIdFromDatabase, retrieveToken } from "@/utils/helpers";
 
 type eventData = {
   eventid: string;
@@ -51,9 +51,9 @@ const ModalBody = ({
   const { user } = useAuth();
 
   const cancel = async () => {
-    const userToken = await auth.currentUser?.getIdToken();
+    const token = await retrieveToken();
     const attendeeid = await fetchUserIdFromDatabase(
-      userToken as string,
+      token,
       user?.email as string
     );
 
@@ -67,7 +67,7 @@ const ModalBody = ({
       const response = await fetch(fetchUrl, {
         method: "PUT",
         headers: {
-          Authorization: `Bearer ${userToken}`,
+          Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
         },
         body: JSON.stringify(cancellationData),

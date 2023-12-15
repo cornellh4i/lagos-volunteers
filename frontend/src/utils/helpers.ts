@@ -1,4 +1,13 @@
 import { BASE_URL } from "@/utils/constants";
+import { auth } from "@/utils/firebase";
+
+/**
+ * Retrieves the Firebase token of the current user session
+ * @returns the user token as a string
+ */
+export const retrieveToken = async () => {
+  return (await auth.currentUser?.getIdToken()) as string;
+};
 
 /**
  * This functions performs a search in the DB based on the email of the user that

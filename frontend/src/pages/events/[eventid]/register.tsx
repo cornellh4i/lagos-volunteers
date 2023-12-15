@@ -6,7 +6,11 @@ import EventConfirmation from "@/components/organisms/EventConfirmation";
 import { BASE_URL } from "@/utils/constants";
 import { auth } from "@/utils/firebase";
 import { useAuth } from "@/utils/AuthContext";
-import { fetchUserIdFromDatabase, formatDateTimeRange } from "@/utils/helpers";
+import {
+  fetchUserIdFromDatabase,
+  formatDateTimeRange,
+  retrieveToken,
+} from "@/utils/helpers";
 import Loading from "@/components/molecules/Loading";
 
 type eventData = {
@@ -36,17 +40,17 @@ const EventRegistration = () => {
   }, []);
 
   const fetchEventDetails = async () => {
-    const userToken = await auth.currentUser?.getIdToken();
+    const token = await retrieveToken();
     try {
       const userId = await fetchUserIdFromDatabase(
-        userToken as string,
+        token,
         user?.email as string
       );
       const fetchUrl = `${BASE_URL}/users/${userId}/registered?eventid=${eventid}`;
       const response = await fetch(fetchUrl, {
         method: "GET",
         headers: {
-          Authorization: `Bearer ${userToken}`,
+          Authorization: `Bearer ${token}`,
         },
       });
 
