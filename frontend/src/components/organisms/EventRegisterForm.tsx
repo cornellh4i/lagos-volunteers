@@ -11,7 +11,11 @@ import { useRouter } from "next/router";
 import { auth } from "@/utils/firebase";
 import { useAuth } from "@/utils/AuthContext";
 import { BASE_URL } from "@/utils/constants";
-import { fetchUserIdFromDatabase, retrieveToken } from "@/utils/helpers";
+import {
+  fetchUserIdFromDatabase,
+  retrieveToken,
+  registerUserForEvent,
+} from "@/utils/helpers";
 
 type eventData = {
   eventid: string;
@@ -44,28 +48,11 @@ const ModalBody = ({
 
   const register = async () => {
     const token = await retrieveToken();
-
     const attendeeid = await fetchUserIdFromDatabase(
       token,
       user?.email as string
     );
-
-    const fetchUrl = `${BASE_URL}/events/` + eventid + `/attendees`;
-    try {
-      const body = { attendeeid: attendeeid };
-      const response = await fetch(fetchUrl, {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(body),
-      });
-      // Response Management
-      if (response.ok) {
-        const data = await response.json();
-      }
-    } catch (error) {}
+    const data = await registerUserForEvent(token, eventid, attendeeid);
 
     router.replace(`/events/${eventid}/register`);
     window.location.reload(); // Call on reload to reroute page

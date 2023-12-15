@@ -71,3 +71,72 @@ export const formatDateTimeRange = (
 
   return formattedDateTimeRange;
 };
+
+/**
+ * Registers the current user for the specified event
+ * @param token is the user token
+ * @param eventid is the id of the event
+ * @param userid is the id of the user
+ * @returns the response data
+ */
+export const registerUserForEvent = async (
+  token: string,
+  eventid: string,
+  userid: string
+) => {
+  try {
+    const fetchUrl = `${BASE_URL}/events/${eventid}/attendees`;
+    const body = { attendeeid: userid };
+    const response = await fetch(fetchUrl, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(body),
+    });
+
+    // Response management
+    if (response.ok) {
+      const data = await response.json();
+      return data;
+    }
+  } catch (error) {}
+};
+
+/**
+ * Cancels the registration of the current user for the specified event
+ * @param token is the user token
+ * @param eventid is the id of the event
+ * @param userid is the id of the user
+ * @param cancelationMessage is the cancelation message
+ * @returns the response data
+ */
+export const cancelUserRegistrationForEvent = async (
+  token: string,
+  eventid: string,
+  userid: string,
+  cancelationMessage: string
+) => {
+  try {
+    const fetchUrl = `${BASE_URL}/events/${eventid}/attendees`;
+    const cancellationData = {
+      attendeeid: userid,
+      cancelationMessage: cancelationMessage,
+    };
+    const response = await fetch(fetchUrl, {
+      method: "PUT",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(cancellationData),
+    });
+
+    // Response management
+    if (response.ok) {
+      const data = await response.json();
+      return data;
+    }
+  } catch (error) {}
+};

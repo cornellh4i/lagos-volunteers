@@ -13,7 +13,11 @@ import { useRouter } from "next/router";
 import { BASE_URL } from "@/utils/constants";
 import { auth } from "@/utils/firebase";
 import { useAuth } from "@/utils/AuthContext";
-import { fetchUserIdFromDatabase, retrieveToken } from "@/utils/helpers";
+import {
+  fetchUserIdFromDatabase,
+  retrieveToken,
+  cancelUserRegistrationForEvent,
+} from "@/utils/helpers";
 
 type eventData = {
   eventid: string;
@@ -56,27 +60,12 @@ const ModalBody = ({
       token,
       user?.email as string
     );
-
-    const fetchUrl = `${BASE_URL}/events/${eventid}/attendees`;
-
-    const cancellationData = {
-      attendeeid: attendeeid,
-      cancelationMessage: cancelationMessage,
-    };
-    try {
-      const response = await fetch(fetchUrl, {
-        method: "PUT",
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(cancellationData),
-      });
-      // Response Management
-      if (response.ok) {
-      } else {
-      }
-    } catch (error) {}
+    const data = await cancelUserRegistrationForEvent(
+      token,
+      eventid,
+      attendeeid,
+      cancelationMessage
+    );
 
     router.reload();
   };
