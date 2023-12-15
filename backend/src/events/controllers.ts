@@ -210,11 +210,8 @@ const getPastEvents = async () => {
 /**
  * Get all event info by eventID
  * @param eventID (String)
- * @param userID (String)
- * @param status (String), determines whether to return all attendees or 1 attendee connected to userID and eventID
  * @returns promise with all event info or error
  */
-
 const getEvent = async (eventID: string) => {
   return prisma.event.findUnique({
     where: {
@@ -234,6 +231,7 @@ const getEvent = async (eventID: string) => {
 /**
  * Gets all attendees registered for an event
  * @param eventID (String)
+ * @param userID (String)
  * @returns promise with all attendees of the event or error
  */
 const getAttendees = async (eventID: string, userID: string) => {
@@ -252,6 +250,7 @@ const getAttendees = async (eventID: string, userID: string) => {
       },
     });
   }
+
   // if userID is not provided, return all attendees of the event
   return prisma.eventEnrollment.findMany({
     where: {
@@ -275,7 +274,7 @@ const addAttendee = async (eventID: string, userID: string) => {
   const userEmail = user?.email;
   // sets the email message
   const emailMsg = "USER WAS REGISTERED";
-  if (process.env.NODE_ENV != "test") {
+  if (process.env.NODE_ENV !== "test") {
     await sendEmail(userEmail, emailMsg);
   }
   return await prisma.eventEnrollment.create({
@@ -293,14 +292,21 @@ const addAttendee = async (eventID: string, userID: string) => {
     },
   });
 };
-const sendEmail = async (userEmail: string | undefined, emailMsg: string) => {
+
+/**
+ * Sends an email to the specified address
+ * @param email is the email address to send to
+ * @param message is the email body
+ */
+const sendEmail = async (email: string | undefined, message: string) => {
   // Create an email message
   const msg = {
-    to: userEmail, // Recipient's email address
+    to: email, // Recipient's email address
     from: "lagosfoodbankdev@gmail.com", // Sender's email address
     subject: "Your Email Subject",
-    text: emailMsg, // You can use HTML content as well
+    text: message, // You can use HTML content as well
   };
+
   // Send the email
   sgMail
     .send(msg)
@@ -315,7 +321,7 @@ const sendEmail = async (userEmail: string | undefined, emailMsg: string) => {
 /**
  * Remove the specified user from the event
  * @param eventID (String)
- * @param attendeeID (String) id of user to add to event
+ * @param userID (String) id of user to add to event
  * @returns promise with eventid or error
  */
 const deleteAttendee = async (
@@ -326,11 +332,14 @@ const deleteAttendee = async (
   // grabs the user and their email for SendGrid fucntionality
   const user = await userController.getUserByID(userID);
   var userEmail = user?.email;
+
   // sets the email message
   const emailMsg = "USER REMOVED FROM THIS EVENT";
   if (process.env.NODE_ENV != "test") {
     await sendEmail(userEmail, emailMsg);
   }
+
+  // update db
   return await prisma.eventEnrollment.update({
     where: {
       userId_eventId: {

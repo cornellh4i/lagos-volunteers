@@ -178,9 +178,11 @@ userRouter.get(
   useAuth,
   async (req: Request, res: Response) => {
     // #swagger.tags = ['Users']
-    const { eventid } = req.query;
     attempt(res, 200, () =>
-      userController.getRegisteredEvents(req.params.userid, eventid as string)
+      userController.getRegisteredEvents(
+        req.params.userid,
+        req.query.eventid as string
+      )
     );
   }
 );

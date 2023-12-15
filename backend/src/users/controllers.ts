@@ -327,6 +327,7 @@ const getRegisteredEvents = async (userID: string, eventID: string) => {
 
     return { attendance, eventDetails };
   }
+
   return prisma.user.findUnique({
     where: {
       id: userID,
