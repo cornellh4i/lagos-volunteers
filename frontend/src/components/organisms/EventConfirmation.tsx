@@ -4,11 +4,11 @@ import { Grid, Box } from "@mui/material";
 import EventDetails from "./EventDetails";
 import Link from "next/link";
 import { grey } from "@mui/material/colors";
-import { EventData, Confirmation } from "@/utils/types";
+import { EventData } from "@/utils/types";
 
 interface EventConfirmationProps {
   event: EventData;
-  confirmation: Confirmation;
+  confirmation: "register" | "cancel";
 }
 
 /**

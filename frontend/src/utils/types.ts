@@ -9,5 +9,3 @@ export type EventData = {
   description: string;
   name: string;
 };
-
-export type Confirmation = "register" | "cancel";
