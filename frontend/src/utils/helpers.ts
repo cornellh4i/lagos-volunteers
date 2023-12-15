@@ -1,11 +1,13 @@
 import { BASE_URL } from "@/utils/constants";
 
-/* This functions performs a search in the DB based on the email of the user that
-is currently logged in. This is used in development because of differing seeded users
-in the database
-@param email: string
-@param token: string
-*/
+/**
+ * This functions performs a search in the DB based on the email of the user that
+ * is currently logged in. This is used in development because of differing seeded
+ * users in the database
+ * @param token is the user token
+ * @param email is the email of the user
+ * @returns the userid
+ */
 export const fetchUserIdFromDatabase = async (email: string, token: string) => {
   try {
     const fetchUrl = `${BASE_URL}/users/search/?email=${email}`;
@@ -26,10 +28,12 @@ export const fetchUserIdFromDatabase = async (email: string, token: string) => {
   }
 };
 
-/* This functions formats 2 date strings in the format: 00:00 AM - 00:00 PM
-@param startDateString: string
-@param endDateString: string
-*/
+/**
+ * This functions formats 2 date strings in the format: 00:00 AM - 00:00 PM
+ * @param startDateString: string
+ * @param endDateString: string
+ * @returns the formatted datestring
+ */
 export const formatDateTimeRange = (
   startDateString: string,
   endDateString: string
