@@ -11,24 +11,13 @@ import {
   fetchEventDetailsForRegisteredUser,
 } from "@/utils/helpers";
 import Loading from "@/components/molecules/Loading";
-
-type eventData = {
-  eventid: string;
-  location: string;
-  datetime: string;
-  supervisors: string[];
-  capacity: number;
-  image_src: string;
-  tags: string[] | undefined;
-  description: string;
-  name: string;
-};
+import { EventData } from "@/utils/types";
 
 /** An EventRegistration page */
 const EventRegistration = () => {
   const router = useRouter();
   const eventid = router.query.eventid as string;
-  const [eventDetails, setEventDetails] = useState<eventData | null>(null);
+  const [eventDetails, setEventDetails] = useState<EventData | null>(null);
   const [isRegistered, setIsRegistered] = useState<boolean>(false);
   const { user } = useAuth();
 

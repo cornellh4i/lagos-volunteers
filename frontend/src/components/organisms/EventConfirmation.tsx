@@ -4,24 +4,11 @@ import { Grid, Box } from "@mui/material";
 import EventDetails from "./EventDetails";
 import Link from "next/link";
 import { grey } from "@mui/material/colors";
-
-type confirmation = "register" | "cancel";
-
-type eventData = {
-  eventid: string;
-  location: string;
-  datetime: string;
-  supervisors: string[];
-  capacity: number;
-  image_src: string;
-  tags: string[] | undefined;
-  description: string;
-  name: string;
-};
+import { EventData, Confirmation } from "@/utils/types";
 
 interface EventConfirmationProps {
-  event: eventData;
-  confirmation: confirmation;
+  event: EventData;
+  confirmation: Confirmation;
 }
 
 /**
@@ -30,7 +17,6 @@ interface EventConfirmationProps {
  * component displays "You are registered". If a user is not registered, the
  * component displays "You are no longer registered".
  */
-
 const EventConfirmation = ({ event, confirmation }: EventConfirmationProps) => {
   switch (confirmation) {
     case "register":

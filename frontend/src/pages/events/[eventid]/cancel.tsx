@@ -11,25 +11,14 @@ import {
   fetchEventDetailsForRegisteredUser,
 } from "@/utils/helpers";
 import Loading from "@/components/molecules/Loading";
-
-type eventData = {
-  eventid: string;
-  location: string;
-  datetime: string;
-  supervisors: string[];
-  capacity: number;
-  image_src: string;
-  tags: string[] | undefined;
-  description: string;
-  name: string;
-};
+import { EventData } from "@/utils/types";
 
 /** An EventCancellation page */
 const EventCancellation = () => {
   const router = useRouter();
   const eventid = router.query.eventid as string;
   const [eventDetails, setEventDetails] = useState<
-    eventData | null | undefined
+    EventData | null | undefined
   >(null);
   const [attendeeCanceled, setAttendeeCanceled] = useState<boolean>(false);
   const { user } = useAuth();

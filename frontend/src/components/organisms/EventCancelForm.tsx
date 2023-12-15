@@ -16,21 +16,10 @@ import {
   retrieveToken,
   cancelUserRegistrationForEvent,
 } from "@/utils/helpers";
-
-type eventData = {
-  eventid: string;
-  location: string;
-  datetime: string;
-  supervisors: string[];
-  capacity: number;
-  image_src: string;
-  tags: string[] | undefined;
-  description: string;
-  name: string;
-};
+import { EventData } from "@/utils/types";
 
 interface EventCancelFormProps {
-  eventDetails: eventData;
+  eventDetails: EventData;
 }
 
 type FormValues = {
