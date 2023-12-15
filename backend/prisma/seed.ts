@@ -14,7 +14,6 @@ import { User, Event } from "@prisma/client";
  * It is used for testing purposes only.
  * @param pool - The number of users to create.
  */
-
 const userDataSeed: User[] = [];
 
 async function createPoolOfRandomUsers(pool: number) {
@@ -50,6 +49,7 @@ async function createPoolOfRandomUsers(pool: number) {
 }
 
 const eventDataSeed: Event[] = [];
+
 /**
  * This function is used to seed the database with dummy event data.
  */
