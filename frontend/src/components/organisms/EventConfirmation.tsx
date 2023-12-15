@@ -20,7 +20,7 @@ type eventData = {
 };
 
 interface EventConfirmationProps {
-  eventDetails: eventData;
+  event: eventData;
   confirmation: confirmation;
 }
 
@@ -31,10 +31,7 @@ interface EventConfirmationProps {
  * component displays "You are no longer registered".
  */
 
-const EventConfirmation = ({
-  eventDetails,
-  confirmation,
-}: EventConfirmationProps) => {
+const EventConfirmation = ({ event, confirmation }: EventConfirmationProps) => {
   switch (confirmation) {
     case "register":
       return (
@@ -44,23 +41,18 @@ const EventConfirmation = ({
           </div>
           <h1 className="text-center">You are registered!</h1>
           <div>
-            <div className="text-2xl font-semibold mb-6">
-              {eventDetails.name}
-            </div>
+            <div className="text-2xl font-semibold mb-6">{event.name}</div>
             <EventDetails
-              location={eventDetails.location}
-              datetime={eventDetails.datetime}
-              supervisors={eventDetails.supervisors}
-              capacity={eventDetails.capacity}
-              image_src={eventDetails.image_src}
-              tags={eventDetails.tags}
+              location={event.location}
+              datetime={event.datetime}
+              supervisors={event.supervisors}
+              capacity={event.capacity}
+              image_src={event.image_src}
+              tags={event.tags}
             />
             <p>
               If you can no longer attend,
-              <Link
-                href={`/events/${eventDetails.eventid}/cancel`}
-                rel="noreferrer"
-              >
+              <Link href={`/events/${event.eventid}/cancel`} rel="noreferrer">
                 cancel here
               </Link>{" "}
               or on the "My Events" page.
@@ -77,14 +69,14 @@ const EventConfirmation = ({
             Explore other volunteer opportunities on the{" "}
             <Link href="/events/view">home page</Link>.
           </p>
-          <div className="text-2xl font-semibold mb-6">{eventDetails.name}</div>
+          <div className="text-2xl font-semibold mb-6">{event.name}</div>
           <EventDetails
-            location={eventDetails.location}
-            datetime={eventDetails.datetime}
-            supervisors={eventDetails.supervisors}
-            capacity={eventDetails.capacity}
-            image_src={eventDetails.image_src}
-            tags={eventDetails.tags}
+            location={event.location}
+            datetime={event.datetime}
+            supervisors={event.supervisors}
+            capacity={event.capacity}
+            image_src={event.image_src}
+            tags={event.tags}
           />
           <Grid item xs={6}></Grid>
         </div>
