@@ -10,6 +10,7 @@ import {
   fetchUserIdFromDatabase,
   formatDateTimeRange,
   retrieveToken,
+  fetchEventDetailsForRegisteredUser,
 } from "@/utils/helpers";
 import Loading from "@/components/molecules/Loading";
 
@@ -28,7 +29,7 @@ type eventData = {
 /** An EventCancellation page */
 const EventCancellation = () => {
   const router = useRouter();
-  const { eventid } = router.query;
+  const eventid = router.query.eventid as string;
   const [eventDetails, setEventDetails] = useState<
     eventData | null | undefined
   >(null);
@@ -40,47 +41,41 @@ const EventCancellation = () => {
     const token = await retrieveToken();
 
     try {
-      const userId = await fetchUserIdFromDatabase(
+      // Make API call
+      const userid = await fetchUserIdFromDatabase(
         token,
         user?.email as string
       );
-      const fetchUrl = `${BASE_URL}/users/${userId}/registered?eventid=${eventid}`;
+      const data = await fetchEventDetailsForRegisteredUser(
+        token,
+        eventid,
+        userid
+      );
 
-      const response = await fetch(fetchUrl, {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+      // Set data
+      const event = data["data"]["eventDetails"];
+      setEventDetails({
+        eventid: event["id"],
+        location: event["location"],
+        datetime: formatDateTimeRange(event["startDate"], event["endDate"]),
+        supervisors: [
+          event["owner"]["profile"]["firstName"] +
+            " " +
+            event["owner"]["profile"]["lastName"],
+        ],
+        capacity: event["capacity"],
+        image_src: event["imageURL"],
+        tags: event["tags"],
+        description: event["description"],
+        name: event["name"],
       });
 
-      const data = await response.json();
+      if (data["data"]["attendance"]) {
+        setAttendeeCanceled(data["data"]["attendance"]["canceled"]);
+      }
 
-      const event = data["data"]["eventDetails"];
-
-      if (response.ok) {
-        setEventDetails({
-          eventid: event["id"],
-          location: event["location"],
-          datetime: formatDateTimeRange(event["startDate"], event["endDate"]),
-          supervisors: [
-            event["owner"]["profile"]["firstName"] +
-              " " +
-              event["owner"]["profile"]["lastName"],
-          ],
-          capacity: event["capacity"],
-          image_src: event["imageURL"],
-          tags: event["tags"],
-          description: event["description"],
-          name: event["name"],
-        });
-
-        if (data["data"]["attendance"]) {
-          setAttendeeCanceled(data["data"]["attendance"]["canceled"]);
-        }
-
-        if (attendeeCanceled || !data["data"]["attendance"]) {
-          router.replace(`/events/${eventid}/register`);
-        }
+      if (attendeeCanceled || !data["data"]["attendance"]) {
+        router.replace(`/events/${eventid}/register`);
       }
     } catch (error) {}
   };

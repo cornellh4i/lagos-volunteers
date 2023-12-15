@@ -140,3 +140,33 @@ export const cancelUserRegistrationForEvent = async (
     }
   } catch (error) {}
 };
+
+/**
+ * Fetches all details for the specified event only if the user is registered
+ * for the event. If the user is not registered, nothing is returned
+ * @param token is the user token
+ * @param eventid is the id of the event
+ * @param userid is the id of the user
+ * @returns the response data
+ */
+export const fetchEventDetailsForRegisteredUser = async (
+  token: string,
+  eventid: string,
+  userid: string
+) => {
+  try {
+    const fetchUrl = `${BASE_URL}/users/${userid}/registered?eventid=${eventid}`;
+    const response = await fetch(fetchUrl, {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    // Response management
+    if (response.ok) {
+      const data = await response.json();
+      return data;
+    }
+  } catch (error) {}
+};

@@ -10,6 +10,7 @@ import {
   fetchUserIdFromDatabase,
   formatDateTimeRange,
   retrieveToken,
+  fetchEventDetailsForRegisteredUser,
 } from "@/utils/helpers";
 import Loading from "@/components/molecules/Loading";
 
@@ -28,7 +29,7 @@ type eventData = {
 /** An EventRegistration page */
 const EventRegistration = () => {
   const router = useRouter();
-  const { eventid } = router.query;
+  const eventid = router.query.eventid as string;
   const [eventDetails, setEventDetails] = useState<eventData | null>(null);
   const [isRegistered, setIsRegistered] = useState<boolean>(false);
 
@@ -42,20 +43,18 @@ const EventRegistration = () => {
   const fetchEventDetails = async () => {
     const token = await retrieveToken();
     try {
-      const userId = await fetchUserIdFromDatabase(
+      // Make API call
+      const userid = await fetchUserIdFromDatabase(
         token,
         user?.email as string
       );
-      const fetchUrl = `${BASE_URL}/users/${userId}/registered?eventid=${eventid}`;
-      const response = await fetch(fetchUrl, {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const data = await fetchEventDetailsForRegisteredUser(
+        token,
+        eventid,
+        userid
+      );
 
-      const data = await response.json();
-
+      // Set data
       const event = data["data"]["eventDetails"];
       setEventDetails({
         eventid: event["id"],
