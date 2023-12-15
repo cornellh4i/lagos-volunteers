@@ -19,7 +19,7 @@ import {
 import { EventData } from "@/utils/types";
 
 interface EventCancelFormProps {
-  eventDetails: EventData;
+  event: EventData;
 }
 
 type FormValues = {
@@ -83,7 +83,7 @@ const ModalBody = ({
 /**
  * An EventCancelForm component
  */
-const EventCancelForm = ({ eventDetails }: EventCancelFormProps) => {
+const EventCancelForm = ({ event }: EventCancelFormProps) => {
   const {
     register,
     handleSubmit,
@@ -107,7 +107,7 @@ const EventCancelForm = ({ eventDetails }: EventCancelFormProps) => {
         handleClose={handleClose}
         children={
           <ModalBody
-            eventid={eventDetails.eventid}
+            eventid={event.eventid}
             handleClose={handleClose}
             cancelationMessage={cancelationMessage}
           />
@@ -125,18 +125,18 @@ const EventCancelForm = ({ eventDetails }: EventCancelFormProps) => {
           </div>
 
           <div className="font-semibold text-3xl">Cancel Registration</div>
-          <div className="text-2xl font-semibold mb-6">{eventDetails.name}</div>
+          <div className="text-2xl font-semibold mb-6">{event.name}</div>
           <div>
             <EventDetails
-              location={eventDetails.location}
-              datetime={eventDetails.datetime}
-              supervisors={eventDetails.supervisors}
-              capacity={eventDetails.capacity}
-              image_src={eventDetails.image_src}
-              tags={eventDetails.tags}
+              location={event.location}
+              datetime={event.datetime}
+              supervisors={event.supervisors}
+              capacity={event.capacity}
+              image_src={event.image_src}
+              tags={event.tags}
             />
           </div>
-          <div>{eventDetails.description}</div>
+          <div>{event.description}</div>
           <div className="font-bold text-xl pt-6">
             You are registered for this event.
           </div>

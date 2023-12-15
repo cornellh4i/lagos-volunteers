@@ -78,7 +78,7 @@ const EventCancellation = () => {
         attendeeCanceled ? (
           <EventConfirmation event={eventDetails} confirmation="cancel" />
         ) : (
-          <EventCancelForm eventDetails={eventDetails} />
+          <EventCancelForm event={eventDetails} />
         )
       ) : (
         <Loading />
