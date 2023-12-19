@@ -170,3 +170,28 @@ export const fetchEventDetailsForRegisteredUser = async (
     }
   } catch (error) {}
 };
+
+/**
+ * Fetches all events that the user is registered for
+ * @param token is the user token
+ * @param userid is the id of the user
+ * @returns the response data
+ */
+export const fetchUserRegisteredEvents = async (
+  token: string,
+  userid: string
+) => {
+  try {
+    const fetchUrl = `${BASE_URL}/users/${userid}/registered`;
+    const response = await fetch(fetchUrl, {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    if (response.ok) {
+      const data = await response.json();
+      return data;
+    }
+  } catch (error) {}
+};

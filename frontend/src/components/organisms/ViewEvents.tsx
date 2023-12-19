@@ -12,7 +12,12 @@ import Link from "next/link";
 import { BASE_URL } from "@/utils/constants";
 import { useAuth } from "@/utils/AuthContext";
 import { auth } from "@/utils/firebase";
-import { fetchUserIdFromDatabase, formatDateTimeRange } from "@/utils/helpers";
+import {
+  fetchUserIdFromDatabase,
+  fetchUserRegisteredEvents,
+  formatDateTimeRange,
+  retrieveToken,
+} from "@/utils/helpers";
 
 type Action = "Rsvp" | "Cancel Rsvp" | "Publish" | "Manage Attendees" | "Edit";
 
@@ -140,21 +145,13 @@ const ViewEvents = () => {
 
   const fetchUserEvents = async () => {
     try {
-      const url = BASE_URL as string;
-      const userToken = await auth.currentUser?.getIdToken();
-      const userId = await fetchUserIdFromDatabase(
-        user?.email as string,
-        userToken as string
+      const token = await retrieveToken();
+      const userid = await fetchUserIdFromDatabase(
+        token,
+        user?.email as string
       );
-      const fetchUrl = `${url}/users/${userId}/registered`;
-      const response = await fetch(fetchUrl, {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${userToken}`,
-        },
-      });
-      const json = await response.json();
-      const apiEvents = json["data"]["events"];
+      const data = await fetchUserRegisteredEvents(token, userid);
+      const apiEvents = data["data"]["events"];
 
       let events: event[] = [];
       apiEvents.map((event: any) => {
@@ -166,7 +163,7 @@ const ViewEvents = () => {
           endDate: event["event"]["endDate"],
           actions: ["Manage Attendees", "Edit"],
           role:
-            userId === event["event"]["ownerId"] ? "Supervisor" : "Volunteer",
+            userid === event["event"]["ownerId"] ? "Supervisor" : "Volunteer",
           hours: 0, // hard-coded for now
         });
       });
