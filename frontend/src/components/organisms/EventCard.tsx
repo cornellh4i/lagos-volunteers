@@ -39,12 +39,12 @@ const EventCard = ({
   location,
   datetime,
 }: EventCardProps) => {
+  // Handling the dropdown menu
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const handleClick = (event: any) => {
     setAnchorEl(event.currentTarget);
   };
   const open = Boolean(anchorEl);
-
   const handleClose = () => {
     setAnchorEl(null);
   };
