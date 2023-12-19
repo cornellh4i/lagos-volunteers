@@ -1,7 +1,7 @@
 import React, { ReactElement } from "react";
 
 interface CardListProps {
-  children: JSX.Element[];
+  children: ReactElement[];
 }
 
 /**
