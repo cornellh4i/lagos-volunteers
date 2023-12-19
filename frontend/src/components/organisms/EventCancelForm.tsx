@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import EventDetails from "./EventDetails";
 import Button from "../atoms/Button";
 import Modal from "@/components/molecules/Modal";
@@ -10,16 +10,18 @@ import MultilineTextField from "../atoms/MultilineTextField";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { Typography, Grid } from "@mui/material";
 import { useRouter } from "next/router";
+import { useAuth } from "@/utils/AuthContext";
+import {
+  fetchUserIdFromDatabase,
+  retrieveToken,
+  cancelUserRegistrationForEvent,
+} from "@/utils/helpers";
+import { EventData } from "@/utils/types";
 
 interface EventCancelFormProps {
-  eventid: string;
-  location: string;
-  datetime: string;
-  supervisors: string[];
-  capacity: number;
-  image_src: string;
-  tags?: string[];
+  event: EventData;
 }
+
 type FormValues = {
   cancelReason: string;
 };
@@ -30,14 +32,33 @@ type FormValues = {
 const ModalBody = ({
   eventid,
   handleClose,
+  cancelationMessage,
 }: {
   eventid: string;
   handleClose: () => void;
+  cancelationMessage: string;
 }) => {
   const router = useRouter();
-  const cancel = () => {
-    router.replace(`/events/${eventid}/confirm/cancel`);
+  const { user } = useAuth();
+
+  /**
+   * Handles clicking the Cancel button
+   */
+  const handleCancel = async () => {
+    const token = await retrieveToken();
+    const attendeeid = await fetchUserIdFromDatabase(
+      token,
+      user?.email as string
+    );
+    await cancelUserRegistrationForEvent(
+      token,
+      eventid,
+      attendeeid,
+      cancelationMessage
+    );
+    router.reload();
   };
+
   return (
     <div>
       <Typography align="center" sx={{ paddingBottom: 2 }}>
@@ -50,7 +71,7 @@ const ModalBody = ({
           </Button>
         </Grid>
         <Grid item md={6} xs={12}>
-          <Button color="dark-gray" type="button" onClick={cancel}>
+          <Button color="dark-gray" type="button" onClick={handleCancel}>
             Yes, cancel
           </Button>
         </Grid>
@@ -62,15 +83,7 @@ const ModalBody = ({
 /**
  * An EventCancelForm component
  */
-const EventCancelForm = ({
-  eventid,
-  location,
-  datetime,
-  supervisors,
-  capacity,
-  image_src,
-  tags,
-}: EventCancelFormProps) => {
+const EventCancelForm = ({ event }: EventCancelFormProps) => {
   const {
     register,
     handleSubmit,
@@ -79,8 +92,10 @@ const EventCancelForm = ({
 
   // Confirmation modal
   const [open, setOpen] = useState(false);
+  const [cancelationMessage, setCancelationMessage] = useState("");
   const handleSubmitReason: SubmitHandler<FormValues> = async (data) => {
     const { cancelReason } = data;
+    setCancelationMessage(cancelReason);
     setOpen(!open);
   };
   const handleClose = () => setOpen(false);
@@ -90,7 +105,13 @@ const EventCancelForm = ({
       <Modal
         open={open}
         handleClose={handleClose}
-        children={<ModalBody eventid={eventid} handleClose={handleClose} />}
+        children={
+          <ModalBody
+            eventid={event.eventid}
+            handleClose={handleClose}
+            cancelationMessage={cancelationMessage}
+          />
+        }
       />
 
       <div className="justify-center center-items">
@@ -104,25 +125,18 @@ const EventCancelForm = ({
           </div>
 
           <div className="font-semibold text-3xl">Cancel Registration</div>
-          <div className="text-2xl font-semibold mb-6">EDUFOOD</div>
+          <div className="text-2xl font-semibold mb-6">{event.name}</div>
           <div>
             <EventDetails
-              location={location}
-              datetime={datetime}
-              supervisors={supervisors}
-              capacity={capacity}
-              image_src={image_src}
-              tags={tags}
+              location={event.location}
+              datetime={event.datetime}
+              supervisors={event.supervisors}
+              capacity={event.capacity}
+              image_src={event.image_src}
+              tags={event.tags}
             />
           </div>
-          <div>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut et massa
-            mi. Aliquam in hendrerit urna. Pellentesque sit amet sapien
-            fringilla, mattis ligula consectetur, ultrices mauris. Lorem ipsum
-            dolor sit amet, consectetur adipiscing elit. Ut et massa mi. Aliquam
-            in hendrerit urna. Pellentesque sit amet sapien fringilla, mattis
-            ligula consectetur, ultrices mauris.
-          </div>
+          <div>{event.description}</div>
           <div className="font-bold text-xl pt-6">
             You are registered for this event.
           </div>
