@@ -141,14 +141,16 @@ const ViewEvents = () => {
 
   const fetchUserEvents = async () => {
     try {
+      // Make API call
       const token = await retrieveToken();
       const userid = await fetchUserIdFromDatabase(
         token,
         user?.email as string
       );
       const data = await fetchUserRegisteredEvents(token, userid);
-      const apiEvents = data["data"]["events"];
 
+      // Set data
+      const apiEvents = data["data"]["events"];
       let events: event[] = [];
       apiEvents.map((event: any) => {
         events.push({
