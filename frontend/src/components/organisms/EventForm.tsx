@@ -142,7 +142,7 @@ const EventForm = ({ eventId, eventType, eventDetails }: EventFormProps) => {
     return true;
   };
 
-  /**Helper for handling creating events */
+  /** Helper for handling creating events */
   const handleCreateEvent: SubmitHandler<FormValues> = async (data) => {
     setIsLoading(true);
     const validation = timeAndDateValidation();
@@ -182,7 +182,7 @@ const EventForm = ({ eventId, eventType, eventDetails }: EventFormProps) => {
     }
   };
 
-  /**Helper for handling editing events */
+  /** Helper for handling editing events */
   const handleEditEvent: SubmitHandler<FormValues> = async (data) => {
     setIsLoading(true);
     const validation = timeAndDateValidation();
