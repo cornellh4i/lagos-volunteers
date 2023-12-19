@@ -5,7 +5,7 @@ import CircularProgress from "@mui/material/CircularProgress";
 interface ButtonProps {
   children: ReactNode;
   color: "gray" | "dark-gray";
-  onClick?: (e?: any) => void;
+  onClick?: (event?: any) => void;
   type?: "button" | "submit" | "reset" | undefined;
   isLoading?: boolean;
   disabled?: boolean;

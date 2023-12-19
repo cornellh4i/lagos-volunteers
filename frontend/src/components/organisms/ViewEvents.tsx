@@ -14,7 +14,7 @@ import { useAuth } from "@/utils/AuthContext";
 import { auth } from "@/utils/firebase";
 import { fetchUserIdFromDatabase, formatDateTimeRange } from "@/utils/helpers";
 
-type Action = "Rsvp" | "Cancel Rsvp" | "Publish" | "Manage Attendees" | "Edit";
+type Action = "rsvp" | "cancel rsvp" | "publish" | "manage attendees" | "edit";
 
 type event = {
   id: string;
