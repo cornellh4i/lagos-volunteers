@@ -15,12 +15,15 @@ import FormControlLabel from "@mui/material/FormControlLabel";
 import FormControl from "@mui/material/FormControl";
 import LocationPicker from "../atoms/LocationPicker";
 import { Typography } from "@mui/material";
-import { BASE_URL } from "@/utils/constants";
-import { auth } from "@/utils/firebase";
 import { useAuth } from "@/utils/AuthContext";
 import dayjs from "dayjs";
 import router from "next/router";
-import { fetchUserIdFromDatabase } from "@/utils/helpers";
+import {
+  createEvent,
+  editEvent,
+  fetchUserIdFromDatabase,
+  retrieveToken,
+} from "@/utils/helpers";
 
 interface EventFormProps {
   eventId?: string | string[] | undefined;
@@ -80,7 +83,6 @@ const convertToISO = (inputTime: string, inputDate: string) => {
 /** An EventForm page */
 const EventForm = ({ eventId, eventType, eventDetails }: EventFormProps) => {
   const { user } = useAuth();
-  const url = BASE_URL as string;
   const [isLoading, setIsLoading] = useState(false);
   // For deciding whether to show "In-person" or "Virtual"
   // 0: no show, 1: show yes.
@@ -182,39 +184,22 @@ const EventForm = ({ eventId, eventType, eventDetails }: EventFormProps) => {
       setIsLoading(false);
       return;
     }
-    const userToken = await auth.currentUser?.getIdToken();
+    const token = await retrieveToken();
     const mode = status === 0 ? "VIRTUAL" : "IN_PERSON";
     const startDateTime = convertToISO(getStartTime, getStartDate);
     const endDateTime = convertToISO(getEndTime, getEndDate);
     const { eventName, location, volunteerSignUpCap, eventDescription } = data;
-    const userid = await fetchUserIdFromDatabase(
-      user?.email as string,
-      userToken as string
-    );
-    const fetchCreateEventsUrl = `${url}/events`;
+    const userid = await fetchUserIdFromDatabase(token, user?.email as string);
     try {
-      const createBody = {
-        userID: `${userid}`,
-        event: {
-          name: `${eventName}`,
-          location: `${location}`,
-          description: `${eventDescription}`,
-          startDate: new Date(`${startDateTime}`),
-          endDate: new Date(`${endDateTime}`),
-          capacity: +volunteerSignUpCap,
-          mode: `${mode}`,
-        },
-      };
-
-      const response = await fetch(fetchCreateEventsUrl, {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${userToken}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(createBody),
+      const { response, data } = await createEvent(token, userid, {
+        name: `${eventName}`,
+        location: `${location}`,
+        description: `${eventDescription}`,
+        startDate: new Date(startDateTime),
+        endDate: new Date(endDateTime),
+        capacity: +volunteerSignUpCap,
+        mode: `${mode}`,
       });
-      const r = await response.json();
 
       if (response.ok) {
         setSuccessMessage("Successfully Created Event! Redirecting...");
@@ -244,30 +229,18 @@ const EventForm = ({ eventId, eventType, eventDetails }: EventFormProps) => {
     const startDateTime = convertToISO(getStartTime, getStartDate);
     const endDateTime = convertToISO(getEndTime, getEndDate);
     const { eventName, location, volunteerSignUpCap, eventDescription } = data;
-    const fetchEditEventsUrl = `${url}/events/${eventId}`;
 
     try {
-      const editBody = {
+      const token = await retrieveToken();
+      const { response, data } = await editEvent(token, eventId as string, {
         name: `${eventName}`,
         location: `${location}`,
         description: `${eventDescription}`,
-        startDate: `${startDateTime}`,
-        endDate: `${endDateTime}`,
+        startDate: new Date(startDateTime),
+        endDate: new Date(endDateTime),
         capacity: +volunteerSignUpCap,
         mode: `${mode}`,
-      };
-      const userToken = await auth.currentUser?.getIdToken();
-      const response = await fetch(fetchEditEventsUrl, {
-        method: "PUT",
-        headers: {
-          Authorization: `Bearer ${userToken}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(editBody),
       });
-
-      const r = await response.json();
-
       if (response.ok) {
         setSuccessMessage("Successfully Edited Event! Redirecting...");
         setTimeout(back, 3000);
@@ -317,7 +290,9 @@ const EventForm = ({ eventId, eventType, eventDetails }: EventFormProps) => {
         <DatePicker
           label="End Date"
           value={eventDetails ? eventDetails.endDate : undefined}
-          onChange={(e) => e?.$d ? (e?.$d != "Invalid Date" ? setEndDate(e.$d) : "") : ""}
+          onChange={(e) =>
+            e?.$d ? (e?.$d != "Invalid Date" ? setEndDate(e.$d) : "") : ""
+          }
         />
       </div>
       <div className="sm:space-x-4 grid grid-cols-1 sm:grid-cols-2">
@@ -333,7 +308,9 @@ const EventForm = ({ eventId, eventType, eventDetails }: EventFormProps) => {
         <TimePicker
           label="End Time"
           value={eventDetails ? eventDetails.endTime : undefined}
-          onChange={(e) => e?.$d ? (e?.$d != "Invalid Date" ? setEndTime(e.$d) : "") : ""}
+          onChange={(e) =>
+            e?.$d ? (e?.$d != "Invalid Date" ? setEndTime(e.$d) : "") : ""
+          }
         />
       </div>
       <div>

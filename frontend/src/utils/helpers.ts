@@ -1,5 +1,6 @@
 import { BASE_URL } from "@/utils/constants";
 import { auth } from "@/utils/firebase";
+import { EventDTO } from "./types";
 
 /**
  * Retrieves the Firebase token of the current user session
@@ -194,4 +195,59 @@ export const fetchUserRegisteredEvents = async (
       return data;
     }
   } catch (error) {}
+};
+
+/**
+ * Creates a new event with userid as the owner
+ * @param token is the user token
+ * @param userid is the id of the event owner
+ * @param event is the event data
+ * @returns the response
+ */
+export const createEvent = async (
+  token: string,
+  userid: string,
+  event: EventDTO
+) => {
+  const url = `${BASE_URL}/events`;
+  const body = JSON.stringify({
+    userID: `${userid}`,
+    event: event,
+  });
+  const response = await fetch(url, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
+    },
+    body: body,
+  });
+  const data = await response.json();
+  return { response: response, data: data };
+};
+
+/**
+ * Edits an event
+ * @param token is the user token
+ * @param eventid is the id of the event
+ * @param event is the event data
+ * @returns the response
+ */
+export const editEvent = async (
+  token: string,
+  eventid: string,
+  event: EventDTO
+) => {
+  const url = `${BASE_URL}/events/${eventid}`;
+  const body = JSON.stringify(event);
+  const response = await fetch(url, {
+    method: "PUT",
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
+    },
+    body: body,
+  });
+  const data = await response.json();
+  return { response: response, data: data };
 };

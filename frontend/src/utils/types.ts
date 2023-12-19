@@ -10,6 +10,23 @@ export type EventData = {
   name: string;
 };
 
+export type EventDTO = {
+  name: string;
+  subtitle?: string;
+  location: string;
+  description: string;
+  imageURL?: string;
+  startDate: Date;
+  endDate: Date;
+  mode?: EventMode;
+  status?: EventStatus;
+  capacity: number;
+};
+
+export type EventMode = "VIRTUAL" | "IN_PERSON";
+
+export type EventStatus = "ACTIVE" | "COMPLETED" | "CANCELED";
+
 export type Action =
   | "rsvp"
   | "cancel rsvp"
