@@ -1,5 +1,7 @@
 import { BASE_URL } from "@/utils/constants";
 import { auth } from "@/utils/firebase";
+import { EventDTO } from "./types";
+import dayjs from "dayjs";
 
 /**
  * Retrieves the Firebase token of the current user session
@@ -70,6 +72,45 @@ export const formatDateTimeRange = (
   const formattedDateTimeRange = `${startDateFormatted}, ${startTimeFormatted} - ${endTimeFormatted}`;
 
   return formattedDateTimeRange;
+};
+
+/**
+ * Converts DatePicker and TimePicker inputs to an ISO string
+ * @param inputTime is the input time
+ * @param inputDate is the inputDate
+ */
+export const convertToISO = (inputTime: string, inputDate: string) => {
+  console.log(inputTime);
+  console.log(inputDate);
+  var timeIndex = 0;
+  var counter = 0;
+  const time = String(inputTime);
+  const date = String(inputDate);
+  for (let i = 0; i < time.length; i++) {
+    if (time[i] === " ") {
+      counter += 1;
+      if (counter === 4) {
+        timeIndex = i;
+        counter = 0;
+        break;
+      }
+    }
+  }
+  var dateIndex = 0;
+  for (let i = 0; i < date.length; i++) {
+    if (date[i] === " ") {
+      counter += 1;
+      if (counter === 4) {
+        dateIndex = i;
+        counter = 0;
+        break;
+      }
+    }
+  }
+  const rawDateTime = date.substring(0, dateIndex) + time.substring(timeIndex);
+  console.log(rawDateTime);
+  const res = dayjs(rawDateTime).toJSON();
+  return res;
 };
 
 /**
@@ -172,6 +213,24 @@ export const fetchEventDetailsForRegisteredUser = async (
 };
 
 /**
+ * Fetches details for the specified event
+ * @param token is the user token
+ * @param eventid is the id of the event
+ * @returns the response data
+ */
+export const fetchEvent = async (token: string, eventid: string) => {
+  const url = `${BASE_URL}/events/${eventid}`;
+  const response = await fetch(url, {
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  const data = await response.json();
+  return { response: response, data: data };
+};
+
+/**
  * Fetches all events that the user is registered for
  * @param token is the user token
  * @param userid is the id of the user
@@ -194,4 +253,59 @@ export const fetchUserRegisteredEvents = async (
       return data;
     }
   } catch (error) {}
+};
+
+/**
+ * Creates a new event with userid as the owner
+ * @param token is the user token
+ * @param userid is the id of the event owner
+ * @param event is the event data
+ * @returns the response
+ */
+export const createEvent = async (
+  token: string,
+  userid: string,
+  event: EventDTO
+) => {
+  const url = `${BASE_URL}/events`;
+  const body = JSON.stringify({
+    userID: `${userid}`,
+    event: event,
+  });
+  const response = await fetch(url, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
+    },
+    body: body,
+  });
+  const data = await response.json();
+  return { response: response, data: data };
+};
+
+/**
+ * Edits an event
+ * @param token is the user token
+ * @param eventid is the id of the event
+ * @param event is the event data
+ * @returns the response data
+ */
+export const editEvent = async (
+  token: string,
+  eventid: string,
+  event: EventDTO
+) => {
+  const url = `${BASE_URL}/events/${eventid}`;
+  const body = JSON.stringify(event);
+  const response = await fetch(url, {
+    method: "PUT",
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
+    },
+    body: body,
+  });
+  const data = await response.json();
+  return { response: response, data: data };
 };
