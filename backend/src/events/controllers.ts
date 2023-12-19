@@ -1,9 +1,15 @@
 import { Request, Response } from "express";
-import { EventMode, EventStatus, Event, EventEnrollment } from "@prisma/client";
+import {
+  EventMode,
+  EventStatus,
+  Event,
+  EventEnrollment,
+  Prisma,
+} from "@prisma/client";
 import { EventDTO } from "./views";
-
-// We are using one connection to prisma client to prevent multiple connections
+import userController from "../users/controllers";
 import prisma from "../../client";
+import sgMail from "@sendgrid/mail";
 
 /**
  * Creates a new event and assign owner to it.
@@ -39,11 +45,100 @@ const deleteEvent = async (eventID: string) => {
 };
 
 /**
- * Get all events in DB
- * @returns promise with all events or error
+ * Search, sort and pagination for events
+ * @param filter are the filter params passed in
+ * @param sort are sort params passed in
+ * @param pagination are the pagination params passed in
+ * @returns promise with list of events
  */
-const getEvents = async () => {
-  return prisma.event.findMany({});
+const getEvents = async (
+  filter: {
+    upcoming?: string;
+    ownerId?: string;
+    userId?: string;
+  },
+  sort: {
+    key: string;
+    order: Prisma.SortOrder;
+  },
+  pagination: {
+    after: string;
+    limit: string;
+  }
+) => {
+  /* SORTING */
+
+  // Handles GET /events?sort=location:desc
+  const defaultCursor = { id: "asc" };
+  const sortDict: { [key: string]: any } = {
+    default: { id: sort.order },
+    name: [{ name: sort.order }, defaultCursor],
+    location: [{ location: sort.order }, defaultCursor],
+  };
+
+  /* PAGINATION */
+
+  // Handles GET /events?limit=20&after=asdf
+  let cursor = undefined;
+  let skip = undefined;
+  if (pagination.after) {
+    cursor = {
+      id: pagination.after as string,
+    };
+    skip = 1;
+  }
+  let take = undefined;
+  if (pagination.limit) {
+    take = parseInt(pagination.limit as string);
+  } else {
+    // default take is 10
+    take = 10;
+  }
+
+  /* FILTERING */
+
+  let whereDict: { [key: string]: any } = {};
+  let includeDict: { [key: string]: any } = {};
+
+  // Handles GET /events?upcoming=true
+  if (filter.upcoming === "true") {
+    const dateTime = new Date();
+    whereDict["startDate"] = {
+      gt: dateTime,
+    };
+  }
+
+  // Handles GET /events?ownerId=asdf
+  if (filter.ownerId) {
+    whereDict["ownerId"] = filter.ownerId;
+  }
+
+  // Handles GET /events?userId=asdf
+  if (filter.userId) {
+    whereDict["attendees"] = {
+      some: {
+        userId: filter.userId,
+      },
+    };
+  }
+
+  /* RESULT */
+
+  const queryResult = await prisma.event.findMany({
+    where: {
+      AND: [whereDict],
+    },
+    include: includeDict,
+    orderBy: sortDict[sort.key],
+    take: take,
+    skip: skip,
+    cursor: cursor,
+  });
+  const lastPostInResults = take
+    ? queryResult[take - 1]
+    : queryResult[queryResult.length - 1];
+  const myCursor = lastPostInResults ? lastPostInResults.id : undefined;
+  return { result: queryResult, cursor: myCursor };
 };
 
 /**
@@ -122,15 +217,41 @@ const getEvent = async (eventID: string) => {
     where: {
       id: eventID,
     },
+    include: {
+      owner: {
+        select: {
+          profile: true,
+        },
+      },
+      tags: true,
+    },
   });
 };
 
 /**
  * Gets all attendees registered for an event
  * @param eventID (String)
+ * @param userID (String)
  * @returns promise with all attendees of the event or error
  */
-const getAttendees = async (eventID: string) => {
+const getAttendees = async (eventID: string, userID: string) => {
+  if (userID) {
+    // If userID is provided, return only the attendee connected to the userID and eventID
+    return prisma.eventEnrollment.findUnique({
+      where: {
+        userId_eventId: {
+          userId: userID,
+          eventId: eventID,
+        },
+      },
+      include: {
+        user: true,
+        event: true,
+      },
+    });
+  }
+
+  // if userID is not provided, return all attendees of the event
   return prisma.eventEnrollment.findMany({
     where: {
       eventId: eventID,
@@ -148,6 +269,14 @@ const getAttendees = async (eventID: string) => {
  * @returns promise with user or error
  */
 const addAttendee = async (eventID: string, userID: string) => {
+  // grabs the user and their email for SendGrid fucntionality
+  const user = await userController.getUserByID(userID);
+  const userEmail = user?.email;
+  // sets the email message
+  const emailMsg = "USER WAS REGISTERED";
+  if (process.env.NODE_ENV !== "test") {
+    await sendEmail(userEmail, emailMsg);
+  }
   return await prisma.eventEnrollment.create({
     data: {
       event: {
@@ -165,18 +294,62 @@ const addAttendee = async (eventID: string, userID: string) => {
 };
 
 /**
+ * Sends an email to the specified address
+ * @param email is the email address to send to
+ * @param message is the email body
+ */
+const sendEmail = async (email: string | undefined, message: string) => {
+  // Create an email message
+  const msg = {
+    to: email, // Recipient's email address
+    from: "lagosfoodbankdev@gmail.com", // Sender's email address
+    subject: "Your Email Subject",
+    text: message, // You can use HTML content as well
+  };
+
+  // Send the email
+  sgMail
+    .send(msg)
+    .then(() => {
+      console.log("Email sent successfully");
+    })
+    .catch((error) => {
+      console.error("Error sending email:", error);
+    });
+};
+
+/**
  * Remove the specified user from the event
  * @param eventID (String)
- * @param attendeeID (String) id of user to add to event
+ * @param userID (String) id of user to add to event
  * @returns promise with eventid or error
  */
-const deleteAttendee = async (eventID: string, userID: string) => {
-  return await prisma.eventEnrollment.delete({
+const deleteAttendee = async (
+  eventID: string,
+  userID: string,
+  cancelationMessage: string
+) => {
+  // grabs the user and their email for SendGrid fucntionality
+  const user = await userController.getUserByID(userID);
+  var userEmail = user?.email;
+
+  // sets the email message
+  const emailMsg = "USER REMOVED FROM THIS EVENT";
+  if (process.env.NODE_ENV != "test") {
+    await sendEmail(userEmail, emailMsg);
+  }
+
+  // update db
+  return await prisma.eventEnrollment.update({
     where: {
       userId_eventId: {
         userId: userID,
         eventId: eventID,
       },
+    },
+    data: {
+      canceled: true,
+      cancelationMessage: cancelationMessage,
     },
   });
 };
