@@ -9,8 +9,7 @@ import MoreVertIcon from "@mui/icons-material/MoreVert";
 import Link from "next/link";
 import MenuItem from "@mui/material/MenuItem";
 import Menu from "@mui/material/Menu";
-
-type Action = "Rsvp" | "Cancel Rsvp" | "Publish" | "Manage Attendees" | "Edit";
+import { Action } from "@/utils/types";
 
 interface EventCardProps {
   eventid: string;
@@ -52,7 +51,7 @@ const EventCard = ({
 
   const MainAction = () => {
     switch (mainAction) {
-      case "Cancel Rsvp":
+      case "cancel rsvp":
         return (
           <Link
             className="text-black no-underline"
@@ -61,7 +60,7 @@ const EventCard = ({
             Cancel RSVP
           </Link>
         );
-      case "Manage Attendees":
+      case "manage attendees":
         return (
           <Link
             className="text-black no-underline"

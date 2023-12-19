@@ -9,3 +9,10 @@ export type EventData = {
   description: string;
   name: string;
 };
+
+export type Action =
+  | "rsvp"
+  | "cancel rsvp"
+  | "publish"
+  | "manage attendees"
+  | "edit";

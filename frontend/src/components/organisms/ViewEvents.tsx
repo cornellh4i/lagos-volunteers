@@ -2,24 +2,20 @@ import React, { useEffect, useState } from "react";
 import BoxText from "@/components/atoms/BoxText";
 import Chip from "@/components/atoms/Chip";
 import TabContainer from "@/components/molecules/TabContainer";
-import next from "next/types";
 import EventCard from "@/components/organisms/EventCard";
 import CardList from "@/components/molecules/CardList";
 import { GridColDef, GridValueGetterParams } from "@mui/x-data-grid";
 import Table from "@/components/molecules/Table";
 import Button from "../atoms/Button";
 import Link from "next/link";
-import { BASE_URL } from "@/utils/constants";
 import { useAuth } from "@/utils/AuthContext";
-import { auth } from "@/utils/firebase";
 import {
   fetchUserIdFromDatabase,
   fetchUserRegisteredEvents,
   formatDateTimeRange,
   retrieveToken,
 } from "@/utils/helpers";
-
-type Action = "Rsvp" | "Cancel Rsvp" | "Publish" | "Manage Attendees" | "Edit";
+import { Action } from "@/utils/types";
 
 type event = {
   id: string;
@@ -54,9 +50,9 @@ const UpcomingEvents = ({ eventDetails }: EventCardProps) => {
           title={event.name}
           location={event.location}
           datetime={formatDateTimeRange(event.startDate, event.endDate)}
-          dropdownActions={["Manage Attendees", "Edit"]}
+          dropdownActions={["manage attendees", "edit"]}
           // hard-coded for now but main-action is determined based on the user and their status
-          mainAction="Rsvp"
+          mainAction="rsvp"
         />
       ))}
     </CardList>
@@ -161,7 +157,7 @@ const ViewEvents = () => {
           location: event["event"]["location"],
           startDate: event["event"]["startDate"],
           endDate: event["event"]["endDate"],
-          actions: ["Manage Attendees", "Edit"],
+          actions: ["manage attendees", "edit"],
           role:
             userid === event["event"]["ownerId"] ? "Supervisor" : "Volunteer",
           hours: 0, // hard-coded for now
