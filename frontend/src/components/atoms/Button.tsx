@@ -9,6 +9,7 @@ interface ButtonProps {
   type?: "button" | "submit" | "reset" | undefined;
   isLoading?: boolean;
   disabled?: boolean;
+  [key: string]: any;
 }
 
 /** A Button page */
@@ -19,6 +20,7 @@ const CustomButton = ({
   type,
   isLoading,
   disabled,
+  ...props
 }: ButtonProps) => {
   return (
     <Button
@@ -36,6 +38,7 @@ const CustomButton = ({
           ? "bg-gray-400 text-black"
           : ""
       }
+      {...props}
     >
       {isLoading && <CircularProgress size={24} />}
       {!isLoading && <div className="truncate">{children}</div>}

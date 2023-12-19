@@ -14,14 +14,14 @@ const CardList = ({ children }: CardListProps) => {
     <>
       {/* Show only on large screens */}
       <div className="hidden sm:flex flex-wrap pt-3">
-        {cards?.map((card: any) => {
+        {cards.map((card) => {
           return <div className="pr-5 pb-5 w-96">{card}</div>;
         })}
       </div>
 
       {/* Show only on small screens */}
       <div className="sm:hidden flex flex-col pt-3">
-        {cards?.map((card: any) => {
+        {cards.map((card) => {
           return <div className="pb-4">{card}</div>;
         })}
       </div>

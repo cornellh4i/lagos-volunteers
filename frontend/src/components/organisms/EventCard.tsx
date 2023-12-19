@@ -51,23 +51,23 @@ const EventCard = ({
 
   const MainAction = () => {
     switch (mainAction) {
+      case "rsvp":
+        return (
+          <Button href={`/events/${eventid}/register`} color="gray">
+            RSVP
+          </Button>
+        );
       case "cancel rsvp":
         return (
-          <Link
-            className="text-black no-underline"
-            href={`/events/${eventid}/cancel`}
-          >
-            Cancel RSVP
-          </Link>
+          <Button href={`/events/${eventid}/cancel`} color="gray">
+            RSVP
+          </Button>
         );
       case "manage attendees":
         return (
-          <Link
-            className="text-black no-underline"
-            href={`/events/${eventid}/attendees`}
-          >
-            Manage Attendees
-          </Link>
+          <Button href={`/events/${eventid}/attendees`} color="gray">
+            RSVP
+          </Button>
         );
       default:
         return <></>;
@@ -95,12 +95,9 @@ const EventCard = ({
         {/* Card buttons */}
         {dropdownActions.length > 0 ? (
           <div className="pt-4 flex flex-row">
-            <Button color="gray">{mainAction}</Button>
+            <MainAction />
             <div className="pl-1">
-              {/* <IconButton className="bg-gray-300 rounded-md">
-                <MoreVertIcon />
-              </IconButton> */}
-
+              {/* Icon button */}
               <IconButton
                 className="bg-gray-300 rounded-md"
                 onClick={handleClick}
@@ -108,6 +105,7 @@ const EventCard = ({
                 <MoreVertIcon />
               </IconButton>
 
+              {/* Dropdown menu */}
               <Menu
                 id="demo-positioned-menu"
                 aria-labelledby="demo-positioned-button"
@@ -131,7 +129,7 @@ const EventCard = ({
           </div>
         ) : (
           <div className="pt-4">
-            <Button color="gray">{mainAction}</Button>
+            <MainAction />
           </div>
         )}
       </div>
