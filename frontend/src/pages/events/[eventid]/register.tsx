@@ -1,24 +1,90 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import CenteredTemplate from "@/components/templates/CenteredTemplate";
 import EventRegisterForm from "@/components/organisms/EventRegisterForm";
+import EventConfirmation from "@/components/organisms/EventConfirmation";
+import { useAuth } from "@/utils/AuthContext";
+import {
+  fetchUserIdFromDatabase,
+  formatDateTimeRange,
+  retrieveToken,
+  fetchEventDetailsForRegisteredUser,
+} from "@/utils/helpers";
+import Loading from "@/components/molecules/Loading";
+import { EventData } from "@/utils/types";
 
 /** An EventRegistration page */
 const EventRegistration = () => {
   const router = useRouter();
-  const { eventid } = router.query;
+  const eventid = router.query.eventid as string;
+  const [eventDetails, setEventDetails] = useState<EventData | null>(null);
+  const [isRegistered, setIsRegistered] = useState<boolean>(false);
+  const { user } = useAuth();
+
+  /**
+   * Fetches and updates the event details
+   */
+  const updateEventDetails = async () => {
+    try {
+      // Make API call
+      const token = await retrieveToken();
+      const userid = await fetchUserIdFromDatabase(
+        token,
+        user?.email as string
+      );
+      const data = await fetchEventDetailsForRegisteredUser(
+        token,
+        eventid,
+        userid
+      );
+
+      // Set data
+      const event = data["data"]["eventDetails"];
+      setEventDetails({
+        eventid: event["id"],
+        location: event["location"],
+        datetime: formatDateTimeRange(event["startDate"], event["endDate"]),
+        capacity: event["capacity"],
+        image_src: event["imageURL"],
+        tags: event["tags"],
+        supervisors: [
+          event["owner"]["profile"]["firstName"] +
+            " " +
+            event["owner"]["profile"]["lastName"],
+        ],
+        description: event["description"],
+        name: event["name"],
+      });
+
+      if (
+        data["data"]["attendance"] &&
+        data["data"]["attendance"]["canceled"]
+      ) {
+        router.push(`/events/${eventid}/cancel`);
+      } else if (data["data"]["attendance"]) {
+        setIsRegistered(true);
+      } else {
+        setIsRegistered(false);
+      }
+    } catch (error) {}
+  };
+
+  // This can be fetched from the server to prevent flashing of unregister form
+  useEffect(() => {
+    updateEventDetails();
+  }, []);
 
   return (
     <CenteredTemplate>
-      <EventRegisterForm
-        eventid={eventid as string}
-        location="Address, Building Name"
-        datetime="02/15/2023, 9:00AM-11:00AM"
-        supervisors={["Jane Doe", "Jess Lee"]}
-        capacity={20}
-        image_src="https://i0.wp.com/roadmap-tech.com/wp-content/uploads/2019/04/placeholder-image.jpg?resize=800%2C800&ssl=1"
-        tags={["In-person", "EDUFOOD"]}
-      />
+      {eventDetails ? (
+        !isRegistered ? (
+          <EventRegisterForm event={eventDetails} />
+        ) : (
+          <EventConfirmation event={eventDetails} confirmation="register" />
+        )
+      ) : (
+        <Loading />
+      )}
     </CenteredTemplate>
   );
 };

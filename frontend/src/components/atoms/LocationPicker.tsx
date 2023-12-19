@@ -1,16 +1,27 @@
 import React from "react";
 import Autocomplete from "@mui/material/Autocomplete";
 import { TextField } from "@mui/material";
+import { RegisterOptions, UseFormRegisterReturn } from "react-hook-form";
 
 interface LocationPickerProps {
   label: string;
+  name: string;
+  required: boolean;
+  requiredMessage?: string;
+  register: (name: any, options?: RegisterOptions) => UseFormRegisterReturn;
 }
 
 /**
  * A LocationPicker component is an input field that allows selecting a specific
  * geographic location with autocomplete
  */
-const LocationPicker = ({ label }: LocationPickerProps) => {
+const LocationPicker = ({
+  label,
+  name,
+  required,
+  requiredMessage = "",
+  register,
+}: LocationPickerProps) => {
   return (
     <div>
       <div> {label} </div>
@@ -24,7 +35,15 @@ const LocationPicker = ({ label }: LocationPickerProps) => {
           margin: "dense",
         }}
         size="small"
-        renderInput={(params) => <TextField {...params} />}
+        isOptionEqualToValue={(option, value) => option.label === value.label}
+        renderInput={(params) => (
+          <TextField
+            {...params}
+            {...register(name, {
+              required: required,
+            })}
+          />
+        )}
       />
     </div>
   );

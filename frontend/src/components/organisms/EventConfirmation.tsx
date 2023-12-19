@@ -4,18 +4,11 @@ import { Grid, Box } from "@mui/material";
 import EventDetails from "./EventDetails";
 import Link from "next/link";
 import { grey } from "@mui/material/colors";
-
-type Confirmation = "register" | "cancel";
+import { EventData } from "@/utils/types";
 
 interface EventConfirmationProps {
-  eventid: string;
-  confirmation: Confirmation;
-  location: string;
-  datetime: string;
-  supervisors: string[];
-  capacity: number;
-  image_src: string;
-  tags?: string[];
+  event: EventData;
+  confirmation: "register" | "cancel";
 }
 
 /**
@@ -24,16 +17,7 @@ interface EventConfirmationProps {
  * component displays "You are registered". If a user is not registered, the
  * component displays "You are no longer registered".
  */
-const EventConfirmation = ({
-  eventid,
-  confirmation,
-  location,
-  datetime,
-  supervisors,
-  capacity,
-  image_src,
-  tags,
-}: EventConfirmationProps) => {
+const EventConfirmation = ({ event, confirmation }: EventConfirmationProps) => {
   switch (confirmation) {
     case "register":
       return (
@@ -43,18 +27,18 @@ const EventConfirmation = ({
           </div>
           <h1 className="text-center">You are registered!</h1>
           <div>
-            <div className="text-2xl font-semibold mb-6">EDUFOOD</div>
+            <div className="text-2xl font-semibold mb-6">{event.name}</div>
             <EventDetails
-              location={location}
-              datetime={datetime}
-              supervisors={supervisors}
-              capacity={capacity}
-              image_src={image_src}
-              tags={tags}
+              location={event.location}
+              datetime={event.datetime}
+              supervisors={event.supervisors}
+              capacity={event.capacity}
+              image_src={event.image_src}
+              tags={event.tags}
             />
             <p>
-              If you can no longer attend,{" "}
-              <Link href={`/events/${eventid}/cancel`} rel="noreferrer">
+              If you can no longer attend,&nbsp;
+              <Link href={`/events/${event.eventid}/cancel`} rel="noreferrer">
                 cancel here
               </Link>{" "}
               or on the "My Events" page.
@@ -66,22 +50,19 @@ const EventConfirmation = ({
       return (
         <div>
           <h1>You are no longer registered.</h1>
-          <h3>
-            {" "}
-            We're sorry you can't make it! Thank you for letting us know.
-          </h3>
+          <h3>We're sorry you can't make it! Thank you for letting us know.</h3>
           <p>
             Explore other volunteer opportunities on the{" "}
-            <Link href="/events/view"> home page</Link>.
+            <Link href="/events/view">home page</Link>.
           </p>
-          <div className="text-2xl font-semibold mb-6">EDUFOOD</div>
+          <div className="text-2xl font-semibold mb-6">{event.name}</div>
           <EventDetails
-            location="Address, Building Name"
-            datetime="02/15/2023, 9:00AM-11:00AM"
-            supervisors={["Jane Doe", "Jess Lee"]}
-            capacity={20}
-            image_src="https://i0.wp.com/roadmap-tech.com/wp-content/uploads/2019/04/placeholder-image.jpg?resize=800%2C800&ssl=1"
-            tags={["In-person", "EDUFOOD"]}
+            location={event.location}
+            datetime={event.datetime}
+            supervisors={event.supervisors}
+            capacity={event.capacity}
+            image_src={event.image_src}
+            tags={event.tags}
           />
           <Grid item xs={6}></Grid>
         </div>

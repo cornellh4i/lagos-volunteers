@@ -83,7 +83,63 @@
           "Users"
         ],
         "description": "",
-        "parameters": [],
+        "parameters": [
+          {
+            "name": "firstName",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "lastName",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "nickname",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "email",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "role",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "hours",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "eventId",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "sort",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "after",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "type": "string"
+          }
+        ],
         "responses": {}
       }
     },
@@ -318,6 +374,11 @@
             "in": "path",
             "required": true,
             "type": "string"
+          },
+          {
+            "name": "eventid",
+            "in": "query",
+            "type": "string"
           }
         ],
         "responses": {}
@@ -410,7 +471,38 @@
           "Events"
         ],
         "description": "",
-        "parameters": [],
+        "parameters": [
+          {
+            "name": "upcoming",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "ownerid",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "userid",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "sort",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "after",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "type": "string"
+          }
+        ],
         "responses": {}
       }
     },
@@ -446,9 +538,6 @@
         "responses": {}
       },
       "get": {
-        "tags": [
-          "Events"
-        ],
         "description": "",
         "parameters": [
           {
@@ -503,6 +592,11 @@
             "in": "path",
             "required": true,
             "type": "string"
+          },
+          {
+            "name": "userid",
+            "in": "query",
+            "type": "string"
           }
         ],
         "responses": {}
@@ -533,10 +627,8 @@
           }
         ],
         "responses": {}
-      }
-    },
-    "/events/{eventid}/attendees/{attendeeid}": {
-      "delete": {
+      },
+      "put": {
         "tags": [
           "Events"
         ],
@@ -549,10 +641,19 @@
             "type": "string"
           },
           {
-            "name": "attendeeid",
-            "in": "path",
-            "required": true,
-            "type": "string"
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "attendeeid": {
+                  "example": "any"
+                },
+                "cancelationMessage": {
+                  "example": "any"
+                }
+              }
+            }
           }
         ],
         "responses": {}
