@@ -213,6 +213,24 @@ export const fetchEventDetailsForRegisteredUser = async (
 };
 
 /**
+ * Fetches details for the specified event
+ * @param token is the user token
+ * @param eventid is the id of the event
+ * @returns the response data
+ */
+export const fetchEvent = async (token: string, eventid: string) => {
+  const url = `${BASE_URL}/events/${eventid}`;
+  const response = await fetch(url, {
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  const data = await response.json();
+  return { response: response, data: data };
+};
+
+/**
  * Fetches all events that the user is registered for
  * @param token is the user token
  * @param userid is the id of the user
@@ -271,7 +289,7 @@ export const createEvent = async (
  * @param token is the user token
  * @param eventid is the id of the event
  * @param event is the event data
- * @returns the response
+ * @returns the response data
  */
 export const editEvent = async (
   token: string,

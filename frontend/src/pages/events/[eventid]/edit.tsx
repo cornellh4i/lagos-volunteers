@@ -2,9 +2,8 @@ import React, { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import EventForm from "@/components/organisms/EventForm";
 import CenteredTemplate from "@/components/templates/CenteredTemplate";
-import { auth } from "@/utils/firebase";
-import { BASE_URL } from "@/utils/constants";
 import Loading from "@/components/molecules/Loading";
+import { fetchEvent, retrieveToken } from "@/utils/helpers";
 
 type eventData = {
   eventName: string;
@@ -23,23 +22,18 @@ type eventData = {
 /** An EditEvent page */
 const EditEvent = () => {
   const router = useRouter();
-  const { eventid } = router.query;
+  const eventid = router.query.eventid as string;
   const [eventDetails, setEventDetails] = useState<
     eventData | null | undefined
   >(null);
 
   const fetchEventDetails = async () => {
     try {
-      const url = BASE_URL as string;
-      const fetchUrl = `${url}/events/${eventid}`;
-      const userToken = await auth.currentUser?.getIdToken();
-      const response = await fetch(fetchUrl, {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${userToken}`,
-        },
-      });
-      const data = await response.json();
+      // Make API call
+      const token = await retrieveToken();
+      const { response, data } = await fetchEvent(token, eventid);
+
+      // Set event details
       setEventDetails({
         eventName: data["data"]["name"],
         location: data["data"]["location"],
