@@ -98,12 +98,12 @@ const PastEvents = ({ eventDetails }: EventCardProps) => {
     },
   ];
 
-  function getFormattedDate(date: string) {
+  const getFormattedDate = (date: string) => {
     const month = date.substring(5, 7);
     const year = date.substring(0, 4);
     const day = date.substring(8, 10);
     return month + "/" + day + "/" + year;
-  }
+  };
 
   let dummyRows: pastEvent[] = [];
   {
@@ -118,11 +118,11 @@ const PastEvents = ({ eventDetails }: EventCardProps) => {
     ]);
   }
 
-  function totalHours() {
+  const totalHours = () => {
     let numOfHours = 0;
     eventDetails?.map((event) => (numOfHours = numOfHours + event.hours));
     return numOfHours.toString();
-  }
+  };
 
   return (
     <>
@@ -183,16 +183,14 @@ const ViewEvents = () => {
       { label: "Drafts", panel: <Drafts /> },
     ];
     return (
-      <>
-        <TabContainer
-          tabs={tabs}
-          rightAlignedComponent={
-            <Link href="/events/create">
-              <Button color="dark-gray">Create New Event</Button>
-            </Link>
-          }
-        />
-      </>
+      <TabContainer
+        tabs={tabs}
+        rightAlignedComponent={
+          <Link href="/events/create">
+            <Button color="dark-gray">Create New Event</Button>
+          </Link>
+        }
+      />
     );
   }
 };
