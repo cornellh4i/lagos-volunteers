@@ -4,86 +4,126 @@ import { formatISO } from "date-fns";
 import {
   createRandomUser,
   createRandomEvent,
-  User,
-  Event,
+  dummyUser,
+  dummyEvent,
 } from "../src/utils/script";
+import { User, Event } from "@prisma/client";
 
 /**
  * This function is used to seed the database with dummy data.
  * It is used for testing purposes only.
  * @param pool - The number of users to create.
  */
-
-const userDataSeed: Prisma.UserCreateInput[] = [];
+const userDataSeed: User[] = [];
 
 async function createPoolOfRandomUsers(pool: number) {
-  const users: User[] = [];
+  const users: dummyUser[] = [];
   for (let i = 0; i < pool; i++) {
     users.push(createRandomUser());
   }
 
-  users.map((user) => {
-    userDataSeed.push({
-      email: user.email,
-      role: user.role,
-      profile: {
-        create: {
-          firstName: user.firstName,
-          lastName: user.lastName,
-          nickname: user.nickname,
-          imageURL: user.imageURL,
+  users.map(async (user) => {
+    const createdUser = await prisma.user.create({
+      data: {
+        email: user.email,
+        role: user.role,
+        profile: {
+          create: {
+            firstName: user.firstName,
+            lastName: user.lastName,
+            nickname: user.nickname,
+            imageURL: user.imageURL,
+          },
         },
-      },
-      preferences: {
-        create: {
-          sendPromotions: true,
+        preferences: {
+          create: {
+            sendPromotions: true,
+          },
         },
       },
     });
+    console.log(`Created user with id: ${createdUser.id}`);
+    userDataSeed.push(createdUser);
   });
+  console.log("Done creating pool of random users");
 }
+
+const eventDataSeed: Event[] = [];
 
 /**
  * This function is used to seed the database with dummy event data.
  */
-
-const eventDataSeed: Prisma.EventCreateInput[] = [];
-
 async function createPoolOfRandomEvents(pool: number) {
-  const events: Event[] = [];
+  const events: dummyEvent[] = [];
   for (let i = 0; i < pool; i++) {
     events.push(createRandomEvent());
   }
-
-  events.map((event, index) => {
-    // Get a random owner that is admin/supervisor - hopefully doesn't go on forever haha.
-    const randomOwner: any = () => {
-      const randomIndex = Math.floor(Math.random() * userDataSeed.length);
-      const randomUser = userDataSeed[randomIndex];
-      if (randomUser.role === "ADMIN" || randomUser.role === "SUPERVISOR") {
-        return randomUser;
-      } else {
-        return randomOwner();
-      }
-    };
-
-    eventDataSeed.push({
-      name: event.name,
-      description: event.description,
-      location: event.location,
-      startDate: event.startDate,
-      endDate: event.endDate,
-      capacity: event.capacity,
-      imageURL: event.imageURL,
-      mode: event.mode,
-      owner: {
-        connect: {
-          id: randomOwner().id,
-          email: randomOwner().email,
+  const supervisors: User[] = [];
+  // create 20 supervisors to host various events
+  for (let i = 0; i < 20; i++) {
+    const supervisor = createRandomUser();
+    const createdSupervisor = await prisma.user.create({
+      data: {
+        email: supervisor.email,
+        role: "SUPERVISOR",
+        profile: {
+          create: {
+            firstName: supervisor.firstName,
+            lastName: supervisor.lastName,
+            nickname: supervisor.nickname,
+            imageURL: supervisor.imageURL,
+          },
+        },
+        preferences: {
+          create: {
+            sendPromotions: true,
+          },
         },
       },
     });
+    supervisors.push(createdSupervisor);
+  }
+  events.map(async (event, index) => {
+    const randomSuperVisor = supervisors[Math.floor(Math.random() * 20)];
+    const createdEvent = await prisma.event.create({
+      data: {
+        name: event.name,
+        description: event.description,
+        location: event.location,
+        startDate: event.startDate,
+        endDate: event.endDate,
+        imageURL: event.imageURL,
+        owner: {
+          connect: {
+            id: randomSuperVisor.id,
+          },
+        },
+        capacity: event.capacity,
+      },
+    });
+    // enroll users in this event
+    const users = userDataSeed.slice(0, 60);
+    for (const user of users) {
+      const createdEventEnrollment = await prisma.eventEnrollment.create({
+        data: {
+          event: {
+            connect: {
+              id: createdEvent.id,
+            },
+          },
+          user: {
+            connect: {
+              id: user.id,
+            },
+          },
+        },
+      });
+    }
+    console.log(`Created event with id: ${createdEvent.id}`);
+    eventDataSeed.push(createdEvent);
   });
+
+  console.log("Done creating pool of random events");
 }
 
 const userData: Prisma.UserCreateInput[] = [
@@ -223,59 +263,6 @@ const eventData: Prisma.EventCreateInput[] = [
   },
 ];
 
-// Enroll Alice in Prisma Day
-
-async function enrollAlice() {
-  const alice = await prisma.user.findFirst({
-    where: {
-      id: userData[1].id,
-    },
-  });
-
-  const event = await prisma.event.findFirst({
-    where: {
-      id: eventData[0].id,
-    },
-  });
-
-  await prisma.eventEnrollment.create({
-    data: {
-      user: {
-        connect: { id: alice?.id },
-      },
-      event: {
-        connect: { id: event?.id },
-      },
-    },
-  });
-}
-
-// Enroll Prisma in Future Event
-async function enrollPrisma() {
-  const prismaNotAlice = await prisma.user.findFirst({
-    where: {
-      id: userData[2].id,
-    },
-  });
-
-  const event = await prisma.event.findFirst({
-    where: {
-      id: eventData[5].id,
-    },
-  });
-
-  await prisma.eventEnrollment.create({
-    data: {
-      user: {
-        connect: { id: prismaNotAlice?.id },
-      },
-      event: {
-        connect: { id: event?.id },
-      },
-    },
-  });
-}
-
 async function main() {
   console.log(`Start seeding ...`);
 
@@ -325,22 +312,6 @@ async function main() {
   await createPoolOfRandomUsers(100);
   await createPoolOfRandomEvents(100);
 
-  for (const u of userDataSeed) {
-    const user = await prisma.user.create({
-      data: u,
-    });
-    console.log(`Created user with id: ${user.id}`);
-  }
-
-  for (const e of eventDataSeed) {
-    const event = await prisma.event.create({
-      data: e,
-    });
-    console.log(`Created event with id: ${event.id}`);
-  }
-
-  await enrollAlice();
-  // await enrollPrisma();
   console.log(`Seeding finished.`);
 }
 // This is for demo purposes only. Everytime we start the server, our seed script will run.
