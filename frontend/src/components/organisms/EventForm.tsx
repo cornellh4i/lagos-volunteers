@@ -19,6 +19,7 @@ import { useAuth } from "@/utils/AuthContext";
 import dayjs from "dayjs";
 import router from "next/router";
 import {
+  convertToISO,
   createEvent,
   editEvent,
   fetchUserIdFromDatabase,
@@ -43,41 +44,6 @@ type FormValues = {
   startTime: string;
   endTime: string;
   mode: string;
-};
-
-/** Helper function for converting datepicker and timepicker to ISO string*/
-const convertToISO = (inputTime: string, inputDate: string) => {
-  console.log(inputTime);
-  console.log(inputDate);
-  var timeIndex = 0;
-  var counter = 0;
-  const time = String(inputTime);
-  const date = String(inputDate);
-  for (let i = 0; i < time.length; i++) {
-    if (time[i] === " ") {
-      counter += 1;
-      if (counter === 4) {
-        timeIndex = i;
-        counter = 0;
-        break;
-      }
-    }
-  }
-  var dateIndex = 0;
-  for (let i = 0; i < date.length; i++) {
-    if (date[i] === " ") {
-      counter += 1;
-      if (counter === 4) {
-        dateIndex = i;
-        counter = 0;
-        break;
-      }
-    }
-  }
-  const rawDateTime = date.substring(0, dateIndex) + time.substring(timeIndex);
-  console.log(rawDateTime);
-  const res = dayjs(rawDateTime).toJSON();
-  return res;
 };
 
 /** An EventForm page */

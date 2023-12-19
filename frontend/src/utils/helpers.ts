@@ -1,6 +1,7 @@
 import { BASE_URL } from "@/utils/constants";
 import { auth } from "@/utils/firebase";
 import { EventDTO } from "./types";
+import dayjs from "dayjs";
 
 /**
  * Retrieves the Firebase token of the current user session
@@ -71,6 +72,45 @@ export const formatDateTimeRange = (
   const formattedDateTimeRange = `${startDateFormatted}, ${startTimeFormatted} - ${endTimeFormatted}`;
 
   return formattedDateTimeRange;
+};
+
+/**
+ * Converts DatePicker and TimePicker inputs to an ISO string
+ * @param inputTime is the input time
+ * @param inputDate is the inputDate
+ */
+export const convertToISO = (inputTime: string, inputDate: string) => {
+  console.log(inputTime);
+  console.log(inputDate);
+  var timeIndex = 0;
+  var counter = 0;
+  const time = String(inputTime);
+  const date = String(inputDate);
+  for (let i = 0; i < time.length; i++) {
+    if (time[i] === " ") {
+      counter += 1;
+      if (counter === 4) {
+        timeIndex = i;
+        counter = 0;
+        break;
+      }
+    }
+  }
+  var dateIndex = 0;
+  for (let i = 0; i < date.length; i++) {
+    if (date[i] === " ") {
+      counter += 1;
+      if (counter === 4) {
+        dateIndex = i;
+        counter = 0;
+        break;
+      }
+    }
+  }
+  const rawDateTime = date.substring(0, dateIndex) + time.substring(timeIndex);
+  console.log(rawDateTime);
+  const res = dayjs(rawDateTime).toJSON();
+  return res;
 };
 
 /**
