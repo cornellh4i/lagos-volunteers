@@ -9,6 +9,12 @@ import IconText from "../atoms/IconText";
 import Link from "next/link";
 import { auth } from "@/utils/firebase";
 import { BASE_URL } from "@/utils/constants";
+import {
+  fetchUsersCount,
+  fetchUsersPaginated,
+  formatDateString,
+  retrieveToken,
+} from "@/utils/helpers";
 
 interface ManageUsersProps {}
 
@@ -19,14 +25,6 @@ type ActiveProps = {
   /** The function called to obtain the next elements */
   progressFunction: (cursor: string) => Promise<any[]>;
 };
-
-function formatDateString(dateString: string) {
-  const date = new Date(dateString);
-  const month = (date.getMonth() + 1).toString().padStart(2, "0");
-  const day = date.getDate().toString().padStart(2, "0");
-  const year = date.getFullYear();
-  return `${month}/${day}/${year}`;
-}
 
 const Active = ({
   initalRowData,
@@ -130,16 +128,9 @@ const ManageUsers = ({}: ManageUsersProps) => {
     const url = BASE_URL as string;
     try {
       // call the get count insdtead of this
-      const fetchUrl = `${url}/users/count`;
-      const userToken = await auth.currentUser?.getIdToken();
-      const response = await fetch(fetchUrl, {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${userToken}`,
-        },
-      });
+      const token = await retrieveToken();
+      const { response, data } = await fetchUsersCount(token);
       if (response.ok) {
-        const data = await response.json();
         const length = data["data"];
         return length;
       }
@@ -148,24 +139,12 @@ const ManageUsers = ({}: ManageUsersProps) => {
 
   // Dummy FETCH function
   const fetchUsers = async (cursor: string) => {
-    const url = BASE_URL as string;
-    const PAGE_SIZE = 6; // Number of records to fetch per page
     try {
-      const fetchUrl =
-        cursor == ""
-          ? `${url}/users/pagination?limit=${PAGE_SIZE}`
-          : `${url}/users/pagination?limit=${PAGE_SIZE}&after=${cursor}`;
-      const userToken = await auth.currentUser?.getIdToken();
-      const response = await fetch(fetchUrl, {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${userToken}`,
-        },
-      });
+      const token = await retrieveToken();
+      const { response, data } = await fetchUsersPaginated(token, cursor);
       if (response.ok) {
         // Dummy function placed here just to make sure
         // front end pagination works
-        const data = await response.json();
         const clean_data = data["data"];
         const result = clean_data.map((element: any) => ({
           id: element["id"],
