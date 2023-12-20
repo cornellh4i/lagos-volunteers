@@ -1,6 +1,6 @@
 import { BASE_URL } from "@/utils/constants";
 import { auth } from "@/utils/firebase";
-import { EventDTO } from "./types";
+import { EventDTO, UserRole, UserStatus } from "./types";
 import dayjs from "dayjs";
 
 /**
@@ -72,6 +72,19 @@ export const formatDateTimeRange = (
   const formattedDateTimeRange = `${startDateFormatted}, ${startTimeFormatted} - ${endTimeFormatted}`;
 
   return formattedDateTimeRange;
+};
+
+/**
+ * Formats the provided date string
+ * @param dateString is the input date string
+ * @returns the date formatted as mm/dd/yyyy
+ */
+export const formatDateString = (dateString: string) => {
+  const date = new Date(dateString);
+  const month = (date.getMonth() + 1).toString().padStart(2, "0");
+  const day = date.getDate().toString().padStart(2, "0");
+  const year = date.getFullYear();
+  return `${month}/${day}/${year}`;
 };
 
 /**
@@ -231,6 +244,24 @@ export const fetchEvent = async (token: string, eventid: string) => {
 };
 
 /**
+ * Fetches details for the specified user
+ * @param token is the user token
+ * @param userid is the id of the user
+ * @returns the response data
+ */
+export const fetchUser = async (token: string, userid: string) => {
+  const url = `${BASE_URL}/users/${userid}/profile`;
+  const response = await fetch(url, {
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  const data = await response.json();
+  return { response: response, data: data };
+};
+
+/**
  * Fetches all events that the user is registered for
  * @param token is the user token
  * @param userid is the id of the user
@@ -240,19 +271,15 @@ export const fetchUserRegisteredEvents = async (
   token: string,
   userid: string
 ) => {
-  try {
-    const fetchUrl = `${BASE_URL}/users/${userid}/registered`;
-    const response = await fetch(fetchUrl, {
-      method: "GET",
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-    if (response.ok) {
-      const data = await response.json();
-      return data;
-    }
-  } catch (error) {}
+  const url = `${BASE_URL}/users/${userid}/registered`;
+  const response = await fetch(url, {
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  const data = await response.json();
+  return { response: response, data: data };
 };
 
 /**
@@ -300,6 +327,58 @@ export const editEvent = async (
   const body = JSON.stringify(event);
   const response = await fetch(url, {
     method: "PUT",
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
+    },
+    body: body,
+  });
+  const data = await response.json();
+  return { response: response, data: data };
+};
+
+/**
+ * Updates the user status
+ * @param token is the user token
+ * @param userid is the id of the user
+ * @param status is the new user status
+ * @returns the response data
+ */
+export const updateUserStatus = async (
+  token: string,
+  userid: string,
+  status: UserStatus
+) => {
+  const url = `${BASE_URL}/users/${userid}/status`;
+  const body = JSON.stringify({ status: status });
+  const response = await fetch(url, {
+    method: "PATCH",
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
+    },
+    body: body,
+  });
+  const data = await response.json();
+  return { response: response, data: data };
+};
+
+/**
+ * Updates the user role
+ * @param token is the user token
+ * @param userid is the id of the user
+ * @param role is the new user role
+ * @returns the response data
+ */
+export const updateUserRole = async (
+  token: string,
+  userid: string,
+  role: UserRole
+) => {
+  const url = `${BASE_URL}/users/${userid}/role`;
+  const body = JSON.stringify({ role: role });
+  const response = await fetch(url, {
+    method: "PATCH",
     headers: {
       Authorization: `Bearer ${token}`,
       "Content-Type": "application/json",
