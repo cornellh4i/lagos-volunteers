@@ -1,5 +1,6 @@
 import React from "react";
 import dynamic from "next/dynamic";
+import DefaultTemplate from "@/components/templates/DefaultTemplate";
 
 const DynamicAboutPage = dynamic(
   () => import("../components/organisms/About"),
@@ -9,6 +10,10 @@ const DynamicAboutPage = dynamic(
 );
 
 const AboutPage = () => {
-  return <DynamicAboutPage edit={true} />;
+  return (
+    <DefaultTemplate>
+      <DynamicAboutPage edit={true} />
+    </DefaultTemplate>
+  );
 };
-export default DynamicAboutPage;
+export default AboutPage;

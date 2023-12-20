@@ -22,12 +22,12 @@ const ModalBody = ({ handleModal, handleClose }: modalBodyProps) => {
       <Grid container spacing={2}>
         <Grid item md={6} xs={12}>
           <Button color="gray" onClick={handleModal}>
-            Yes, publish.
+            Yes, publish
           </Button>
         </Grid>
         <Grid item md={6} xs={12}>
           <Button color="dark-gray" onClick={handleClose}>
-            No, cancel.
+            No, cancel
           </Button>
         </Grid>
       </Grid>
@@ -38,7 +38,6 @@ const ModalBody = ({ handleModal, handleClose }: modalBodyProps) => {
 /**
  * An About component
  */
-
 const About = ({ edit }: AboutProps) => {
   var default_text = `
   <h2>About Lagos Food Bank</h2>
@@ -135,7 +134,7 @@ const About = ({ edit }: AboutProps) => {
   } else {
     return (
       <div>
-        <div>{ReactHtmlParser(value)}</div>;
+        <div>{ReactHtmlParser(value)}</div>
         <Grid item container>
           <Grid xs={11}></Grid>
           <Grid xs={1}>
