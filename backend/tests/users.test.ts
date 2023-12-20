@@ -410,7 +410,7 @@ describe("Testing GET /users/pagination", () => {
   test("Get 10 users without a specified after", async () => {
     // limit should be defaulted to 10
     const users = await request(app).get("/users");
-    const userid = users.body.data[2].id;
+    const userid = users.body.data.result[2].id;
     const response = await request(app).get("/users/pagination");
     expect(response.status).toBe(200);
   });

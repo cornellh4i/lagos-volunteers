@@ -190,6 +190,16 @@
         "responses": {}
       }
     },
+    "/users/count": {
+      "get": {
+        "tags": [
+          "Users"
+        ],
+        "description": "",
+        "parameters": [],
+        "responses": {}
+      }
+    },
     "/users/pagination": {
       "get": {
         "tags": [
@@ -198,12 +208,12 @@
         "description": "",
         "parameters": [
           {
-            "name": "limit",
+            "name": "after",
             "in": "query",
             "type": "string"
           },
           {
-            "name": "after",
+            "name": "limit",
             "in": "query",
             "type": "string"
           }
