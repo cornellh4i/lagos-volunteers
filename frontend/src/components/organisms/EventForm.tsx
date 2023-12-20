@@ -76,6 +76,8 @@ const EventForm = ({ eventId, eventType, eventDetails }: EventFormProps) => {
     register,
     handleSubmit,
     watch,
+    getValues,
+    setValue,
     formState: { errors },
   } = useForm<FormValues>(
     eventDetails
@@ -231,6 +233,7 @@ const EventForm = ({ eventId, eventType, eventDetails }: EventFormProps) => {
     >
       <CreateErrorComponent />
       <CreateSuccessComponent />
+      {/* <button onClick={() => console.log(getValues())}>test</button> */}
       <div className="font-bold text-3xl">
         {eventType == "create" ? "Create Event" : "Edit Event"}
       </div>
@@ -309,6 +312,7 @@ const EventForm = ({ eventId, eventType, eventDetails }: EventFormProps) => {
             required={status == 1}
             name="location"
             register={register}
+            setValue={setValue}
             requiredMessage={errors.location ? "Required" : undefined}
           />
         )}
