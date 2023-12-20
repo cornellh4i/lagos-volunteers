@@ -13,13 +13,21 @@ import LinearProgress from "@mui/material/LinearProgress";
 import Link from "next/link";
 import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
 import { IconButton } from "@mui/material";
-import { BASE_URL } from "@/utils/constants";
 import { auth } from "@/utils/firebase";
 import Alert from "../atoms/Alert";
 import { useRouter } from "next/router";
 import { Grid } from "@mui/material";
 import Modal from "@/components/molecules/Modal";
 import Loading from "@/components/molecules/Loading";
+import {
+  fetchUser,
+  fetchUserRegisteredEvents,
+  formatDateString,
+  retrieveToken,
+  updateUserRole,
+  updateUserStatus,
+} from "@/utils/helpers";
+import { UserRole, UserStatus } from "@/utils/types";
 
 type userProfileData = {
   name: string;
@@ -53,13 +61,6 @@ type modalBodyProps = {
   handleClose: () => void;
 };
 
-function formatDateString(dateString: string) {
-  const date = new Date(dateString);
-  const month = (date.getMonth() + 1).toString().padStart(2, "0");
-  const day = date.getDate().toString().padStart(2, "0");
-  const year = date.getFullYear();
-  return `${month}/${day}/${year}`;
-}
 const ModalBody = ({ status, blacklistFunc, handleClose }: modalBodyProps) => {
   return (
     <div>
@@ -99,22 +100,16 @@ const Status = ({ userRole, userStatus, userID }: userStatusData) => {
   const handleUserRoleChange = async (event: SelectChangeEvent) => {
     try {
       // FETCH Prep
-      const url = BASE_URL as string;
-      const fetchUrl = `${url}/users/` + userID + `/role`;
-      const currentUser = auth.currentUser;
-      const userToken = await currentUser?.getIdToken();
       const val = event.target.value;
-      const body = { role: val };
+      const currentUser = auth.currentUser;
+      const token = await retrieveToken();
 
       // FETCH Call
-      const response = await fetch(fetchUrl, {
-        method: "PATCH",
-        headers: {
-          Authorization: `Bearer ${userToken}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(body),
-      });
+      const { response, data } = await updateUserRole(
+        token,
+        userID,
+        val as UserRole
+      );
 
       // FETCH Response
       if (response.ok) {
@@ -138,21 +133,13 @@ const Status = ({ userRole, userStatus, userID }: userStatusData) => {
     }
     try {
       // FETCH Prep
-      const url = BASE_URL as string;
-      const fetchUrl = `${url}/users/` + userID + `/status`;
       const currentUser = auth.currentUser;
-      const userToken = await currentUser?.getIdToken();
-      const body = { status: bodyval };
-
-      // FETCH Call
-      const response = await fetch(fetchUrl, {
-        method: "PATCH",
-        headers: {
-          Authorization: `Bearer ${userToken}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(body),
-      });
+      const token = await retrieveToken();
+      const { response, data } = await updateUserStatus(
+        token,
+        userID,
+        bodyval as UserStatus
+      );
 
       // FETCH Response
       if (response.ok) {
@@ -333,19 +320,12 @@ const ManageUserProfile = () => {
 
   const fetchUserDetails = async () => {
     try {
-      const url = BASE_URL as string;
-      const fetchUrl = `${url}/users/${userid}/profile`;
-      const userToken = await auth.currentUser?.getIdToken();
+      // Make API call
+      const token = await retrieveToken();
+      const { response, data } = await fetchUser(token, userid as string);
 
-      const response = await fetch(fetchUrl, {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${userToken}`,
-        },
-      });
-
+      // Set data
       if (response.ok) {
-        const data = await response.json();
         const result = {
           name:
             data["data"]["profile"]["firstName"] +
@@ -367,22 +347,15 @@ const ManageUserProfile = () => {
   };
   const fetchUserRegistrations = async () => {
     try {
-      //FETCH Prep
-      const url = BASE_URL as string;
-      const fetchUrl = `${url}/users/${userid}/registered`;
-      const userToken = await auth.currentUser?.getIdToken();
+      // Make API call
+      const token = await retrieveToken();
+      const { response, data } = await fetchUserRegisteredEvents(
+        token,
+        userid as string
+      );
 
-      //FETCH Call
-      const response = await fetch(fetchUrl, {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${userToken}`,
-        },
-      });
-
-      //FETCH Response
+      // Set data
       if (response.ok) {
-        const data = await response.json();
         setRegisteredEvents(data["data"]["events"]);
       }
     } catch (error) {

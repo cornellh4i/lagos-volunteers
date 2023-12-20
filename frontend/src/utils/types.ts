@@ -27,6 +27,10 @@ export type EventMode = "VIRTUAL" | "IN_PERSON";
 
 export type EventStatus = "ACTIVE" | "COMPLETED" | "CANCELED";
 
+export type UserStatus = "ACTIVE" | "INACTIVE" | "HOLD";
+
+export type UserRole = "VOLUNTEER" | "SUPERVISOR" | "ADMIN";
+
 export type Action =
   | "rsvp"
   | "cancel rsvp"

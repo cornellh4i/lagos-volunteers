@@ -147,7 +147,7 @@ const ViewEvents = () => {
         token,
         user?.email as string
       );
-      const data = await fetchUserRegisteredEvents(token, userid);
+      const { response, data } = await fetchUserRegisteredEvents(token, userid);
 
       // Set data
       const apiEvents = data["data"]["events"];
