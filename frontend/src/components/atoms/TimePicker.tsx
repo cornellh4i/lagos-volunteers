@@ -5,22 +5,26 @@ import { TimeField } from "@mui/x-date-pickers/TimeField";
 import { IconButton } from "@mui/material";
 import { InputAdornment } from "@mui/material";
 import { AccessTime } from "@mui/icons-material";
+import dayjs from "dayjs";
 
 interface TimePickerProps {
   label: string;
+  value?: string;
+  onChange: (newValue: any) => void;
 }
 
 /**
  * A TimePicker component is an input field that allows selecting different
  * times of day.
  */
-const CustomTimePicker = ({ label }: TimePickerProps) => {
+const CustomTimePicker = ({ label, value, onChange }: TimePickerProps) => {
   return (
     <div>
       <div> {label} </div>
       <LocalizationProvider dateAdapter={AdapterDayjs}>
         <TimeField
           label=""
+          defaultValue={value ? dayjs(value) : undefined}
           sx={{
             borderRadius: 2,
             borderColor: "primary.main",
@@ -38,22 +42,9 @@ const CustomTimePicker = ({ label }: TimePickerProps) => {
               </InputAdornment>
             ),
           }}
+          onChange={onChange}
         />
       </LocalizationProvider>
-      {/* <LocalizationProvider dateAdapter={AdapterDayjs}>
-        <TimePicker
-          label=""
-          data-mdb-toggle="timepicker"
-          sx={{
-            borderRadius: 2,
-            borderColor: "primary.main",
-            size: "small",
-            margin: "dense",
-            width: 1,
-          }}
-          slotProps={{ textField: { size: "small" } }}
-        />
-      </LocalizationProvider> */}
     </div>
   );
 };

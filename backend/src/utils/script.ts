@@ -3,7 +3,7 @@ import { faker } from "@faker-js/faker";
 
 type Role = "VOLUNTEER" | "ADMIN" | "SUPERVISOR";
 
-export interface User {
+export interface dummyUser {
   email: string;
   imageURL: string;
   firstName: string;
@@ -15,7 +15,7 @@ export interface User {
 type Mode = "IN_PERSON" | "VIRTUAL";
 type Status = "DRAFT" | "ACTIVE" | "CANCELLED" | "COMPLETED";
 
-export interface Event {
+export interface dummyEvent {
   name: string;
   description: string;
   location: string;
@@ -28,7 +28,7 @@ export interface Event {
   tags?: string[];
 }
 
-export function createRandomUser(): User {
+export function createRandomUser(): dummyUser {
   const email = faker.internet.email().toLocaleLowerCase();
   const imageURL = faker.image.avatar();
   const firstName = faker.person.firstName();
@@ -50,7 +50,7 @@ export function createRandomUser(): User {
   };
 }
 
-export function createRandomEvent(): Event {
+export function createRandomEvent(): dummyEvent {
   const name = faker.lorem.words(3);
   const description = faker.lorem.paragraph();
   const location = `${

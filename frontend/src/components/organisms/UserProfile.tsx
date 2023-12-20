@@ -13,8 +13,8 @@ interface UserProfileProps {
   name: string;
   role: string;
   email: string;
-  joinDate: Date;
-  img_src?: string;
+  joinDate: string;
+  imgSrc?: string;
 }
 
 /**
@@ -25,23 +25,13 @@ const UserProfile = ({
   role,
   email,
   joinDate,
-  img_src,
+  imgSrc,
 }: UserProfileProps) => {
-  // Format date properly
-  const dateString = joinDate.toLocaleString("en-NG", {
-    year: "numeric",
-    month: "numeric",
-    day: "numeric",
-  });
-
-  // Set avatar
-  const avatar = img_src ? img_src : FALLBACK_AVATAR_URL;
-
   return (
     <div className="flex">
       <div className="flex items-center">
         <img
-          src={avatar}
+          src={imgSrc || FALLBACK_AVATAR_URL}
           alt={FALLBACK_AVATOR_ALT}
           className="rounded-full w-24 h-24"
         />
@@ -56,7 +46,7 @@ const UserProfile = ({
             {email}
           </IconText>
           <IconText icon={<CalendarMonthIcon className="text-gray-400" />}>
-            Joined {dateString}
+            Joined {joinDate}
           </IconText>
         </div>
       </div>

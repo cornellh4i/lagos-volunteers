@@ -1,64 +1,60 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import BoxText from "@/components/atoms/BoxText";
 import Chip from "@/components/atoms/Chip";
 import TabContainer from "@/components/molecules/TabContainer";
-import next from "next/types";
 import EventCard from "@/components/organisms/EventCard";
 import CardList from "@/components/molecules/CardList";
 import { GridColDef, GridValueGetterParams } from "@mui/x-data-grid";
 import Table from "@/components/molecules/Table";
 import Button from "../atoms/Button";
 import Link from "next/link";
+import { useAuth } from "@/utils/AuthContext";
+import {
+  fetchUserIdFromDatabase,
+  fetchUserRegisteredEvents,
+  formatDateTimeRange,
+  retrieveToken,
+} from "@/utils/helpers";
+import { Action } from "@/utils/types";
 
-type Action = "rsvp" | "cancel rsvp" | "publish" | "manage attendees" | "edit";
+type event = {
+  id: string;
+  name: string;
+  location: string;
+  actions: Action[];
+  startDate: string;
+  endDate: string;
+  role: string;
+  hours: number;
+};
 
-const UpcomingEvents = () => {
+type pastEvent = {
+  id: string;
+  name: string;
+  startDate: string;
+  role: string;
+  hours: number;
+};
+
+interface EventCardProps {
+  eventDetails: event[] | null;
+}
+
+const UpcomingEvents = ({ eventDetails }: EventCardProps) => {
   return (
     <CardList>
-      <EventCard
-        eventid={"000"}
-        mainAction={"manage attendees"}
-        title={"EDUFOOD"}
-        location={"WAREHOUSE B"}
-        datetime={"02/15/2023, 9:00-11:00 AM"}
-      />
-      <EventCard
-        eventid={"000"}
-        mainAction={"cancel rsvp"}
-        title={"Malta Outreach"}
-        location={"Plot 2, Lagos Food Bank Building"}
-        datetime={"02/16/2023, 9:00-11:00 AM"}
-      />
-      <EventCard
-        eventid={"000"}
-        mainAction={"cancel rsvp"}
-        dropdownActions={["cancel rsvp"]}
-        title={"NUMEPLAN"}
-        location={"Plot 2, Lagos Food Bank Building"}
-        datetime={"02/19/2023, 9:00-11:00 AM"}
-      />
-      <EventCard
-        eventid={"000"}
-        mainAction={"cancel rsvp"}
-        title={"EDUFOOD"}
-        location={"WAREHOUSE B"}
-        datetime={"02/15/2023, 9:00-11:00 AM"}
-      />
-      <EventCard
-        eventid={"000"}
-        mainAction={"cancel rsvp"}
-        title={"Malta Outreach"}
-        location={"Plot 2, Lagos Food Bank Building"}
-        datetime={"02/16/2023, 9:00-11:00 AM"}
-      />
-      <EventCard
-        eventid={"000"}
-        mainAction={"cancel rsvp"}
-        dropdownActions={["cancel rsvp"]}
-        title={"NUMEPLAN"}
-        location={"Plot 2, Lagos Food Bank Building"}
-        datetime={"02/19/2023, 9:00-11:00 AM"}
-      />
+      {eventDetails?.map((event) => (
+        <EventCard
+          key={event.id}
+          eventid={event.id}
+          title={event.name}
+          location={event.location}
+          datetime={formatDateTimeRange(event.startDate, event.endDate)}
+          dropdownActions={["manage attendees", "edit"]}
+          // hard-coded for now but main-action is determined based on the user and their status
+          mainAction="rsvp"
+        />
+      ))}
     </CardList>
   );
 };
@@ -67,7 +63,7 @@ const Drafts = () => {
   return <>Hello drafts</>;
 };
 
-const PastEvents = () => {
+const PastEvents = ({ eventDetails }: EventCardProps) => {
   const eventColumns: GridColDef[] = [
     {
       field: "role",
@@ -83,16 +79,15 @@ const PastEvents = () => {
       },
     },
     {
-      field: "program",
+      field: "name",
       headerName: "Program Name",
       flex: 2,
       minWidth: 100,
     },
     {
-      field: "date",
+      field: "startDate",
       headerName: "Date",
-      type: "date",
-      flex: 0.5,
+      flex: 2,
       minWidth: 100,
     },
     {
@@ -103,31 +98,37 @@ const PastEvents = () => {
     },
   ];
 
-  // below are dummy data, in the future we want to get data from backend and
-  // format them like this
-  let dummyDate: Date = new Date(2023, 0o1, 21);
-  const dummyRows = [
-    {
-      id: 1,
-      role: "Supervisor",
-      program: "EDUFOOD",
-      date: dummyDate,
-      hours: 4,
-    },
-    {
-      id: 2,
-      role: "Volunteer",
-      program: "Malta Outreach",
-      date: dummyDate,
-      hours: 4,
-    },
-  ];
+  const getFormattedDate = (date: string) => {
+    const month = date.substring(5, 7);
+    const year = date.substring(0, 4);
+    const day = date.substring(8, 10);
+    return month + "/" + day + "/" + year;
+  };
+
+  let dummyRows: pastEvent[] = [];
+  {
+    eventDetails?.map((event) => [
+      dummyRows.push({
+        id: event.id,
+        role: event.role,
+        name: event.name,
+        startDate: getFormattedDate(event.startDate),
+        hours: event.hours,
+      }),
+    ]);
+  }
+
+  const totalHours = () => {
+    let numOfHours = 0;
+    eventDetails?.map((event) => (numOfHours = numOfHours + event.hours));
+    return numOfHours.toString();
+  };
 
   return (
-    <div>
-      <BoxText text="Volunteer Hours" textRight="30" />
+    <>
+      <BoxText text="Volunteer Hours" textRight={totalHours()} />
       <Table columns={eventColumns} rows={dummyRows} />
-    </div>
+    </>
   );
 };
 
@@ -135,13 +136,55 @@ const PastEvents = () => {
  * A ViewEvents component is where a user can view and manage their events.
  */
 const ViewEvents = () => {
-  const tabs = [
-    { label: "Upcoming Events", panel: <UpcomingEvents /> },
-    { label: "Past Events", panel: <PastEvents /> },
-    { label: "Drafts", panel: <Drafts /> },
-  ];
-  return (
-    <>
+  const { user } = useAuth();
+  const [events, setEvents] = useState<event[] | null>(null);
+
+  const fetchUserEvents = async () => {
+    try {
+      // Make API call
+      const token = await retrieveToken();
+      const userid = await fetchUserIdFromDatabase(
+        token,
+        user?.email as string
+      );
+      const { response, data } = await fetchUserRegisteredEvents(token, userid);
+
+      // Set data
+      const apiEvents = data["data"]["events"];
+      let events: event[] = [];
+      apiEvents.map((event: any) => {
+        events.push({
+          id: event["event"]["id"],
+          name: event["event"]["name"],
+          location: event["event"]["location"],
+          startDate: event["event"]["startDate"],
+          endDate: event["event"]["endDate"],
+          actions: ["manage attendees", "edit"],
+          role:
+            userid === event["event"]["ownerId"] ? "Supervisor" : "Volunteer",
+          hours: 0, // hard-coded for now
+        });
+      });
+      setEvents(events);
+    } catch (error) {}
+  };
+
+  useEffect(() => {
+    fetchUserEvents();
+  }, []);
+  {
+    const tabs = [
+      {
+        label: "Upcoming Events",
+        panel: <UpcomingEvents eventDetails={events} />,
+      },
+      {
+        label: "Past Events",
+        panel: <PastEvents eventDetails={events} />,
+      },
+      { label: "Drafts", panel: <Drafts /> },
+    ];
+    return (
       <TabContainer
         tabs={tabs}
         rightAlignedComponent={
@@ -150,8 +193,7 @@ const ViewEvents = () => {
           </Link>
         }
       />
-    </>
-  );
+    );
+  }
 };
-
 export default ViewEvents;

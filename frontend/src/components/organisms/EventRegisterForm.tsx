@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import EventDetails from "./EventDetails";
 import IconText from "../atoms/IconText";
 import CustomCheckbox from "../atoms/Checkbox";
@@ -8,15 +8,16 @@ import Link from "next/link";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { Grid } from "@mui/material";
 import { useRouter } from "next/router";
+import { useAuth } from "@/utils/AuthContext";
+import {
+  fetchUserIdFromDatabase,
+  retrieveToken,
+  registerUserForEvent,
+} from "@/utils/helpers";
+import { EventData } from "@/utils/types";
 
 interface EventRegisterFormProps {
-  eventid: string;
-  location: string;
-  datetime: string;
-  supervisors: string[];
-  capacity: number;
-  image_src: string;
-  tags?: string[];
+  event: EventData;
 }
 
 /**
@@ -30,9 +31,21 @@ const ModalBody = ({
   handleClose: () => void;
 }) => {
   const router = useRouter();
-  const register = () => {
-    router.replace(`/events/${eventid}/confirm/register`);
+  const { user } = useAuth();
+
+  /**
+   * Handles clicking the Register button
+   */
+  const handleRegister = async () => {
+    const token = await retrieveToken();
+    const attendeeid = await fetchUserIdFromDatabase(
+      token,
+      user?.email as string
+    );
+    await registerUserForEvent(token, eventid, attendeeid);
+    router.reload();
   };
+
   return (
     <div>
       <h2>Terms and Conditions</h2>
@@ -49,7 +62,7 @@ const ModalBody = ({
           </Button>
         </Grid>
         <Grid item md={6} xs={12}>
-          <Button color="dark-gray" type="button" onClick={register}>
+          <Button color="dark-gray" type="button" onClick={handleRegister}>
             Agree & Continue
           </Button>
         </Grid>
@@ -61,15 +74,7 @@ const ModalBody = ({
 /**
  * An EventRegisterForm component
  */
-const EventRegisterForm = ({
-  eventid,
-  location,
-  datetime,
-  supervisors,
-  capacity,
-  image_src,
-  tags,
-}: EventRegisterFormProps) => {
+const EventRegisterForm = ({ event }: EventRegisterFormProps) => {
   const [checked, setChecked] = useState(false);
   const handleChange = () => {
     setChecked((checked) => !checked);
@@ -89,7 +94,9 @@ const EventRegisterForm = ({
       <Modal
         open={open}
         handleClose={handleClose}
-        children={<ModalBody eventid={eventid} handleClose={handleClose} />}
+        children={
+          <ModalBody eventid={event.eventid} handleClose={handleClose} />
+        }
       />
 
       <div className="justify-center center-items grid grid-cols-4 grid-rows-6`">
@@ -102,23 +109,16 @@ const EventRegisterForm = ({
             </IconText>
           </div>
           <div className="font-semibold text-3xl">Event Registration</div>
-          <div className="text-2xl font-semibold mb-6">EDUFOOD</div>
+          <div className="text-2xl font-semibold mb-6">{event.name}</div>
           <EventDetails
-            location={location}
-            datetime={datetime}
-            supervisors={supervisors}
-            capacity={capacity}
-            image_src={image_src}
-            tags={tags}
+            location={event.location}
+            datetime={event.datetime}
+            supervisors={event.supervisors}
+            capacity={event.capacity}
+            image_src={event.image_src}
+            tags={event.tags}
           />
-          <div>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut et massa
-            mi. Aliquam in hendrerit urna. Pellentesque sit amet sapien
-            fringilla, mattis ligula consectetur, ultrices mauris. Lorem ipsum
-            dolor sit amet, consectetur adipiscing elit. Ut et massa mi. Aliquam
-            in hendrerit urna. Pellentesque sit amet sapien fringilla, mattis
-            ligula consectetur, ultrices mauris.
-          </div>
+          <div>{event.description}</div>
           <div className="font-bold pt-4">Terms and Conditions</div>
           <div>
             By registering, I agree that I will attend the event. If I cannot
