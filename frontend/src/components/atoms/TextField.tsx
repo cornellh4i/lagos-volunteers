@@ -28,6 +28,7 @@ const CustomTextField = ({
       </div>
       <TextField
         type={type}
+        InputProps={type == "number" ? { inputProps: { min: 0 } } : {}}
         disabled={disabled}
         size="small"
         margin="dense"

@@ -1,7 +1,7 @@
-import React, { ReactElement } from "react";
+import React, { ReactNode, Children } from "react";
 
 interface CardListProps {
-  children: ReactElement[];
+  children: ReactNode;
 }
 
 /**
@@ -9,18 +9,19 @@ interface CardListProps {
  * contained within
  */
 const CardList = ({ children }: CardListProps) => {
+  const cards = Children.toArray(children);
   return (
     <>
       {/* Show only on large screens */}
       <div className="hidden sm:flex flex-wrap pt-3">
-        {children.map((card) => {
+        {cards.map((card) => {
           return <div className="pr-5 pb-5 w-96">{card}</div>;
         })}
       </div>
 
       {/* Show only on small screens */}
       <div className="sm:hidden flex flex-col pt-3">
-        {children.map((card) => {
+        {cards.map((card) => {
           return <div className="pb-4">{card}</div>;
         })}
       </div>
