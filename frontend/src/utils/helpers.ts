@@ -244,6 +244,46 @@ export const fetchEvent = async (token: string, eventid: string) => {
 };
 
 /**
+ * Fetches all users after the specified cursor
+ * @param token is the user token
+ * @param cursor is the pagination cursor
+ * @returns the response data
+ */
+export const fetchUsersPaginated = async (token: string, cursor: string) => {
+  const PAGE_SIZE = 6; // Number of records to fetch per page
+  const url =
+    cursor == ""
+      ? `${BASE_URL}/users/pagination?limit=${PAGE_SIZE}`
+      : `${BASE_URL}/users/pagination?limit=${PAGE_SIZE}&after=${cursor}`;
+  const response = await fetch(url, {
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  const data = await response.json();
+  return { response: response, data: data };
+};
+
+/**
+ * Fetches the total number of users in the database
+ * @param token is the user token
+ * @returns the response data
+ */
+export const fetchUsersCount = async (token: string) => {
+  // call the get count insdtead of this
+  const url = `${BASE_URL}/users/count`;
+  const response = await fetch(url, {
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  const data = await response.json();
+  return { response: response, data: data };
+};
+
+/**
  * Fetches details for the specified user
  * @param token is the user token
  * @param userid is the id of the user

@@ -60,6 +60,13 @@ const updateUser = async (userID: string, user: User) => {
     },
   });
 };
+/**
+ * Gets all Users in database and all data associated with each user
+ * @returns promise with all users or error
+ */
+const getCountUsers = async () => {
+  return prisma.user.count({});
+};
 
 /**
  * Gets all users in database and all data associated with each user
@@ -199,15 +206,29 @@ const getUsers = async (
  */
 const getUsersPaginated = async (req: Request) => {
   const query = req.query;
-  return prisma.user.findMany({
-    take: query.limit ? parseInt(query.limit as string) : 10,
-    cursor: {
-      id: query.after ? (query.after as string) : undefined,
-    },
-    orderBy: {
-      id: "asc",
-    },
-  });
+  // if no after is supplied make the request independent of that paramter
+  return query.after === undefined
+    ? prisma.user.findMany({
+        take: query.limit ? parseInt(query.limit as string) : 10,
+        orderBy: {
+          id: "asc",
+        },
+        include: {
+          profile: true,
+        },
+      })
+    : prisma.user.findMany({
+        take: query.limit ? parseInt(query.limit as string) : 10,
+        cursor: {
+          id: query.after ? (query.after as string) : undefined,
+        },
+        orderBy: {
+          id: "asc",
+        },
+        include: {
+          profile: true,
+        },
+      });
 };
 
 /**
@@ -617,6 +638,7 @@ export default {
   createUser,
   deleteUser,
   updateUser,
+  getCountUsers,
   getUsers,
   getUsersPaginated,
   getSearchedUser,
