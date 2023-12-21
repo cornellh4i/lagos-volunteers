@@ -49,7 +49,7 @@ const Button = ({
       {...props}
     >
       {loading ? (
-        <CircularProgress size={24} />
+        <CircularProgress color="inherit" size={24} />
       ) : (
         <div className="truncate">{children}</div>
       )}
