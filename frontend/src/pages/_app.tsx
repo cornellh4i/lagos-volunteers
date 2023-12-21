@@ -1,5 +1,4 @@
 import "../styles/globals.css";
-import { useEffect } from "react";
 import type { AppProps } from "next/app";
 import { ThemeProvider, CssBaseline } from "@mui/material";
 import { createTheme } from "@mui/material/styles";
@@ -9,7 +8,7 @@ import { AuthProvider } from "@/utils/AuthContext";
 
 export const theme = createTheme({
   typography: {
-    fontFamily: "Helvetica, sans-serif",
+    fontFamily: "Inter, sans-serif",
     button: {
       textTransform: "none",
     },
