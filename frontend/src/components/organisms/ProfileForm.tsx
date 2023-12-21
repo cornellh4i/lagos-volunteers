@@ -184,70 +184,70 @@ const ProfileForm = ({ userDetails }: ProfileFormProps) => {
         <TextField
           label="Email *"
           disabled={true}
-          required={true}
-          name="email"
-          register={register}
-          requiredMessage={errors.email ? "Required" : undefined}
+          error={errors.email ? "Required" : undefined}
+          {...register("email", {
+            required: "true",
+          })}
         />
       </div>
       <div>
         <TextField
           label="First name *"
-          required={true}
-          name="firstName"
-          register={register}
-          requiredMessage={errors.firstName ? "Required" : undefined}
+          error={errors.firstName ? "Required" : undefined}
+          {...register("firstName", {
+            required: "true",
+          })}
         />
       </div>
       <div>
         <TextField
           label="Last name *"
-          required={true}
-          name="lastName"
-          register={register}
-          requiredMessage={errors.lastName ? "Required" : undefined}
+          error={errors.lastName ? "Required" : undefined}
+          {...register("lastName", {
+            required: "true",
+          })}
         />
       </div>
       <div>
         <TextField
           label="Preferred name"
-          required={false}
-          name="preferredName"
-          register={register}
-          requiredMessage={errors.preferredName ? "Required" : undefined}
+          error={errors.preferredName ? "Required" : undefined}
+          {...register("preferredName", {
+            required: "true",
+          })}
         />
       </div>
       <div>
         <TextField
           type="password"
           label="Old password *"
-          required={false}
-          name="oldPassword"
-          register={register}
-          requiredMessage={errors.oldPassword ? "Required" : undefined}
+          error={errors.oldPassword ? "Required" : undefined}
+          {...register("oldPassword", {
+            required: "false",
+          })}
         />
       </div>
       <div>
         <TextField
           type="password"
           label="New password "
-          required={false}
-          name="newPassword"
-          register={register}
+          {...register("newPassword", {
+            required: "false",
+          })}
         />
       </div>
       <div>
         <TextField
           type="password"
           label="Confirm new password"
-          required={false}
-          name="confirmNewPassword"
-          register={register}
-          requiredMessage={
+          error={
             watch("newPassword") === watch("confirmNewPassword")
               ? undefined
               : "Passwords must match"
           }
+          {...register("confirmNewPassword", {
+            required: "false",
+          })}
         />
       </div>
       <div>

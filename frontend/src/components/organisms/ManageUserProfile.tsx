@@ -4,7 +4,8 @@ import UserProfile from "./UserProfile";
 import Button from "@/components/atoms/Button";
 import FormControl from "@mui/material/FormControl";
 import MenuItem from "@mui/material/MenuItem";
-import Select, { SelectChangeEvent } from "@mui/material/Select";
+import { SelectChangeEvent } from "@mui/material/Select";
+import Select from "../atoms/Select";
 import Table from "@/components/molecules/Table";
 import { GridColDef } from "@mui/x-data-grid";
 import HourglassEmptyIcon from "@mui/icons-material/HourglassEmpty";
@@ -167,14 +168,11 @@ const Status = ({ userRole, userStatus, userID }: userStatusData) => {
             />
           }
         />
-        <div>Assign Role</div>
         <FormControl className="w-full sm:w-1/2">
           <Select
+            label="Assign role"
             value={role}
             onChange={handleUserRoleChange}
-            displayEmpty
-            size="small"
-            className="text-lg"
           >
             <MenuItem value="VOLUNTEER">Volunteer</MenuItem>
             <MenuItem value="SUPERVISOR">Supervisor</MenuItem>

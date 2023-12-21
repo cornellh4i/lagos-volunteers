@@ -240,16 +240,17 @@ const EventForm = ({ eventId, eventType, eventDetails }: EventFormProps) => {
       <div className="grid grid-cols-1 sm:grid-cols-2  col-span-2  sm:col-span-1">
         <TextField
           label="Event Name"
-          required={true}
-          name="eventName"
-          register={register}
-          requiredMessage={errors.eventName ? "Required" : undefined}
+          error={errors.eventName ? "Required" : undefined}
+          {...register("eventName", {
+            required: "true",
+          })}
         />
       </div>
       <div className="sm:space-x-4 grid grid-cols-1 sm:grid-cols-2">
         <div className="pb-4 sm:pb-0">
           <DatePicker
             label="Start Date"
+            error={getStartDate === "" ? "Required" : undefined}
             value={eventDetails ? eventDetails.startDate : undefined}
             onChange={(e) =>
               e?.$d ? (e?.$d != "Invalid Date" ? setStartDate(e.$d) : "") : ""
@@ -258,6 +259,7 @@ const EventForm = ({ eventId, eventType, eventDetails }: EventFormProps) => {
         </div>
         <DatePicker
           label="End Date"
+          error={getEndDate === "" ? "Required" : undefined}
           value={eventDetails ? eventDetails.endDate : undefined}
           onChange={(e) =>
             e?.$d ? (e?.$d != "Invalid Date" ? setEndDate(e.$d) : "") : ""
@@ -268,6 +270,7 @@ const EventForm = ({ eventId, eventType, eventDetails }: EventFormProps) => {
         <div className="pb-4 sm:pb-0">
           <TimePicker
             label="Start Time"
+            error={getStartTime === "" ? "Required" : undefined}
             value={eventDetails ? eventDetails.startTime : undefined}
             onChange={(e) =>
               e?.$d ? (e?.$d != "Invalid Date" ? setStartTime(e.$d) : "") : ""
@@ -276,6 +279,7 @@ const EventForm = ({ eventId, eventType, eventDetails }: EventFormProps) => {
         </div>
         <TimePicker
           label="End Time"
+          error={getEndTime === "" ? "Required" : undefined}
           value={eventDetails ? eventDetails.endTime : undefined}
           onChange={(e) =>
             e?.$d ? (e?.$d != "Invalid Date" ? setEndTime(e.$d) : "") : ""
@@ -320,19 +324,20 @@ const EventForm = ({ eventId, eventType, eventDetails }: EventFormProps) => {
       <div className="grid grid-cols-1 sm:grid-cols-2 col-span-2  sm:col-span-1">
         <TextField
           label="Volunteer Sign Up Cap"
-          required={true}
           type="number"
-          name="volunteerSignUpCap"
-          register={register}
-          requiredMessage={errors.volunteerSignUpCap ? "Required" : undefined}
+          error={errors.volunteerSignUpCap ? "Required" : undefined}
+          {...register("volunteerSignUpCap", {
+            required: "true",
+          })}
         />
       </div>
       <MultilineTextField
         label="Event Description"
         required={true}
-        name="eventDescription"
-        register={register}
-        requiredMessage={errors.eventDescription ? "Required" : undefined}
+        error={errors.eventDescription ? "Required" : undefined}
+        {...register("eventDescription", {
+          required: "true",
+        })}
       />
       <Upload label="Event Image" />
       <TextCopy

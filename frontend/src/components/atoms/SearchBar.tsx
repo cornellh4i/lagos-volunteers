@@ -3,7 +3,6 @@ import { Box, TextField, InputAdornment, IconButton } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 
 interface SearchBarProps {
-  onClick: (event: FormEvent<any>) => void;
   [key: string]: any;
 }
 
@@ -12,22 +11,27 @@ interface SearchBarProps {
  */
 const SearchBar = ({ onClick, ...props }: SearchBarProps) => {
   return (
-    <Box component="form" onClick={onClick}>
-      <TextField
-        size="small"
-        fullWidth={true}
-        InputProps={{
-          endAdornment: (
-            <InputAdornment position="end">
-              <IconButton type="submit" aria-label="search" edge="end">
-                <SearchIcon />
-              </IconButton>
-            </InputAdornment>
-          ),
-        }}
-        {...props}
-      />
-    </Box>
+    <TextField
+      sx={{
+        "& .MuiInputBase-root": {
+          borderRadius: "8px",
+        },
+        "& .MuiInputBase-input": {
+          height: "12px",
+        },
+      }}
+      fullWidth
+      InputProps={{
+        endAdornment: (
+          <InputAdornment position="end">
+            <IconButton type="submit" aria-label="search" edge="end">
+              <SearchIcon />
+            </IconButton>
+          </InputAdornment>
+        ),
+      }}
+      {...props}
+    />
   );
 };
 

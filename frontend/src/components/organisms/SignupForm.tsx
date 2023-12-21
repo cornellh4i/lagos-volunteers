@@ -117,58 +117,58 @@ const SignupForm = () => {
       <div className="font-bold text-3xl">Sign Up</div>
       <div>
         <TextField
-          requiredMessage={errors.email ? "Required" : undefined}
-          name="email"
+          error={errors.email ? "Required" : undefined}
           type="email"
-          register={register}
-          label="Email *"
-          required={true}
+          label="Email"
+          {...register("email", {
+            required: "true",
+          })}
         />
       </div>
       <div className="grid sm:space-x-4 grid-cols-1 sm:grid-cols-2 ">
         <div className="pb-4 sm:pb-0">
           <TextField
-            requiredMessage={errors.firstName ? "Required" : undefined}
-            name="firstName"
-            register={register}
-            label="First Name *"
-            required={true}
+            error={errors.firstName ? "Required" : undefined}
+            label="First Name"
+            {...register("firstName", {
+              required: "true",
+            })}
           />
         </div>
         <div>
           <TextField
-            requiredMessage={errors.lastName ? "Required" : undefined}
-            name="lastName"
-            register={register}
-            label="Last Name *"
-            required={true}
+            error={errors.lastName ? "Required" : undefined}
+            label="Last Name"
+            {...register("lastName", {
+              required: "true",
+            })}
           />
         </div>
       </div>
       <div>
         <TextField
-          requiredMessage={errors.password ? "Required" : undefined}
+          error={errors.password ? "Required" : undefined}
           type="password"
-          name="password"
-          register={register}
-          label="Password *"
-          required={true}
+          label="Password"
+          {...register("password", {
+            required: "true",
+          })}
         />
       </div>
       <div>
         <TextField
           type="password"
-          requiredMessage={
+          error={
             errors.confirmPassword
               ? "Required"
               : watch("password") != watch("confirmPassword")
               ? "Passwords do not match"
               : undefined
           }
-          name="confirmPassword"
-          register={register}
-          label="Confirm Password *"
-          required={true}
+          label="Confirm Password"
+          {...register("confirmPassword", {
+            required: "true",
+          })}
         />
       </div>
       <div>

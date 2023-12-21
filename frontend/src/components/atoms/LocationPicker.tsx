@@ -8,9 +8,8 @@ import { RegisterOptions, UseFormRegisterReturn } from "react-hook-form";
 interface LocationPickerProps {
   label: string;
   name: string;
-  required: boolean;
+  error?: string;
   setValue: (x: any, y: any) => any;
-  requiredMessage?: string;
   register: (name: any, options?: RegisterOptions) => UseFormRegisterReturn;
 }
 
@@ -21,8 +20,7 @@ interface LocationPickerProps {
 const LocationPicker = ({
   label,
   name,
-  required,
-  requiredMessage = "",
+  error,
   register,
   setValue,
 }: LocationPickerProps) => {
@@ -33,6 +31,7 @@ const LocationPicker = ({
   };
   return (
     <div className="relative z-0">
+      <div className="mb-1">{label}</div>
       <LocationOnIcon
         color="disabled"
         className="flex h-full absolute inset-y-0 right-0 z-10 pr-2"
@@ -44,12 +43,13 @@ const LocationPicker = ({
 
           setValue(name, place["address_components"][0]["long_name"]);
         }}
-        className="box-border border border-solid rounded w-full p-2 text-base border-gray-400 hover:border-black focus:border-blue-600 focus:outline-none focus:border-2"
+        className="box-border border border-solid rounded-[8px] w-full p-2 text-base border-gray-400 hover:border-black focus:border-blue-600 focus:outline-none focus:border-2"
         options={{
           fields: ["address_components"],
           types: ["address"],
         }}
       />
+      <div className="mt-1 text-xs text-red-500">{error}</div>
     </div>
   );
 };

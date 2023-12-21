@@ -86,12 +86,12 @@ const ForgotPasswordForm = () => {
       </div>
       <div>
         <TextField
-          requiredMessage={errors.email ? "Required" : undefined}
-          name="email"
+          error={errors.email ? "Required" : undefined}
           type="email"
-          register={register}
           label="Email *"
-          required={true}
+          {...register("email", {
+            required: "true",
+          })}
         />
       </div>
       <div>

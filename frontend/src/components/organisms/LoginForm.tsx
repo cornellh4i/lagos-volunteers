@@ -86,7 +86,6 @@ const LoginForm = () => {
     } catch (err) {}
     setIsLoading(false);
   };
-
   return (
     <div className="space-y-4 ">
       <LoginErrorComponent />
@@ -94,22 +93,22 @@ const LoginForm = () => {
         <div className="font-bold text-3xl"> Log In </div>
         <div>
           <TextField
-            requiredMessage={errors.email ? "Required" : undefined}
-            label="Email *"
-            name="email"
+            error={errors.email ? "Required" : undefined}
+            label="Email"
             type="email"
-            register={register}
-            required={true}
+            {...register("email", {
+              required: "true",
+            })}
           />
         </div>
         <div>
           <TextField
-            requiredMessage={errors.password ? "Required" : undefined}
-            label="Password *"
-            name="password"
+            error={errors.password ? "Required" : undefined}
+            label="Password"
             type="password"
-            register={register}
-            required={true}
+            {...register("password", {
+              required: "true",
+            })}
           />
         </div>
         <div className="text-center">

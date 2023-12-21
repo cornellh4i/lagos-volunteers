@@ -10,6 +10,7 @@ import dayjs from "dayjs";
 interface TimePickerProps {
   label: string;
   value?: string;
+  error?: string;
   [key: string]: any;
 }
 
@@ -17,22 +18,28 @@ interface TimePickerProps {
  * A TimePicker component is an input field that allows selecting different
  * times of day.
  */
-const CustomTimePicker = ({ label, value, ...props }: TimePickerProps) => {
+const CustomTimePicker = ({
+  label,
+  value,
+  error,
+  ...props
+}: TimePickerProps) => {
   return (
     <div>
-      <div> {label} </div>
+      <div className="mb-1">{label}</div>
       <LocalizationProvider dateAdapter={AdapterDayjs}>
         <TimeField
+          sx={{
+            "& .MuiInputBase-root": {
+              borderRadius: "8px",
+            },
+            "& .MuiInputBase-input": {
+              height: "12px",
+            },
+          }}
+          fullWidth
           label=""
           defaultValue={value ? dayjs(value) : undefined}
-          sx={{
-            borderRadius: 2,
-            borderColor: "primary.main",
-            size: "small",
-            margin: "dense",
-            width: 1,
-          }}
-          slotProps={{ textField: { size: "small" } }}
           InputProps={{
             endAdornment: (
               <InputAdornment position="end">
@@ -45,6 +52,7 @@ const CustomTimePicker = ({ label, value, ...props }: TimePickerProps) => {
           {...props}
         />
       </LocalizationProvider>
+      <div className="mt-1 text-xs text-red-500">{error}</div>
     </div>
   );
 };
