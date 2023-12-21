@@ -57,7 +57,7 @@ const post = async (url: string, body: object) => {
 const put = async (url: string, body: object) => {
   const token = await retrieveToken();
   const options = {
-    method: "POST",
+    method: "PUT",
     headers: {
       Authorization: `Bearer ${token}`,
       "Content-Type": "application/json",
@@ -77,7 +77,7 @@ const put = async (url: string, body: object) => {
 const patch = async (url: string, body: object) => {
   const token = await retrieveToken();
   const options = {
-    method: "POST",
+    method: "PATCH",
     headers: {
       Authorization: `Bearer ${token}`,
       "Content-Type": "application/json",
