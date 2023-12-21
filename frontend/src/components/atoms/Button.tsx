@@ -1,5 +1,5 @@
 import React, { ReactNode } from "react";
-import MuiButton, { ButtonPropsColorOverrides } from "@mui/material/Button";
+import MuiButton from "@mui/material/Button";
 import CircularProgress from "@mui/material/CircularProgress";
 
 interface ButtonProps {
