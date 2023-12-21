@@ -20,8 +20,13 @@ const Button = ({
 }: ButtonProps) => {
   // Set button size
   let height = "";
-  if (size === "medium") {
-    height = "45px";
+  switch (size) {
+    case "small":
+      height = "35px";
+      break;
+    case "medium":
+      height = "45px";
+      break;
   }
 
   // Set button variety

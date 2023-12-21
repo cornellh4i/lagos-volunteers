@@ -34,7 +34,9 @@ const NavBar = () => {
   ];
 
   const rightAlignedComponents = [
-    <Button onClick={handleSignOut}>Log Out</Button>,
+    <Button size="small" onClick={handleSignOut}>
+      Log Out
+    </Button>,
   ];
 
   return (
