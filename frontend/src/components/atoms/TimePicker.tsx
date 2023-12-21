@@ -49,6 +49,7 @@ const CustomTimePicker = ({
               </InputAdornment>
             ),
           }}
+          slotProps={{ textField: { error: error !== "" } }}
           {...props}
         />
       </LocalizationProvider>

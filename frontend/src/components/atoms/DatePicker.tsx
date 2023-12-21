@@ -35,7 +35,7 @@ const CustomDatePicker = ({
             },
           }}
           slotProps={{
-            textField: { fullWidth: true },
+            textField: { fullWidth: true, error: error !== "" },
           }}
           label=""
           format="MM/DD/YYYY"

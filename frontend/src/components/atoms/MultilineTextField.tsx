@@ -26,6 +26,7 @@ const MultilineTextField = forwardRef(
           fullWidth
           rows={10}
           ref={ref}
+          error={error !== ""}
           {...props}
         />
         <div className="mt-1 text-xs text-red-500">{error}</div>

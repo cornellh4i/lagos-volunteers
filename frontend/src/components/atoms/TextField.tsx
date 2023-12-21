@@ -30,6 +30,7 @@ const TextField = forwardRef(
           ref={ref}
           type={type}
           InputProps={type === "number" ? { inputProps: { min: 0 } } : {}}
+          error={error !== ""}
           {...props}
         />
         <div className="mt-1 text-xs text-red-500">{error}</div>
