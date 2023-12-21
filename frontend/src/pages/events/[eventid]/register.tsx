@@ -4,14 +4,10 @@ import CenteredTemplate from "@/components/templates/CenteredTemplate";
 import EventRegisterForm from "@/components/organisms/EventRegisterForm";
 import EventConfirmation from "@/components/organisms/EventConfirmation";
 import { useAuth } from "@/utils/AuthContext";
-import {
-  fetchUserIdFromDatabase,
-  formatDateTimeRange,
-  retrieveToken,
-  fetchEventDetailsForRegisteredUser,
-} from "@/utils/helpers";
+import { fetchUserIdFromDatabase, formatDateTimeRange } from "@/utils/helpers";
 import Loading from "@/components/molecules/Loading";
 import { EventData } from "@/utils/types";
+import { api } from "@/utils/api";
 
 /** An EventRegistration page */
 const EventRegistration = () => {
@@ -27,15 +23,9 @@ const EventRegistration = () => {
   const updateEventDetails = async () => {
     try {
       // Make API call
-      const token = await retrieveToken();
-      const userid = await fetchUserIdFromDatabase(
-        token,
-        user?.email as string
-      );
-      const data = await fetchEventDetailsForRegisteredUser(
-        token,
-        eventid,
-        userid
+      const userid = await fetchUserIdFromDatabase(user?.email as string);
+      const { data } = await api.get(
+        `/users/${userid}/registered?eventid=${eventid}`
       );
 
       // Set data

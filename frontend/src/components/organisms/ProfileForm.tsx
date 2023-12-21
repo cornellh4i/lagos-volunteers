@@ -9,6 +9,7 @@ import { BASE_URL } from "@/utils/constants";
 import { useUpdatePassword } from "react-firebase-hooks/auth";
 import Alert from "../atoms/Alert";
 import { reauthenticateWithCredential, EmailAuthProvider } from "firebase/auth";
+import { api } from "@/utils/api";
 
 type FormValues = {
   email: string;
@@ -132,23 +133,12 @@ const ProfileForm = ({ userDetails }: ProfileFormProps) => {
       // Update profile in DB
       const url = BASE_URL as string;
       const userid = userDetails.id;
-      const fetchUrl = `${url}/users/` + userid + `/profile`;
-      const currentUser = auth.currentUser;
-      const userToken = await currentUser?.getIdToken();
-      const body = {
+      const { response } = await api.put(`/users/${userid}/profile`, {
         firstName: firstName,
         lastName: lastName,
         nickname: preferredName,
-      };
-      const response = await fetch(fetchUrl, {
-        method: "PUT",
-        headers: {
-          Authorization: `Bearer ${userToken}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(body),
       });
-      const data = await response.json();
+      const currentUser = auth.currentUser;
 
       // Update password in Firebase
       if (newPassword !== "" && currentUser != null) {

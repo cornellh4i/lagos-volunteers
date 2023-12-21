@@ -3,7 +3,7 @@ import { useRouter } from "next/router";
 import EventForm from "@/components/organisms/EventForm";
 import CenteredTemplate from "@/components/templates/CenteredTemplate";
 import Loading from "@/components/molecules/Loading";
-import { fetchEvent, retrieveToken } from "@/utils/helpers";
+import { api } from "@/utils/api";
 
 type eventData = {
   eventName: string;
@@ -30,8 +30,7 @@ const EditEvent = () => {
   const fetchEventDetails = async () => {
     try {
       // Make API call
-      const token = await retrieveToken();
-      const { response, data } = await fetchEvent(token, eventid);
+      const { data } = await await api.get(`/events/${eventid}`);
 
       // Set event details
       setEventDetails({
