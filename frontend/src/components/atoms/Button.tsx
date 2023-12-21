@@ -4,6 +4,7 @@ import CircularProgress from "@mui/material/CircularProgress";
 
 interface ButtonProps {
   children: ReactNode;
+  icon: ReactNode;
   variety?: "primary" | "secondary" | "tertiary" | "error";
   size?: "small" | "medium";
   loading?: boolean;
@@ -13,6 +14,7 @@ interface ButtonProps {
 /** A simple Button component */
 const Button = ({
   children,
+  icon,
   variety = "primary",
   size = "medium",
   loading = false,
@@ -59,6 +61,7 @@ const Button = ({
       fullWidth
       variant={variant}
       color={color}
+      startIcon={icon}
       sx={{
         color: textColor,
         height: height,
