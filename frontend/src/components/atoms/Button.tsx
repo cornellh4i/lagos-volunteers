@@ -4,7 +4,7 @@ import CircularProgress from "@mui/material/CircularProgress";
 
 interface ButtonProps {
   children: ReactNode;
-  icon: ReactNode;
+  icon?: ReactNode;
   variety?: "primary" | "secondary" | "tertiary" | "error";
   size?: "small" | "medium";
   loading?: boolean;
