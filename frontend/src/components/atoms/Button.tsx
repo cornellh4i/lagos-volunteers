@@ -1,49 +1,53 @@
 import React, { ReactNode } from "react";
-import { Button } from "@mui/material";
+import MuiButton, { ButtonPropsColorOverrides } from "@mui/material/Button";
 import CircularProgress from "@mui/material/CircularProgress";
 
 interface ButtonProps {
   children: ReactNode;
-  color: "gray" | "dark-gray";
-  onClick?: (e?: any) => void;
-  type?: "button" | "submit" | "reset" | undefined;
-  isLoading?: boolean;
-  disabled?: boolean;
+  variety?: "primary" | "secondary" | "tertiary" | "error";
+  loading?: boolean;
   [key: string]: any;
 }
 
-/** A Button page */
-const CustomButton = ({
+/** A simple Button component */
+const Button = ({
   children,
-  color,
-  onClick,
-  type,
-  isLoading,
-  disabled,
+  variety = "primary",
+  loading = false,
   ...props
 }: ButtonProps) => {
+  let variant: "contained" | "outlined" | "text";
+  let color: "primary" | "secondary" | "error";
+  switch (variety) {
+    case "primary":
+      variant = "contained";
+      color = "primary";
+      break;
+    case "secondary":
+      variant = "outlined";
+      color = "secondary";
+    case "tertiary":
+      variant = "text";
+      color = "secondary";
+    case "error":
+      variant = "outlined";
+      color = "error";
+  }
   return (
-    <Button
-      fullWidth={true}
-      disabled={disabled}
-      type={type}
-      variant="contained"
-      onClick={onClick}
+    <MuiButton
       disableElevation
-      sx={{ textTransform: "capitalize" }}
-      className={
-        color == "gray"
-          ? "bg-gray-300 text-black"
-          : color == "dark-gray"
-          ? "bg-gray-400 text-black"
-          : ""
-      }
+      fullWidth
+      variant={variant}
+      color={color}
       {...props}
     >
-      {isLoading && <CircularProgress size={24} />}
-      {!isLoading && <div className="truncate">{children}</div>}
-    </Button>
+      {loading ? (
+        <CircularProgress size={24} />
+      ) : (
+        <div className="truncate">{children}</div>
+      )}
+    </MuiButton>
   );
 };
 
-export default CustomButton;
+export default Button;

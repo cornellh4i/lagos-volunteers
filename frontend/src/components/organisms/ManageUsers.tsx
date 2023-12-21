@@ -93,7 +93,7 @@ const Active = ({
           }}
         >
           <Link href="/users/asdf/manage" className="no-underline">
-            <Button color="gray">
+            <Button>
               <IconText icon={<AccountBoxIcon />}>View Profile</IconText>
             </Button>
           </Link>

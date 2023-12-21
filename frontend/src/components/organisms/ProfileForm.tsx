@@ -259,19 +259,13 @@ const ProfileForm = ({ userDetails }: ProfileFormProps) => {
       </div>
       <div className="sm:space-x-4 grid grid-cols-1 sm:grid-cols-2">
         <div className="pb-4 sm:pb-0">
-          <Button
-            loading={isLoading}
-            disabled={isLoading}
-            type="submit"
-            color="gray"
-          >
+          <Button loading={isLoading} disabled={isLoading} type="submit">
             Save Changes
           </Button>
         </div>
         <div>
           <Button
             type="button"
-            color="dark-gray"
             onClick={() => {
               reset(userDetails, { keepDefaultValues: true });
             }}

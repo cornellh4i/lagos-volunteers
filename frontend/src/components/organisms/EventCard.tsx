@@ -52,23 +52,11 @@ const EventCard = ({
   const MainAction = () => {
     switch (mainAction) {
       case "rsvp":
-        return (
-          <Button href={`/events/${eventid}/register`} color="gray">
-            RSVP
-          </Button>
-        );
+        return <Button href={`/events/${eventid}/register`}>RSVP</Button>;
       case "cancel rsvp":
-        return (
-          <Button href={`/events/${eventid}/cancel`} color="gray">
-            RSVP
-          </Button>
-        );
+        return <Button href={`/events/${eventid}/cancel`}>RSVP</Button>;
       case "manage attendees":
-        return (
-          <Button href={`/events/${eventid}/attendees`} color="gray">
-            RSVP
-          </Button>
-        );
+        return <Button href={`/events/${eventid}/attendees`}>RSVP</Button>;
       default:
         return <></>;
     }

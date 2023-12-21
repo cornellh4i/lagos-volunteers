@@ -71,12 +71,12 @@ const ModalBody = ({ status, blacklistFunc, handleClose }: modalBodyProps) => {
       </p>
       <Grid container spacing={2}>
         <Grid item md={6} xs={12}>
-          <Button color="gray" type="button" onClick={handleClose}>
+          <Button type="button" onClick={handleClose}>
             Cancel
           </Button>
         </Grid>
         <Grid item md={6} xs={12}>
-          <Button color="dark-gray" type="button" onClick={blacklistFunc}>
+          <Button type="button" onClick={blacklistFunc}>
             {status == "ACTIVE" ? "Blacklist" : "Remove"}
           </Button>
         </Grid>
@@ -184,7 +184,7 @@ const Status = ({ userRole, userStatus, userID }: userStatusData) => {
 
         <div className="pt-2">Blacklist</div>
         <div className="w-full sm:w-1/4">
-          <Button color="dark-gray" onClick={handleOpen}>
+          <Button onClick={handleOpen}>
             {status == "ACTIVE"
               ? "Blacklist Member"
               : "Remove Member from Blacklist"}
@@ -272,7 +272,7 @@ const VerifyCertificate = ({ totalHours }: verifyData) => {
       </div>
 
       <div className="w-full sm:w-1/2">
-        <Button color="dark-gray">Verify Certificate Request</Button>
+        <Button>Verify Certificate Request</Button>
       </div>
     </div>
   );

@@ -21,14 +21,10 @@ const ModalBody = ({ handleModal, handleClose }: modalBodyProps) => {
       <p>Are you sure you want to publish changes to this page?</p>
       <Grid container spacing={2}>
         <Grid item md={6} xs={12}>
-          <Button color="gray" onClick={handleModal}>
-            Yes, publish
-          </Button>
+          <Button onClick={handleModal}>Yes, publish</Button>
         </Grid>
         <Grid item md={6} xs={12}>
-          <Button color="dark-gray" onClick={handleClose}>
-            No, cancel
-          </Button>
+          <Button onClick={handleClose}>No, cancel</Button>
         </Grid>
       </Grid>
     </div>
@@ -123,9 +119,7 @@ const About = ({ edit }: AboutProps) => {
           <Grid item container>
             <Grid xs={10}></Grid>
             <Grid xs={2}>
-              <Button color={"gray"} onClick={handleOpen}>
-                Publish Changes
-              </Button>
+              <Button onClick={handleOpen}>Publish Changes</Button>
             </Grid>
           </Grid>
         </div>
@@ -138,9 +132,7 @@ const About = ({ edit }: AboutProps) => {
         <Grid item container>
           <Grid xs={11}></Grid>
           <Grid xs={1}>
-            <Button color={"gray"} onClick={handleClick}>
-              Edit
-            </Button>
+            <Button onClick={handleClick}>Edit</Button>
           </Grid>
         </Grid>
       </div>

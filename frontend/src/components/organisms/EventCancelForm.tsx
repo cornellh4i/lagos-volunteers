@@ -66,12 +66,12 @@ const ModalBody = ({
       </Typography>
       <Grid container spacing={2}>
         <Grid item md={6} xs={12}>
-          <Button color="gray" type="button" onClick={handleClose}>
+          <Button type="button" onClick={handleClose}>
             No
           </Button>
         </Grid>
         <Grid item md={6} xs={12}>
-          <Button color="dark-gray" type="button" onClick={handleCancel}>
+          <Button type="button" onClick={handleCancel}>
             Yes, cancel
           </Button>
         </Grid>
@@ -166,11 +166,7 @@ const EventCancelForm = ({ event }: EventCancelFormProps) => {
               />
             </div>
             <div className="col-start-1 col-end-5 pt-4 md:col-start-2 md:col-end-4 md:pt-8">
-              <Button
-                children="Cancel Registration"
-                color="gray"
-                type="submit"
-              ></Button>
+              <Button type="submit">Cancel Registration</Button>
             </div>
           </div>
         </form>

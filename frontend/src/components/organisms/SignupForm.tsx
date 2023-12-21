@@ -172,14 +172,12 @@ const SignupForm = () => {
         />
       </div>
       <div>
-        <Button loading={isLoading} color="dark-gray" type="submit">
+        <Button loading={isLoading} type="submit">
           Continue
         </Button>
       </div>
       <div>
-        <Button type="submit" color="gray">
-          Continue with Google
-        </Button>
+        <Button type="submit">Continue with Google</Button>
       </div>
       <div className="justify-center flex flex-row">
         <div className="">Have an account?&nbsp;</div>

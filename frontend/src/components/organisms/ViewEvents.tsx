@@ -189,7 +189,7 @@ const ViewEvents = () => {
         tabs={tabs}
         rightAlignedComponent={
           <Link href="/events/create">
-            <Button color="dark-gray">Create New Event</Button>
+            <Button>Create New Event</Button>
           </Link>
         }
       />

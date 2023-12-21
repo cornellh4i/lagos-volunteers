@@ -10,19 +10,29 @@ import { AuthProvider } from "@/utils/AuthContext";
 export const theme = createTheme({
   typography: {
     fontFamily: "Helvetica, sans-serif",
+    button: {
+      textTransform: "none",
+    },
   },
   palette: {
     primary: {
-      main: "#556cd6",
+      main: "#568124", // green
+      light: "#E5E9E0", // green gray
     },
     secondary: {
-      main: "#19857b",
+      main: "#8D8D8D", // dark gray
+      light: "#D9D9D9", // medium gray
+    },
+    warning: {
+      main: "#D67300", // orange
+      light: "#F1E8DC", // muted orange
     },
     error: {
-      main: "#ff0000",
+      main: "#CB2F2F", // red
+      light: "#EDCDCD", // muted red
     },
     background: {
-      default: "#fff",
+      default: "#FFFFFF",
     },
   },
 });

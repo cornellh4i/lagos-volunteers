@@ -58,7 +58,7 @@ const ResetPassword = () => {
         />
       </div>
       <div>
-        <Button color="dark-gray">Reset Password</Button>
+        <Button>Reset Password</Button>
       </div>
       <div className="justify-center flex flex-row text-sm">
         <Link href="/" className="text-black">

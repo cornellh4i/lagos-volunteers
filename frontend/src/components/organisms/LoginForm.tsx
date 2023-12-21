@@ -118,7 +118,7 @@ const LoginForm = () => {
           </Link>
         </div>
         <div>
-          <Button loading={isLoading} type="submit" color="dark-gray">
+          <Button loading={isLoading} type="submit">
             Log In
           </Button>
         </div>
@@ -133,16 +133,13 @@ const LoginForm = () => {
           // We are paused on this feature for now...
           // onClick={() => handleGoogleLogin()}
           type="submit"
-          color="gray"
         >
           Continue with Google
         </Button>
       </div>
       <div>
         <Link href="/signup">
-          <Button type="submit" color="gray">
-            Sign up with Email
-          </Button>
+          <Button type="submit">Sign up with Email</Button>
         </Link>
       </div>
     </div>

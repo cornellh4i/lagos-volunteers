@@ -55,7 +55,7 @@ const eventColumnsPending: GridColDef[] = [
     flex: 0.5,
     renderCell: () => (
       <div style={{ display: "flex", justifyContent: "flex-end" }}>
-        <Button children="Check In" color="gray"></Button>
+        <Button children="Check In"></Button>
       </div>
     ),
   },
@@ -104,7 +104,7 @@ const eventColumnsCheckedIn: GridColDef[] = [
     flex: 0.5,
     renderCell: () => (
       <div style={{ display: "flex", justifyContent: "flex-end" }}>
-        <Button children="Check Out" color="gray"></Button>
+        <Button children="Check Out"></Button>
       </div>
     ),
   },
