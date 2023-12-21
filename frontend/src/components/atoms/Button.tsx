@@ -18,6 +18,7 @@ const Button = ({
 }: ButtonProps) => {
   let variant: "contained" | "outlined" | "text";
   let color: "primary" | "secondary" | "error";
+  let textColor = "";
   switch (variety) {
     case "primary":
       variant = "contained";
@@ -26,10 +27,12 @@ const Button = ({
     case "secondary":
       variant = "outlined";
       color = "secondary";
+      textColor = "black";
       break;
     case "tertiary":
       variant = "text";
       color = "secondary";
+      textColor = "black";
       break;
     case "error":
       variant = "outlined";
@@ -42,6 +45,7 @@ const Button = ({
       fullWidth
       variant={variant}
       color={color}
+      sx={{ color: textColor }}
       {...props}
     >
       {loading ? (
