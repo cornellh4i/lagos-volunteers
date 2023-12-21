@@ -8,6 +8,7 @@ interface TextFieldProps {
   [key: string]: any;
 }
 
+/** A simple text field */
 const TextField = forwardRef(
   (
     { label, type = "text", error = "", ...props }: TextFieldProps,

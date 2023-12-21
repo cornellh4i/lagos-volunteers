@@ -6,9 +6,7 @@ interface SearchBarProps {
   [key: string]: any;
 }
 
-/**
- * A SearchBar component
- */
+/** A simple searchbar */
 const SearchBar = ({ onClick, ...props }: SearchBarProps) => {
   return (
     <TextField

@@ -7,7 +7,7 @@ interface MultilineTextFieldProps {
   [key: string]: any;
 }
 
-/** A MultilineTextField page */
+/** A text field with multiple lines */
 const MultilineTextField = forwardRef(
   (
     { label, name, error = "", ...props }: MultilineTextFieldProps,

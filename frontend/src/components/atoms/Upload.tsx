@@ -6,9 +6,7 @@ interface UploadProps {
   label: string;
 }
 
-/**
- * An Upload component allows uploading local attachments from the file system
- */
+/** An Upload component allows uploading local attachments from the file system */
 const Upload = ({ label }: UploadProps) => {
   return (
     <div>

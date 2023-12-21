@@ -6,9 +6,7 @@ interface ChipProps {
   [key: string]: any;
 }
 
-/**
- * A Chip component is a chip with text inside
- */
+/** A Chip component is a chip with text inside */
 const CustomChip = ({ label, ...props }: ChipProps) => {
   return (
     <Chip

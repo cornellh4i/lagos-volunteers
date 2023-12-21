@@ -5,9 +5,7 @@ interface IconTextProps {
   children: ReactNode;
 }
 
-/**
- * A IconText component is a small line of text prefaced by an icon
- */
+/** A IconText component is a small line of text prefaced by an icon */
 const IconText = ({ icon, children }: IconTextProps) => {
   return (
     <div className="flex">

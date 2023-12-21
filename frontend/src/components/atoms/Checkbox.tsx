@@ -8,6 +8,8 @@ interface CheckboxProps {
   checked?: boolean;
   [key: string]: any;
 }
+
+/** A custom checkbox */
 const CustomCheckbox = ({ label, checked, ...props }: CheckboxProps) => {
   return (
     <FormGroup>

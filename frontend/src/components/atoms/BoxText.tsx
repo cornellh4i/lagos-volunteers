@@ -5,9 +5,7 @@ interface BoxTextProps {
   textRight: string;
 }
 
-/**
- * A BoxText component is a piece of text surrounded by a colored box
- */
+/** A BoxText component is a piece of text surrounded by a colored box */
 const BoxText = ({ text, textRight }: BoxTextProps) => {
   return (
     <div className="bg-gray-300 p-2 flex justify-between">
