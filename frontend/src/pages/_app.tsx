@@ -1,17 +1,13 @@
 import "../styles/globals.css";
 import type { AppProps } from "next/app";
 import { ThemeProvider, CssBaseline } from "@mui/material";
-import { createTheme } from "@mui/material/styles";
-import { StyledEngineProvider } from "@mui/material/styles";
+import { createTheme, StyledEngineProvider } from "@mui/material/styles";
 import Layout from "@/components/Layout";
 import { AuthProvider } from "@/utils/AuthContext";
 
 export const theme = createTheme({
   typography: {
     fontFamily: "Inter, sans-serif",
-    button: {
-      textTransform: "none",
-    },
   },
   palette: {
     primary: {
