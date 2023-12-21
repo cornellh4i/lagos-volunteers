@@ -26,12 +26,15 @@ const Button = ({
     case "secondary":
       variant = "outlined";
       color = "secondary";
+      break;
     case "tertiary":
       variant = "text";
       color = "secondary";
+      break;
     case "error":
       variant = "outlined";
       color = "error";
+      break;
   }
   return (
     <MuiButton
