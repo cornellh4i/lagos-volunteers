@@ -91,10 +91,9 @@ const patch = async (url: string, body: object) => {
 /**
  * Performs a DELETE request to the specified URL
  * @param url is the resource url
- * @param body is the request body
  * @returns the response
  */
-const del = async (url: string, body: object) => {
+const del = async (url: string) => {
   const token = await retrieveToken();
   const options = {
     method: "DELETE",
