@@ -7,22 +7,22 @@ interface MultilineTextFieldProps {
   labelStyling?: string;
   required: boolean;
   type?: string;
-  placeholder?: string;
   requiredMessage?: string;
   name: string;
   register: (name: any, options?: RegisterOptions) => UseFormRegisterReturn;
+  [key: string]: any;
 }
 
 /** A MultilineTextField page */
 const MultilineTextField = ({
   label,
   labelStyling,
-  placeholder,
   name,
   required,
   type = "text",
   requiredMessage = "",
   register,
+  ...props
 }: MultilineTextFieldProps) => {
   return (
     <div>
@@ -34,7 +34,6 @@ const MultilineTextField = ({
       <TextField
         id="outlined-multiline-static"
         multiline
-        placeholder={placeholder}
         rows={4}
         sx={{ borderRadius: 2, borderColor: "primary.main" }}
         fullWidth={true}
@@ -42,6 +41,7 @@ const MultilineTextField = ({
           required: required,
         })}
         margin="dense"
+        {...props}
       />
     </div>
   );

@@ -1,13 +1,14 @@
 import React, { ReactNode } from "react";
-import Alert, { AlertColor } from "@mui/material/Alert";
+import MuiAlert from "@mui/material/Alert";
 
-interface CustomAlertProps {
-  severity: AlertColor;
+interface AlertProps {
   children: ReactNode;
+  [key: string]: any;
 }
 
-function CustomAlert({ severity, children }: CustomAlertProps) {
-  return <Alert severity={severity}>{children}</Alert>;
-}
+/** A simple Alert component */
+const Alert = ({ children, ...props }: AlertProps) => {
+  return <MuiAlert {...props}>{children}</MuiAlert>;
+};
 
-export default CustomAlert;
+export default Alert;

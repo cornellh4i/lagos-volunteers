@@ -260,7 +260,7 @@ const ProfileForm = ({ userDetails }: ProfileFormProps) => {
       <div className="sm:space-x-4 grid grid-cols-1 sm:grid-cols-2">
         <div className="pb-4 sm:pb-0">
           <Button
-            isLoading={isLoading}
+            loading={isLoading}
             disabled={isLoading}
             type="submit"
             color="gray"

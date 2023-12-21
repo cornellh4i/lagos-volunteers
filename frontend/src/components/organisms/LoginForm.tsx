@@ -118,7 +118,7 @@ const LoginForm = () => {
           </Link>
         </div>
         <div>
-          <Button isLoading={isLoading} type="submit" color="dark-gray">
+          <Button loading={isLoading} type="submit" color="dark-gray">
             Log In
           </Button>
         </div>
@@ -128,7 +128,7 @@ const LoginForm = () => {
       </form>
       <div>
         <Button
-          isLoading={googleLoading}
+          loading={googleLoading}
           disabled={googleLoading}
           // We are paused on this feature for now...
           // onClick={() => handleGoogleLogin()}

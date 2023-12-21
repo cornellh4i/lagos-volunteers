@@ -10,14 +10,14 @@ import dayjs from "dayjs";
 interface TimePickerProps {
   label: string;
   value?: string;
-  onChange: (newValue: any) => void;
+  [key: string]: any;
 }
 
 /**
  * A TimePicker component is an input field that allows selecting different
  * times of day.
  */
-const CustomTimePicker = ({ label, value, onChange }: TimePickerProps) => {
+const CustomTimePicker = ({ label, value, ...props }: TimePickerProps) => {
   return (
     <div>
       <div> {label} </div>
@@ -42,7 +42,7 @@ const CustomTimePicker = ({ label, value, onChange }: TimePickerProps) => {
               </InputAdornment>
             ),
           }}
-          onChange={onChange}
+          {...props}
         />
       </LocalizationProvider>
     </div>

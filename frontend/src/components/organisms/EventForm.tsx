@@ -352,7 +352,7 @@ const EventForm = ({ eventId, eventType, eventDetails }: EventFormProps) => {
               </Link>
             </div>
             <div className="col-start-1 col-span-1 sm:col-start-4 sm:col-span-1">
-              <Button isLoading={isLoading} type="submit" color="dark-gray">
+              <Button loading={isLoading} type="submit" color="dark-gray">
                 Create
               </Button>
             </div>
@@ -368,7 +368,7 @@ const EventForm = ({ eventId, eventType, eventDetails }: EventFormProps) => {
               <Button color="gray">Cancel Event</Button>
             </div>
             <div className="sm:col-start-10 sm:col-span-3">
-              <Button type="submit" color="dark-gray" isLoading={isLoading}>
+              <Button type="submit" color="dark-gray" loading={isLoading}>
                 Save Changes
               </Button>
             </div>

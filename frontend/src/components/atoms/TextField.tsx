@@ -7,7 +7,6 @@ interface TextFieldProps {
   name: string;
   required?: boolean;
   type?: string;
-  disabled?: boolean;
   requiredMessage?: string;
   register: (name: any, options?: RegisterOptions) => UseFormRegisterReturn;
 }
@@ -18,8 +17,8 @@ const CustomTextField = ({
   required,
   type = "text",
   requiredMessage = "",
-  disabled = false,
   register,
+  ...props
 }: TextFieldProps) => {
   return (
     <div>
@@ -29,7 +28,6 @@ const CustomTextField = ({
       <TextField
         type={type}
         InputProps={type == "number" ? { inputProps: { min: 0 } } : {}}
-        disabled={disabled}
         size="small"
         margin="dense"
         fullWidth={true}
@@ -37,6 +35,7 @@ const CustomTextField = ({
           required: required,
         })}
         sx={{ borderRadius: 2, borderColor: "primary.main" }}
+        {...props}
       />
     </div>
   );

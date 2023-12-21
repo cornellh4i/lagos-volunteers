@@ -7,14 +7,14 @@ import dayjs from "dayjs";
 interface DatePickerProps {
   label: string;
   value?: string;
-  onChange: (newValue: any) => void;
+  [key: string]: any;
 }
 
 /**
  * A DatePicker component is an input field that allows selecting a specific
  * date through a calendar popup
  */
-const CustomDatePicker = ({ label, value, onChange }: DatePickerProps) => {
+const CustomDatePicker = ({ label, value, ...props }: DatePickerProps) => {
   return (
     <div>
       <div> {label}</div>
@@ -27,7 +27,7 @@ const CustomDatePicker = ({ label, value, onChange }: DatePickerProps) => {
           slotProps={{
             textField: { size: "small", fullWidth: true },
           }}
-          onChange={onChange}
+          {...props}
         />
       </LocalizationProvider>
     </div>

@@ -1,5 +1,4 @@
 import React from "react";
-import { Chip } from "@mui/material";
 
 interface BoxTextProps {
   text: string;

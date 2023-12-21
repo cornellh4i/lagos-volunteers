@@ -172,7 +172,7 @@ const SignupForm = () => {
         />
       </div>
       <div>
-        <Button isLoading={isLoading} color="dark-gray" type="submit">
+        <Button loading={isLoading} color="dark-gray" type="submit">
           Continue
         </Button>
       </div>

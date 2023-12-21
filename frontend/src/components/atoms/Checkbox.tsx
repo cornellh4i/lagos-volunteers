@@ -6,15 +6,15 @@ import Checkbox from "@mui/material/Checkbox";
 interface CheckboxProps {
   label: string;
   checked?: boolean;
-  onChange?: () => void;
+  [key: string]: any;
 }
-const CustomCheckbox = ({ label, onChange, checked }: CheckboxProps) => {
+const CustomCheckbox = ({ label, checked, ...props }: CheckboxProps) => {
   return (
     <FormGroup>
       <FormControlLabel
         control={<Checkbox checked={checked} />}
         label={label}
-        onChange={onChange}
+        {...props}
       />
     </FormGroup>
   );
