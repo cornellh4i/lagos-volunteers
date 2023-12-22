@@ -14,18 +14,12 @@ const retrieveToken = () => {
 };
 
 /**
- * Performs a GET request to the specified URL
+ * Performs GET request to the specified URL
  * @param url is the resource url
  * @returns the response
  */
 const get = async (url: string) => {
-  const token = await retrieveToken();
-  const options = {
-    method: "GET",
-    headers: { Authorization: `Bearer ${token}` },
-  };
-  const response = await fetch(BASE_URL + url, options);
-  return handleResponse(response);
+  return handleRequest("GET", url);
 };
 
 /**
@@ -35,17 +29,8 @@ const get = async (url: string) => {
  * @returns the response
  */
 const post = async (url: string, body: object) => {
-  const token = await retrieveToken();
-  const options = {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${token}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(body),
-  };
-  const response = await fetch(BASE_URL + url, options);
-  return handleResponse(response);
+  const headers = { "Content-Type": "application/json" };
+  return handleRequest("POST", url, headers, body);
 };
 
 /**
@@ -55,17 +40,8 @@ const post = async (url: string, body: object) => {
  * @returns the response
  */
 const put = async (url: string, body: object) => {
-  const token = await retrieveToken();
-  const options = {
-    method: "PUT",
-    headers: {
-      Authorization: `Bearer ${token}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(body),
-  };
-  const response = await fetch(BASE_URL + url, options);
-  return handleResponse(response);
+  const headers = { "Content-Type": "application/json" };
+  return handleRequest("PUT", url, headers, body);
 };
 
 /**
@@ -75,17 +51,8 @@ const put = async (url: string, body: object) => {
  * @returns the response
  */
 const patch = async (url: string, body: object) => {
-  const token = await retrieveToken();
-  const options = {
-    method: "PATCH",
-    headers: {
-      Authorization: `Bearer ${token}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(body),
-  };
-  const response = await fetch(BASE_URL + url, options);
-  return handleResponse(response);
+  const headers = { "Content-Type": "application/json" };
+  return handleRequest("PATCH", url, headers, body);
 };
 
 /**
@@ -94,10 +61,25 @@ const patch = async (url: string, body: object) => {
  * @returns the response
  */
 const del = async (url: string) => {
+  return await handleRequest("DELETE", url);
+};
+
+/**
+ * Handles the request of a fetch request
+ * @param response is the response
+ * @returns the response data
+ */
+const handleRequest = async (
+  method: string,
+  url: string,
+  headers?: { [key: string]: string },
+  body?: object
+) => {
   const token = await retrieveToken();
   const options = {
-    method: "DELETE",
-    headers: { Authorization: `Bearer ${token}` },
+    method: method,
+    headers: { Authorization: `Bearer ${token}`, ...headers },
+    body: JSON.stringify(body),
   };
   const response = await fetch(BASE_URL + url, options);
   return handleResponse(response);
