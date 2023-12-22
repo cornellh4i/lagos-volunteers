@@ -14,7 +14,7 @@ const retrieveToken = () => {
 };
 
 /**
- * Performs GET request to the specified URL
+ * Performs a GET request to the specified URL
  * @param url is the resource url
  * @returns the response
  */
