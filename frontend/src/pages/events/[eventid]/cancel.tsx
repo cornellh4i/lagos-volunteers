@@ -4,14 +4,10 @@ import CenteredTemplate from "@/components/templates/CenteredTemplate";
 import EventCancelForm from "@/components/organisms/EventCancelForm";
 import EventConfirmation from "@/components/organisms/EventConfirmation";
 import { useAuth } from "@/utils/AuthContext";
-import {
-  fetchUserIdFromDatabase,
-  formatDateTimeRange,
-  retrieveToken,
-  fetchEventDetailsForRegisteredUser,
-} from "@/utils/helpers";
+import { fetchUserIdFromDatabase, formatDateTimeRange } from "@/utils/helpers";
 import Loading from "@/components/molecules/Loading";
 import { EventData } from "@/utils/types";
+import { api } from "@/utils/api";
 
 /** An EventCancellation page */
 const EventCancellation = () => {
@@ -29,15 +25,9 @@ const EventCancellation = () => {
   const updateEventDetails = async () => {
     try {
       // Make API call
-      const token = await retrieveToken();
-      const userid = await fetchUserIdFromDatabase(
-        token,
-        user?.email as string
-      );
-      const data = await fetchEventDetailsForRegisteredUser(
-        token,
-        eventid,
-        userid
+      const userid = await fetchUserIdFromDatabase(user?.email as string);
+      const { data } = await api.get(
+        `/users/${userid}/registered?eventid=${eventid}`
       );
 
       // Set data

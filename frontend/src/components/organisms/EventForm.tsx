@@ -18,13 +18,8 @@ import { Typography } from "@mui/material";
 import { useAuth } from "@/utils/AuthContext";
 import dayjs from "dayjs";
 import router from "next/router";
-import {
-  convertToISO,
-  createEvent,
-  editEvent,
-  fetchUserIdFromDatabase,
-  retrieveToken,
-} from "@/utils/helpers";
+import { convertToISO, fetchUserIdFromDatabase } from "@/utils/helpers";
+import { api } from "@/utils/api";
 
 interface EventFormProps {
   eventId?: string | string[] | undefined;
@@ -152,21 +147,23 @@ const EventForm = ({ eventId, eventType, eventDetails }: EventFormProps) => {
       setIsLoading(false);
       return;
     }
-    const token = await retrieveToken();
     const mode = status === 0 ? "VIRTUAL" : "IN_PERSON";
     const startDateTime = convertToISO(getStartTime, getStartDate);
     const endDateTime = convertToISO(getEndTime, getEndDate);
     const { eventName, location, volunteerSignUpCap, eventDescription } = data;
-    const userid = await fetchUserIdFromDatabase(token, user?.email as string);
+    const userid = await fetchUserIdFromDatabase(user?.email as string);
     try {
-      const { response, data } = await createEvent(token, userid, {
-        name: `${eventName}`,
-        location: `${location}`,
-        description: `${eventDescription}`,
-        startDate: new Date(startDateTime),
-        endDate: new Date(endDateTime),
-        capacity: +volunteerSignUpCap,
-        mode: `${mode}`,
+      const { response } = await api.post("/events", {
+        userID: `${userid}`,
+        event: {
+          name: `${eventName}`,
+          location: `${location}`,
+          description: `${eventDescription}`,
+          startDate: new Date(startDateTime),
+          endDate: new Date(endDateTime),
+          capacity: +volunteerSignUpCap,
+          mode: `${mode}`,
+        },
       });
 
       if (response.ok) {
@@ -199,8 +196,7 @@ const EventForm = ({ eventId, eventType, eventDetails }: EventFormProps) => {
     const { eventName, location, volunteerSignUpCap, eventDescription } = data;
 
     try {
-      const token = await retrieveToken();
-      const { response, data } = await editEvent(token, eventId as string, {
+      const { response } = await api.put(`/events/${eventId}`, {
         name: `${eventName}`,
         location: `${location}`,
         description: `${eventDescription}`,

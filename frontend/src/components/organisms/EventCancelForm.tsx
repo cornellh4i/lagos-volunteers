@@ -11,12 +11,9 @@ import { useForm, SubmitHandler } from "react-hook-form";
 import { Typography, Grid } from "@mui/material";
 import { useRouter } from "next/router";
 import { useAuth } from "@/utils/AuthContext";
-import {
-  fetchUserIdFromDatabase,
-  retrieveToken,
-  cancelUserRegistrationForEvent,
-} from "@/utils/helpers";
+import { fetchUserIdFromDatabase } from "@/utils/helpers";
 import { EventData } from "@/utils/types";
+import { api } from "@/utils/api";
 
 interface EventCancelFormProps {
   event: EventData;
@@ -45,17 +42,15 @@ const ModalBody = ({
    * Handles clicking the Cancel button
    */
   const handleCancel = async () => {
-    const token = await retrieveToken();
-    const attendeeid = await fetchUserIdFromDatabase(
-      token,
-      user?.email as string
-    );
-    await cancelUserRegistrationForEvent(
-      token,
-      eventid,
-      attendeeid,
-      cancelationMessage
-    );
+    try {
+      const attendeeid = await fetchUserIdFromDatabase(user?.email as string);
+      await api.put(`/events/${eventid}/attendees`, {
+        attendeeid: attendeeid,
+        cancelationMessage: cancelationMessage,
+      });
+    } catch (error) {
+      console.error(error);
+    }
     router.reload();
   };
 
