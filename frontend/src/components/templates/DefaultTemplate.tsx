@@ -11,9 +11,7 @@ const DefaultTemplate = ({ children }: DefaultTemplateProps) => {
     <div className="min-h-screen bg-gray-200">
       <NavBar />
       <div className="px-6 sm:px-12 py-6 sm:py-12">
-        <div className="max-w-6xl p-6 sm:p-12 mx-auto rounded-3xl">
-          {children}
-        </div>
+        <div className="max-w-7xl mx-auto">{children}</div>
       </div>
     </div>
   );

@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from "react";
 import ProfileForm from "@/components/organisms/ProfileForm";
-import ProfileTemplate from "@/components/templates/ProfileTemplate";
+import CenteredTemplate from "@/components/templates/CenteredTemplate";
 import Banner from "@/components/molecules/Banner";
 import { BASE_URL } from "@/utils/constants";
 import { onAuthStateChanged, getAuth } from "firebase/auth";
 import { auth } from "@/utils/firebase";
 import { useAuth } from "@/utils/AuthContext";
 import Avatar from "@/components/molecules/Avatar";
+import Paper from "@/components/molecules/Paper";
 
 type userData = {
   id: string;
@@ -62,28 +63,41 @@ const Profile = () => {
   }, []);
 
   return (
-    <ProfileTemplate
-      banner={
-        userDetails ? (
-          <Banner>
-            <Avatar
-              name={`${userDetails?.firstName} ${userDetails?.lastName}`}
-              hour={20}
-              start_date={date}
-              url={userDetails?.imageUrl}
-            />
-          </Banner>
-        ) : (
-          <div>Grabbing your data...</div>
-        )
-      }
-    >
+    <CenteredTemplate>
       {userDetails ? (
-        <ProfileForm userDetails={userDetails} />
+        <div>
+          {userDetails ? (
+            <Banner>
+              <Avatar
+                name={`${userDetails?.firstName} ${userDetails?.lastName}`}
+                hour={20}
+                start_date={date}
+                url={userDetails?.imageUrl}
+              />
+            </Banner>
+          ) : (
+            <div>Grabbing your data...</div>
+          )}
+          <h3>Member Status</h3>
+          <Paper className="mb-3" size="small">
+            <h3 className="mt-0 mb-2">You are a Volunteer</h3>
+            You are currently a volunteer. Volunters are allowed to register for
+            and attend events.
+          </Paper>
+          <Paper size="small">
+            <h3 className="mt-0 mb-2">You are an Active Member</h3>
+            You are currently an active member. Your account is active and you
+            are able to access all normal website functions.
+          </Paper>
+          <h3>My Profile</h3>
+          <Paper>
+            <ProfileForm userDetails={userDetails} />
+          </Paper>
+        </div>
       ) : (
         <div>Getting your data...</div>
       )}
-    </ProfileTemplate>
+    </CenteredTemplate>
   );
 };
 
