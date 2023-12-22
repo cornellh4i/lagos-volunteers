@@ -55,10 +55,21 @@ const DrawerAppBar = ({ navs, rightAlignedComponents }: AppBarProps) => {
   return (
     <Box sx={{ display: "flex" }}>
       <AppBar color="default" component="nav" elevation={0} position="static">
-        <Toolbar variant="dense" className="pt-1 pb-1">
-          <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-            LFBI
-          </Typography>
+        <Toolbar
+          variant="dense"
+          sx={{
+            paddingTop: 1,
+            paddingBottom: 1,
+            borderBottom: 1,
+            borderColor: "divider",
+          }}
+        >
+          {/* LFBI navbar brand */}
+          <div className="flex-1 h-8">
+            <img src="/lfbi_logo.png" className="h-full" />
+          </div>
+
+          {/* Navbar items */}
           <Box className="hidden sm:flex">
             {navs.map((nav) => (
               <Link href={nav.link}>
