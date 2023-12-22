@@ -182,7 +182,7 @@ const ProfileForm = ({ userDetails }: ProfileFormProps) => {
       <ProfileReauthenticationErrorComponent />
       <div>
         <TextField
-          label="Email *"
+          label="Email"
           disabled={true}
           error={errors.email ? "Required" : undefined}
           {...register("email", {
@@ -192,7 +192,7 @@ const ProfileForm = ({ userDetails }: ProfileFormProps) => {
       </div>
       <div>
         <TextField
-          label="First name *"
+          label="First name"
           error={errors.firstName ? "Required" : undefined}
           {...register("firstName", {
             required: "true",
@@ -201,7 +201,7 @@ const ProfileForm = ({ userDetails }: ProfileFormProps) => {
       </div>
       <div>
         <TextField
-          label="Last name *"
+          label="Last name"
           error={errors.lastName ? "Required" : undefined}
           {...register("lastName", {
             required: "true",
@@ -220,7 +220,7 @@ const ProfileForm = ({ userDetails }: ProfileFormProps) => {
       <div>
         <TextField
           type="password"
-          label="Old password *"
+          label="Old password"
           error={errors.oldPassword ? "Required" : undefined}
           {...register("oldPassword", {
             required: "false",
@@ -266,6 +266,7 @@ const ProfileForm = ({ userDetails }: ProfileFormProps) => {
         <div>
           <Button
             type="button"
+            variety="secondary"
             onClick={() => {
               reset(userDetails, { keepDefaultValues: true });
             }}

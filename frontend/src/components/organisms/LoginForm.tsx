@@ -8,6 +8,7 @@ import { useRouter } from "next/router";
 import Link from "next/link";
 import { auth } from "@/utils/firebase";
 import Alert from "../atoms/Alert";
+import GoogleIcon from "@mui/icons-material/Google";
 
 import {
   useSignInWithEmailAndPassword,
@@ -118,7 +119,7 @@ const LoginForm = () => {
         </div>
         <div>
           <Button loading={isLoading} type="submit">
-            Log In
+            Log in
           </Button>
         </div>
         <div>
@@ -126,20 +127,24 @@ const LoginForm = () => {
         </div>
       </form>
       <div>
+        <Link href="/signup">
+          <Button type="submit" variety="secondary">
+            Sign up with email
+          </Button>
+        </Link>
+      </div>
+      <div>
         <Button
           loading={googleLoading}
           disabled={googleLoading}
+          variety="secondary"
+          icon={<GoogleIcon />}
           // We are paused on this feature for now...
           // onClick={() => handleGoogleLogin()}
           type="submit"
         >
           Continue with Google
         </Button>
-      </div>
-      <div>
-        <Link href="/signup">
-          <Button type="submit">Sign up with Email</Button>
-        </Link>
       </div>
     </div>
   );

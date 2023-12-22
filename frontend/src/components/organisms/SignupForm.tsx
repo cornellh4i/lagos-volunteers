@@ -176,9 +176,6 @@ const SignupForm = () => {
           Continue
         </Button>
       </div>
-      <div>
-        <Button type="submit">Continue with Google</Button>
-      </div>
       <div className="justify-center flex flex-row">
         <div className="">Have an account?&nbsp;</div>
         <Link href="/login" className="text-black">

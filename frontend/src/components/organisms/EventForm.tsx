@@ -353,7 +353,7 @@ const EventForm = ({ eventId, eventType, eventDetails }: EventFormProps) => {
           <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
             <div className="col-start-1 col-span-1 sm:col-start-3 sm:col-span-1">
               <Link href="/events/view">
-                <Button>Cancel</Button>
+                <Button variety="secondary">Cancel</Button>
               </Link>
             </div>
             <div className="col-start-1 col-span-1 sm:col-start-4 sm:col-span-1">
