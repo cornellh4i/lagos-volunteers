@@ -18,7 +18,7 @@ const retrieveToken = () => {
  * @param url is the resource url
  * @returns the response
  */
-const get = async (url: string) => {
+const get = (url: string) => {
   return handleRequest("GET", url);
 };
 
@@ -28,7 +28,7 @@ const get = async (url: string) => {
  * @param body is the request body
  * @returns the response
  */
-const post = async (url: string, body: object) => {
+const post = (url: string, body: object) => {
   const headers = { "Content-Type": "application/json" };
   return handleRequest("POST", url, headers, body);
 };
@@ -39,7 +39,7 @@ const post = async (url: string, body: object) => {
  * @param body is the request body
  * @returns the response
  */
-const put = async (url: string, body: object) => {
+const put = (url: string, body: object) => {
   const headers = { "Content-Type": "application/json" };
   return handleRequest("PUT", url, headers, body);
 };
@@ -50,7 +50,7 @@ const put = async (url: string, body: object) => {
  * @param body is the request body
  * @returns the response
  */
-const patch = async (url: string, body: object) => {
+const patch = (url: string, body: object) => {
   const headers = { "Content-Type": "application/json" };
   return handleRequest("PATCH", url, headers, body);
 };
@@ -60,8 +60,8 @@ const patch = async (url: string, body: object) => {
  * @param url is the resource url
  * @returns the response
  */
-const del = async (url: string) => {
-  return await handleRequest("DELETE", url);
+const del = (url: string) => {
+  return handleRequest("DELETE", url);
 };
 
 /**
