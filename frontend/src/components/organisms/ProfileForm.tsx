@@ -9,6 +9,7 @@ import { BASE_URL } from "@/utils/constants";
 import { useUpdatePassword } from "react-firebase-hooks/auth";
 import Alert from "../atoms/Alert";
 import { reauthenticateWithCredential, EmailAuthProvider } from "firebase/auth";
+import Snackbar from "../atoms/Snackbar";
 
 type FormValues = {
   email: string;
@@ -70,24 +71,46 @@ const ProfileForm = ({ userDetails }: ProfileFormProps) => {
     }
   };
 
+  // State variables for the notification popups
+  const [notifOpen, setNotifOpen] = useState(false);
+
   const ProfileErrorComponent = (): JSX.Element | null => {
+    setNotifOpen(true);
     return error ? (
-      <Alert severity="error">Error: {handleErrors(error?.message)}</Alert>
+      <Snackbar
+        variety="error"
+        open={notifOpen}
+        onClose={() => setNotifOpen(false)}
+      >
+        Error: {handleErrors(error?.message)}
+      </Snackbar>
     ) : null;
   };
 
   const ProfileReauthenticationErrorComponent = (): JSX.Element | null => {
+    setNotifOpen(true);
     return errorMessage.length > 0 ? (
-      <Alert severity="error">Error: {handleErrors(errorMessage)}</Alert>
+      <Snackbar
+        variety="error"
+        open={notifOpen}
+        onClose={() => setNotifOpen(false)}
+      >
+        Error: {handleErrors(errorMessage)}
+      </Snackbar>
     ) : null;
   };
 
   const ProfileSuccessComponent = (): JSX.Element | null => {
+    setNotifOpen(true);
     return !error && !(errorMessage.length > 0) && success ? (
-      <Alert severity="success">
+      <Snackbar
+        variety="success"
+        open={notifOpen}
+        onClose={() => setNotifOpen(false)}
+      >
         Success: Profile update was successful. Please refresh the page to see
         your changes!
-      </Alert>
+      </Snackbar>
     ) : null;
   };
 

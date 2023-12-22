@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
-import Alert from "../atoms/Alert";
 import DatePicker from "../atoms/DatePicker";
 import TimePicker from "../atoms/TimePicker";
 import Upload from "../atoms/Upload";
@@ -25,6 +24,7 @@ import {
   fetchUserIdFromDatabase,
   retrieveToken,
 } from "@/utils/helpers";
+import Snackbar from "../atoms/Snackbar";
 
 interface EventFormProps {
   eventId?: string | string[] | undefined;
@@ -101,15 +101,32 @@ const EventForm = ({ eventId, eventType, eventDetails }: EventFormProps) => {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
+  // State variables for the notification popups
+  const [notifOpen, setNotifOpen] = useState(false);
+
   const CreateErrorComponent = (): JSX.Element | null => {
+    setNotifOpen(true);
     return errorMessage ? (
-      <Alert severity="error">Error: {errorMessage}</Alert>
+      <Snackbar
+        variety="error"
+        open={notifOpen}
+        onClose={() => setNotifOpen(false)}
+      >
+        Error: {errorMessage}
+      </Snackbar>
     ) : null;
   };
 
   const CreateSuccessComponent = (): JSX.Element | null => {
+    setNotifOpen(true);
     return successMessage ? (
-      <Alert severity="success">Success: {successMessage}</Alert>
+      <Snackbar
+        variety="success"
+        open={notifOpen}
+        onClose={() => setNotifOpen(false)}
+      >
+        Success: {successMessage}
+      </Snackbar>
     ) : null;
   };
 

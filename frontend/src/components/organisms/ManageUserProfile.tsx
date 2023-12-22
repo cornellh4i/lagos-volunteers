@@ -29,6 +29,7 @@ import {
   updateUserStatus,
 } from "@/utils/helpers";
 import { UserRole, UserStatus } from "@/utils/types";
+import Snackbar from "../atoms/Snackbar";
 
 type userProfileData = {
   name: string;
@@ -285,31 +286,50 @@ const ManageUserProfile = () => {
   >(null);
   const [registeredEvents, setRegisteredEvents] = useState<any[]>([]);
 
+  // State variables for the notification popups
+  const [notifOpen, setNotifOpen] = useState(false);
+
   /* State Vars for Blacklist and UserRoleChange Indicators  */
   const [userRoleIndicator, setUserRoleIndicator] = useState<string>("");
   const [blacklistIndicator, setBlacklistIndicator] = useState<string>("");
   const ChangeIndicatorComponent = (): JSX.Element | null => {
     if (userRoleIndicator != "") {
+      setNotifOpen(true);
       return userRoleIndicator === "SUCCESS" ? (
-        <Alert severity="success">
-          Success:
-          {`You have successfully updated ${userProfileDetails?.name}'s role!`}
-        </Alert>
+        <Snackbar
+          variety="success"
+          open={notifOpen}
+          onClose={() => setNotifOpen(false)}
+        >
+          {`Success: You have successfully updated ${userProfileDetails?.name}'s role!`}
+        </Snackbar>
       ) : (
-        <Alert severity="error">
-          Error: {"The request was not successful. Please Try again!"}
-        </Alert>
+        <Snackbar
+          variety="error"
+          open={notifOpen}
+          onClose={() => setNotifOpen(false)}
+        >
+          {"Error: The request was not successful. Please Try again!"}
+        </Snackbar>
       );
     } else if (blacklistIndicator != "") {
+      setNotifOpen(true);
       return blacklistIndicator === "SUCCESS" ? (
-        <Alert severity="success">
-          Success:{" "}
-          {`${userProfileDetails?.name} blacklist status was successfully updated!`}
-        </Alert>
+        <Snackbar
+          variety="success"
+          open={notifOpen}
+          onClose={() => setNotifOpen(false)}
+        >
+          {`Success: ${userProfileDetails?.name}'s blacklist status was successfully updated!`}
+        </Snackbar>
       ) : (
-        <Alert severity="error">
-          Error: {"User blacklist status has not changed. Please Try again!"}
-        </Alert>
+        <Snackbar
+          variety="error"
+          open={notifOpen}
+          onClose={() => setNotifOpen(false)}
+        >
+          {"Error: User blacklist status has not changed. Please Try again!"}
+        </Snackbar>
       );
     } else {
       return null;

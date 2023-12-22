@@ -9,6 +9,7 @@ import { useForm, SubmitHandler } from "react-hook-form";
 import Alert from "../atoms/Alert";
 import { useRouter } from "next/router";
 import { useSignInWithEmailAndPassword } from "react-firebase-hooks/auth";
+import Snackbar from "../atoms/Snackbar";
 
 type FormValues = {
   firstName: string;
@@ -60,9 +61,19 @@ const SignupForm = () => {
     }
   };
 
+  // State variables for the notification popups
+  const [notifOpen, setNotifOpen] = useState(false);
+
   const SignUpErrorComponent = (): JSX.Element | null => {
+    setNotifOpen(true);
     return errorMessage ? (
-      <Alert severity="error">Error: {handleErrors(errorMessage)}</Alert>
+      <Snackbar
+        variety="error"
+        open={notifOpen}
+        onClose={() => setNotifOpen(false)}
+      >
+        Error: {handleErrors(errorMessage)}
+      </Snackbar>
     ) : null;
   };
 

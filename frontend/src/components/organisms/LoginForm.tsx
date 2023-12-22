@@ -14,6 +14,7 @@ import {
   useSignInWithEmailAndPassword,
   useSignInWithGoogle,
 } from "react-firebase-hooks/auth";
+import Snackbar from "../atoms/Snackbar";
 
 export type FormValues = {
   email: string;
@@ -58,9 +59,19 @@ const LoginForm = () => {
     }
   };
 
+  // State variables for the notification popups
+  const [notifOpen, setNotifOpen] = useState(false);
+
   const LoginErrorComponent = (): JSX.Element | null => {
+    setNotifOpen(true);
     return signInErrors ? (
-      <Alert severity="error">Error: {handleErrors(signInErrors.code)}</Alert>
+      <Snackbar
+        variety="error"
+        open={notifOpen}
+        onClose={() => setNotifOpen(false)}
+      >
+        Error: {handleErrors(signInErrors.code)}
+      </Snackbar>
     ) : null;
   };
 
