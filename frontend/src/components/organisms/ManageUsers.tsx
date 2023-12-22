@@ -101,7 +101,7 @@ const Active = ({
     <div>
       <Table
         columns={eventColumns}
-        rowData={initalRowData}
+        rows={initalRowData}
         dataSetLength={usersLength}
         initialID={initialUserID}
         nextFunction={progressFunction}
