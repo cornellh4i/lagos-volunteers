@@ -1,5 +1,5 @@
 import React, { forwardRef, Ref } from "react";
-import { TextField } from "@mui/material";
+import TextField from "@mui/material/TextField";
 
 interface MultilineTextFieldProps {
   label: string;
@@ -10,7 +10,7 @@ interface MultilineTextFieldProps {
 /** A text field with multiple lines */
 const MultilineTextField = forwardRef(
   (
-    { label, name, error = "", ...props }: MultilineTextFieldProps,
+    { label, error = "", ...props }: MultilineTextFieldProps,
     ref: Ref<HTMLInputElement>
   ) => {
     return (
