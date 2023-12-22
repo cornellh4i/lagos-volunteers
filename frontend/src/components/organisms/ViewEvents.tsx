@@ -9,13 +9,9 @@ import Table from "@/components/molecules/Table";
 import Button from "../atoms/Button";
 import Link from "next/link";
 import { useAuth } from "@/utils/AuthContext";
-import {
-  fetchUserIdFromDatabase,
-  fetchUserRegisteredEvents,
-  formatDateTimeRange,
-  retrieveToken,
-} from "@/utils/helpers";
+import { fetchUserIdFromDatabase, formatDateTimeRange } from "@/utils/helpers";
 import { Action } from "@/utils/types";
+import { api } from "@/utils/api";
 
 type event = {
   id: string;
@@ -142,12 +138,8 @@ const ViewEvents = () => {
   const fetchUserEvents = async () => {
     try {
       // Make API call
-      const token = await retrieveToken();
-      const userid = await fetchUserIdFromDatabase(
-        token,
-        user?.email as string
-      );
-      const { response, data } = await fetchUserRegisteredEvents(token, userid);
+      const userid = await fetchUserIdFromDatabase(user?.email as string);
+      const { data } = await api.get(`/users/${userid}/registered`);
 
       // Set data
       const apiEvents = data["data"]["events"];

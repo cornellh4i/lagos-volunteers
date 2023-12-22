@@ -20,16 +20,10 @@ import { useRouter } from "next/router";
 import { Grid } from "@mui/material";
 import Modal from "@/components/molecules/Modal";
 import Loading from "@/components/molecules/Loading";
-import {
-  fetchUser,
-  fetchUserRegisteredEvents,
-  formatDateString,
-  retrieveToken,
-  updateUserRole,
-  updateUserStatus,
-} from "@/utils/helpers";
+import { formatDateString } from "@/utils/helpers";
 import { UserRole, UserStatus } from "@/utils/types";
 import Snackbar from "../atoms/Snackbar";
+import { api } from "@/utils/api";
 
 type userProfileData = {
   name: string;
@@ -104,14 +98,11 @@ const Status = ({ userRole, userStatus, userID }: userStatusData) => {
       // FETCH Prep
       const val = event.target.value;
       const currentUser = auth.currentUser;
-      const token = await retrieveToken();
 
       // FETCH Call
-      const { response, data } = await updateUserRole(
-        token,
-        userID,
-        val as UserRole
-      );
+      const { response } = await api.patch(`/users/${userID}/role`, {
+        role: val,
+      });
 
       // FETCH Response
       if (response.ok) {
@@ -136,12 +127,9 @@ const Status = ({ userRole, userStatus, userID }: userStatusData) => {
     try {
       // FETCH Prep
       const currentUser = auth.currentUser;
-      const token = await retrieveToken();
-      const { response, data } = await updateUserStatus(
-        token,
-        userID,
-        bodyval as UserStatus
-      );
+      const { response } = await api.patch(`/users/${userID}/status`, {
+        status: bodyval,
+      });
 
       // FETCH Response
       if (response.ok) {
@@ -338,46 +326,31 @@ const ManageUserProfile = () => {
 
   const fetchUserDetails = async () => {
     try {
-      // Make API call
-      const token = await retrieveToken();
-      const { response, data } = await fetchUser(token, userid as string);
-
-      // Set data
-      if (response.ok) {
-        const result = {
-          name:
-            data["data"]["profile"]["firstName"] +
-            " " +
-            data["data"]["profile"]["lastName"],
-          role: data["data"]["role"],
-          email: data["data"]["email"],
-          joinDate: formatDateString(data["data"]["createdAt"]),
-          userid: data["data"]["id"],
-          hours: data["data"]["hours"],
-          status: data["data"]["status"],
-          imgSrc: data["data"]["profile"]["imageURL"],
-        };
-        setUserProfileDetails(result);
-      }
+      const { data } = await api.get(`/users/${userid}/profile`);
+      const result = {
+        name:
+          data["data"]["profile"]["firstName"] +
+          " " +
+          data["data"]["profile"]["lastName"],
+        role: data["data"]["role"],
+        email: data["data"]["email"],
+        joinDate: formatDateString(data["data"]["createdAt"]),
+        userid: data["data"]["id"],
+        hours: data["data"]["hours"],
+        status: data["data"]["status"],
+        imgSrc: data["data"]["profile"]["imageURL"],
+      };
+      setUserProfileDetails(result);
     } catch (error) {
-      // console.log(error);
+      console.error(error);
     }
   };
   const fetchUserRegistrations = async () => {
     try {
-      // Make API call
-      const token = await retrieveToken();
-      const { response, data } = await fetchUserRegisteredEvents(
-        token,
-        userid as string
-      );
-
-      // Set data
-      if (response.ok) {
-        setRegisteredEvents(data["data"]["events"]);
-      }
+      const { data } = await api.get(`/users/${userid}/registered`);
+      setRegisteredEvents(data["data"]["events"]);
     } catch (error) {
-      // console.log(error);
+      console.error(error);
     }
   };
 

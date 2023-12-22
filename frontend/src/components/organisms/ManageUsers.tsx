@@ -7,14 +7,9 @@ import AccountBoxIcon from "@mui/icons-material/AccountBox";
 import SearchBar from "@/components/atoms/SearchBar";
 import IconText from "../atoms/IconText";
 import Link from "next/link";
-import { auth } from "@/utils/firebase";
 import { BASE_URL } from "@/utils/constants";
-import {
-  fetchUsersCount,
-  fetchUsersPaginated,
-  formatDateString,
-  retrieveToken,
-} from "@/utils/helpers";
+import { formatDateString } from "@/utils/helpers";
+import { api } from "@/utils/api";
 
 interface ManageUsersProps {}
 
@@ -128,8 +123,7 @@ const ManageUsers = ({}: ManageUsersProps) => {
     const url = BASE_URL as string;
     try {
       // call the get count insdtead of this
-      const token = await retrieveToken();
-      const { response, data } = await fetchUsersCount(token);
+      const { response, data } = await api.get("/users/count");
       if (response.ok) {
         const length = data["data"];
         return length;
@@ -140,8 +134,12 @@ const ManageUsers = ({}: ManageUsersProps) => {
   // Dummy FETCH function
   const fetchUsers = async (cursor: string) => {
     try {
-      const token = await retrieveToken();
-      const { response, data } = await fetchUsersPaginated(token, cursor);
+      const PAGE_SIZE = 6; // Number of records to fetch per page
+      const url =
+        cursor == ""
+          ? `/users/pagination?limit=${PAGE_SIZE}`
+          : `/users/pagination?limit=${PAGE_SIZE}&after=${cursor}`;
+      const { response, data } = await api.get(url);
       if (response.ok) {
         // Dummy function placed here just to make sure
         // front end pagination works

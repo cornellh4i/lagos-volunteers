@@ -9,12 +9,9 @@ import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { Grid } from "@mui/material";
 import { useRouter } from "next/router";
 import { useAuth } from "@/utils/AuthContext";
-import {
-  fetchUserIdFromDatabase,
-  retrieveToken,
-  registerUserForEvent,
-} from "@/utils/helpers";
+import { fetchUserIdFromDatabase } from "@/utils/helpers";
 import { EventData } from "@/utils/types";
+import { api } from "@/utils/api";
 
 interface EventRegisterFormProps {
   event: EventData;
@@ -37,12 +34,14 @@ const ModalBody = ({
    * Handles clicking the Register button
    */
   const handleRegister = async () => {
-    const token = await retrieveToken();
-    const attendeeid = await fetchUserIdFromDatabase(
-      token,
-      user?.email as string
-    );
-    await registerUserForEvent(token, eventid, attendeeid);
+    const attendeeid = await fetchUserIdFromDatabase(user?.email as string);
+    try {
+      await api.post(`/events/${eventid}/attendees`, {
+        attendeeid: attendeeid,
+      });
+    } catch (error) {
+      console.error(error);
+    }
     router.reload();
   };
 
