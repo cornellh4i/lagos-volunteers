@@ -1,12 +1,8 @@
 import React, { ReactElement } from "react";
 import Box from "@mui/material/Box";
 import Tab from "@mui/material/Tab";
-import {
-  FormControl,
-  MenuItem,
-  Select,
-  SelectChangeEvent,
-} from "@mui/material";
+import { FormControl, MenuItem, SelectChangeEvent } from "@mui/material";
+import Select from "../atoms/Select";
 import { TabPanel, TabContext, TabList } from "@mui/lab";
 
 interface TabContainerProps {
@@ -71,39 +67,10 @@ const VerticalTabContainer = ({
   };
   return (
     <div>
-      <FormControl variant="standard" sx={{ minWidth: "100%" }}>
+      <FormControl fullWidth>
         <div className="grid grid-cols-1 space-y-4">
           {rightAlignedComponent}
-          <Select
-            labelId="demo-simple-select-standard-label"
-            id="demo-simple-select-standard"
-            value={value}
-            onChange={handleChange}
-            label="Select"
-            autoWidth
-            MenuProps={{
-              MenuListProps: {
-                sx: {
-                  padding: 0,
-                  borderRadius: 2,
-                },
-              },
-              PaperProps: {
-                elevation: 4,
-                sx: {
-                  borderRadius: 2,
-                },
-              },
-              anchorOrigin: {
-                vertical: "bottom",
-                horizontal: "right",
-              },
-              transformOrigin: {
-                vertical: "top",
-                horizontal: "right",
-              },
-            }}
-          >
+          <Select value={value} onChange={handleChange}>
             {tabs.map((tab, index) => (
               <MenuItem value={String(index)}>{tab.label}</MenuItem>
             ))}
