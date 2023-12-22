@@ -6,7 +6,11 @@ module.exports = {
   },
   important: "#__next",
   theme: {
-    extend: {},
+    extend: {
+      colors: {
+        primary: "#568124",
+      },
+    },
   },
   plugins: [],
 };

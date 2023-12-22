@@ -101,6 +101,7 @@ const LoginForm = () => {
   return (
     <div className="space-y-4 ">
       <LoginErrorComponent />
+      <img src="/lfbi_logo.png" className="w-24" />
       <form onSubmit={handleSubmit(handleLogin)} className="space-y-4 ">
         <div className="font-bold text-3xl"> Log In </div>
         <div>
@@ -124,8 +125,11 @@ const LoginForm = () => {
           />
         </div>
         <div className="text-center">
-          <Link href="/password/forgot" className="text-black">
-            Forgot Password?
+          <Link
+            href="/password/forgot"
+            className="text-primary hover:underline no-underline"
+          >
+            Forgot password?
           </Link>
         </div>
         <div>

@@ -125,6 +125,7 @@ const SignupForm = () => {
   return (
     <form onSubmit={handleSubmit(handleSubmitUser)} className="space-y-4">
       <SignUpErrorComponent />
+      <img src="/lfbi_logo.png" className="w-24" />
       <div className="font-bold text-3xl">Sign Up</div>
       <div>
         <TextField
@@ -188,9 +189,11 @@ const SignupForm = () => {
         </Button>
       </div>
       <div className="justify-center flex flex-row">
-        <div className="">Have an account?&nbsp;</div>
-        <Link href="/login" className="text-black">
-          {" "}
+        <div>Have an account?&nbsp;</div>
+        <Link
+          href="/login"
+          className="text-primary hover:underline no-underline"
+        >
           Log in
         </Link>
       </div>
