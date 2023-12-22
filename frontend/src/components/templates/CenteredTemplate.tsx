@@ -8,9 +8,13 @@ interface CenteredTemplateProps {
 
 const CenteredTemplate = ({ children }: CenteredTemplateProps) => {
   return (
-    <div className="h-screen">
+    <div className="min-h-screen bg-gray-200">
       <NavBar />
-      <div className="max-w-3xl mx-auto py-10 px-10">{children}</div>
+      <div className="px-6 sm:px-12 py-6 sm:py-12">
+        <div className="bg-white max-w-xl p-6 sm:p-12 mx-auto rounded-3xl">
+          {children}
+        </div>
+      </div>
     </div>
   );
 };
