@@ -17,12 +17,12 @@ interface AppBarProps {
   /** A list of nav labels and links in order of display */
   navs: { label: string; link: string }[];
   /** A list of components to display on the right of the appbar */
-  rightAlignedComponents: ReactElement[];
+  buttons: { label: string; onClick: () => void }[];
 }
 
 const drawerWidth = 240;
 
-const DrawerAppBar = ({ navs, rightAlignedComponents }: AppBarProps) => {
+const DrawerAppBar = ({ navs, buttons }: AppBarProps) => {
   const [mobileOpen, setMobileOpen] = React.useState(false);
 
   const handleDrawerToggle = () => {
@@ -41,10 +41,13 @@ const DrawerAppBar = ({ navs, rightAlignedComponents }: AppBarProps) => {
             </ListItem>
           </Link>
         ))}
-        {rightAlignedComponents.map((component) => (
+        {buttons.map((button) => (
           <ListItem disablePadding>
-            <ListItemButton sx={{ textAlign: "center" }}>
-              <ListItemText primary={component} />
+            <ListItemButton
+              onClick={button.onClick}
+              sx={{ textAlign: "center" }}
+            >
+              <ListItemText primary={button.label} />
             </ListItemButton>
           </ListItem>
         ))}
@@ -79,8 +82,13 @@ const DrawerAppBar = ({ navs, rightAlignedComponents }: AppBarProps) => {
 
             {/* Right aligned components */}
             <div className="ml-2 min-w-0">
-              {rightAlignedComponents.map((component) => (
-                <Button className="text-black normal-case">{component}</Button>
+              {buttons.map((button) => (
+                <Button
+                  onClick={button.onClick}
+                  className="text-black normal-case"
+                >
+                  {button.label}
+                </Button>
               ))}
             </div>
           </Box>

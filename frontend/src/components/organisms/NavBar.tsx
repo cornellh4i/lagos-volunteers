@@ -31,15 +31,14 @@ const NavBar = () => {
     { label: "FAQ", link: "/about" },
     { label: "Profile", link: "/profile" },
   ];
-
-  const rightAlignedComponents = [<div onClick={handleSignOut}>Log Out</div>];
+  const buttons = [{ label: "Log Out", onClick: handleSignOut }];
 
   return (
     <>
       {loginStatus ? (
-        <AppBar navs={navs} rightAlignedComponents={rightAlignedComponents} />
+        <AppBar navs={navs} buttons={buttons} />
       ) : (
-        <AppBar navs={[]} rightAlignedComponents={[]} />
+        <AppBar navs={[]} buttons={[]} />
       )}
     </>
   );
