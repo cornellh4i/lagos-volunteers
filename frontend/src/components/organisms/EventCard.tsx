@@ -52,11 +52,19 @@ const EventCard = ({
   const MainAction = () => {
     switch (mainAction) {
       case "rsvp":
-        return <Button href={`/events/${eventid}/register`}>RSVP</Button>;
+        return (
+          <Link href={`/events/${eventid}/register`} className="w-full">
+            <Button>View Event Details</Button>
+          </Link>
+        );
       case "cancel rsvp":
-        return <Button href={`/events/${eventid}/cancel`}>RSVP</Button>;
+        return (
+          <Link href={`/events/${eventid}/register`} className="w-full">
+            <Button>View Event Details</Button>
+          </Link>
+        );
       case "manage attendees":
-        return <Button href={`/events/${eventid}/attendees`}>RSVP</Button>;
+        return <Button href={`/events/${eventid}/cancel`}>RSVP</Button>;
       default:
         return <></>;
     }
@@ -67,18 +75,16 @@ const EventCard = ({
       <div className="p-5">
         {/* Main card body */}
         <div className="pb-1">
-          <IconText icon={<EmojiFoodBeverageIcon color="disabled" />}>
+          <IconText icon={<EmojiFoodBeverageIcon />}>
             <b className="text-2xl">{title.toLocaleUpperCase()}</b>
           </IconText>
         </div>
         <div className="pb-1">
-          <IconText icon={<LocationOnIcon color="disabled" />}>
+          <IconText icon={<LocationOnIcon />}>
             {location.toLocaleUpperCase()}
           </IconText>
         </div>
-        <IconText icon={<WatchLaterIcon color="disabled" />}>
-          {datetime}
-        </IconText>
+        <IconText icon={<WatchLaterIcon />}>{datetime}</IconText>
 
         {/* Card buttons */}
         {dropdownActions.length > 0 ? (
@@ -86,15 +92,15 @@ const EventCard = ({
             <MainAction />
             <div className="pl-1">
               {/* Icon button */}
-              <IconButton
+              {/* <IconButton
                 className="bg-gray-300 rounded-md"
                 onClick={handleClick}
               >
                 <MoreVertIcon />
-              </IconButton>
+              </IconButton> */}
 
               {/* Dropdown menu */}
-              <Menu
+              {/* <Menu
                 id="demo-positioned-menu"
                 aria-labelledby="demo-positioned-button"
                 anchorEl={anchorEl}
@@ -112,7 +118,7 @@ const EventCard = ({
                 {dropdownActions?.map((action) => (
                   <MenuItem onClick={handleClose}>{action}</MenuItem>
                 ))}
-              </Menu>
+              </Menu> */}
             </div>
           </div>
         ) : (
