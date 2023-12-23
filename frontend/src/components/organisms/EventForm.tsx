@@ -344,16 +344,18 @@ const EventForm = ({ eventId, eventType, eventDetails }: EventFormProps) => {
             />
           </RadioGroup>
         </FormControl>
-        {status == 1 && (
-          <LocationPicker
-            label=""
-            required={status == 1}
-            name="location"
-            register={register}
-            setValue={setValue}
-            requiredMessage={errors.location ? "Required" : undefined}
-          />
-        )}
+        <div className="grid grid-cols-1 sm:grid-cols-2 col-span-2  sm:col-span-1">
+          {status == 1 && (
+            <LocationPicker
+              label=""
+              form={{
+                name: "location",
+                setFormValue: setValue,
+              }}
+              error={errors.location ? "Required" : undefined}
+            />
+          )}
+        </div>
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 col-span-2  sm:col-span-1">
         <TextField
