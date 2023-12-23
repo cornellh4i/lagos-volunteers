@@ -90,9 +90,7 @@ const ForgotPasswordForm = () => {
           error={errors.email ? "Required" : undefined}
           type="email"
           label="Email"
-          {...register("email", {
-            required: "true",
-          })}
+          {...register("email", { required: "true" })}
         />
       </div>
       <div>

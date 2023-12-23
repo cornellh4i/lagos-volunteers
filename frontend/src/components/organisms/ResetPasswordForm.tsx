@@ -38,9 +38,7 @@ const ResetPassword = () => {
           label="Password*"
           type="password"
           error={errors.password ? "Required" : undefined}
-          {...register("password", {
-            required: "true",
-          })}
+          {...register("password", { required: "true" })}
         />
       </div>
       <div>
@@ -52,9 +50,7 @@ const ResetPassword = () => {
               ? undefined
               : "Passwords must match"
           }
-          {...register("confirmPassword", {
-            required: "true",
-          })}
+          {...register("confirmPassword", { required: "true" })}
         />
       </div>
       <div>
