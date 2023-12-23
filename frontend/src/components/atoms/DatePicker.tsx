@@ -17,7 +17,7 @@ interface DatePickerProps {
  */
 const CustomDatePicker = forwardRef(
   (
-    { label, error, value, ...props }: DatePickerProps,
+    { label, error = "", value, ...props }: DatePickerProps,
     ref: Ref<HTMLInputElement>
   ) => {
     return (

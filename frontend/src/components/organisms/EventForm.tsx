@@ -7,7 +7,7 @@ import MultilineTextField from "../atoms/MultilineTextField";
 import Button from "../atoms/Button";
 import TextCopy from "../atoms/TextCopy";
 import TextField from "../atoms/TextField";
-import { useForm, SubmitHandler } from "react-hook-form";
+import { useForm, SubmitHandler, Controller } from "react-hook-form";
 import Radio from "@mui/material/Radio";
 import RadioGroup from "@mui/material/RadioGroup";
 import FormControlLabel from "@mui/material/FormControlLabel";
@@ -51,18 +51,6 @@ const EventForm = ({ eventId, eventType, eventDetails }: EventFormProps) => {
     eventDetails ? (eventDetails.mode === "IN_PERSON" ? 1 : 0) : 0
   );
 
-  const [getStartDate, setStartDate] = React.useState(
-    eventDetails ? String(dayjs(eventDetails.startDate)) : ""
-  );
-  const [getEndDate, setEndDate] = React.useState(
-    eventDetails ? String(dayjs(eventDetails.endDate)) : ""
-  );
-  const [getStartTime, setStartTime] = React.useState(
-    eventDetails ? String(dayjs(eventDetails.startTime)) : ""
-  );
-  const [getEndTime, setEndTime] = React.useState(
-    eventDetails ? String(dayjs(eventDetails.endTime)) : ""
-  );
   const radioHandler = (status: number) => {
     setStatus(status);
   };
@@ -73,6 +61,7 @@ const EventForm = ({ eventId, eventType, eventDetails }: EventFormProps) => {
     watch,
     getValues,
     setValue,
+    control,
     formState: { errors },
   } = useForm<FormValues>(
     eventDetails
@@ -126,25 +115,9 @@ const EventForm = ({ eventId, eventType, eventDetails }: EventFormProps) => {
   };
 
   const timeAndDateValidation = () => {
-    if (getStartTime == "") {
-      setErrorMessage("Start Time is required.");
-      return false;
-    }
-    if (getEndTime == "") {
-      setErrorMessage("End Time is required.");
-      return false;
-    }
-    if (getStartDate == "") {
-      setErrorMessage("Start Date is required.");
-      return false;
-    }
-    if (getEndDate == "") {
-      setErrorMessage("End Date is required.");
-      return false;
-    }
-
-    const startDateTime = convertToISO(getStartTime, getStartDate);
-    const endDateTime = convertToISO(getEndTime, getEndDate);
+    const { startTime, startDate, endTime, endDate } = getValues();
+    const startDateTime = convertToISO(startTime, startDate);
+    const endDateTime = convertToISO(endTime, endDate);
     if (new Date(startDateTime) >= new Date(endDateTime)) {
       setErrorMessage(
         "End Date and Time must be later than Start Date and Time"
@@ -165,9 +138,18 @@ const EventForm = ({ eventId, eventType, eventDetails }: EventFormProps) => {
       return;
     }
     const mode = status === 0 ? "VIRTUAL" : "IN_PERSON";
-    const startDateTime = convertToISO(getStartTime, getStartDate);
-    const endDateTime = convertToISO(getEndTime, getEndDate);
-    const { eventName, location, volunteerSignUpCap, eventDescription } = data;
+    const {
+      eventName,
+      location,
+      volunteerSignUpCap,
+      eventDescription,
+      startDate,
+      endDate,
+      startTime,
+      endTime,
+    } = data;
+    const startDateTime = convertToISO(startTime, startDate);
+    const endDateTime = convertToISO(endTime, endDate);
     const userid = await fetchUserIdFromDatabase(user?.email as string);
     try {
       const { response } = await api.post("/events", {
@@ -208,8 +190,9 @@ const EventForm = ({ eventId, eventType, eventDetails }: EventFormProps) => {
     }
 
     const mode = status === 0 ? "VIRTUAL" : "IN_PERSON";
-    const startDateTime = convertToISO(getStartTime, getStartDate);
-    const endDateTime = convertToISO(getEndTime, getEndDate);
+    const { startTime, startDate, endTime, endDate } = getValues();
+    const startDateTime = convertToISO(startTime, startDate);
+    const endDateTime = convertToISO(endTime, endDate);
     const { eventName, location, volunteerSignUpCap, eventDescription } = data;
 
     try {
@@ -246,7 +229,25 @@ const EventForm = ({ eventId, eventType, eventDetails }: EventFormProps) => {
     >
       <CreateErrorComponent />
       <CreateSuccessComponent />
-      {/* <button onClick={() => console.log(getValues())}>test</button> */}
+      {/* <button onClick={() => console.log(getValues())}>test</button>
+      <button
+        onClick={() => {
+          const startDateTime = convertToISO(
+            getValues().startTime,
+            getValues().startDate
+          );
+          const endDateTime = convertToISO(
+            getValues().endTime,
+            getValues().endDate
+          );
+          console.log("START TIME");
+          console.log(startDateTime);
+          console.log("END TIME");
+          console.log(endDateTime);
+        }}
+      >
+        see iso
+      </button> */}
       <div className="font-bold text-3xl">
         {eventType == "create" ? "Create Event" : "Edit Event"}
       </div>
@@ -261,42 +262,62 @@ const EventForm = ({ eventId, eventType, eventDetails }: EventFormProps) => {
       </div>
       <div className="sm:space-x-4 grid grid-cols-1 sm:grid-cols-2">
         <div className="pb-4 sm:pb-0">
-          <DatePicker
-            label="Start Date"
-            error={getStartDate === "" ? "Required" : undefined}
-            value={eventDetails ? eventDetails.startDate : undefined}
-            onChange={(e) =>
-              e?.$d ? (e?.$d != "Invalid Date" ? setStartDate(e.$d) : "") : ""
-            }
+          <Controller
+            name="startDate"
+            control={control}
+            rules={{ required: true }}
+            defaultValue={undefined}
+            render={({ field }) => (
+              <DatePicker
+                label="Start Date"
+                error={errors.startDate ? "Required" : undefined}
+                {...field}
+              />
+            )}
           />
         </div>
-        <DatePicker
-          label="End Date"
-          error={getEndDate === "" ? "Required" : undefined}
-          value={eventDetails ? eventDetails.endDate : undefined}
-          onChange={(e) =>
-            e?.$d ? (e?.$d != "Invalid Date" ? setEndDate(e.$d) : "") : ""
-          }
+        <Controller
+          name="endDate"
+          control={control}
+          rules={{ required: true }}
+          defaultValue={undefined}
+          render={({ field }) => (
+            <DatePicker
+              error={errors.endDate ? "Required" : undefined}
+              label="End Date"
+              {...field}
+            />
+          )}
         />
       </div>
       <div className="sm:space-x-4 grid grid-cols-1 sm:grid-cols-2">
         <div className="pb-4 sm:pb-0">
-          <TimePicker
-            label="Start Time"
-            error={getStartTime === "" ? "Required" : undefined}
-            value={eventDetails ? eventDetails.startTime : undefined}
-            onChange={(e) =>
-              e?.$d ? (e?.$d != "Invalid Date" ? setStartTime(e.$d) : "") : ""
-            }
+          <Controller
+            name="startTime"
+            control={control}
+            rules={{ required: true }}
+            defaultValue={undefined}
+            render={({ field }) => (
+              <TimePicker
+                error={errors.startTime ? "Required" : undefined}
+                label="Start Time"
+                {...field}
+              />
+            )}
           />
         </div>
-        <TimePicker
-          label="End Time"
-          error={getEndTime === "" ? "Required" : undefined}
-          value={eventDetails ? eventDetails.endTime : undefined}
-          onChange={(e) =>
-            e?.$d ? (e?.$d != "Invalid Date" ? setEndTime(e.$d) : "") : ""
-          }
+        <Controller
+          name="endTime"
+          control={control}
+          rules={{ required: true }}
+          defaultValue={undefined}
+          render={({ field }) => (
+            <TimePicker
+              error={errors.endTime ? "Required" : undefined}
+              label="End Time"
+              {...field}
+            />
+          )}
         />
       </div>
       <div>
@@ -346,7 +367,6 @@ const EventForm = ({ eventId, eventType, eventDetails }: EventFormProps) => {
       </div>
       <MultilineTextField
         label="Event Description"
-        required={true}
         error={errors.eventDescription ? "Required" : undefined}
         {...register("eventDescription", {
           required: "true",

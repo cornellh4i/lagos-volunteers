@@ -20,7 +20,7 @@ interface TimePickerProps {
  */
 const CustomTimePicker = forwardRef(
   (
-    { label, value, error, ...props }: TimePickerProps,
+    { label, value, error = "", ...props }: TimePickerProps,
     ref: Ref<HTMLInputElement>
   ) => {
     return (
