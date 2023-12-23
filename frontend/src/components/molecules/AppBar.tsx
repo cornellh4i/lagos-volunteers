@@ -70,7 +70,7 @@ const DrawerAppBar = ({ navs, rightAlignedComponents }: AppBarProps) => {
           </div>
 
           {/* Navbar items */}
-          <Box className="hidden sm:flex">
+          <Box className="hidden md:flex">
             {navs.map((nav) => (
               <Link href={nav.link}>
                 <Button className="text-black normal-case">{nav.label}</Button>
@@ -88,7 +88,7 @@ const DrawerAppBar = ({ navs, rightAlignedComponents }: AppBarProps) => {
             color="inherit"
             aria-label="open drawer"
             onClick={handleDrawerToggle}
-            className="default sm:hidden"
+            className="default md:hidden"
           >
             <MenuIcon />
           </IconButton>
@@ -104,7 +104,7 @@ const DrawerAppBar = ({ navs, rightAlignedComponents }: AppBarProps) => {
           ModalProps={{
             keepMounted: true, // Better open performance on mobile.
           }}
-          className="block sm:hidden"
+          className="block md:hidden"
           sx={{
             "& .MuiDrawer-paper": {
               boxSizing: "border-box",

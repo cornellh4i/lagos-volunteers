@@ -27,6 +27,7 @@ const NavBar = () => {
     { label: "Home", link: "/" },
     { label: "My Events", link: "/events/view" },
     { label: "Manage Members", link: "/users/view" },
+    { label: "Manage Website", link: "/" },
     { label: "FAQ", link: "/about" },
     { label: "Profile", link: "/profile" },
   ];
