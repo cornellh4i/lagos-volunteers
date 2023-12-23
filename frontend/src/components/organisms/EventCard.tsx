@@ -88,12 +88,12 @@ const EventCard = ({
     <Card variant="outlined" className="w-full">
       <div className="p-5">
         {/* Main card body */}
-        <div className="pb-1">
+        <div className="pb-2">
           <IconText icon={<EmojiFoodBeverageIcon />}>
             <b className="text-2xl">{title.toLocaleUpperCase()}</b>
           </IconText>
         </div>
-        <div className="pb-1">
+        <div className="pb-2">
           <IconText icon={<LocationOnIcon />}>
             {location.toLocaleUpperCase()}
           </IconText>
