@@ -1,18 +1,18 @@
 import React, { ReactNode } from "react";
 
-interface PaperProps {
+interface CardProps {
   children: ReactNode;
-  color: "white" | "inherit";
-  size: "small" | "medium";
-  className: string;
+  color?: "white" | "inherit";
+  size?: "small" | "medium";
+  className?: string;
 }
 
-const Paper = ({
+const Card = ({
   children,
   color = "white",
-  size = "medium",
+  size = "small",
   className,
-}: PaperProps) => {
+}: CardProps) => {
   // Set color
   let bg;
   if (color === "white") {
@@ -27,8 +27,9 @@ const Paper = ({
       break;
     case "medium":
       styles = "p-6 sm:p-12 rounded-3xl";
+      break;
   }
   return <div className={`${bg} ${styles} ${className}`}>{children}</div>;
 };
 
-export default Paper;
+export default Card;

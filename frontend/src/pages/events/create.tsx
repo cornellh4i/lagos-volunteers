@@ -1,15 +1,15 @@
 import React from "react";
 import EventForm from "@/components/organisms/EventForm";
 import CenteredTemplate from "@/components/templates/CenteredTemplate";
-import Paper from "@/components/molecules/Paper";
+import Card from "@/components/molecules/Card";
 
 /** A CreateEvent page */
 const CreateEvent = () => {
   return (
     <CenteredTemplate>
-      <Paper>
+      <Card size="medium">
         <EventForm eventType="create" />
-      </Paper>
+      </Card>
     </CenteredTemplate>
   );
 };
