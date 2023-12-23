@@ -49,7 +49,8 @@ const UpcomingEvents = ({ eventDetails }: EventCardProps) => {
             eventid={event.id}
             title={event.name}
             location={event.location}
-            datetime={formatDateTimeRange(event.startDate, event.endDate)}
+            startDate={new Date(event.startDate)}
+            endDate={new Date(event.endDate)}
             dropdownActions={["manage attendees", "edit"]}
             // hard-coded for now but main-action is determined based on the user and their status
             mainAction="rsvp"

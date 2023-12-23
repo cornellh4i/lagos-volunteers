@@ -10,6 +10,7 @@ import Link from "next/link";
 import MenuItem from "@mui/material/MenuItem";
 import Menu from "@mui/material/Menu";
 import { Action } from "@/utils/types";
+import { formatDateTimeRange } from "@/utils/helpers";
 
 interface EventCardProps {
   eventid: string;
@@ -17,7 +18,8 @@ interface EventCardProps {
   dropdownActions?: Action[];
   title: string;
   location: string;
-  datetime: string;
+  startDate: Date;
+  endDate: Date;
 }
 
 /**
@@ -37,7 +39,8 @@ const EventCard = ({
   dropdownActions = [],
   title,
   location,
-  datetime,
+  startDate,
+  endDate,
 }: EventCardProps) => {
   // Handling the dropdown menu
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
@@ -49,22 +52,33 @@ const EventCard = ({
     setAnchorEl(null);
   };
 
+  // Check date
+  const start = startDate.getTime();
+  const now = Date.now();
+  let variety: "primary" | "secondary" = "primary";
+  if (start > now) {
+    variety = "secondary";
+  }
   const MainAction = () => {
     switch (mainAction) {
       case "rsvp":
         return (
           <Link href={`/events/${eventid}/register`} className="w-full">
-            <Button>View Event Details</Button>
+            <Button variety={variety}>View Event Details</Button>
           </Link>
         );
       case "cancel rsvp":
         return (
           <Link href={`/events/${eventid}/register`} className="w-full">
-            <Button>View Event Details</Button>
+            <Button variety={variety}>View Event Details</Button>
           </Link>
         );
       case "manage attendees":
-        return <Button href={`/events/${eventid}/cancel`}>RSVP</Button>;
+        return (
+          <Button variety={variety} href={`/events/${eventid}/cancel`}>
+            RSVP
+          </Button>
+        );
       default:
         return <></>;
     }
@@ -84,7 +98,9 @@ const EventCard = ({
             {location.toLocaleUpperCase()}
           </IconText>
         </div>
-        <IconText icon={<WatchLaterIcon />}>{datetime}</IconText>
+        <IconText icon={<WatchLaterIcon />}>
+          {formatDateTimeRange(startDate.toString(), endDate.toString())}
+        </IconText>
 
         {/* Card buttons */}
         {dropdownActions.length > 0 ? (
