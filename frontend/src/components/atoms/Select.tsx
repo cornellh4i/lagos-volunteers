@@ -25,7 +25,6 @@ const Select = ({ children, label, error, ...props }: SelectProps) => {
             },
           },
           PaperProps: {
-            // variant: "outlined",
             elevation: 1,
             sx: {
               marginTop: 1,
