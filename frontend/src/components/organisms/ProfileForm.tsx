@@ -198,36 +198,28 @@ const ProfileForm = ({ userDetails }: ProfileFormProps) => {
           label="Email"
           disabled={true}
           error={errors.email ? "Required" : undefined}
-          {...register("email", {
-            required: "true",
-          })}
+          {...register("email", { required: "true" })}
         />
       </div>
       <div>
         <TextField
           label="First name"
           error={errors.firstName ? "Required" : undefined}
-          {...register("firstName", {
-            required: "true",
-          })}
+          {...register("firstName", { required: "true" })}
         />
       </div>
       <div>
         <TextField
           label="Last name"
           error={errors.lastName ? "Required" : undefined}
-          {...register("lastName", {
-            required: "true",
-          })}
+          {...register("lastName", { required: "true" })}
         />
       </div>
       <div>
         <TextField
           label="Preferred name"
           error={errors.preferredName ? "Required" : undefined}
-          {...register("preferredName", {
-            required: "true",
-          })}
+          {...register("preferredName", { required: "true" })}
         />
       </div>
       <div>
@@ -235,18 +227,14 @@ const ProfileForm = ({ userDetails }: ProfileFormProps) => {
           type="password"
           label="Old password"
           error={errors.oldPassword ? "Required" : undefined}
-          {...register("oldPassword", {
-            required: "false",
-          })}
+          {...register("oldPassword", { required: "false" })}
         />
       </div>
       <div>
         <TextField
           type="password"
           label="New password "
-          {...register("newPassword", {
-            required: "false",
-          })}
+          {...register("newPassword", { required: "false" })}
         />
       </div>
       <div>
@@ -258,9 +246,7 @@ const ProfileForm = ({ userDetails }: ProfileFormProps) => {
               ? undefined
               : "Passwords must match"
           }
-          {...register("confirmNewPassword", {
-            required: "false",
-          })}
+          {...register("confirmNewPassword", { required: "false" })}
         />
       </div>
       <div>

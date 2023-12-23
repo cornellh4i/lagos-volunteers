@@ -126,9 +126,7 @@ const SignupForm = () => {
           error={errors.email ? "Required" : undefined}
           type="email"
           label="Email"
-          {...register("email", {
-            required: "true",
-          })}
+          {...register("email", { required: "true" })}
         />
       </div>
       <div className="grid sm:space-x-4 grid-cols-1 sm:grid-cols-2 ">
@@ -136,18 +134,14 @@ const SignupForm = () => {
           <TextField
             error={errors.firstName ? "Required" : undefined}
             label="First Name"
-            {...register("firstName", {
-              required: "true",
-            })}
+            {...register("firstName", { required: "true" })}
           />
         </div>
         <div>
           <TextField
             error={errors.lastName ? "Required" : undefined}
             label="Last Name"
-            {...register("lastName", {
-              required: "true",
-            })}
+            {...register("lastName", { required: "true" })}
           />
         </div>
       </div>
@@ -156,9 +150,7 @@ const SignupForm = () => {
           error={errors.password ? "Required" : undefined}
           type="password"
           label="Password"
-          {...register("password", {
-            required: "true",
-          })}
+          {...register("password", { required: "true" })}
         />
       </div>
       <div>
@@ -172,9 +164,7 @@ const SignupForm = () => {
               : undefined
           }
           label="Confirm Password"
-          {...register("confirmPassword", {
-            required: "true",
-          })}
+          {...register("confirmPassword", { required: "true" })}
         />
       </div>
       <div>

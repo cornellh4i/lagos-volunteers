@@ -255,9 +255,7 @@ const EventForm = ({ eventId, eventType, eventDetails }: EventFormProps) => {
         <TextField
           label="Event Name"
           error={errors.eventName ? "Required" : undefined}
-          {...register("eventName", {
-            required: "true",
-          })}
+          {...register("eventName", { required: "true" })}
         />
       </div>
       <div className="sm:space-x-4 grid grid-cols-1 sm:grid-cols-2">
@@ -362,17 +360,13 @@ const EventForm = ({ eventId, eventType, eventDetails }: EventFormProps) => {
           label="Volunteer Sign Up Cap"
           type="number"
           error={errors.volunteerSignUpCap ? "Required" : undefined}
-          {...register("volunteerSignUpCap", {
-            required: "true",
-          })}
+          {...register("volunteerSignUpCap", { required: "true" })}
         />
       </div>
       <MultilineTextField
         label="Event Description"
         error={errors.eventDescription ? "Required" : undefined}
-        {...register("eventDescription", {
-          required: "true",
-        })}
+        {...register("eventDescription", { required: "true" })}
       />
       <Upload label="Event Image" />
       <TextCopy

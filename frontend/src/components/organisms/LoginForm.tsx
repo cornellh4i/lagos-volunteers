@@ -109,9 +109,7 @@ const LoginForm = () => {
             error={errors.email ? "Required" : undefined}
             label="Email"
             type="email"
-            {...register("email", {
-              required: "true",
-            })}
+            {...register("email", { required: "true" })}
           />
         </div>
         <div>
@@ -119,9 +117,7 @@ const LoginForm = () => {
             error={errors.password ? "Required" : undefined}
             label="Password"
             type="password"
-            {...register("password", {
-              required: "true",
-            })}
+            {...register("password", { required: "true" })}
           />
         </div>
         <div className="text-center">
