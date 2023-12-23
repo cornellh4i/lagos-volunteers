@@ -31,8 +31,8 @@ const Active = ({
     {
       field: "name",
       headerName: "Name",
-      flex: 1,
-      minWidth: 100,
+      flex: 2,
+      minWidth: 200,
       renderHeader: (params) => (
         <div style={{ fontWeight: "bold" }}>{params.colDef.headerName}</div>
       ),
@@ -41,7 +41,7 @@ const Active = ({
       field: "email",
       headerName: "Email",
       flex: 1,
-      minWidth: 100,
+      minWidth: 150,
       renderHeader: (params) => (
         <div style={{ fontWeight: "bold" }}>{params.colDef.headerName}</div>
       ),
@@ -49,7 +49,7 @@ const Active = ({
     {
       field: "role",
       headerName: "Role",
-      flex: 1,
+      flex: 0.5,
       minWidth: 100,
       renderHeader: (params) => (
         <div style={{ fontWeight: "bold" }}>{params.colDef.headerName}</div>
@@ -58,7 +58,7 @@ const Active = ({
     {
       field: "date",
       headerName: "Joined on",
-      flex: 1,
+      flex: 0.5,
       minWidth: 100,
       type: "date",
       renderHeader: (params) => (
@@ -68,7 +68,7 @@ const Active = ({
     {
       field: "hours",
       headerName: "Total hours",
-      flex: 2,
+      flex: 0.5,
       minWidth: 100,
       renderHeader: (params) => (
         <div style={{ fontWeight: "bold" }}>{params.colDef.headerName}</div>
@@ -77,7 +77,7 @@ const Active = ({
     {
       headerName: "",
       field: "actions",
-      flex: 0.6,
+      flex: 0.5,
       minWidth: 180,
       renderCell: () => (
         <div

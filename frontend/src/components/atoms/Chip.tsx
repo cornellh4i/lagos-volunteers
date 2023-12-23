@@ -8,14 +8,7 @@ interface ChipProps {
 
 /** A Chip component is a chip with text inside */
 const CustomChip = ({ label, ...props }: ChipProps) => {
-  return (
-    <Chip
-      sx={{ width: "150px", height: "37px" }}
-      label={label}
-      variant="outlined"
-      {...props}
-    />
-  );
+  return <Chip label={label} className="w-full" {...props} />;
 };
 
 export default CustomChip;
