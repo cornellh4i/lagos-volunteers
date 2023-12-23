@@ -88,8 +88,8 @@ const Active = ({
           }}
         >
           <Link href="/users/asdf/manage" className="no-underline">
-            <Button>
-              <IconText icon={<AccountBoxIcon />}>View Profile</IconText>
+            <Button variety="tertiary" icon={<AccountBoxIcon />}>
+              View Profile
             </Button>
           </Link>
         </div>
@@ -97,8 +97,28 @@ const Active = ({
     },
   ];
 
+  // Search bar
+  const [value, setValue] = React.useState("");
+  const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
+    setValue(event.target.value);
+  };
+  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+    // Prevent page refresh
+    event.preventDefault();
+    // Actual function
+    // console.log(value);
+  };
+
   return (
     <div>
+      <div className="pb-5 w-full sm:w-[600px]">
+        <SearchBar
+          placeholder="Search member by name, email"
+          value={value}
+          onChange={handleChange}
+          onClick={handleSubmit}
+        />
+      </div>
       <Table
         columns={eventColumns}
         rows={initalRowData}
@@ -185,18 +205,6 @@ const ManageUsers = ({}: ManageUsersProps) => {
     }, // need to change panel for Blacklisted
   ];
 
-  // Search bar
-  const [value, setValue] = React.useState("");
-  const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
-    setValue(event.target.value);
-  };
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
-    // Prevent page refresh
-    event.preventDefault();
-    // Actual function
-    // console.log(value);
-  };
-
   useEffect(() => {
     const fetchData = async () => {
       const length = await fetchUserCount();
@@ -211,18 +219,12 @@ const ManageUsers = ({}: ManageUsersProps) => {
 
   return (
     <>
-      <div className="font-semibold text-3xl">Manage Members</div>
-      <div className="pt-5 pb-5 w-full sm:w-[600px]">
-        <SearchBar
-          placeholder="Search member by name, email"
-          value={value}
-          onChange={handleChange}
-          onClick={handleSubmit}
-        />
-      </div>
       {initialrows.length > 0 && (
         <div>
-          <TabContainer tabs={tabs} />
+          <TabContainer
+            left={<div className="font-semibold text-3xl">Manage Members</div>}
+            tabs={tabs}
+          />
         </div>
       )}
     </>

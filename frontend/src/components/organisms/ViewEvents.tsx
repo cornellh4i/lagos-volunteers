@@ -38,25 +38,26 @@ interface EventCardProps {
 
 const UpcomingEvents = ({ eventDetails }: EventCardProps) => {
   return (
-    <CardList>
-      {eventDetails?.map((event) => (
-        <EventCard
-          key={event.id}
-          eventid={event.id}
-          title={event.name}
-          location={event.location}
-          datetime={formatDateTimeRange(event.startDate, event.endDate)}
-          dropdownActions={["manage attendees", "edit"]}
-          // hard-coded for now but main-action is determined based on the user and their status
-          mainAction="rsvp"
-        />
-      ))}
-    </CardList>
+    <div>
+      <Link href="/events/create">
+        <Button className="w-full sm:w-max mb-2">Create New Event</Button>
+      </Link>
+      <CardList>
+        {eventDetails?.map((event) => (
+          <EventCard
+            key={event.id}
+            eventid={event.id}
+            title={event.name}
+            location={event.location}
+            datetime={formatDateTimeRange(event.startDate, event.endDate)}
+            dropdownActions={["manage attendees", "edit"]}
+            // hard-coded for now but main-action is determined based on the user and their status
+            mainAction="rsvp"
+          />
+        ))}
+      </CardList>
+    </div>
   );
-};
-
-const Drafts = () => {
-  return <>Hello drafts</>;
 };
 
 const PastEvents = ({ eventDetails }: EventCardProps) => {
@@ -167,23 +168,18 @@ const ViewEvents = () => {
   {
     const tabs = [
       {
-        label: "Upcoming Events",
+        label: "Upcoming",
         panel: <UpcomingEvents eventDetails={events} />,
       },
       {
-        label: "Past Events",
+        label: "Past",
         panel: <PastEvents eventDetails={events} />,
       },
-      { label: "Drafts", panel: <Drafts /> },
     ];
     return (
       <TabContainer
         tabs={tabs}
-        rightAlignedComponent={
-          <Link href="/events/create">
-            <Button>Create New Event</Button>
-          </Link>
-        }
+        left={<div className="font-semibold text-3xl">My Events</div>}
       />
     );
   }
