@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import AppBar from "@/components/molecules/AppBar";
-import Button from "@/components/atoms/Button";
 import { useAuth } from "@/utils/AuthContext";
 import { auth } from "@/utils/firebase";
 import { useRouter } from "next/router";
@@ -32,11 +31,7 @@ const NavBar = () => {
     { label: "Profile", link: "/profile" },
   ];
 
-  const rightAlignedComponents = [
-    <Button size="small" onClick={handleSignOut}>
-      Log Out
-    </Button>,
-  ];
+  const rightAlignedComponents = [<div onClick={handleSignOut}>Log Out</div>];
 
   return (
     <>

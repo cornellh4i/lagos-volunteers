@@ -44,7 +44,7 @@ const DrawerAppBar = ({ navs, rightAlignedComponents }: AppBarProps) => {
         {rightAlignedComponents.map((component) => (
           <ListItem disablePadding>
             <ListItemButton sx={{ textAlign: "center" }}>
-              {component}
+              <ListItemText primary={component} />
             </ListItemButton>
           </ListItem>
         ))}
@@ -73,12 +73,14 @@ const DrawerAppBar = ({ navs, rightAlignedComponents }: AppBarProps) => {
           <Box className="hidden sm:flex">
             {navs.map((nav) => (
               <Link href={nav.link}>
-                <Button className="text-black capitalize">{nav.label}</Button>
+                <Button className="text-black normal-case">{nav.label}</Button>
               </Link>
             ))}
+
+            {/* Right aligned components */}
             <div className="ml-2 min-w-0">
               {rightAlignedComponents.map((component) => (
-                <>{component}</>
+                <Button className="text-black normal-case">{component}</Button>
               ))}
             </div>
           </Box>
