@@ -9,6 +9,7 @@ import { useForm, SubmitHandler } from "react-hook-form";
 import Alert from "../atoms/Alert";
 import { useRouter } from "next/router";
 import { useSignInWithEmailAndPassword } from "react-firebase-hooks/auth";
+import { api } from "@/utils/api";
 
 type FormValues = {
   firstName: string;
@@ -87,14 +88,7 @@ const SignupForm = () => {
         setErrorMessage("Passwords do not match");
         return;
       }
-      const response = await fetch(`${BASE_URL}/users`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(post),
-      });
-      const r = await response.json();
+      const { response } = await api.post("/users", post);
       if (response.ok) {
         const signIn = await signInWithEmailAndPassword(email, password);
         if (signIn?.user) {

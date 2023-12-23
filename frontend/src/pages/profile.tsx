@@ -8,6 +8,7 @@ import { auth } from "@/utils/firebase";
 import { useAuth } from "@/utils/AuthContext";
 import Avatar from "@/components/molecules/Avatar";
 import Paper from "@/components/molecules/Paper";
+import { api } from "@/utils/api";
 
 type userData = {
   id: string;
@@ -33,17 +34,7 @@ const Profile = () => {
 
   const fetchUserDetails = async () => {
     try {
-      const url = BASE_URL as string;
-      const fetchUrl = `${url}/users/search/?email=${user?.email}`;
-      const userToken = await auth.currentUser?.getIdToken();
-      const response = await fetch(fetchUrl, {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${userToken}`,
-        },
-      });
-      const data = await response.json();
-
+      const { data } = await api.get(`/users/search/?email=${user?.email}`);
       setUserDetails({
         id: data["data"][0]["profile"]["userId"],
         email: data["data"][0]["email"],
