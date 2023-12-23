@@ -7,7 +7,7 @@ interface SearchBarProps {
 }
 
 /** A simple searchbar */
-const SearchBar = ({ onClick, ...props }: SearchBarProps) => {
+const SearchBar = ({ ...props }: SearchBarProps) => {
   return (
     <TextField
       sx={{
