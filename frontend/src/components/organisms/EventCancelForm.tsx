@@ -61,12 +61,12 @@ const ModalBody = ({
       </Typography>
       <Grid container spacing={2}>
         <Grid item md={6} xs={12}>
-          <Button color="gray" type="button" onClick={handleClose}>
+          <Button type="button" onClick={handleClose}>
             No
           </Button>
         </Grid>
         <Grid item md={6} xs={12}>
-          <Button color="dark-gray" type="button" onClick={handleCancel}>
+          <Button type="button" onClick={handleCancel}>
             Yes, cancel
           </Button>
         </Grid>
@@ -151,21 +151,18 @@ const EventCancelForm = ({ event }: EventCancelFormProps) => {
           <div className="justify-center center-items grid grid-cols-4 grid-rows-2">
             <div className="pt-4 col-start-1 col-end-5">
               <MultilineTextField
-                requiredMessage={errors.cancelReason ? "Required" : undefined}
+                error={errors.cancelReason ? "Required" : undefined}
                 labelStyling="font-semibold"
                 placeholder="Your answer here"
-                name="cancelReason"
-                register={register}
                 label="Reason for cancelling *"
                 required={true}
+                {...register("cancelReason", {
+                  required: "true",
+                })}
               />
             </div>
             <div className="col-start-1 col-end-5 pt-4 md:col-start-2 md:col-end-4 md:pt-8">
-              <Button
-                children="Cancel Registration"
-                color="gray"
-                type="submit"
-              ></Button>
+              <Button type="submit">Cancel Registration</Button>
             </div>
           </div>
         </form>

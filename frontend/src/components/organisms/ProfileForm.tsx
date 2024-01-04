@@ -9,6 +9,7 @@ import { BASE_URL } from "@/utils/constants";
 import { useUpdatePassword } from "react-firebase-hooks/auth";
 import Alert from "../atoms/Alert";
 import { reauthenticateWithCredential, EmailAuthProvider } from "firebase/auth";
+import Snackbar from "../atoms/Snackbar";
 import { api } from "@/utils/api";
 
 type FormValues = {
@@ -71,24 +72,46 @@ const ProfileForm = ({ userDetails }: ProfileFormProps) => {
     }
   };
 
+  // State variables for the notification popups
+  const [notifOpen, setNotifOpen] = useState(false);
+
   const ProfileErrorComponent = (): JSX.Element | null => {
+    setNotifOpen(true);
     return error ? (
-      <Alert severity="error">Error: {handleErrors(error?.message)}</Alert>
+      <Snackbar
+        variety="error"
+        open={notifOpen}
+        onClose={() => setNotifOpen(false)}
+      >
+        Error: {handleErrors(error?.message)}
+      </Snackbar>
     ) : null;
   };
 
   const ProfileReauthenticationErrorComponent = (): JSX.Element | null => {
+    setNotifOpen(true);
     return errorMessage.length > 0 ? (
-      <Alert severity="error">Error: {handleErrors(errorMessage)}</Alert>
+      <Snackbar
+        variety="error"
+        open={notifOpen}
+        onClose={() => setNotifOpen(false)}
+      >
+        Error: {handleErrors(errorMessage)}
+      </Snackbar>
     ) : null;
   };
 
   const ProfileSuccessComponent = (): JSX.Element | null => {
+    setNotifOpen(true);
     return !error && !(errorMessage.length > 0) && success ? (
-      <Alert severity="success">
+      <Snackbar
+        variety="success"
+        open={notifOpen}
+        onClose={() => setNotifOpen(false)}
+      >
         Success: Profile update was successful. Please refresh the page to see
         your changes!
-      </Alert>
+      </Snackbar>
     ) : null;
   };
 
@@ -172,72 +195,58 @@ const ProfileForm = ({ userDetails }: ProfileFormProps) => {
       <ProfileReauthenticationErrorComponent />
       <div>
         <TextField
-          label="Email *"
+          label="Email"
           disabled={true}
-          required={true}
-          name="email"
-          register={register}
-          requiredMessage={errors.email ? "Required" : undefined}
+          error={errors.email ? "Required" : undefined}
+          {...register("email", { required: "true" })}
         />
       </div>
       <div>
         <TextField
-          label="First name *"
-          required={true}
-          name="firstName"
-          register={register}
-          requiredMessage={errors.firstName ? "Required" : undefined}
+          label="First name"
+          error={errors.firstName ? "Required" : undefined}
+          {...register("firstName", { required: "true" })}
         />
       </div>
       <div>
         <TextField
-          label="Last name *"
-          required={true}
-          name="lastName"
-          register={register}
-          requiredMessage={errors.lastName ? "Required" : undefined}
+          label="Last name"
+          error={errors.lastName ? "Required" : undefined}
+          {...register("lastName", { required: "true" })}
         />
       </div>
       <div>
         <TextField
           label="Preferred name"
-          required={false}
-          name="preferredName"
-          register={register}
-          requiredMessage={errors.preferredName ? "Required" : undefined}
+          error={errors.preferredName ? "Required" : undefined}
+          {...register("preferredName", { required: "true" })}
         />
       </div>
       <div>
         <TextField
           type="password"
-          label="Old password *"
-          required={false}
-          name="oldPassword"
-          register={register}
-          requiredMessage={errors.oldPassword ? "Required" : undefined}
+          label="Old password"
+          error={errors.oldPassword ? "Required" : undefined}
+          {...register("oldPassword", { required: "false" })}
         />
       </div>
       <div>
         <TextField
           type="password"
           label="New password "
-          required={false}
-          name="newPassword"
-          register={register}
+          {...register("newPassword", { required: "false" })}
         />
       </div>
       <div>
         <TextField
           type="password"
           label="Confirm new password"
-          required={false}
-          name="confirmNewPassword"
-          register={register}
-          requiredMessage={
+          error={
             watch("newPassword") === watch("confirmNewPassword")
               ? undefined
               : "Passwords must match"
           }
+          {...register("confirmNewPassword", { required: "false" })}
         />
       </div>
       <div>
@@ -249,19 +258,14 @@ const ProfileForm = ({ userDetails }: ProfileFormProps) => {
       </div>
       <div className="sm:space-x-4 grid grid-cols-1 sm:grid-cols-2">
         <div className="pb-4 sm:pb-0">
-          <Button
-            isLoading={isLoading}
-            disabled={isLoading}
-            type="submit"
-            color="gray"
-          >
+          <Button loading={isLoading} disabled={isLoading} type="submit">
             Save Changes
           </Button>
         </div>
         <div>
           <Button
             type="button"
-            color="dark-gray"
+            variety="secondary"
             onClick={() => {
               reset(userDetails, { keepDefaultValues: true });
             }}

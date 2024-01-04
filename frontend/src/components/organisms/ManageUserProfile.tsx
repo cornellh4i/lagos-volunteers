@@ -4,7 +4,8 @@ import UserProfile from "./UserProfile";
 import Button from "@/components/atoms/Button";
 import FormControl from "@mui/material/FormControl";
 import MenuItem from "@mui/material/MenuItem";
-import Select, { SelectChangeEvent } from "@mui/material/Select";
+import { SelectChangeEvent } from "@mui/material/Select";
+import Select from "../atoms/Select";
 import Table from "@/components/molecules/Table";
 import { GridColDef } from "@mui/x-data-grid";
 import HourglassEmptyIcon from "@mui/icons-material/HourglassEmpty";
@@ -21,6 +22,7 @@ import Modal from "@/components/molecules/Modal";
 import Loading from "@/components/molecules/Loading";
 import { formatDateString } from "@/utils/helpers";
 import { UserRole, UserStatus } from "@/utils/types";
+import Snackbar from "../atoms/Snackbar";
 import { api } from "@/utils/api";
 
 type userProfileData = {
@@ -65,12 +67,12 @@ const ModalBody = ({ status, blacklistFunc, handleClose }: modalBodyProps) => {
       </p>
       <Grid container spacing={2}>
         <Grid item md={6} xs={12}>
-          <Button color="gray" type="button" onClick={handleClose}>
+          <Button type="button" onClick={handleClose}>
             Cancel
           </Button>
         </Grid>
         <Grid item md={6} xs={12}>
-          <Button color="dark-gray" type="button" onClick={blacklistFunc}>
+          <Button type="button" onClick={blacklistFunc}>
             {status == "ACTIVE" ? "Blacklist" : "Remove"}
           </Button>
         </Grid>
@@ -155,14 +157,11 @@ const Status = ({ userRole, userStatus, userID }: userStatusData) => {
             />
           }
         />
-        <div>Assign Role</div>
         <FormControl className="w-full sm:w-1/2">
           <Select
+            label="Assign role"
             value={role}
             onChange={handleUserRoleChange}
-            displayEmpty
-            size="small"
-            className="text-lg"
           >
             <MenuItem value="VOLUNTEER">Volunteer</MenuItem>
             <MenuItem value="SUPERVISOR">Supervisor</MenuItem>
@@ -172,7 +171,7 @@ const Status = ({ userRole, userStatus, userID }: userStatusData) => {
 
         <div className="pt-2">Blacklist</div>
         <div className="w-full sm:w-1/4">
-          <Button color="dark-gray" onClick={handleOpen}>
+          <Button onClick={handleOpen}>
             {status == "ACTIVE"
               ? "Blacklist Member"
               : "Remove Member from Blacklist"}
@@ -260,7 +259,7 @@ const VerifyCertificate = ({ totalHours }: verifyData) => {
       </div>
 
       <div className="w-full sm:w-1/2">
-        <Button color="dark-gray">Verify Certificate Request</Button>
+        <Button>Verify Certificate Request</Button>
       </div>
     </div>
   );
@@ -275,31 +274,50 @@ const ManageUserProfile = () => {
   >(null);
   const [registeredEvents, setRegisteredEvents] = useState<any[]>([]);
 
+  // State variables for the notification popups
+  const [notifOpen, setNotifOpen] = useState(false);
+
   /* State Vars for Blacklist and UserRoleChange Indicators  */
   const [userRoleIndicator, setUserRoleIndicator] = useState<string>("");
   const [blacklistIndicator, setBlacklistIndicator] = useState<string>("");
   const ChangeIndicatorComponent = (): JSX.Element | null => {
     if (userRoleIndicator != "") {
+      setNotifOpen(true);
       return userRoleIndicator === "SUCCESS" ? (
-        <Alert severity="success">
-          Success:
-          {`You have successfully updated ${userProfileDetails?.name}'s role!`}
-        </Alert>
+        <Snackbar
+          variety="success"
+          open={notifOpen}
+          onClose={() => setNotifOpen(false)}
+        >
+          {`Success: You have successfully updated ${userProfileDetails?.name}'s role!`}
+        </Snackbar>
       ) : (
-        <Alert severity="error">
-          Error: {"The request was not successful. Please Try again!"}
-        </Alert>
+        <Snackbar
+          variety="error"
+          open={notifOpen}
+          onClose={() => setNotifOpen(false)}
+        >
+          {"Error: The request was not successful. Please Try again!"}
+        </Snackbar>
       );
     } else if (blacklistIndicator != "") {
+      setNotifOpen(true);
       return blacklistIndicator === "SUCCESS" ? (
-        <Alert severity="success">
-          Success:{" "}
-          {`${userProfileDetails?.name} blacklist status was successfully updated!`}
-        </Alert>
+        <Snackbar
+          variety="success"
+          open={notifOpen}
+          onClose={() => setNotifOpen(false)}
+        >
+          {`Success: ${userProfileDetails?.name}'s blacklist status was successfully updated!`}
+        </Snackbar>
       ) : (
-        <Alert severity="error">
-          Error: {"User blacklist status has not changed. Please Try again!"}
-        </Alert>
+        <Snackbar
+          variety="error"
+          open={notifOpen}
+          onClose={() => setNotifOpen(false)}
+        >
+          {"Error: User blacklist status has not changed. Please Try again!"}
+        </Snackbar>
       );
     } else {
       return null;

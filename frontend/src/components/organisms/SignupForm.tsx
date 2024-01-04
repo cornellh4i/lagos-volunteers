@@ -9,6 +9,7 @@ import { useForm, SubmitHandler } from "react-hook-form";
 import Alert from "../atoms/Alert";
 import { useRouter } from "next/router";
 import { useSignInWithEmailAndPassword } from "react-firebase-hooks/auth";
+import Snackbar from "../atoms/Snackbar";
 import { api } from "@/utils/api";
 
 type FormValues = {
@@ -61,9 +62,19 @@ const SignupForm = () => {
     }
   };
 
+  // State variables for the notification popups
+  const [notifOpen, setNotifOpen] = useState(false);
+
   const SignUpErrorComponent = (): JSX.Element | null => {
+    setNotifOpen(true);
     return errorMessage ? (
-      <Alert severity="error">Error: {handleErrors(errorMessage)}</Alert>
+      <Snackbar
+        variety="error"
+        open={notifOpen}
+        onClose={() => setNotifOpen(false)}
+      >
+        Error: {handleErrors(errorMessage)}
+      </Snackbar>
     ) : null;
   };
 
@@ -108,77 +119,65 @@ const SignupForm = () => {
   return (
     <form onSubmit={handleSubmit(handleSubmitUser)} className="space-y-4">
       <SignUpErrorComponent />
+      <img src="/lfbi_logo.png" className="w-24" />
       <div className="font-bold text-3xl">Sign Up</div>
       <div>
         <TextField
-          requiredMessage={errors.email ? "Required" : undefined}
-          name="email"
+          error={errors.email ? "Required" : undefined}
           type="email"
-          register={register}
-          label="Email *"
-          required={true}
+          label="Email"
+          {...register("email", { required: "true" })}
         />
       </div>
       <div className="grid sm:space-x-4 grid-cols-1 sm:grid-cols-2 ">
         <div className="pb-4 sm:pb-0">
           <TextField
-            requiredMessage={errors.firstName ? "Required" : undefined}
-            name="firstName"
-            register={register}
-            label="First Name *"
-            required={true}
+            error={errors.firstName ? "Required" : undefined}
+            label="First Name"
+            {...register("firstName", { required: "true" })}
           />
         </div>
         <div>
           <TextField
-            requiredMessage={errors.lastName ? "Required" : undefined}
-            name="lastName"
-            register={register}
-            label="Last Name *"
-            required={true}
+            error={errors.lastName ? "Required" : undefined}
+            label="Last Name"
+            {...register("lastName", { required: "true" })}
           />
         </div>
       </div>
       <div>
         <TextField
-          requiredMessage={errors.password ? "Required" : undefined}
+          error={errors.password ? "Required" : undefined}
           type="password"
-          name="password"
-          register={register}
-          label="Password *"
-          required={true}
+          label="Password"
+          {...register("password", { required: "true" })}
         />
       </div>
       <div>
         <TextField
           type="password"
-          requiredMessage={
+          error={
             errors.confirmPassword
               ? "Required"
               : watch("password") != watch("confirmPassword")
               ? "Passwords do not match"
               : undefined
           }
-          name="confirmPassword"
-          register={register}
-          label="Confirm Password *"
-          required={true}
+          label="Confirm Password"
+          {...register("confirmPassword", { required: "true" })}
         />
       </div>
       <div>
-        <Button isLoading={isLoading} color="dark-gray" type="submit">
+        <Button loading={isLoading} type="submit">
           Continue
         </Button>
       </div>
-      <div>
-        <Button type="submit" color="gray">
-          Continue with Google
-        </Button>
-      </div>
       <div className="justify-center flex flex-row">
-        <div className="">Have an account?&nbsp;</div>
-        <Link href="/login" className="text-black">
-          {" "}
+        <div>Have an account?&nbsp;</div>
+        <Link
+          href="/login"
+          className="text-primary hover:underline no-underline"
+        >
           Log in
         </Link>
       </div>

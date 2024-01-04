@@ -61,9 +61,10 @@ const Profile = () => {
             <Banner>
               <Avatar
                 name={`${userDetails?.firstName} ${userDetails?.lastName}`}
-                hour={20}
-                start_date={date}
-                url={userDetails?.imageUrl}
+                startDate={date}
+                email={userDetails?.email}
+                image={userDetails?.imageUrl}
+                phone="123-456-789"
               />
             </Banner>
           ) : (

@@ -8,11 +8,13 @@ import { useRouter } from "next/router";
 import Link from "next/link";
 import { auth } from "@/utils/firebase";
 import Alert from "../atoms/Alert";
+import GoogleIcon from "@mui/icons-material/Google";
 
 import {
   useSignInWithEmailAndPassword,
   useSignInWithGoogle,
 } from "react-firebase-hooks/auth";
+import Snackbar from "../atoms/Snackbar";
 
 export type FormValues = {
   email: string;
@@ -57,9 +59,19 @@ const LoginForm = () => {
     }
   };
 
+  // State variables for the notification popups
+  const [notifOpen, setNotifOpen] = useState(false);
+
   const LoginErrorComponent = (): JSX.Element | null => {
+    setNotifOpen(true);
     return signInErrors ? (
-      <Alert severity="error">Error: {handleErrors(signInErrors.code)}</Alert>
+      <Snackbar
+        variety="error"
+        open={notifOpen}
+        onClose={() => setNotifOpen(false)}
+      >
+        Error: {handleErrors(signInErrors.code)}
+      </Snackbar>
     ) : null;
   };
 
@@ -86,40 +98,39 @@ const LoginForm = () => {
     } catch (err) {}
     setIsLoading(false);
   };
-
   return (
     <div className="space-y-4 ">
       <LoginErrorComponent />
+      <img src="/lfbi_logo.png" className="w-24" />
       <form onSubmit={handleSubmit(handleLogin)} className="space-y-4 ">
         <div className="font-bold text-3xl"> Log In </div>
         <div>
           <TextField
-            requiredMessage={errors.email ? "Required" : undefined}
-            label="Email *"
-            name="email"
+            error={errors.email ? "Required" : undefined}
+            label="Email"
             type="email"
-            register={register}
-            required={true}
+            {...register("email", { required: "true" })}
           />
         </div>
         <div>
           <TextField
-            requiredMessage={errors.password ? "Required" : undefined}
-            label="Password *"
-            name="password"
+            error={errors.password ? "Required" : undefined}
+            label="Password"
             type="password"
-            register={register}
-            required={true}
+            {...register("password", { required: "true" })}
           />
         </div>
         <div className="text-center">
-          <Link href="/password/forgot" className="text-black">
-            Forgot Password?
+          <Link
+            href="/password/forgot"
+            className="text-primary hover:underline no-underline"
+          >
+            Forgot password?
           </Link>
         </div>
         <div>
-          <Button isLoading={isLoading} type="submit" color="dark-gray">
-            Log In
+          <Button loading={isLoading} type="submit">
+            Log in
           </Button>
         </div>
         <div>
@@ -127,23 +138,24 @@ const LoginForm = () => {
         </div>
       </form>
       <div>
+        <Link href="/signup">
+          <Button type="submit" variety="secondary">
+            Sign up with email
+          </Button>
+        </Link>
+      </div>
+      <div>
         <Button
-          isLoading={googleLoading}
+          loading={googleLoading}
           disabled={googleLoading}
+          variety="secondary"
+          icon={<GoogleIcon />}
           // We are paused on this feature for now...
           // onClick={() => handleGoogleLogin()}
           type="submit"
-          color="gray"
         >
           Continue with Google
         </Button>
-      </div>
-      <div>
-        <Link href="/signup">
-          <Button type="submit" color="gray">
-            Sign up with Email
-          </Button>
-        </Link>
       </div>
     </div>
   );

@@ -12,19 +12,20 @@ import { useAuth } from "@/utils/AuthContext";
 import { fetchUserIdFromDatabase, formatDateTimeRange } from "@/utils/helpers";
 import { Action } from "@/utils/types";
 import { api } from "@/utils/api";
+import ManageSearchIcon from "@mui/icons-material/ManageSearch";
 
 type event = {
-  id: string;
-  name: string;
-  location: string;
-  actions: Action[];
-  startDate: string;
-  endDate: string;
-  role: string;
-  hours: number;
+  id?: string;
+  name?: string;
+  location?: string;
+  actions?: Action[];
+  startDate?: string;
+  endDate?: string;
+  role?: string;
+  hours?: number;
 };
 
-type pastEvent = {
+type pastEventVolunteers = {
   id: string;
   name: string;
   startDate: string;
@@ -38,33 +39,62 @@ interface EventCardProps {
 
 const UpcomingEvents = ({ eventDetails }: EventCardProps) => {
   return (
-    <CardList>
-      {eventDetails?.map((event) => (
-        <EventCard
-          key={event.id}
-          eventid={event.id}
-          title={event.name}
-          location={event.location}
-          datetime={formatDateTimeRange(event.startDate, event.endDate)}
-          dropdownActions={["manage attendees", "edit"]}
-          // hard-coded for now but main-action is determined based on the user and their status
-          mainAction="rsvp"
-        />
-      ))}
-    </CardList>
+    <div>
+      <Link href="/events/create">
+        <Button className="w-full sm:w-max mb-2">Create New Event</Button>
+      </Link>
+      <CardList>
+        {eventDetails?.map((event) => (
+          <EventCard
+            key={event.id}
+            eventid={event.id}
+            title={event.name}
+            location={event.location}
+            startDate={new Date(event.startDate)}
+            endDate={new Date(event.endDate)}
+            dropdownActions={["manage attendees", "edit"]}
+            // hard-coded for now but main-action is determined based on the user and their status
+            mainAction="rsvp"
+          />
+        ))}
+      </CardList>
+    </div>
   );
-};
-
-const Drafts = () => {
-  return <>Hello drafts</>;
 };
 
 const PastEvents = ({ eventDetails }: EventCardProps) => {
   const eventColumns: GridColDef[] = [
     {
+      field: "name",
+      headerName: "Program Name",
+      minWidth: 200,
+      flex: 1,
+      renderHeader: (params) => (
+        <div style={{ fontWeight: "bold" }}>{params.colDef.headerName}</div>
+      ),
+    },
+    {
+      field: "startDate",
+      headerName: "Date",
+      minWidth: 150,
+      renderHeader: (params) => (
+        <div style={{ fontWeight: "bold" }}>{params.colDef.headerName}</div>
+      ),
+    },
+    {
+      field: "hours",
+      headerName: "Hours",
+      renderHeader: (params) => (
+        <div style={{ fontWeight: "bold" }}>{params.colDef.headerName}</div>
+      ),
+    },
+    {
       field: "role",
-      headerName: "Role",
-      minWidth: 120,
+      headerName: "Status",
+      minWidth: 150,
+      renderHeader: (params) => (
+        <div style={{ fontWeight: "bold" }}>{params.colDef.headerName}</div>
+      ),
       renderCell: (params) => {
         return (
           <Chip
@@ -74,23 +104,37 @@ const PastEvents = ({ eventDetails }: EventCardProps) => {
         );
       },
     },
+  ];
+
+  const eventColumnsSupervisors: GridColDef[] = [
     {
       field: "name",
       headerName: "Program Name",
-      flex: 2,
-      minWidth: 100,
+      minWidth: 200,
+      flex: 1,
+      renderHeader: (params) => (
+        <div style={{ fontWeight: "bold" }}>{params.colDef.headerName}</div>
+      ),
     },
     {
       field: "startDate",
       headerName: "Date",
-      flex: 2,
-      minWidth: 100,
+      minWidth: 150,
+      renderHeader: (params) => (
+        <div style={{ fontWeight: "bold" }}>{params.colDef.headerName}</div>
+      ),
     },
     {
-      field: "hours",
-      headerName: "Hours",
-      type: "number",
-      flex: 0.5,
+      field: "actions",
+      headerName: "",
+      minWidth: 175,
+      renderCell: (params) => {
+        return (
+          <Button variety="tertiary" icon={<ManageSearchIcon />}>
+            Manage Event
+          </Button>
+        );
+      },
     },
   ];
 
@@ -101,15 +145,26 @@ const PastEvents = ({ eventDetails }: EventCardProps) => {
     return month + "/" + day + "/" + year;
   };
 
-  let dummyRows: pastEvent[] = [];
+  let dummyRows: event[] = [];
   {
     eventDetails?.map((event) => [
       dummyRows.push({
         id: event.id,
         role: event.role,
         name: event.name,
-        startDate: getFormattedDate(event.startDate),
+        startDate: getFormattedDate(event.startDate as string),
         hours: event.hours,
+      }),
+    ]);
+  }
+
+  let dummyRowsSupervisors: event[] = [];
+  {
+    eventDetails?.map((event) => [
+      dummyRowsSupervisors.push({
+        id: event.id,
+        name: event.name,
+        startDate: getFormattedDate(event.startDate as string),
       }),
     ]);
   }
@@ -122,8 +177,8 @@ const PastEvents = ({ eventDetails }: EventCardProps) => {
 
   return (
     <>
-      <BoxText text="Volunteer Hours" textRight={totalHours()} />
       <Table columns={eventColumns} rows={dummyRows} />
+      <Table columns={eventColumnsSupervisors} rows={dummyRowsSupervisors} />
     </>
   );
 };
@@ -167,23 +222,18 @@ const ViewEvents = () => {
   {
     const tabs = [
       {
-        label: "Upcoming Events",
+        label: "Upcoming",
         panel: <UpcomingEvents eventDetails={events} />,
       },
       {
-        label: "Past Events",
+        label: "Past",
         panel: <PastEvents eventDetails={events} />,
       },
-      { label: "Drafts", panel: <Drafts /> },
     ];
     return (
       <TabContainer
         tabs={tabs}
-        rightAlignedComponent={
-          <Link href="/events/create">
-            <Button color="dark-gray">Create New Event</Button>
-          </Link>
-        }
+        left={<div className="font-semibold text-3xl">My Events</div>}
       />
     );
   }

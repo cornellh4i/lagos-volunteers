@@ -36,29 +36,25 @@ const ResetPassword = () => {
       <div>
         <TextField
           label="Password*"
-          required={true}
-          name="password"
           type="password"
-          register={register}
-          requiredMessage={errors.password ? "Required" : undefined}
+          error={errors.password ? "Required" : undefined}
+          {...register("password", { required: "true" })}
         />
       </div>
       <div>
         <TextField
           label="Confirm Password*"
-          required={true}
-          name="confirmPassword"
           type="password"
-          register={register}
-          requiredMessage={
+          error={
             watch("password") === watch("confirmPassword")
               ? undefined
               : "Passwords must match"
           }
+          {...register("confirmPassword", { required: "true" })}
         />
       </div>
       <div>
-        <Button color="dark-gray">Reset Password</Button>
+        <Button>Reset Password</Button>
       </div>
       <div className="justify-center flex flex-row text-sm">
         <Link href="/" className="text-black">

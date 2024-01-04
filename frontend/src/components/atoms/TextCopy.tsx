@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Snackbar } from "@mui/material";
-import ContentCopyIcon from "@mui/icons-material/ContentCopy";
+import FileCopyIcon from "@mui/icons-material/FileCopy";
 import IconButton from "@mui/material/IconButton";
 
 interface TextCopyProps {
@@ -25,7 +25,7 @@ const TextCopy = ({ label, text }: TextCopyProps) => {
         <div className="pt-3 float-left">{label}:</div>
         <div className="float-right">
           <IconButton onClick={handleClick}>
-            <ContentCopyIcon />
+            <FileCopyIcon />
           </IconButton>
           <Snackbar
             open={open}

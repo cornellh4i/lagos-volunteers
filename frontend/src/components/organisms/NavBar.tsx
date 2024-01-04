@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import AppBar from "@/components/molecules/AppBar";
-import Button from "@/components/atoms/Button";
 import { useAuth } from "@/utils/AuthContext";
 import { auth } from "@/utils/firebase";
 import { useRouter } from "next/router";
@@ -26,25 +25,20 @@ const NavBar = () => {
 
   const navs = [
     { label: "Home", link: "/" },
-    { label: "About", link: "/" },
     { label: "My Events", link: "/events/view" },
-    { label: "Manage Users", link: "/users/view" },
-    { label: "Request Certificate", link: "/" },
+    { label: "Manage Members", link: "/users/view" },
+    { label: "Manage Website", link: "/" },
+    { label: "FAQ", link: "/about" },
     { label: "Profile", link: "/profile" },
   ];
-
-  const rightAlignedComponents = [
-    <Button color="gray" onClick={handleSignOut}>
-      Log Out
-    </Button>,
-  ];
+  const buttons = [{ label: "Log Out", onClick: handleSignOut }];
 
   return (
     <>
       {loginStatus ? (
-        <AppBar navs={navs} rightAlignedComponents={rightAlignedComponents} />
+        <AppBar navs={navs} buttons={buttons} />
       ) : (
-        <AppBar navs={[]} rightAlignedComponents={[]} />
+        <AppBar navs={[]} buttons={[]} />
       )}
     </>
   );

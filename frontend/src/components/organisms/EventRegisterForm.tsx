@@ -56,12 +56,12 @@ const ModalBody = ({
       </p>
       <Grid container spacing={2}>
         <Grid item md={6} xs={12}>
-          <Button color="gray" type="button" onClick={handleClose}>
+          <Button type="button" onClick={handleClose}>
             Disagree
           </Button>
         </Grid>
         <Grid item md={6} xs={12}>
-          <Button color="dark-gray" type="button" onClick={handleRegister}>
+          <Button type="button" onClick={handleRegister}>
             Agree & Continue
           </Button>
         </Grid>
@@ -132,11 +132,7 @@ const EventRegisterForm = ({ event }: EventRegisterFormProps) => {
           />
         </div>
         <div className="col-start-1 col-end-5 pt-4 md:col-start-2 md:col-end-4 md:pt-8">
-          <Button
-            children="Register"
-            color="gray"
-            onClick={handleOpen}
-          ></Button>
+          <Button children="Register" onClick={handleOpen}></Button>
         </div>
       </div>
     </div>

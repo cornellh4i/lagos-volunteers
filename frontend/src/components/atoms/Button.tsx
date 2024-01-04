@@ -1,49 +1,82 @@
 import React, { ReactNode } from "react";
-import { Button } from "@mui/material";
+import MuiButton from "@mui/material/Button";
 import CircularProgress from "@mui/material/CircularProgress";
 
 interface ButtonProps {
   children: ReactNode;
-  color: "gray" | "dark-gray";
-  onClick?: (e?: any) => void;
-  type?: "button" | "submit" | "reset" | undefined;
-  isLoading?: boolean;
-  disabled?: boolean;
+  icon?: ReactNode;
+  variety?: "primary" | "secondary" | "tertiary" | "error";
+  size?: "small" | "medium";
+  loading?: boolean;
   [key: string]: any;
 }
 
-/** A Button page */
-const CustomButton = ({
+/** A simple Button component */
+const Button = ({
   children,
-  color,
-  onClick,
-  type,
-  isLoading,
-  disabled,
+  icon,
+  variety = "primary",
+  size = "medium",
+  loading = false,
   ...props
 }: ButtonProps) => {
+  // Set button size
+  let height = "";
+  switch (size) {
+    case "small":
+      height = "35px";
+      break;
+    case "medium":
+      height = "45px";
+      break;
+  }
+
+  // Set button variety
+  let variant: "contained" | "outlined" | "text";
+  let color: "primary" | "secondary" | "error";
+  let textColor = "";
+  switch (variety) {
+    case "primary":
+      variant = "contained";
+      color = "primary";
+      break;
+    case "secondary":
+      variant = "outlined";
+      color = "primary";
+      textColor = "black";
+      break;
+    case "tertiary":
+      variant = "text";
+      color = "primary";
+      break;
+    case "error":
+      variant = "outlined";
+      color = "error";
+      break;
+  }
+
   return (
-    <Button
-      fullWidth={true}
-      disabled={disabled}
-      type={type}
-      variant="contained"
-      onClick={onClick}
+    <MuiButton
       disableElevation
-      sx={{ textTransform: "capitalize" }}
-      className={
-        color == "gray"
-          ? "bg-gray-300 text-black"
-          : color == "dark-gray"
-          ? "bg-gray-400 text-black"
-          : ""
-      }
+      fullWidth
+      variant={variant}
+      color={color}
+      startIcon={icon}
+      sx={{
+        color: textColor,
+        height: height,
+        borderRadius: "8px",
+        textTransform: "none",
+      }}
       {...props}
     >
-      {isLoading && <CircularProgress size={24} />}
-      {!isLoading && <div className="truncate">{children}</div>}
-    </Button>
+      {loading ? (
+        <CircularProgress color="inherit" size={20} />
+      ) : (
+        <div className="truncate">{children}</div>
+      )}
+    </MuiButton>
   );
 };
 
-export default CustomButton;
+export default Button;

@@ -17,12 +17,12 @@ interface AppBarProps {
   /** A list of nav labels and links in order of display */
   navs: { label: string; link: string }[];
   /** A list of components to display on the right of the appbar */
-  rightAlignedComponents: ReactElement[];
+  buttons: { label: string; onClick: () => void }[];
 }
 
 const drawerWidth = 240;
 
-const DrawerAppBar = ({ navs, rightAlignedComponents }: AppBarProps) => {
+const DrawerAppBar = ({ navs, buttons }: AppBarProps) => {
   const [mobileOpen, setMobileOpen] = React.useState(false);
 
   const handleDrawerToggle = () => {
@@ -41,10 +41,13 @@ const DrawerAppBar = ({ navs, rightAlignedComponents }: AppBarProps) => {
             </ListItem>
           </Link>
         ))}
-        {rightAlignedComponents.map((component) => (
+        {buttons.map((button) => (
           <ListItem disablePadding>
-            <ListItemButton sx={{ textAlign: "center" }}>
-              {component}
+            <ListItemButton
+              onClick={button.onClick}
+              sx={{ textAlign: "center" }}
+            >
+              <ListItemText primary={button.label} />
             </ListItemButton>
           </ListItem>
         ))}
@@ -55,19 +58,37 @@ const DrawerAppBar = ({ navs, rightAlignedComponents }: AppBarProps) => {
   return (
     <Box sx={{ display: "flex" }}>
       <AppBar color="default" component="nav" elevation={0} position="static">
-        <Toolbar variant="dense" className="pt-1 pb-1">
-          <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-            LFBI
-          </Typography>
-          <Box className="hidden sm:flex">
+        <Toolbar
+          variant="dense"
+          sx={{
+            paddingTop: 1,
+            paddingBottom: 1,
+            borderBottom: 1,
+            borderColor: "divider",
+          }}
+        >
+          {/* LFBI navbar brand */}
+          <div className="flex-1 h-8">
+            <img src="/lfbi_logo.png" className="h-full" />
+          </div>
+
+          {/* Navbar items */}
+          <Box className="hidden md:flex">
             {navs.map((nav) => (
               <Link href={nav.link}>
-                <Button className="text-black capitalize">{nav.label}</Button>
+                <Button className="text-black normal-case">{nav.label}</Button>
               </Link>
             ))}
+
+            {/* Right aligned components */}
             <div className="ml-2 min-w-0">
-              {rightAlignedComponents.map((component) => (
-                <>{component}</>
+              {buttons.map((button) => (
+                <Button
+                  onClick={button.onClick}
+                  className="text-black normal-case"
+                >
+                  {button.label}
+                </Button>
               ))}
             </div>
           </Box>
@@ -75,7 +96,7 @@ const DrawerAppBar = ({ navs, rightAlignedComponents }: AppBarProps) => {
             color="inherit"
             aria-label="open drawer"
             onClick={handleDrawerToggle}
-            className="default sm:hidden"
+            className="default md:hidden"
           >
             <MenuIcon />
           </IconButton>
@@ -91,7 +112,7 @@ const DrawerAppBar = ({ navs, rightAlignedComponents }: AppBarProps) => {
           ModalProps={{
             keepMounted: true, // Better open performance on mobile.
           }}
-          className="block sm:hidden"
+          className="block md:hidden"
           sx={{
             "& .MuiDrawer-paper": {
               boxSizing: "border-box",

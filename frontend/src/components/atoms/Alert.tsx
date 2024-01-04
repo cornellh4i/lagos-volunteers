@@ -1,13 +1,53 @@
-import React, { ReactNode } from "react";
-import Alert, { AlertColor } from "@mui/material/Alert";
+import React, { ReactNode, forwardRef, Ref } from "react";
+import MuiAlert from "@mui/material/Alert";
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import CancelIcon from "@mui/icons-material/Cancel";
 
-interface CustomAlertProps {
-  severity: AlertColor;
+interface AlertProps {
   children: ReactNode;
+  variety: "success" | "error";
+  onClose: () => void;
+  [key: string]: any;
 }
 
-function CustomAlert({ severity, children }: CustomAlertProps) {
-  return <Alert severity={severity}>{children}</Alert>;
-}
+/** A simple Alert component */
+const Alert = forwardRef(
+  (
+    { children, variety, onClose, ...props }: AlertProps,
+    ref: Ref<HTMLDivElement>
+  ) => {
+    // Set alert variety
+    let bgcolor = "";
+    let icon;
+    switch (variety) {
+      case "success":
+        bgcolor = "primary.light";
+        icon = <CheckCircleIcon color="success" fontSize="inherit" />;
+        break;
+      case "error":
+        bgcolor = "error.light";
+        icon = <CancelIcon color="error" fontSize="inherit" />;
+        break;
+    }
 
-export default CustomAlert;
+    return (
+      <MuiAlert
+        ref={ref}
+        onClose={onClose}
+        variant="filled"
+        icon={icon}
+        sx={{
+          bgcolor: bgcolor,
+          color: "black",
+          borderRadius: "8px",
+          padding: "16px 32px",
+        }}
+        {...props}
+      >
+        {children}
+      </MuiAlert>
+    );
+  }
+);
+
+export default Alert;
