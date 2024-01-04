@@ -33,7 +33,7 @@ const Avatar = ({
       <div className="p-6 font-sans text-center sm:text-left">
         <div className="text-3xl font-semibold">{name}</div>
         <div className="py-1">
-          Volunteer since {start_date.toLocaleDateString("en-US")}
+          Volunteer since {start_date.toDateString()}
         </div>
         <div>{hour} volunteer hours completed</div>
       </div>
