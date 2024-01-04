@@ -12,12 +12,13 @@ import Menu from "@mui/material/Menu";
 import { Action } from "@/utils/types";
 import { formatDateTimeRange } from "@/utils/helpers";
 
+
 interface EventCardProps {
-  eventid: string;
+  eventid: string | undefined;
   mainAction: Action;
   dropdownActions?: Action[];
-  title: string;
-  location: string;
+  title: string | undefined;
+  location: string | undefined;
   startDate: Date;
   endDate: Date;
 }
@@ -90,12 +91,12 @@ const EventCard = ({
         {/* Main card body */}
         <div className="pb-2">
           <IconText icon={<EmojiFoodBeverageIcon />}>
-            <b className="text-2xl">{title.toLocaleUpperCase()}</b>
+            <b className="text-2xl">{title?.toLocaleUpperCase()}</b>
           </IconText>
         </div>
         <div className="pb-2">
           <IconText icon={<LocationOnIcon />}>
-            {location.toLocaleUpperCase()}
+            {location?.toLocaleUpperCase()}
           </IconText>
         </div>
         <IconText icon={<WatchLaterIcon />}>

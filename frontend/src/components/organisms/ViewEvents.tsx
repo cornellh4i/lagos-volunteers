@@ -13,6 +13,8 @@ import { fetchUserIdFromDatabase, formatDateTimeRange } from "@/utils/helpers";
 import { Action } from "@/utils/types";
 import { api } from "@/utils/api";
 import ManageSearchIcon from "@mui/icons-material/ManageSearch";
+import { useQuery } from "@tanstack/react-query";
+import Loading from "@/components/molecules/Loading";
 
 type event = {
   id?: string;
@@ -34,7 +36,7 @@ type pastEventVolunteers = {
 };
 
 interface EventCardProps {
-  eventDetails: event[] | null;
+  eventDetails: event[];
 }
 
 const UpcomingEvents = ({ eventDetails }: EventCardProps) => {
@@ -44,14 +46,14 @@ const UpcomingEvents = ({ eventDetails }: EventCardProps) => {
         <Button className="w-full sm:w-max mb-2">Create New Event</Button>
       </Link>
       <CardList>
-        {eventDetails?.map((event) => (
+        {eventDetails.map((event) => (
           <EventCard
             key={event.id}
             eventid={event.id}
             title={event.name}
             location={event.location}
-            startDate={new Date(event.startDate)}
-            endDate={new Date(event.endDate)}
+            startDate={new Date(event.startDate ? event.startDate : "")}
+            endDate={new Date(event.endDate ? event.endDate : "")}
             dropdownActions={["manage attendees", "edit"]}
             // hard-coded for now but main-action is determined based on the user and their status
             mainAction="rsvp"
@@ -169,12 +171,6 @@ const PastEvents = ({ eventDetails }: EventCardProps) => {
     ]);
   }
 
-  const totalHours = () => {
-    let numOfHours = 0;
-    eventDetails?.map((event) => (numOfHours = numOfHours + event.hours));
-    return numOfHours.toString();
-  };
-
   return (
     <>
       <Table columns={eventColumns} rows={dummyRows} />
@@ -188,37 +184,49 @@ const PastEvents = ({ eventDetails }: EventCardProps) => {
  */
 const ViewEvents = () => {
   const { user } = useAuth();
-  const [events, setEvents] = useState<event[] | null>(null);
 
-  const fetchUserEvents = async () => {
-    try {
-      // Make API call
+  const computeHours = (startDate: string, endDate: string) => {
+    const start = new Date(startDate).getTime();
+    const end = new Date(endDate).getTime();
+    const diffInMilliseconds = end - start;
+    const diffInHours = diffInMilliseconds / (1000 * 60 * 60);
+    return Math.round(diffInHours);
+  }
+
+  // TODO: Remove in production?
+  const { data: userid } = useQuery({
+    queryKey: ["userid"],
+    queryFn: async () => {
       const userid = await fetchUserIdFromDatabase(user?.email as string);
-      const { data } = await api.get(`/users/${userid}/registered`);
+      return userid;
+    },
+  })
 
-      // Set data
-      const apiEvents = data["data"]["events"];
-      let events: event[] = [];
-      apiEvents.map((event: any) => {
-        events.push({
-          id: event["event"]["id"],
-          name: event["event"]["name"],
-          location: event["event"]["location"],
-          startDate: event["event"]["startDate"],
-          endDate: event["event"]["endDate"],
-          actions: ["manage attendees", "edit"],
-          role:
-            userid === event["event"]["ownerId"] ? "Supervisor" : "Volunteer",
-          hours: 0, // hard-coded for now
-        });
-      });
-      setEvents(events);
-    } catch (error) {}
-  };
 
-  useEffect(() => {
-    fetchUserEvents();
-  }, []);
+  const { data, isLoading, isError } = useQuery({
+    queryKey: ["events"],
+    queryFn: async () => {
+      const eventsUserRegisteredFor = await api.get(`/users/${userid}/registered`);
+      return eventsUserRegisteredFor["data"]["data"]["events"];
+    },
+    enabled: !!userid,
+  })
+
+  let events: event[] = [];
+  data?.map((event: any) => {
+    events.push({
+      id: event["event"]["id"],
+      name: event["event"]["name"],
+      location: event["event"]["location"],
+      startDate: event["event"]["startDate"],
+      endDate: event["event"]["endDate"],
+      actions: ["manage attendees", "edit"],
+      role:
+        userid === event["event"]["ownerId"] ? "Supervisor" : "Volunteer",
+      hours: computeHours(event["event"]["startDate"], event["event"]["endDate"]), // hard-coded for now
+    });
+  });
+
   {
     const tabs = [
       {
@@ -230,6 +238,17 @@ const ViewEvents = () => {
         panel: <PastEvents eventDetails={events} />,
       },
     ];
+    if (isLoading) return <Loading />;
+
+    // TODO: Add Error Page
+    if (isError) return (
+      <div className="flex justify-center items-center h-screen">
+        <div className="text-center">
+          Aw! An error occurred :(
+          <p>Please try again</p>
+        </div>
+      </div>
+    );
     return (
       <TabContainer
         tabs={tabs}

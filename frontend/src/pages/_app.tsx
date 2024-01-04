@@ -34,7 +34,13 @@ export const theme = createTheme({
 });
 
 // Note: default retry is 3 times. 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      refetchOnWindowFocus: false,
+    }
+  },
+});
 
 
 const App = ({ Component, pageProps }: AppProps) => {
