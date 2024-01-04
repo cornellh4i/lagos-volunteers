@@ -31,8 +31,8 @@ const Active = ({
     {
       field: "name",
       headerName: "Name",
-      flex: 1,
-      minWidth: 100,
+      flex: 2,
+      minWidth: 200,
       renderHeader: (params) => (
         <div style={{ fontWeight: "bold" }}>{params.colDef.headerName}</div>
       ),
@@ -41,7 +41,7 @@ const Active = ({
       field: "email",
       headerName: "Email",
       flex: 1,
-      minWidth: 100,
+      minWidth: 150,
       renderHeader: (params) => (
         <div style={{ fontWeight: "bold" }}>{params.colDef.headerName}</div>
       ),
@@ -49,7 +49,7 @@ const Active = ({
     {
       field: "role",
       headerName: "Role",
-      flex: 1,
+      flex: 0.5,
       minWidth: 100,
       renderHeader: (params) => (
         <div style={{ fontWeight: "bold" }}>{params.colDef.headerName}</div>
@@ -58,7 +58,7 @@ const Active = ({
     {
       field: "date",
       headerName: "Joined on",
-      flex: 1,
+      flex: 0.5,
       minWidth: 100,
       type: "date",
       renderHeader: (params) => (
@@ -68,7 +68,7 @@ const Active = ({
     {
       field: "hours",
       headerName: "Total hours",
-      flex: 2,
+      flex: 0.5,
       minWidth: 100,
       renderHeader: (params) => (
         <div style={{ fontWeight: "bold" }}>{params.colDef.headerName}</div>
@@ -77,7 +77,7 @@ const Active = ({
     {
       headerName: "",
       field: "actions",
-      flex: 0.6,
+      flex: 0.5,
       minWidth: 180,
       renderCell: () => (
         <div
@@ -88,8 +88,8 @@ const Active = ({
           }}
         >
           <Link href="/users/asdf/manage" className="no-underline">
-            <Button color="gray">
-              <IconText icon={<AccountBoxIcon />}>View Profile</IconText>
+            <Button variety="tertiary" icon={<AccountBoxIcon />}>
+              View Profile
             </Button>
           </Link>
         </div>
@@ -97,11 +97,31 @@ const Active = ({
     },
   ];
 
+  // Search bar
+  const [value, setValue] = React.useState("");
+  const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
+    setValue(event.target.value);
+  };
+  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+    // Prevent page refresh
+    event.preventDefault();
+    // Actual function
+    // console.log(value);
+  };
+
   return (
     <div>
+      <div className="pb-5 w-full sm:w-[600px]">
+        <SearchBar
+          placeholder="Search member by name, email"
+          value={value}
+          onChange={handleChange}
+          onClick={handleSubmit}
+        />
+      </div>
       <Table
         columns={eventColumns}
-        rowData={initalRowData}
+        rows={initalRowData}
         dataSetLength={usersLength}
         initialID={initialUserID}
         nextFunction={progressFunction}
@@ -185,18 +205,6 @@ const ManageUsers = ({}: ManageUsersProps) => {
     }, // need to change panel for Blacklisted
   ];
 
-  // Search bar
-  const [value, setValue] = React.useState("");
-  const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
-    setValue(event.target.value);
-  };
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
-    // Prevent page refresh
-    event.preventDefault();
-    // Actual function
-    // console.log(value);
-  };
-
   useEffect(() => {
     const fetchData = async () => {
       const length = await fetchUserCount();
@@ -211,18 +219,12 @@ const ManageUsers = ({}: ManageUsersProps) => {
 
   return (
     <>
-      <div className="font-semibold text-3xl">Manage Members</div>
-      <div className="pt-5 pb-5 w-full sm:w-[600px]">
-        <SearchBar
-          placeholder="Search member by name, email"
-          value={value}
-          onChange={handleChange}
-          onClick={handleSubmit}
-        />
-      </div>
       {initialrows.length > 0 && (
         <div>
-          <TabContainer tabs={tabs} />
+          <TabContainer
+            left={<div className="font-semibold text-3xl">Manage Members</div>}
+            tabs={tabs}
+          />
         </div>
       )}
     </>

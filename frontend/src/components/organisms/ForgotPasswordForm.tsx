@@ -78,6 +78,7 @@ const ForgotPasswordForm = () => {
     <form onSubmit={handleSubmit(handleForgotPassword)} className="space-y-4">
       <ForgotPasswordErrorComponent />
       <ForgotPasswordSuccessComponent />
+      <img src="/lfbi_logo.png" className="w-24" />
       <div className="font-bold text-3xl">Forgot Password</div>
       <div className="text-sm">
         After verifying your email, you will receive instructions on how to
@@ -86,23 +87,22 @@ const ForgotPasswordForm = () => {
       </div>
       <div>
         <TextField
-          requiredMessage={errors.email ? "Required" : undefined}
-          name="email"
+          error={errors.email ? "Required" : undefined}
           type="email"
-          register={register}
-          label="Email *"
-          required={true}
+          label="Email"
+          {...register("email", { required: "true" })}
         />
       </div>
       <div>
-        <Button type="submit" color="dark-gray">
-          Send Email
-        </Button>
+        <Button type="submit">Email me a link</Button>
       </div>
-      <div className="justify-center flex flex-row text-sm">
-        <Link href="/" className="text-black">
-          {" "}
-          Reach out to support team
+      <div className="justify-center flex flex-row">
+        <div>Have an account?&nbsp;</div>
+        <Link
+          href="/login"
+          className="text-primary hover:underline no-underline"
+        >
+          Log in
         </Link>
       </div>
     </form>

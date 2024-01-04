@@ -5,7 +5,7 @@ interface TableProps {
   /** The columns of the table, following the MUI Data Grid spec */
   columns: GridColDef<object>[];
   /** The table rows represented as an object array */
-  rowData: Object[];
+  rows: Object[];
   /** The length of the entire dataset [NEEDED FOR PAGINATION] */
   dataSetLength: number;
   /** The ID of the first element [NEEDED FOR PAGINATION] */
@@ -19,13 +19,13 @@ interface TableProps {
 // initialCursor
 const Table = ({
   columns,
-  rowData,
+  rows,
   dataSetLength,
   initialID,
   nextFunction,
 }: TableProps) => {
   const PAGE_SIZE = 5;
-  const [rows, setRows] = React.useState<any[]>(rowData);
+  const [rowData, setRowData] = React.useState<any[]>(rows);
   const [cursor, setCursor] = React.useState<any[]>([initialID]);
   const [lastElementID, setlastElementID] = React.useState<string>("");
   const [paginationModel, setPaginationModel] = React.useState({
@@ -62,19 +62,19 @@ const Table = ({
   const adjustRows = async (rows: any[]) => {
     var userData = [...rows];
     const last_element_id = userData.pop().id;
-    setRows(userData);
+    setRowData(userData);
     setlastElementID(last_element_id);
   };
   useEffect(() => {
-    adjustRows(rows);
+    adjustRows(rowData);
   }, []);
 
   return (
     <div>
-      {rows.length > 0 && (
+      {rowData.length > 0 && (
         <DataGrid
           columns={columns}
-          rows={rows}
+          rows={rowData}
           sx={{ border: 0 }}
           disableRowSelectionOnClick
           rowCount={rowCountState}

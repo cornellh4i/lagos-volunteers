@@ -1,28 +1,34 @@
 import "../styles/globals.css";
 import type { AppProps } from "next/app";
 import { ThemeProvider, CssBaseline } from "@mui/material";
-import { createTheme } from "@mui/material/styles";
-import { StyledEngineProvider } from "@mui/material/styles";
+import { createTheme, StyledEngineProvider } from "@mui/material/styles";
 import Layout from "@/components/Layout";
 import { AuthProvider } from "@/utils/AuthContext";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 export const theme = createTheme({
   typography: {
-    fontFamily: "Helvetica, sans-serif",
+    fontFamily: "Inter, sans-serif",
   },
   palette: {
     primary: {
-      main: "#556cd6",
+      main: "#568124", // green
+      light: "#E5E9E0", // green gray
     },
     secondary: {
-      main: "#19857b",
+      main: "#8D8D8D", // dark gray
+      light: "#D9D9D9", // medium gray
+    },
+    warning: {
+      main: "#D67300", // orange
+      light: "#F1E8DC", // muted orange
     },
     error: {
-      main: "#ff0000",
+      main: "#CB2F2F", // red
+      light: "#EDCDCD", // muted red
     },
     background: {
-      default: "#fff",
+      default: "#FFFFFF",
     },
   },
 });

@@ -1,45 +1,42 @@
-import React, { useEffect } from "react";
-import { TextField } from "@mui/material";
-import { RegisterOptions, UseFormRegisterReturn } from "react-hook-form";
+import React, { forwardRef, Ref } from "react";
+import MuiTextField from "@mui/material/TextField";
 
 interface TextFieldProps {
   label: string;
-  name: string;
-  required?: boolean;
   type?: string;
-  disabled?: boolean;
-  requiredMessage?: string;
-  register: (name: any, options?: RegisterOptions) => UseFormRegisterReturn;
+  error?: string;
+  [key: string]: any;
 }
 
-const CustomTextField = ({
-  label,
-  name,
-  required,
-  type = "text",
-  requiredMessage = "",
-  disabled = false,
-  register,
-}: TextFieldProps) => {
-  return (
-    <div>
+/** A simple text field */
+const TextField = forwardRef(
+  (
+    { label, type = "text", error = "", ...props }: TextFieldProps,
+    ref: Ref<HTMLInputElement>
+  ) => {
+    return (
       <div>
-        {label} <span className="text-red-500">{requiredMessage}</span>
+        <div className="mb-1">{label}</div>
+        <MuiTextField
+          sx={{
+            "& .MuiInputBase-root": {
+              borderRadius: "8px",
+            },
+            "& .MuiInputBase-input": {
+              height: "12px",
+            },
+          }}
+          fullWidth
+          ref={ref}
+          type={type}
+          InputProps={type === "number" ? { inputProps: { min: 0 } } : {}}
+          error={error !== ""}
+          {...props}
+        />
+        <div className="mt-1 text-xs text-red-500">{error}</div>
       </div>
-      <TextField
-        type={type}
-        InputProps={type == "number" ? { inputProps: { min: 0 } } : {}}
-        disabled={disabled}
-        size="small"
-        margin="dense"
-        fullWidth={true}
-        {...register(name, {
-          required: required,
-        })}
-        sx={{ borderRadius: 2, borderColor: "primary.main" }}
-      />
-    </div>
-  );
-};
+    );
+  }
+);
 
-export default CustomTextField;
+export default TextField;
