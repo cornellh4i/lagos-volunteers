@@ -63,7 +63,6 @@ const LoginForm = () => {
   const [notifOpen, setNotifOpen] = useState(false);
 
   const LoginErrorComponent = (): JSX.Element | null => {
-    setNotifOpen(true);
     return signInErrors ? (
       <Snackbar
         variety="error"
@@ -82,7 +81,7 @@ const LoginForm = () => {
       if (googleUser) {
         router.push("/events/view");
       }
-    } catch (err) {}
+    } catch (err) { }
     setIsLoading(false);
   };
 
@@ -95,7 +94,8 @@ const LoginForm = () => {
       if (signedInUser) {
         router.push("/events/view");
       }
-    } catch (err) {}
+    } catch (err) { }
+    setNotifOpen(true);
     setIsLoading(false);
   };
   return (
