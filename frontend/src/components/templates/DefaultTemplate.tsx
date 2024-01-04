@@ -8,9 +8,11 @@ interface DefaultTemplateProps {
 /** A DefaultTemplate page */
 const DefaultTemplate = ({ children }: DefaultTemplateProps) => {
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="min-h-screen bg-gray-200">
       <NavBar />
-      <div className="pt-8 pb-10 px-6">{children}</div>
+      <div className="px-6 sm:px-12 py-6 sm:py-12">
+        <div className="max-w-7xl mx-auto">{children}</div>
+      </div>
     </div>
   );
 };
