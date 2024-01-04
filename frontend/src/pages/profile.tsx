@@ -57,8 +57,7 @@ const Profile = () => {
       <h3 className="text-xl font-normal">My Profile</h3>
       <Card size="medium">
         <ProfileForm userDetails={{
-          firstName: data?.profile.firstName,
-          lastName: data?.profile.lastName,
+          ...data.profile,
           ...data
         }} />
       </Card>

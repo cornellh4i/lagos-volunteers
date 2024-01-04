@@ -4,13 +4,12 @@ import TextField from "../atoms/TextField";
 import Checkbox from "../atoms/Checkbox";
 import { auth } from "@/utils/firebase";
 import { useForm, SubmitHandler } from "react-hook-form";
-import { useRouter } from "next/router";
-import { BASE_URL } from "@/utils/constants";
-import { useUpdatePassword } from "react-firebase-hooks/auth";
-import Alert from "../atoms/Alert";
 import { reauthenticateWithCredential, EmailAuthProvider } from "firebase/auth";
 import Snackbar from "../atoms/Snackbar";
 import { api } from "@/utils/api";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { updatePassword } from "firebase/auth";
+import { User } from "firebase/auth";
 
 type FormValues = {
   email: string;
@@ -42,11 +41,15 @@ interface ProfileFormProps {
 }
 
 const ProfileForm = ({ userDetails }: ProfileFormProps) => {
-  const router = useRouter();
-  const [updatePassword, updating, error] = useUpdatePassword(auth);
   const [success, setSuccess] = React.useState<boolean>(false);
-  const [isLoading, setIsLoading] = React.useState<boolean>(false);
+  const [error, setError] = React.useState<boolean>(false);
   const [errorMessage, setErrorMessage] = React.useState<string>("");
+  // State variables for the notification popups
+  const [SuccessNotificationOpen, setSuccessNotificationOpen] = useState(false);
+  const [ErrorNotificationOpen, setErrorNotificationOpen] = useState(false);
+  const queryClient = useQueryClient();
+
+
 
   const handleErrors = (errors: any) => {
     const errorParsed = errors?.split("/")[1].slice(0, -2);
@@ -68,52 +71,41 @@ const ProfileForm = ({ userDetails }: ProfileFormProps) => {
       case "too-many-requests":
         return "You have made too many requests to change your password. Please try again later.";
       default:
-        return "Something went wrong.";
+        return "Something went wrong. Please try again";
     }
   };
 
-  // State variables for the notification popups
-  const [notifOpen, setNotifOpen] = useState(false);
 
-  const ProfileErrorComponent = (): JSX.Element | null => {
-    setNotifOpen(true);
-    return error ? (
-      <Snackbar
-        variety="error"
-        open={notifOpen}
-        onClose={() => setNotifOpen(false)}
-      >
-        Error: {handleErrors(error?.message)}
-      </Snackbar>
-    ) : null;
+  const ProfileUpdateErrorSnackBar = (): JSX.Element | null => {
+    if (error) {
+      return (
+        <Snackbar
+          variety="error"
+          open={ErrorNotificationOpen}
+          onClose={() => setErrorNotificationOpen(false)}
+        >
+          Error: {handleErrors(errorMessage)}
+        </Snackbar>
+      );
+    }
+    return null;
   };
 
-  const ProfileReauthenticationErrorComponent = (): JSX.Element | null => {
-    setNotifOpen(true);
-    return errorMessage.length > 0 ? (
-      <Snackbar
-        variety="error"
-        open={notifOpen}
-        onClose={() => setNotifOpen(false)}
-      >
-        Error: {handleErrors(errorMessage)}
-      </Snackbar>
-    ) : null;
+  const ProfileUpdateSuccessSnackBar = (): JSX.Element | null => {
+    if (success) {
+      return (
+        <Snackbar
+          variety="success"
+          open={SuccessNotificationOpen}
+          onClose={() => setSuccessNotificationOpen(false)}
+        >
+          Success: Profile update was successful!
+        </Snackbar>
+      )
+    }
+    return null;
   };
 
-  const ProfileSuccessComponent = (): JSX.Element | null => {
-    setNotifOpen(true);
-    return !error && !(errorMessage.length > 0) && success ? (
-      <Snackbar
-        variety="success"
-        open={notifOpen}
-        onClose={() => setNotifOpen(false)}
-      >
-        Success: Profile update was successful. Please refresh the page to see
-        your changes!
-      </Snackbar>
-    ) : null;
-  };
 
   const {
     register,
@@ -135,132 +127,121 @@ const ProfileForm = ({ userDetails }: ProfileFormProps) => {
   });
 
   // Handle checkbox
+  // TODO: Implement this
   const [checked, setChecked] = useState(false);
   const handleCheckbox = () => {
     setChecked((checked) => !checked);
   };
 
-  const handleChanges: SubmitHandler<FormValues> = async (data) => {
-    const {
-      email,
-      firstName,
-      lastName,
-      preferredName,
-      oldPassword,
-      newPassword,
-      confirmNewPassword,
-    } = data;
-
-    try {
-      setIsLoading(true);
-      // Update profile in DB
-      const url = BASE_URL as string;
-      const userid = userDetails.id;
-      const { response } = await api.put(`/users/${userid}/profile`, {
-        firstName: firstName,
-        lastName: lastName,
-        nickname: preferredName,
-      });
+  const ReAuthenticateUserSession = useMutation({
+    mutationFn: async (data: any) => {
       const currentUser = auth.currentUser;
-
-      // Update password in Firebase
-      if (newPassword !== "" && currentUser != null) {
-        // first re-authenticate the user to check if the old password is correct
-
-        const credentials = EmailAuthProvider.credential(email, oldPassword);
-        reauthenticateWithCredential(currentUser, credentials)
-          .then(() => {
-            updatePassword(newPassword).then(() => {
-              setSuccess(true);
-              setIsLoading(false);
-            });
-          })
-          .catch((error) => {
-            setErrorMessage(error.message);
-            setIsLoading(false);
-          });
+      if (currentUser != null) {
+        const credentials = EmailAuthProvider.credential(
+          data.email,
+          data.oldPassword
+        );
+        return reauthenticateWithCredential(currentUser, credentials);
       }
-      setErrorMessage("");
-      setIsLoading(false);
-    } catch (error) {
-      setIsLoading(false);
+    },
+    retry: false,
+  });
+
+  const updateUserPasswordInFirebase = useMutation({
+    mutationFn: async (data: any) => {
+      const user = auth.currentUser as User;
+      return updatePassword(user, data.newPassword);
+    },
+    retry: false,
+  });
+
+  const updateProfileInDB = useMutation({
+    mutationFn: async (data: any) => {
+      return api.put(`/users/${userDetails.id}/profile`, {
+        firstName: data.firstName,
+        lastName: data.lastName,
+        nickname: data.preferredName,
+      })
+
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["profile"] });
+    },
+    retry: false,
+  });
+
+
+  const handleChanges: SubmitHandler<FormValues> = async (data) => {
+    try {
+      await ReAuthenticateUserSession.mutateAsync(data);
+      await updateUserPasswordInFirebase.mutateAsync(data);
+      await updateProfileInDB.mutateAsync(data);
+      setSuccess(true);
+      setSuccessNotificationOpen(true);
+    } catch (error: any) {
       console.log(error);
+      setError(true);
+      setErrorNotificationOpen(true);
+      setErrorMessage(error.message);
     }
-  };
+  }
+
+
 
   return (
     <form onSubmit={handleSubmit(handleChanges)} className="space-y-4">
-      <ProfileErrorComponent />
-      <ProfileSuccessComponent />
-      <ProfileReauthenticationErrorComponent />
-      <div>
-        <TextField
-          label="Email"
-          disabled={true}
-          error={errors.email ? "Required" : undefined}
-          {...register("email", { required: "true" })}
-        />
-      </div>
-      <div>
-        <TextField
-          label="First name"
-          error={errors.firstName ? "Required" : undefined}
-          {...register("firstName", { required: "true" })}
-        />
-      </div>
-      <div>
-        <TextField
-          label="Last name"
-          error={errors.lastName ? "Required" : undefined}
-          {...register("lastName", { required: "true" })}
-        />
-      </div>
-      <div>
-        <TextField
-          label="Preferred name"
-          error={errors.preferredName ? "Required" : undefined}
-          {...register("preferredName", { required: "true" })}
-        />
-      </div>
-      <div>
-        <TextField
-          type="password"
-          label="Old password"
-          error={errors.oldPassword ? "Required" : undefined}
-          {...register("oldPassword", { required: "false" })}
-        />
-      </div>
-      <div>
-        <TextField
-          type="password"
-          label="New password "
-          {...register("newPassword", { required: "false" })}
-        />
-      </div>
-      <div>
-        <TextField
-          type="password"
-          label="Confirm new password"
-          error={
-            watch("newPassword") === watch("confirmNewPassword")
-              ? undefined
-              : "Passwords must match"
-          }
-          {...register("confirmNewPassword", { required: "false" })}
-        />
-      </div>
-      <div>
-        <Checkbox
-          checked={checked}
-          onChange={handleCheckbox}
-          label="Email notifications"
-        />
-      </div>
+      <ProfileUpdateErrorSnackBar />
+      <ProfileUpdateSuccessSnackBar />
+      <TextField
+        label="Email"
+        disabled={true}
+        error={errors.email ? "Required" : undefined}
+        {...register("email", { required: true })}
+      />
+      <TextField
+        label="First name"
+        error={errors.firstName ? "Required" : undefined}
+        {...register("firstName", { required: true })}
+      />
+      <TextField
+        label="Last name"
+        error={errors.lastName ? "Required" : undefined}
+        {...register("lastName", { required: true })}
+      />
+      <TextField
+        label="Preferred name"
+        error={errors.preferredName ? "Required" : undefined}
+        {...register("preferredName", { required: true })}
+      />
+      <TextField
+        type="password"
+        label="Old password"
+        error={errors.oldPassword ? "Required" : undefined}
+        {...register("oldPassword", { required: true })}
+      />
+      <TextField
+        type="password"
+        label="New password "
+        {...register("newPassword", { required: false })}
+      />
+      <TextField
+        type="password"
+        label="Confirm new password"
+        error={
+          watch("newPassword") === watch("confirmNewPassword")
+            ? undefined
+            : "Passwords must match"
+        }
+        {...register("confirmNewPassword", { required: false })}
+      />
+      <Checkbox
+        checked={checked}
+        onChange={handleCheckbox}
+        label="Email notifications"
+      />
       <div className="sm:space-x-4 grid grid-cols-1 sm:grid-cols-2">
         <div className="pb-4 sm:pb-0">
-          <Button loading={isLoading} disabled={isLoading} type="submit">
-            Save Changes
-          </Button>
+          <Button type="submit">Save Changes</Button>
         </div>
         <div>
           <Button

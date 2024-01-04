@@ -9,6 +9,7 @@ interface ButtonProps {
   size?: "small" | "medium";
   loading?: boolean;
   [key: string]: any;
+  type?: "button" | "submit" | "reset";
 }
 
 /** A simple Button component */
@@ -18,6 +19,7 @@ const Button = ({
   variety = "primary",
   size = "medium",
   loading = false,
+  type = "button",
   ...props
 }: ButtonProps) => {
   // Set button size
@@ -57,6 +59,7 @@ const Button = ({
 
   return (
     <MuiButton
+      type={type}
       disableElevation
       fullWidth
       variant={variant}
