@@ -18,43 +18,37 @@ userRouter.post(
   NoAuth as RequestHandler,
   async (req: Request, res: Response) => {
     // #swagger.tags = ['Users']
+    // if you're seeing this, no you didn't
+    let user;
     const { password, ...rest } = req.body;
     try {
-      const user = await userController.createUser(
+      user = await userController.createUser(
         rest,
         rest.profile,
         rest.preferences,
         rest.permissions
       );
       if (user && process.env.NODE_ENV !== "test") {
-        try {
-          const fbUser = await firebase.auth().createUser({
-            uid: user.id,
-            email: rest.email,
-            password: password,
+        const fbUser = await firebase.auth().createUser({
+          uid: user.id,
+          email: rest.email,
+          password: password,
+        });
+        if (fbUser) {
+          await firebase.auth().setCustomUserClaims(fbUser.uid, {
+            volunteer: true,
           });
-          if (fbUser) {
-            await firebase.auth().setCustomUserClaims(fbUser.uid, {
-              volunteer: true,
-            });
-            return res.status(200).send({ success: true, user: user });
-          }
-        } catch (e: any) {
-          // If firebase fails to create user, delete user from database
-          // In jest - need to configure firebase App so firebase always fails.
-          await userController
-            .deleteUser(user.id)
-            .then(() => {
-              return res.status(500).send({ success: false, error: e.code });
-            })
-            .catch((e: any) => {
-              return res.status(500).send({ success: false, error: e.message });
-            });
+          return res.status(200).send({ success: true, user: user });
         }
       }
-      // If test environment, return user without firebase auth
-      return res.status(201).send({ success: true, data: user });
     } catch (e: any) {
+      if (user) {
+        try {
+          await userController.deleteUser(user.id);
+        } catch (e: any) {
+          return res.status(500).send({ success: false, error: e.message });
+        }
+      }
       return res.status(500).send({ success: false, error: e.message });
     }
   }

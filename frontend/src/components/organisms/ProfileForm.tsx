@@ -179,7 +179,6 @@ const ProfileForm = ({ userDetails }: ProfileFormProps) => {
       setSuccess(true);
       setSuccessNotificationOpen(true);
     } catch (error: any) {
-      console.log(error);
       setError(true);
       setErrorNotificationOpen(true);
       setErrorMessage(error.message);
