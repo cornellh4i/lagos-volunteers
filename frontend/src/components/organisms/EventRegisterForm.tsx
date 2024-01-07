@@ -45,7 +45,6 @@ const ModalBody = ({
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["eventInfo", eventid] });
-      router.reload();
     },
   });
 

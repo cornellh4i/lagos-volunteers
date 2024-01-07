@@ -14,6 +14,7 @@ import { useAuth } from "@/utils/AuthContext";
 import { fetchUserIdFromDatabase } from "@/utils/helpers";
 import { EventData } from "@/utils/types";
 import { api } from "@/utils/api";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 interface EventCancelFormProps {
   event: EventData;
@@ -37,22 +38,24 @@ const ModalBody = ({
 }) => {
   const router = useRouter();
   const { user } = useAuth();
+  const queryClient = useQueryClient();
 
   /**
    * Handles clicking the Cancel button
    */
-  const handleCancel = async () => {
-    try {
+  const { mutate, isPending, isError } = useMutation({
+    mutationKey: ["eventInfo", eventid],
+    mutationFn: async () => {
       const attendeeid = await fetchUserIdFromDatabase(user?.email as string);
       await api.put(`/events/${eventid}/attendees`, {
         attendeeid: attendeeid,
         cancelationMessage: cancelationMessage,
       });
-    } catch (error) {
-      console.error(error);
-    }
-    router.reload();
-  };
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["eventInfo", eventid] });
+    },
+  });
 
   return (
     <div>
@@ -66,7 +69,7 @@ const ModalBody = ({
           </Button>
         </Grid>
         <Grid item md={6} xs={12}>
-          <Button type="button" onClick={handleCancel}>
+          <Button type="button" onClick={mutate}>
             Yes, cancel
           </Button>
         </Grid>
