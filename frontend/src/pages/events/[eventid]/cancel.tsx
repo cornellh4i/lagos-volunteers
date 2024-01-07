@@ -8,71 +8,67 @@ import { fetchUserIdFromDatabase, formatDateTimeRange } from "@/utils/helpers";
 import Loading from "@/components/molecules/Loading";
 import { EventData } from "@/utils/types";
 import { api } from "@/utils/api";
+import { useQuery } from "@tanstack/react-query";
 
 /** An EventCancellation page */
 const EventCancellation = () => {
   const router = useRouter();
   const eventid = router.query.eventid as string;
-  const [eventDetails, setEventDetails] = useState<
-    EventData | null | undefined
-  >(null);
-  const [attendeeCanceled, setAttendeeCanceled] = useState<boolean>(false);
   const { user } = useAuth();
 
-  /**
-   * Fetches and updates the event details
-   */
-  const updateEventDetails = async () => {
-    try {
-      // Make API call
+  const { data, isLoading, isError } = useQuery({
+    queryKey: ["eventInfo", eventid],
+    queryFn: async () => {
+      // temp
       const userid = await fetchUserIdFromDatabase(user?.email as string);
       const { data } = await api.get(
         `/users/${userid}/registered?eventid=${eventid}`
       );
+      return data["data"];
+    },
+  });
 
-      // Set data
-      const event = data["data"]["eventDetails"];
-      setEventDetails({
-        eventid: event["id"],
-        location: event["location"],
-        datetime: formatDateTimeRange(event["startDate"], event["endDate"]),
-        supervisors: [
-          event["owner"]["profile"]["firstName"] +
-            " " +
-            event["owner"]["profile"]["lastName"],
-        ],
-        capacity: event["capacity"],
-        image_src: event["imageURL"],
-        tags: event["tags"],
-        description: event["description"],
-        name: event["name"],
-      });
+  let eventData = data?.eventDetails;
+  let eventAttendance = data?.attendance;
+  // TODO: Add Error Page
+  if (isError) return <div>Error</div>;
+  if (eventData == null) {
+    return <div>Error</div>;
+  }
 
-      if (data["data"]["attendance"]) {
-        setAttendeeCanceled(data["data"]["attendance"]["canceled"]);
-      }
-
-      if (attendeeCanceled || !data["data"]["attendance"]) {
-        router.replace(`/events/${eventid}/register`);
-      }
-    } catch (error) {}
+  const eventDetails: EventData = {
+    eventid: eventData["id"],
+    location: eventData["location"],
+    datetime: formatDateTimeRange(eventData["startDate"], eventData["endDate"]),
+    capacity: eventData["capacity"],
+    image_src: eventData["imageURL"],
+    tags: eventData["tags"],
+    supervisors: [
+      `${eventData["owner"]["profile"]["firstName"]} ${eventData["owner"]["profile"]["lastName"]}`,
+    ],
+    description: eventData["description"],
+    name: eventData["name"],
   };
 
-  useEffect(() => {
-    updateEventDetails();
-  }, []);
+  const userHasCanceledAttendance =
+    eventAttendance && eventAttendance["canceled"];
+
+  if (!eventAttendance) {
+    router.push(`/events/${eventid}/register`);
+  }
+
+
+
+  if (isLoading) return <Loading />;
 
   return (
     <CenteredTemplate>
-      {eventDetails ? (
-        attendeeCanceled ? (
+      {
+        userHasCanceledAttendance ? (
           <EventConfirmation event={eventDetails} confirmation="cancel" />
         ) : (
           <EventCancelForm event={eventDetails} />
-        )
-      ) : (
-        <Loading />
-      )}
+        )}
     </CenteredTemplate>
   );
 };

@@ -29,11 +29,15 @@ const EventRegistration = () => {
     },
   });
 
-  if (isLoading) return <Loading />;
+  let eventData = data?.eventDetails;
+  let eventAttendance = data?.attendance;
   // TODO: Add Error Page
   if (isError) return <div>Error</div>;
+  if (eventData == null) {
+    return <div>Error</div>;
+  }
 
-  let eventData = data["eventDetails"];
+
   const eventDetails: EventData = {
     eventid: eventData["id"],
     location: eventData["location"],
@@ -47,17 +51,18 @@ const EventRegistration = () => {
     description: eventData["description"],
     name: eventData["name"],
   }
-  const userHasAttendanceStatus = data["attendance"]
-  const userHasCanceledAttendance = userHasAttendanceStatus && data["attendance"]["canceled"]
+  const userHasCanceledAttendance = eventAttendance && eventAttendance["canceled"];
 
   if (userHasCanceledAttendance) {
     router.push(`/events/${eventid}/cancel`);
   }
 
+  if (isLoading) return <Loading />;
+
   return (
     <CenteredTemplate>
       {
-        userHasAttendanceStatus ?
+        eventAttendance ?
           <EventConfirmation event={eventDetails} confirmation="register" />
           :
           <EventRegisterForm event={eventDetails} />
