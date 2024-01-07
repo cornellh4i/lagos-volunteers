@@ -22,7 +22,6 @@ export type FormValues = {
 };
 
 const LoginForm = () => {
-  const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
   const [
     signInWithEmailAndPassword,
@@ -63,7 +62,6 @@ const LoginForm = () => {
   const [notifOpen, setNotifOpen] = useState(false);
 
   const LoginErrorComponent = (): JSX.Element | null => {
-    setNotifOpen(true);
     return signInErrors ? (
       <Snackbar
         variety="error"
@@ -75,21 +73,8 @@ const LoginForm = () => {
     ) : null;
   };
 
-  const handleGoogleLogin = async () => {
-    setIsLoading(true);
-    try {
-      await signInWithGoogle();
-      if (googleUser) {
-        router.push("/events/view");
-      }
-    } catch (err) { }
-    setIsLoading(false);
-  };
-
   const handleLogin: SubmitHandler<FormValues> = async (data) => {
-    setIsLoading(true);
     const { email, password } = data;
-
     try {
       await signInWithEmailAndPassword(email, password);
       if (signedInUser) {
@@ -97,7 +82,6 @@ const LoginForm = () => {
       }
     } catch (err) { }
     setNotifOpen(true);
-    setIsLoading(false);
   };
   return (
     <div className="space-y-4 ">
@@ -105,22 +89,18 @@ const LoginForm = () => {
       <img src="/lfbi_logo.png" className="w-24" />
       <form onSubmit={handleSubmit(handleLogin)} className="space-y-4 ">
         <div className="font-bold text-3xl"> Log In </div>
-        <div>
-          <TextField
-            error={errors.email ? "Required" : undefined}
-            label="Email"
-            type="email"
-            {...register("email", { required: "true" })}
-          />
-        </div>
-        <div>
-          <TextField
-            error={errors.password ? "Required" : undefined}
-            label="Password"
-            type="password"
-            {...register("password", { required: "true" })}
-          />
-        </div>
+        <TextField
+          error={errors.email ? "Required" : undefined}
+          label="Email"
+          type="email"
+          {...register("email", { required: true })}
+        />
+        <TextField
+          error={errors.password ? "Required" : undefined}
+          label="Password"
+          type="password"
+          {...register("password", { required: true })}
+        />
         <div className="text-center">
           <Link
             href="/password/forgot"
@@ -129,35 +109,29 @@ const LoginForm = () => {
             Forgot password?
           </Link>
         </div>
-        <div>
-          <Button loading={isLoading} type="submit">
-            Log in
-          </Button>
-        </div>
+        <Button loading={signInLoading} disabled={signInLoading} type="submit">
+          Log in
+        </Button>
         <div>
           <Divider>or</Divider>
         </div>
       </form>
-      <div>
-        <Link href="/signup">
-          <Button type="submit" variety="secondary">
-            Sign up with email
-          </Button>
-        </Link>
-      </div>
-      <div>
-        <Button
-          loading={googleLoading}
-          disabled={googleLoading}
-          variety="secondary"
-          icon={<GoogleIcon />}
-          // We are paused on this feature for now...
-          // onClick={() => handleGoogleLogin()}
-          type="submit"
-        >
-          Continue with Google
+      <Link href="/signup">
+        <Button type="submit" variety="secondary">
+          Sign up with email
         </Button>
-      </div>
+      </Link>
+      <Button
+        loading={googleLoading}
+        disabled={googleLoading}
+        variety="secondary"
+        icon={<GoogleIcon />}
+        // We are paused on this feature for now...
+        // onClick={() => handleGoogleLogin()}
+        type="submit"
+      >
+        Continue with Google
+      </Button>
     </div>
   );
 };
