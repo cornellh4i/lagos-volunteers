@@ -63,6 +63,7 @@ const LoginForm = () => {
   const [notifOpen, setNotifOpen] = useState(false);
 
   const LoginErrorComponent = (): JSX.Element | null => {
+    setNotifOpen(true);
     return signInErrors ? (
       <Snackbar
         variety="error"

@@ -59,6 +59,7 @@ const SignupForm = () => {
   const [notifOpen, setNotifOpen] = useState(false);
 
   const SignUpErrorComponent = (): JSX.Element | null => {
+    setNotifOpen(true);
     return errorMessage ? (
       <Snackbar
         variety="error"

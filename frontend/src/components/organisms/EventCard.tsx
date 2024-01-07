@@ -12,7 +12,6 @@ import Menu from "@mui/material/Menu";
 import { Action } from "@/utils/types";
 import { formatDateTimeRange } from "@/utils/helpers";
 
-
 interface EventCardProps {
   eventid: string | undefined;
   mainAction: Action;
