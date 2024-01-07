@@ -99,7 +99,7 @@ const SignupForm = () => {
         setErrorMessage("Passwords do not match");
         return;
       }
-      const { response } = await api.post("/users", post);
+      const { response } = await api.post("/users", post, false);
       if (response.ok) {
         const signIn = await signInWithEmailAndPassword(email, password);
         if (signIn?.user) {
