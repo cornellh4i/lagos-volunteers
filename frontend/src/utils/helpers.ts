@@ -68,8 +68,6 @@ export const formatDateString = (dateString: string) => {
  * @param inputDate is the inputDate
  */
 export const convertToISO = (inputTime: string, inputDate: string) => {
-  console.log(inputTime);
-  console.log(inputDate);
   var timeIndex = 0;
   var counter = 0;
   const time = String(inputTime);
@@ -96,7 +94,6 @@ export const convertToISO = (inputTime: string, inputDate: string) => {
     }
   }
   const rawDateTime = date.substring(0, dateIndex) + time.substring(timeIndex);
-  console.log(rawDateTime);
   const res = dayjs(rawDateTime).toJSON();
   return res;
 };

@@ -20,6 +20,7 @@ import router from "next/router";
 import Snackbar from "../atoms/Snackbar";
 import { convertToISO, fetchUserIdFromDatabase } from "@/utils/helpers";
 import { api } from "@/utils/api";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 interface EventFormProps {
   eventId?: string | string[] | undefined;
@@ -77,10 +78,6 @@ const EventForm = ({ eventId, eventType, eventDetails }: EventFormProps) => {
         }
       : {}
   );
-  const back = () => {
-    router.replace("/events/view");
-    setIsLoading(false);
-  };
 
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
@@ -89,27 +86,12 @@ const EventForm = ({ eventId, eventType, eventDetails }: EventFormProps) => {
   const [notifOpen, setNotifOpen] = useState(false);
 
   const CreateErrorComponent = (): JSX.Element | null => {
-    setNotifOpen(true);
     return errorMessage ? (
       <Snackbar
         variety="error"
         open={notifOpen}
-        onClose={() => setNotifOpen(false)}
-      >
+        onClose={() => setNotifOpen(false)}>
         Error: {errorMessage}
-      </Snackbar>
-    ) : null;
-  };
-
-  const CreateSuccessComponent = (): JSX.Element | null => {
-    setNotifOpen(true);
-    return successMessage ? (
-      <Snackbar
-        variety="success"
-        open={notifOpen}
-        onClose={() => setNotifOpen(false)}
-      >
-        Success: {successMessage}
       </Snackbar>
     ) : null;
   };
@@ -119,6 +101,7 @@ const EventForm = ({ eventId, eventType, eventDetails }: EventFormProps) => {
     const startDateTime = convertToISO(startTime, startDate);
     const endDateTime = convertToISO(endTime, endDate);
     if (new Date(startDateTime) >= new Date(endDateTime)) {
+      setNotifOpen(true);
       setErrorMessage(
         "End Date and Time must be later than Start Date and Time"
       );
@@ -129,29 +112,26 @@ const EventForm = ({ eventId, eventType, eventDetails }: EventFormProps) => {
     return true;
   };
 
-  /** Helper for handling creating events */
-  const handleCreateEvent: SubmitHandler<FormValues> = async (data) => {
-    setIsLoading(true);
-    const validation = timeAndDateValidation();
-    if (!validation) {
-      setIsLoading(false);
-      return;
-    }
-    const mode = status === 0 ? "VIRTUAL" : "IN_PERSON";
-    const {
-      eventName,
-      location,
-      volunteerSignUpCap,
-      eventDescription,
-      startDate,
-      endDate,
-      startTime,
-      endTime,
-    } = data;
-    const startDateTime = convertToISO(startTime, startDate);
-    const endDateTime = convertToISO(endTime, endDate);
-    const userid = await fetchUserIdFromDatabase(user?.email as string);
-    try {
+  const { mutateAsync, isPending, isError, isSuccess } = useMutation({
+    mutationFn: async (data: FormValues) => {
+      const validation = timeAndDateValidation();
+      if (!validation) {
+        return;
+      }
+      const mode = status === 0 ? "VIRTUAL" : "IN_PERSON";
+      const {
+        eventName,
+        location,
+        volunteerSignUpCap,
+        eventDescription,
+        startDate,
+        endDate,
+        startTime,
+        endTime,
+      } = data;
+      const startDateTime = convertToISO(startTime, startDate);
+      const endDateTime = convertToISO(endTime, endDate);
+      const userid = await fetchUserIdFromDatabase(user?.email as string);
       const { response } = await api.post("/events", {
         userID: `${userid}`,
         event: {
@@ -164,20 +144,77 @@ const EventForm = ({ eventId, eventType, eventDetails }: EventFormProps) => {
           mode: `${mode}`,
         },
       });
+      return response;
+    },
+    retry: false,
+    onSuccess: () => {
+      // set local storage to true
+      localStorage.setItem("createdEvent", "true");
+      console.log(localStorage.getItem("createdEvent"));
+      // redirect to events page
+      router.push("/events/view");
+    },
+  });
 
-      if (response.ok) {
-        setSuccessMessage("Successfully Created Event! Redirecting...");
-        setTimeout(back, 7000);
-      } else {
-        setErrorMessage(
-          "We were unable to create this event. Please try again."
-        );
-      }
-      setIsLoading(false);
-    } catch (error: any) {
-      setErrorMessage("Network Error");
-      setIsLoading(false);
+  /** Helper for handling creating events */
+  const handleCreateEvent: SubmitHandler<FormValues> = async (data) => {
+    try {
+      await mutateAsync(data);
+    } catch (error) {
+      setNotifOpen(true);
+      setErrorMessage("We were unable to create this event. Please try again");
     }
+    // setIsLoading(true);
+    // const validation = timeAndDateValidation();
+    // if (!validation) {
+    //   setIsLoading(false);
+    //   return;
+    // }
+    // const mode = status === 0 ? "VIRTUAL" : "IN_PERSON";
+    // const {
+    //   eventName,
+    //   location,
+    //   volunteerSignUpCap,
+    //   eventDescription,
+    //   startDate,
+    //   endDate,
+    //   startTime,
+    //   endTime,
+    // } = data;
+    // const startDateTime = convertToISO(startTime, startDate);
+    // const endDateTime = convertToISO(endTime, endDate);
+    // const userid = await fetchUserIdFromDatabase(user?.email as string);
+    // try {
+    //   const { response } = await api.post("/events", {
+    //     userID: `${userid}`,
+    //     event: {
+    //       name: `${eventName}`,
+    //       location: `${location}`,
+    //       description: `${eventDescription}`,
+    //       startDate: new Date(startDateTime),
+    //       endDate: new Date(endDateTime),
+    //       capacity: +volunteerSignUpCap,
+    //       mode: `${mode}`,
+    //     },
+    //   });
+
+    //   if (response.ok) {
+    //     setSuccessMessage("Successfully Created Event! Redirecting...");
+    //     setTimeout(back, 7000);
+    //   } else {
+    //     setErrorMessage(
+    //       "We were unable to create this event. Please try again."
+    //     );
+    //   }
+    //   setIsLoading(false);
+    // } catch (error: any) {
+    //   setErrorMessage("Network Error");
+    //   setIsLoading(false);
+    // }
+  };
+
+  const back = () => {
+    router.push("/events/view");
   };
 
   /** Helper for handling editing events */
@@ -225,10 +262,8 @@ const EventForm = ({ eventId, eventType, eventDetails }: EventFormProps) => {
           ? handleSubmit(handleCreateEvent)
           : handleSubmit(handleEditEvent)
       }
-      className="space-y-4"
-    >
+      className="space-y-4">
       <CreateErrorComponent />
-      <CreateSuccessComponent />
       {/* <button onClick={() => console.log(getValues())}>test</button>
       <button
         onClick={() => {
@@ -326,8 +361,7 @@ const EventForm = ({ eventId, eventType, eventDetails }: EventFormProps) => {
             aria-labelledby="demo-row-radio-buttons-group-label"
             name="row-radio-buttons-group"
             defaultValue={eventDetails ? eventDetails.mode : "VIRTUAL"}
-            sx={{ borderRadius: 2, borderColor: "primary.main" }}
-          >
+            sx={{ borderRadius: 2, borderColor: "primary.main" }}>
             <FormControlLabel
               value="VIRTUAL"
               control={<Radio />}
@@ -386,7 +420,7 @@ const EventForm = ({ eventId, eventType, eventDetails }: EventFormProps) => {
               </Link>
             </div>
             <div className="col-start-1 col-span-1 sm:col-start-4 sm:col-span-1">
-              <Button loading={isLoading} type="submit">
+              <Button loading={isPending} disabled={isPending} type="submit">
                 Create
               </Button>
             </div>

@@ -15,6 +15,7 @@ import { api } from "@/utils/api";
 import ManageSearchIcon from "@mui/icons-material/ManageSearch";
 import { useQuery } from "@tanstack/react-query";
 import Loading from "@/components/molecules/Loading";
+import Snackbar from "@/components/atoms/Snackbar";
 
 type event = {
   id?: string;
@@ -185,13 +186,38 @@ const PastEvents = ({ eventDetails }: EventCardProps) => {
 const ViewEvents = () => {
   const { user } = useAuth();
 
+  // Use localstorage to see if we redirected from
+  // a created event -> if so; show a notification
+  const [showNotification, setShowNotification] = useState(false);
+  useEffect(() => {
+    const createdEvent = localStorage.getItem("createdEvent");
+    console.log(createdEvent);
+    if (createdEvent) {
+      setShowNotification(true);
+      localStorage.removeItem("createdEvent");
+    } else {
+      setShowNotification(false);
+    }
+  }, []);
+
+  const SuccessfulEventCreation = (): JSX.Element | null => {
+    return showNotification ? (
+      <Snackbar
+        variety="success"
+        open={showNotification}
+        onClose={() => setShowNotification(false)}>
+        Success: Your event was successfully created!
+      </Snackbar>
+    ) : null;
+  };
+
   const computeHours = (startDate: string, endDate: string) => {
     const start = new Date(startDate).getTime();
     const end = new Date(endDate).getTime();
     const diffInMilliseconds = end - start;
     const diffInHours = diffInMilliseconds / (1000 * 60 * 60);
     return Math.round(diffInHours);
-  }
+  };
 
   // TODO: Remove in production?
   const { data: userid } = useQuery({
@@ -200,17 +226,18 @@ const ViewEvents = () => {
       const userid = await fetchUserIdFromDatabase(user?.email as string);
       return userid;
     },
-  })
-
+  });
 
   const { data, isLoading, isError } = useQuery({
     queryKey: ["events"],
     queryFn: async () => {
-      const eventsUserRegisteredFor = await api.get(`/users/${userid}/registered`);
+      const eventsUserRegisteredFor = await api.get(
+        `/users/${userid}/registered`
+      );
       return eventsUserRegisteredFor["data"]["data"]["events"];
     },
     enabled: !!userid,
-  })
+  });
 
   let events: event[] = [];
   data?.map((event: any) => {
@@ -221,9 +248,11 @@ const ViewEvents = () => {
       startDate: event["event"]["startDate"],
       endDate: event["event"]["endDate"],
       actions: ["manage attendees", "edit"],
-      role:
-        userid === event["event"]["ownerId"] ? "Supervisor" : "Volunteer",
-      hours: computeHours(event["event"]["startDate"], event["event"]["endDate"]), // hard-coded for now
+      role: userid === event["event"]["ownerId"] ? "Supervisor" : "Volunteer",
+      hours: computeHours(
+        event["event"]["startDate"],
+        event["event"]["endDate"]
+      ), // hard-coded for now
     });
   });
 
@@ -241,19 +270,23 @@ const ViewEvents = () => {
     if (isLoading) return <Loading />;
 
     // TODO: Add Error Page
-    if (isError) return (
-      <div className="flex justify-center items-center h-screen">
-        <div className="text-center">
-          Aw! An error occurred :(
-          <p>Please try again</p>
+    if (isError)
+      return (
+        <div className="flex justify-center items-center h-screen">
+          <div className="text-center">
+            Aw! An error occurred :(
+            <p>Please try again</p>
+          </div>
         </div>
-      </div>
-    );
+      );
     return (
-      <TabContainer
-        tabs={tabs}
-        left={<div className="font-semibold text-3xl">My Events</div>}
-      />
+      <>
+        <SuccessfulEventCreation />
+        <TabContainer
+          tabs={tabs}
+          left={<div className="font-semibold text-3xl">My Events</div>}
+        />
+      </>
     );
   }
 };
