@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import Button from "../atoms/Button";
 import TextField from "../atoms/TextField";
 import Link from "next/link";
@@ -37,7 +37,8 @@ const SignupForm = () => {
   const handleErrors = (errors: any) => {
     // possibly needs some extra verification for common error patterns
     const userAlreadyExistsPrisma = /Unique constraint failed/;
-    const passwordLengthError = /The password must be a string with at least 6 characters./;
+    const passwordLengthError =
+      /The password must be a string with at least 6 characters./;
     const invalidEmailError = /The email address is badly formatted./;
     const EmailAlreadyExists = /A user with that email already exists/;
 
@@ -64,8 +65,7 @@ const SignupForm = () => {
       <Snackbar
         variety="error"
         open={notifOpen}
-        onClose={() => setNotifOpen(false)}
-      >
+        onClose={() => setNotifOpen(false)}>
         Error: {handleErrors(errorMessage)}
       </Snackbar>
     ) : null;
@@ -83,7 +83,7 @@ const SignupForm = () => {
         },
         password,
       };
-      // Using fetch directly here because no auth headers need to be passed. 
+      // Using fetch directly here because no auth headers need to be passed.
       const response = fetch(`${BASE_URL}/users`, {
         method: "POST",
         headers: {
@@ -98,7 +98,7 @@ const SignupForm = () => {
       return response;
     },
     retry: false,
-  })
+  });
 
   const handleSubmitUser: SubmitHandler<FormValues> = async (data, event) => {
     try {
@@ -158,8 +158,8 @@ const SignupForm = () => {
             errors.confirmPassword
               ? "Required"
               : watch("password") != watch("confirmPassword")
-                ? "Passwords do not match"
-                : undefined
+              ? "Passwords do not match"
+              : undefined
           }
           label="Confirm Password"
           {...register("confirmPassword", { required: true })}
@@ -174,8 +174,7 @@ const SignupForm = () => {
         <div>Have an account?&nbsp;</div>
         <Link
           href="/login"
-          className="text-primary hover:underline no-underline"
-        >
+          className="text-primary hover:underline no-underline">
           Log in
         </Link>
       </div>

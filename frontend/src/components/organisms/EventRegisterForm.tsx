@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import EventDetails from "./EventDetails";
 import IconText from "../atoms/IconText";
 import CustomCheckbox from "../atoms/Checkbox";

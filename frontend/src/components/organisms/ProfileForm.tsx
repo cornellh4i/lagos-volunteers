@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import Button from "../atoms/Button";
 import TextField from "../atoms/TextField";
 import Checkbox from "../atoms/Checkbox";
@@ -49,8 +49,6 @@ const ProfileForm = ({ userDetails }: ProfileFormProps) => {
   const [ErrorNotificationOpen, setErrorNotificationOpen] = useState(false);
   const queryClient = useQueryClient();
 
-
-
   const handleErrors = (errors: any) => {
     const errorParsed = errors?.split("/")[1].slice(0, -2);
     switch (errorParsed) {
@@ -75,15 +73,13 @@ const ProfileForm = ({ userDetails }: ProfileFormProps) => {
     }
   };
 
-
   const ProfileUpdateErrorSnackBar = (): JSX.Element | null => {
     if (error) {
       return (
         <Snackbar
           variety="error"
           open={ErrorNotificationOpen}
-          onClose={() => setErrorNotificationOpen(false)}
-        >
+          onClose={() => setErrorNotificationOpen(false)}>
           Error: {handleErrors(errorMessage)}
         </Snackbar>
       );
@@ -97,15 +93,13 @@ const ProfileForm = ({ userDetails }: ProfileFormProps) => {
         <Snackbar
           variety="success"
           open={SuccessNotificationOpen}
-          onClose={() => setSuccessNotificationOpen(false)}
-        >
+          onClose={() => setSuccessNotificationOpen(false)}>
           Success: Profile update was successful!
         </Snackbar>
-      )
+      );
     }
     return null;
   };
-
 
   const {
     register,
@@ -161,15 +155,13 @@ const ProfileForm = ({ userDetails }: ProfileFormProps) => {
         firstName: data.firstName,
         lastName: data.lastName,
         nickname: data.preferredName,
-      })
-
+      });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["profile"] });
     },
     retry: false,
   });
-
 
   const handleChanges: SubmitHandler<FormValues> = async (data) => {
     try {
@@ -183,9 +175,7 @@ const ProfileForm = ({ userDetails }: ProfileFormProps) => {
       setErrorNotificationOpen(true);
       setErrorMessage(error.message);
     }
-  }
-
-
+  };
 
   return (
     <form onSubmit={handleSubmit(handleChanges)} className="space-y-4">
@@ -248,8 +238,7 @@ const ProfileForm = ({ userDetails }: ProfileFormProps) => {
             variety="secondary"
             onClick={() => {
               reset(userDetails, { keepDefaultValues: true });
-            }}
-          >
+            }}>
             Cancel
           </Button>
         </div>
