@@ -36,7 +36,7 @@ const ModalBody = ({
    * Handles clicking the Register button
    */
   const { mutate, isPending, isError } = useMutation({
-    mutationKey: ["eventInfo", eventid],
+    mutationKey: ["event", eventid],
     mutationFn: async () => {
       const attendeeid = await fetchUserIdFromDatabase(user?.email as string);
       await api.post(`/events/${eventid}/attendees`, {
@@ -44,7 +44,7 @@ const ModalBody = ({
       });
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["eventInfo", eventid] });
+      queryClient.invalidateQueries({ queryKey: ["event", eventid] });
     },
   });
 

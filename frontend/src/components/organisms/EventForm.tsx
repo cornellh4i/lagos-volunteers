@@ -46,6 +46,14 @@ type FormValues = {
 const EventForm = ({ eventId, eventType, eventDetails }: EventFormProps) => {
   const { user } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
+
+  const queryClient = useQueryClient();
+
+  // State variables for the notification popups
+  const [notifOpen, setNotifOpen] = useState(false);
+
   // For deciding whether to show "In-person" or "Virtual"
   // 0: no show, 1: show yes.
   const [status, setStatus] = React.useState(
@@ -74,16 +82,14 @@ const EventForm = ({ eventId, eventType, eventDetails }: EventFormProps) => {
             eventDescription: eventDetails.eventDescription,
             eventImage: eventDetails.eventImage,
             rsvpLinkImage: eventDetails.rsvpLinkImage,
+            startDate: eventDetails.startDate,
+            endDate: eventDetails.endDate,
+            startTime: eventDetails.startTime,
+            endTime: eventDetails.endTime,
           },
         }
       : {}
   );
-
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const [successMessage, setSuccessMessage] = useState<string | null>(null);
-
-  // State variables for the notification popups
-  const [notifOpen, setNotifOpen] = useState(false);
 
   const CreateErrorComponent = (): JSX.Element | null => {
     return errorMessage ? (
@@ -92,6 +98,17 @@ const EventForm = ({ eventId, eventType, eventDetails }: EventFormProps) => {
         open={notifOpen}
         onClose={() => setNotifOpen(false)}>
         Error: {errorMessage}
+      </Snackbar>
+    ) : null;
+  };
+
+  const CreateSuccessComponent = (): JSX.Element | null => {
+    return successMessage ? (
+      <Snackbar
+        variety="success"
+        open={notifOpen}
+        onClose={() => setNotifOpen(false)}>
+        {successMessage}
       </Snackbar>
     ) : null;
   };
@@ -112,12 +129,12 @@ const EventForm = ({ eventId, eventType, eventDetails }: EventFormProps) => {
     return true;
   };
 
+  const back = () => {
+    router.push("/events/view");
+  };
+
   const { mutateAsync, isPending, isError, isSuccess } = useMutation({
     mutationFn: async (data: FormValues) => {
-      const validation = timeAndDateValidation();
-      if (!validation) {
-        return;
-      }
       const mode = status === 0 ? "VIRTUAL" : "IN_PERSON";
       const {
         eventName,
@@ -148,91 +165,21 @@ const EventForm = ({ eventId, eventType, eventDetails }: EventFormProps) => {
     },
     retry: false,
     onSuccess: () => {
-      // set local storage to true
-      localStorage.setItem("createdEvent", "true");
-      console.log(localStorage.getItem("createdEvent"));
-      // redirect to events page
-      router.push("/events/view");
+      setNotifOpen(true);
+      let countdown = 3;
+      setSuccessMessage("Successfully Created Event! Redirecting...");
+      setTimeout(back, 1000);
     },
   });
 
-  /** Helper for handling creating events */
-  const handleCreateEvent: SubmitHandler<FormValues> = async (data) => {
-    try {
-      await mutateAsync(data);
-    } catch (error) {
-      setNotifOpen(true);
-      setErrorMessage("We were unable to create this event. Please try again");
-    }
-    // setIsLoading(true);
-    // const validation = timeAndDateValidation();
-    // if (!validation) {
-    //   setIsLoading(false);
-    //   return;
-    // }
-    // const mode = status === 0 ? "VIRTUAL" : "IN_PERSON";
-    // const {
-    //   eventName,
-    //   location,
-    //   volunteerSignUpCap,
-    //   eventDescription,
-    //   startDate,
-    //   endDate,
-    //   startTime,
-    //   endTime,
-    // } = data;
-    // const startDateTime = convertToISO(startTime, startDate);
-    // const endDateTime = convertToISO(endTime, endDate);
-    // const userid = await fetchUserIdFromDatabase(user?.email as string);
-    // try {
-    //   const { response } = await api.post("/events", {
-    //     userID: `${userid}`,
-    //     event: {
-    //       name: `${eventName}`,
-    //       location: `${location}`,
-    //       description: `${eventDescription}`,
-    //       startDate: new Date(startDateTime),
-    //       endDate: new Date(endDateTime),
-    //       capacity: +volunteerSignUpCap,
-    //       mode: `${mode}`,
-    //     },
-    //   });
-
-    //   if (response.ok) {
-    //     setSuccessMessage("Successfully Created Event! Redirecting...");
-    //     setTimeout(back, 7000);
-    //   } else {
-    //     setErrorMessage(
-    //       "We were unable to create this event. Please try again."
-    //     );
-    //   }
-    //   setIsLoading(false);
-    // } catch (error: any) {
-    //   setErrorMessage("Network Error");
-    //   setIsLoading(false);
-    // }
-  };
-
-  const back = () => {
-    router.push("/events/view");
-  };
-
-  /** Helper for handling editing events */
-  const handleEditEvent: SubmitHandler<FormValues> = async (data) => {
-    setIsLoading(true);
-    const validation = timeAndDateValidation();
-    if (!validation) {
-      setIsLoading(false);
-      return;
-    }
-
-    const mode = status === 0 ? "VIRTUAL" : "IN_PERSON";
-    const { startTime, startDate, endTime, endDate } = getValues();
-    const startDateTime = convertToISO(startTime, startDate);
-    const endDateTime = convertToISO(endTime, endDate);
-    const { eventName, location, volunteerSignUpCap, eventDescription } = data;
-
-    try {
+  const { mutateAsync: editEvent, isPending: editEventPending } = useMutation({
+    mutationFn: async (data: FormValues) => {
+      const mode = status === 0 ? "VIRTUAL" : "IN_PERSON";
+      const { startTime, startDate, endTime, endDate } = getValues();
+      const startDateTime = convertToISO(startTime, startDate);
+      const endDateTime = convertToISO(endTime, endDate);
+      const { eventName, location, volunteerSignUpCap, eventDescription } =
+        data;
       const { response } = await api.put(`/events/${eventId}`, {
         name: `${eventName}`,
         location: `${location}`,
@@ -242,16 +189,42 @@ const EventForm = ({ eventId, eventType, eventDetails }: EventFormProps) => {
         capacity: +volunteerSignUpCap,
         mode: `${mode}`,
       });
-      if (response.ok) {
-        setSuccessMessage("Successfully Edited Event! Redirecting...");
-        setTimeout(back, 3000);
-      } else {
-        setErrorMessage("Unable to edit event. Please try again");
+      return response;
+    },
+    retry: false,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["event", eventId] });
+      setNotifOpen(true);
+      setSuccessMessage("Successfully Edited Event! Redirecting...");
+      setTimeout(back, 1000);
+    },
+  });
+
+  /** Helper for handling creating events */
+  const handleCreateEvent: SubmitHandler<FormValues> = async (data) => {
+    try {
+      const validation = timeAndDateValidation();
+      if (validation) {
+        await mutateAsync(data);
       }
-      setIsLoading(false);
-    } catch (error: any) {
-      setErrorMessage("Network error");
-      setIsLoading(false);
+    } catch (error) {
+      console.error(error);
+      setNotifOpen(true);
+      setErrorMessage("We were unable to create this event. Please try again");
+    }
+  };
+
+  /** Helper for handling editing events */
+  const handleEditEvent: SubmitHandler<FormValues> = async (data) => {
+    try {
+      const validation = timeAndDateValidation();
+      if (validation) {
+        await editEvent(data);
+      }
+    } catch (error) {
+      console.error(error);
+      setNotifOpen(true);
+      setErrorMessage("We were unable to edit this event. Please try again");
     }
   };
 
@@ -263,26 +236,8 @@ const EventForm = ({ eventId, eventType, eventDetails }: EventFormProps) => {
           : handleSubmit(handleEditEvent)
       }
       className="space-y-4">
+      <CreateSuccessComponent />
       <CreateErrorComponent />
-      {/* <button onClick={() => console.log(getValues())}>test</button>
-      <button
-        onClick={() => {
-          const startDateTime = convertToISO(
-            getValues().startTime,
-            getValues().startDate
-          );
-          const endDateTime = convertToISO(
-            getValues().endTime,
-            getValues().endDate
-          );
-          console.log("START TIME");
-          console.log(startDateTime);
-          console.log("END TIME");
-          console.log(endDateTime);
-        }}
-      >
-        see iso
-      </button> */}
       <div className="font-bold text-3xl">
         {eventType == "create" ? "Create Event" : "Edit Event"}
       </div>
@@ -290,7 +245,7 @@ const EventForm = ({ eventId, eventType, eventDetails }: EventFormProps) => {
         <TextField
           label="Event Name"
           error={errors.eventName ? "Required" : undefined}
-          {...register("eventName", { required: "true" })}
+          {...register("eventName", { required: true })}
         />
       </div>
       <div className="sm:space-x-4 grid grid-cols-1 sm:grid-cols-2">
@@ -394,13 +349,13 @@ const EventForm = ({ eventId, eventType, eventDetails }: EventFormProps) => {
           label="Volunteer Sign Up Cap"
           type="number"
           error={errors.volunteerSignUpCap ? "Required" : undefined}
-          {...register("volunteerSignUpCap", { required: "true" })}
+          {...register("volunteerSignUpCap", { required: true })}
         />
       </div>
       <MultilineTextField
         label="Event Description"
         error={errors.eventDescription ? "Required" : undefined}
-        {...register("eventDescription", { required: "true" })}
+        {...register("eventDescription", { required: true })}
       />
       <Upload label="Event Image" />
       <TextCopy

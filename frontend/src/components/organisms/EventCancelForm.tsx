@@ -44,7 +44,7 @@ const ModalBody = ({
    * Handles clicking the Cancel button
    */
   const { mutate, isPending, isError } = useMutation({
-    mutationKey: ["eventInfo", eventid],
+    mutationKey: ["event", eventid],
     mutationFn: async () => {
       const attendeeid = await fetchUserIdFromDatabase(user?.email as string);
       await api.put(`/events/${eventid}/attendees`, {
@@ -53,7 +53,7 @@ const ModalBody = ({
       });
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["eventInfo", eventid] });
+      queryClient.invalidateQueries({ queryKey: ["event", eventid] });
     },
   });
 

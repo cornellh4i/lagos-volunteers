@@ -17,7 +17,7 @@ const EventCancellation = () => {
   const { user } = useAuth();
 
   const { data, isLoading, isError } = useQuery({
-    queryKey: ["eventInfo", eventid],
+    queryKey: ["event", eventid],
     queryFn: async () => {
       // temp
       const userid = await fetchUserIdFromDatabase(user?.email as string);
@@ -57,18 +57,15 @@ const EventCancellation = () => {
     router.push(`/events/${eventid}/register`);
   }
 
-
-
   if (isLoading) return <Loading />;
 
   return (
     <CenteredTemplate>
-      {
-        userHasCanceledAttendance ? (
-          <EventConfirmation event={eventDetails} confirmation="cancel" />
-        ) : (
-          <EventCancelForm event={eventDetails} />
-        )}
+      {userHasCanceledAttendance ? (
+        <EventConfirmation event={eventDetails} confirmation="cancel" />
+      ) : (
+        <EventCancelForm event={eventDetails} />
+      )}
     </CenteredTemplate>
   );
 };

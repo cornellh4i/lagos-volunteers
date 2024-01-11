@@ -186,31 +186,6 @@ const PastEvents = ({ eventDetails }: EventCardProps) => {
 const ViewEvents = () => {
   const { user } = useAuth();
 
-  // Use localstorage to see if we redirected from
-  // a created event -> if so; show a notification
-  const [showNotification, setShowNotification] = useState(false);
-  useEffect(() => {
-    const createdEvent = localStorage.getItem("createdEvent");
-    console.log(createdEvent);
-    if (createdEvent) {
-      setShowNotification(true);
-      localStorage.removeItem("createdEvent");
-    } else {
-      setShowNotification(false);
-    }
-  }, []);
-
-  const SuccessfulEventCreation = (): JSX.Element | null => {
-    return showNotification ? (
-      <Snackbar
-        variety="success"
-        open={showNotification}
-        onClose={() => setShowNotification(false)}>
-        Success: Your event was successfully created!
-      </Snackbar>
-    ) : null;
-  };
-
   const computeHours = (startDate: string, endDate: string) => {
     const start = new Date(startDate).getTime();
     const end = new Date(endDate).getTime();
@@ -219,24 +194,17 @@ const ViewEvents = () => {
     return Math.round(diffInHours);
   };
 
-  // TODO: Remove in production?
-  const { data: userid } = useQuery({
-    queryKey: ["userid"],
-    queryFn: async () => {
-      const userid = await fetchUserIdFromDatabase(user?.email as string);
-      return userid;
-    },
-  });
+  const [userid, setUserid] = useState<string>("");
 
   const { data, isLoading, isError } = useQuery({
     queryKey: ["events"],
     queryFn: async () => {
+      const userid = await fetchUserIdFromDatabase(user?.email as string);
       const eventsUserRegisteredFor = await api.get(
         `/users/${userid}/registered`
       );
       return eventsUserRegisteredFor["data"]["data"]["events"];
     },
-    enabled: !!userid,
   });
 
   let events: event[] = [];
@@ -281,7 +249,6 @@ const ViewEvents = () => {
       );
     return (
       <>
-        <SuccessfulEventCreation />
         <TabContainer
           tabs={tabs}
           left={<div className="font-semibold text-3xl">My Events</div>}

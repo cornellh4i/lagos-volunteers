@@ -20,11 +20,13 @@ const EventRegistration = () => {
    * Fetches and updates the event details
    */
   const { data, isLoading, isError } = useQuery({
-    queryKey: ["eventInfo", eventid],
+    queryKey: ["event", eventid],
     queryFn: async () => {
       // temp
       const userid = await fetchUserIdFromDatabase(user?.email as string);
-      const { data } = await api.get(`/users/${userid}/registered?eventid=${eventid}`);
+      const { data } = await api.get(
+        `/users/${userid}/registered?eventid=${eventid}`
+      );
       return data["data"];
     },
   });
@@ -36,7 +38,6 @@ const EventRegistration = () => {
   if (eventData == null) {
     return <div>Error</div>;
   }
-
 
   const eventDetails: EventData = {
     eventid: eventData["id"],
@@ -50,8 +51,9 @@ const EventRegistration = () => {
     ],
     description: eventData["description"],
     name: eventData["name"],
-  }
-  const userHasCanceledAttendance = eventAttendance && eventAttendance["canceled"];
+  };
+  const userHasCanceledAttendance =
+    eventAttendance && eventAttendance["canceled"];
 
   if (userHasCanceledAttendance) {
     router.push(`/events/${eventid}/cancel`);
@@ -61,12 +63,11 @@ const EventRegistration = () => {
 
   return (
     <CenteredTemplate>
-      {
-        eventAttendance ?
-          <EventConfirmation event={eventDetails} confirmation="register" />
-          :
-          <EventRegisterForm event={eventDetails} />
-      }
+      {eventAttendance ? (
+        <EventConfirmation event={eventDetails} confirmation="register" />
+      ) : (
+        <EventRegisterForm event={eventDetails} />
+      )}
     </CenteredTemplate>
   );
 };
