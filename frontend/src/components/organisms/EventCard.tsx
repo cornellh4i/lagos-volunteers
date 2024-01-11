@@ -75,8 +75,8 @@ const EventCard = ({
         );
       case "manage attendees":
         return (
-          <Button variety={variety} href={`/events/${eventid}/cancel`}>
-            RSVP
+          <Button variety={variety} href={`/events/${eventid}/attendees`}>
+            Manage Event
           </Button>
         );
       default:

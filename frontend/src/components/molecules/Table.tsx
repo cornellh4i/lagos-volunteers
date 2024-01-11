@@ -1,5 +1,6 @@
 import React, { useEffect } from "react";
 import { DataGrid, GridColDef, GridPaginationModel } from "@mui/x-data-grid";
+import { useQuery } from "@tanstack/react-query";
 
 interface TableProps {
   /** The columns of the table, following the MUI Data Grid spec */
@@ -11,7 +12,7 @@ interface TableProps {
   /** The ID of the first element [NEEDED FOR PAGINATION] */
   initialID: string;
   /** The function called to obtain the next elements [NEEDED FOR PAGINATION] */
-  nextFunction: (cursor: string) => Promise<any[]>;
+  nextFunction: <T>(cursor: string) => Promise<T[]>;
 }
 /**
  * A Table component
@@ -24,7 +25,7 @@ const Table = ({
   initialID,
   nextFunction,
 }: TableProps) => {
-  const PAGE_SIZE = 5;
+  const PAGE_SIZE = 15;
   const [rowData, setRowData] = React.useState<any[]>(rows);
   const [cursor, setCursor] = React.useState<any[]>([initialID]);
   const [lastElementID, setlastElementID] = React.useState<string>("");
@@ -69,6 +70,14 @@ const Table = ({
     adjustRows(rowData);
   }, []);
 
+  const { data, isPending, refetch } = useQuery({
+    queryKey: ["tableData", paginationModel.page, cursor[cursor.length - 1]],
+    queryFn: async () => {
+      return nextFunction(cursor[cursor.length - 1]);
+    },
+    staleTime: Infinity,
+  });
+
   return (
     <div>
       {rowData.length > 0 && (
@@ -77,12 +86,13 @@ const Table = ({
           rows={rowData}
           sx={{ border: 0 }}
           disableRowSelectionOnClick
-          rowCount={rowCountState}
-          paginationModel={paginationModel}
+          rowCount={rowCountState} // number of rows in the entire dataset
+          paginationModel={paginationModel} // current page and page size
           onPaginationModelChange={handlePaginationModelChange}
           pageSizeOptions={[]}
           paginationMode="server"
           disableColumnMenu
+          loading={isPending}
         />
       )}
     </div>

@@ -100,11 +100,15 @@ const getEvents = async (
   let whereDict: { [key: string]: any } = {};
   let includeDict: { [key: string]: any } = {};
 
-  // Handles GET /events?upcoming=true
+  // Handles GET /events?upcoming=true and GET /events?upcoming=false
+  const dateTime = new Date();
   if (filter.upcoming === "true") {
-    const dateTime = new Date();
     whereDict["startDate"] = {
       gt: dateTime,
+    };
+  } else if (filter.upcoming === "false") {
+    whereDict["endDate"] = {
+      lt: dateTime,
     };
   }
 
@@ -134,11 +138,12 @@ const getEvents = async (
     skip: skip,
     cursor: cursor,
   });
+  const numberOfResults = queryResult.length;
   const lastPostInResults = take
     ? queryResult[take - 1]
     : queryResult[queryResult.length - 1];
   const myCursor = lastPostInResults ? lastPostInResults.id : undefined;
-  return { result: queryResult, cursor: myCursor };
+  return { result: queryResult, cursor: myCursor, count: numberOfResults };
 };
 
 /**
