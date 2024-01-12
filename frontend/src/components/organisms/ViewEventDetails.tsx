@@ -26,13 +26,13 @@ const ViewEventDetails = () => {
               body={<>9:00-11:00 AM WAT</>}
             />
             <IconTextHeader
+              icon={<FmdGoodIcon />}
+              header={<>Plot 2, Lagos Food Bank Building</>}
+            />
+            <IconTextHeader
               icon={<PersonIcon />}
               header={<>Jason Zheng</>}
               body={<>Supervisor</>}
-            />
-            <IconTextHeader
-              icon={<FmdGoodIcon />}
-              header={<>Plot 2, Lagos Food Bank Building</>}
             />
             <IconTextHeader
               icon={<GroupsIcon />}
