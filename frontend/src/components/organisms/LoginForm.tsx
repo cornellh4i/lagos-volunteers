@@ -123,7 +123,7 @@ const LoginForm = () => {
         <div className="text-center">
           <Link
             href="/password/forgot"
-            className="text-primary hover:underline no-underline"
+            className="text-primary-200 hover:underline no-underline"
           >
             Forgot password?
           </Link>
