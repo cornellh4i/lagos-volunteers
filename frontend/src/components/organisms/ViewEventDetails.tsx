@@ -47,6 +47,7 @@ const ViewEventDetails = () => {
           <div className="font-semibold text-xl">About the event</div>
           <Divider />
           <div className="mt-5"></div>
+
           <div>FOOD BANK COMMUNITY OUTREACH</div>
           <div>Kindly find below the details of the outreach:</div>
           <div className="mt-5"></div>
@@ -122,6 +123,15 @@ const ViewEventDetails = () => {
             COMMUNITY OUTREACH
           </div>
           <div>Kindly find below the details of the outreach:</div>
+
+          <div className="mt-5"></div>
+          <div className="font-semibold text-xl">Location</div>
+          <Divider />
+          <div className="mt-5"></div>
+
+          <div className="font-semibold">Plot 2, Lagos Food Bank Building</div>
+          <div>40 Olu Aboderin St, Idi Mangoro 101233, Lagos, Nigeria</div>
+          <div className="bg-red-300 mt-5">Future location widget here</div>
         </div>
       }
       img={<img className="w-full rounded-2xl" src="/lfbi_splash.png" />}
