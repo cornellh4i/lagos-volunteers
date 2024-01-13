@@ -67,18 +67,18 @@ const EventCardNew = () => {
         {/* Event card */}
         <div className="col-span-8">
           <Card>
-            <div className="grid grid-cols-12 gap-4">
+            <div className="flex">
               {/* Card left content */}
-              <div className="col-span-5">
+              <div className="md:max-w-xs">
                 <EventCardContent />
               </div>
 
               {/* Card right image */}
-              <div className="col-span-7">
-                <div className="relative h-full w-full overflow-auto">
+              <div className="flex-1 hidden md:block md:pl-6">
+                <div className="relative h-full w-full overflow-auto rounded-2xl">
                   <img
                     className="absolute right-0 h-full rounded-2xl"
-                    src="/lfbi_splash.png"
+                    src="/lfbi_sample_event.jpg"
                   />
                 </div>
               </div>
