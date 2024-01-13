@@ -11,7 +11,7 @@ const Card = ({
   children,
   color = "white",
   size = "small",
-  className,
+  className = "",
 }: CardProps) => {
   // Set color
   let bg;
