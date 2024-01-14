@@ -35,8 +35,8 @@ interface pastEventProps {
     countForVolunteer: number;
     countForSupervisor: number;
   };
-  fetchNextBatchOfPastVolunteerEvents: () => void;
-  fetchNextBatchOfPastSupervisorEvents: () => void;
+  fetchNextBatchOfPastVolunteerEvents?: () => void;
+  fetchNextBatchOfPastSupervisorEvents?: () => void;
 }
 
 interface EventCardProps {
@@ -328,13 +328,7 @@ const ViewEvents = () => {
       },
       {
         label: "Past",
-        panel: (
-          <PastEvents
-            eventDetails={pastEventsDetails}
-            fetchNextBatchOfPastVolunteerEvents={}
-            fetchNextBatchOfPastSupervisorEvents={}
-          />
-        ),
+        panel: <PastEvents eventDetails={pastEventsDetails} />,
       },
     ];
     if (isLoading) return <Loading />;

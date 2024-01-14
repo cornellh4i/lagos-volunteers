@@ -179,6 +179,13 @@ const getUsers = async (
 
   /* RESULT */
 
+  // Need to find the total number of records before pagination
+  const totalRecords = await prisma.user.count({
+    where: {
+      AND: [whereDict],
+    },
+  });
+
   const queryResult = await prisma.user.findMany({
     where: {
       AND: [whereDict],
@@ -196,7 +203,7 @@ const getUsers = async (
     ? queryResult[take - 1]
     : queryResult[queryResult.length - 1];
   const myCursor = lastPostInResults ? lastPostInResults.id : undefined;
-  return { result: queryResult, cursor: myCursor };
+  return { result: queryResult, cursor: myCursor, totalItems: totalRecords };
 };
 
 /**

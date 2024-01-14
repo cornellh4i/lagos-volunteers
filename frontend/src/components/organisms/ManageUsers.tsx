@@ -1,31 +1,38 @@
-import React, { ChangeEvent, FormEvent, useEffect } from "react";
+import React, { ChangeEvent, FormEvent, useEffect, useState } from "react";
 import Table from "@/components/molecules/Table";
 import TabContainer from "@/components/molecules/TabContainer";
 import Button from "../atoms/Button";
-import { GridColDef } from "@mui/x-data-grid";
+import { GridColDef, GridPaginationModel } from "@mui/x-data-grid";
 import AccountBoxIcon from "@mui/icons-material/AccountBox";
 import SearchBar from "@/components/atoms/SearchBar";
-import IconText from "../atoms/IconText";
 import Link from "next/link";
-import { BASE_URL } from "@/utils/constants";
 import { formatDateString } from "@/utils/helpers";
 import { api } from "@/utils/api";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 
 interface ManageUsersProps {}
 
 type ActiveProps = {
   initalRowData: Object[];
   usersLength: number;
-  initialUserID: string;
-  /** The function called to obtain the next elements */
-  progressFunction: (cursor: string) => Promise<any[]>;
+  paginationModel: GridPaginationModel;
+  setPaginationModel: React.Dispatch<React.SetStateAction<GridPaginationModel>>;
+};
+
+type userInfo = {
+  id: string;
+  name: string;
+  email: string;
+  role: string;
+  date: Date;
+  hours: number;
 };
 
 const Active = ({
   initalRowData,
   usersLength,
-  initialUserID,
-  progressFunction,
+  paginationModel,
+  setPaginationModel,
 }: ActiveProps) => {
   const eventColumns: GridColDef[] = [
     {
@@ -79,15 +86,16 @@ const Active = ({
       field: "actions",
       flex: 0.5,
       minWidth: 180,
-      renderCell: () => (
+      renderCell: (params) => (
         <div
           style={{
             display: "flex",
             alignItems: "center",
             justifyContent: "flex-end",
-          }}
-        >
-          <Link href="/users/asdf/manage" className="no-underline">
+          }}>
+          <Link
+            href={`/users/${params.row.id}/manage`}
+            className="no-underline">
             <Button variety="tertiary" icon={<AccountBoxIcon />}>
               View Profile
             </Button>
@@ -123,8 +131,8 @@ const Active = ({
         columns={eventColumns}
         rows={initalRowData}
         dataSetLength={usersLength}
-        initialID={initialUserID}
-        nextFunction={progressFunction}
+        paginationModel={paginationModel}
+        setPaginationModel={setPaginationModel}
       />
     </div>
   );
@@ -134,61 +142,78 @@ const Active = ({
  * A ManageUsers component
  */
 const ManageUsers = ({}: ManageUsersProps) => {
-  // the initial rowData
-  const [initialrows, setInitialRows] = React.useState<any[]>([]);
-  const [usersLength, setUsersLength] = React.useState(0);
-  const [initialID, setInitialID] = React.useState("");
+  const [paginationModel, setPaginationModel] = useState<GridPaginationModel>({
+    page: 0,
+    pageSize: 15,
+  });
 
-  const fetchUserCount = async () => {
-    const url = BASE_URL as string;
-    try {
-      // call the get count insdtead of this
-      const { response, data } = await api.get("/users/count");
-      if (response.ok) {
-        const length = data["data"];
-        return length;
-      }
-    } catch (error) {}
-  };
+  let cursor = "";
 
-  // Dummy FETCH function
-  const fetchUsers = async (cursor: string) => {
-    try {
-      const PAGE_SIZE = 6; // Number of records to fetch per page
-      const url =
-        cursor == ""
-          ? `/users/pagination?limit=${PAGE_SIZE}`
-          : `/users/pagination?limit=${PAGE_SIZE}&after=${cursor}`;
-      const { response, data } = await api.get(url);
-      if (response.ok) {
-        // Dummy function placed here just to make sure
-        // front end pagination works
-        const clean_data = data["data"];
-        const result = clean_data.map((element: any) => ({
-          id: element["id"],
-          name:
-            element["profile"]["firstName"] + element["profile"]["lastName"],
-          email: element["email"],
-          role: element["status"],
-          date: new Date(formatDateString(element["createdAt"])),
-          hours: element["hours"].toString() + " hours",
-        }));
-
-        return result;
-      }
-    } catch (error) {
-      // console.log(error);
+  const fetchUsersBatch = async (cursor?: string) => {
+    // If a valid cursor is passed, fetch the next batch of users
+    if (cursor !== "") {
+      const { response, data } = await api.get(
+        `/users?limit=${paginationModel.pageSize}&after=${cursor}`
+      );
+      return data;
+    } else {
+      const { response, data } = await api.get(
+        `/users?limit=${paginationModel.pageSize}`
+      );
+      return data;
     }
   };
+
+  const { data, isPending, error, isPlaceholderData } = useQuery({
+    queryKey: ["users", paginationModel.page],
+    queryFn: async () => {
+      return await fetchUsersBatch(cursor);
+    },
+    staleTime: Infinity,
+  });
+
+  const rows: userInfo[] = [];
+  const totalNumberofData = data?.data.totalItems;
+  if (data?.data.cursor) {
+    cursor = data.data.cursor;
+  }
+
+  data?.data.result.map((user: any) => {
+    rows.push({
+      id: user.id,
+      name: user.profile?.firstName + user.profile?.lastName,
+      email: user.email,
+      role: user.status,
+      date: new Date(formatDateString(user.createdAt)),
+      hours: user.hours, // TODO: properly calculate hours
+    });
+  });
+
+  const queryClient = useQueryClient();
+
+  const totalNumberOfPages = Math.ceil(
+    totalNumberofData / paginationModel.pageSize
+  );
+
+  // Prefetch the next page
+  useEffect(() => {
+    if (!isPlaceholderData && paginationModel.page < totalNumberOfPages) {
+      queryClient.prefetchQuery({
+        queryKey: ["users", paginationModel.page + 1],
+        queryFn: async () => fetchUsersBatch(cursor),
+      });
+    }
+  }, [data, queryClient, cursor, totalNumberofData, paginationModel.page]);
+
   const tabs = [
     {
       label: "Active",
       panel: (
         <Active
-          initalRowData={initialrows}
-          usersLength={usersLength}
-          initialUserID={initialID}
-          progressFunction={fetchUsers}
+          initalRowData={rows}
+          usersLength={totalNumberofData}
+          paginationModel={paginationModel}
+          setPaginationModel={setPaginationModel}
         />
       ),
     },
@@ -196,37 +221,23 @@ const ManageUsers = ({}: ManageUsersProps) => {
       label: "Blacklisted",
       panel: (
         <Active
-          initalRowData={initialrows}
-          usersLength={usersLength}
-          initialUserID={initialID}
-          progressFunction={fetchUsers}
+          initalRowData={rows}
+          usersLength={totalNumberofData}
+          paginationModel={paginationModel}
+          setPaginationModel={setPaginationModel}
         />
       ),
     }, // need to change panel for Blacklisted
   ];
 
-  useEffect(() => {
-    const fetchData = async () => {
-      const length = await fetchUserCount();
-      const final_result = await fetchUsers("");
-      const firstUserId = final_result[0].id;
-      setInitialRows(final_result);
-      setInitialID(firstUserId);
-      setUsersLength(length);
-    };
-    fetchData();
-  }, []);
-
   return (
     <>
-      {initialrows.length > 0 && (
-        <div>
-          <TabContainer
-            left={<div className="font-semibold text-3xl">Manage Members</div>}
-            tabs={tabs}
-          />
-        </div>
-      )}
+      <div>
+        <TabContainer
+          left={<div className="font-semibold text-3xl">Manage Members</div>}
+          tabs={tabs}
+        />
+      </div>
     </>
   );
 };

@@ -126,6 +126,13 @@ const getEvents = async (
     };
   }
 
+  // Need to find the total number of records before pagination
+  const totalNumberOfRecords = await prisma.event.count({
+    where: {
+      AND: [whereDict],
+    },
+  });
+
   /* RESULT */
 
   const queryResult = await prisma.event.findMany({
@@ -143,7 +150,11 @@ const getEvents = async (
     ? queryResult[take - 1]
     : queryResult[queryResult.length - 1];
   const myCursor = lastPostInResults ? lastPostInResults.id : undefined;
-  return { result: queryResult, cursor: myCursor, count: numberOfResults };
+  return {
+    result: queryResult,
+    cursor: myCursor,
+    totalItems: totalNumberOfRecords,
+  };
 };
 
 /**
