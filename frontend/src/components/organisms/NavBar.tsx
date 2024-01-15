@@ -3,14 +3,18 @@ import AppBar from "@/components/molecules/AppBar";
 import { useAuth } from "@/utils/AuthContext";
 import { auth } from "@/utils/firebase";
 import { useRouter } from "next/router";
+import { useQueryClient } from "@tanstack/react-query";
 
 const NavBar = () => {
   const { user, loading, error, signOutUser } = useAuth();
+  const queryClient = useQueryClient();
   const router = useRouter();
 
   const handleSignOut = async () => {
     try {
       await signOutUser();
+      // clear cache!!
+      queryClient.clear();
       router.replace("/login");
     } catch (error) {
       console.log(error);
