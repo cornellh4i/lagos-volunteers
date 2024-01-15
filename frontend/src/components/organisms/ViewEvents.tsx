@@ -277,6 +277,7 @@ const ViewEvents = () => {
   // Handle Past Events
   // We need to separate the query for past events registered for and past events supervised
   // because we need to handle pagination differently for each (state is different)
+  // additionally, the userid should probably also make the list of querykeys
   const {
     data: pastEventsUserVolunteerdForQuery,
     isPlaceholderData: isPastVolunteerPlaceHolder,

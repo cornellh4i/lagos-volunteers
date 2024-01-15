@@ -45,6 +45,7 @@ const ModalBody = ({
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["event", eventid] });
+      handleClose();
     },
   });
 

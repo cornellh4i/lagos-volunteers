@@ -233,6 +233,21 @@ const Registrations = ({
     },
   ];
 
+  if (userRegistrations.length == 0) {
+    return (
+      <>
+        <IconText icon={<HourglassEmptyIcon className="text-gray-400" />}>
+          <div className="font-bold">
+            {totalHours.toString()} Hours Volunteered
+          </div>
+        </IconText>
+        <div className="text-center">
+          <p>This user has not registered for any events!</p>
+        </div>
+      </>
+    );
+  }
+
   return (
     <>
       <IconText icon={<HourglassEmptyIcon className="text-gray-400" />}>
@@ -370,9 +385,11 @@ const ManageUserProfile = () => {
     isError: registeredEventsQueryError,
     isPlaceholderData,
   } = useQuery({
-    queryKey: ["user_events", paginationModel.page],
+    queryKey: ["user_events", userid, paginationModel.page],
     queryFn: async () => {
-      const { data } = await api.get(`/events?userid=${userid}`);
+      const { data } = await api.get(
+        `/events?userid=${userid}&limit=${paginationModel.pageSize}`
+      );
       return data["data"];
     },
     staleTime: Infinity,
@@ -404,7 +421,7 @@ const ManageUserProfile = () => {
   useEffect(() => {
     if (!isPlaceholderData && paginationModel.page < totalNumberofPages) {
       queryClient.prefetchQuery({
-        queryKey: ["user_events", paginationModel.page + 1],
+        queryKey: ["user_events", userid, paginationModel.page + 1],
         queryFn: async () => {
           const { data } = await api.get(
             `/events?userid=${userid}&limit=${paginationModel.pageSize}&after=${cursor}`

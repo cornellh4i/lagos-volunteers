@@ -1,11 +1,35 @@
-import React, { ChangeEvent, FormEvent } from "react";
+import React, { ChangeEvent, FormEvent, useEffect } from "react";
 import TabContainer from "@/components/molecules/TabContainer";
-import { GridColDef, GridValueGetterParams } from "@mui/x-data-grid";
+import {
+  GridColDef,
+  GridValueGetterParams,
+  GridPaginationModel,
+} from "@mui/x-data-grid";
 import Table from "@/components/molecules/Table";
 import { MenuItem } from "@mui/material";
 import Button from "../atoms/Button";
 import SearchBar from "../atoms/SearchBar";
 import Select from "../atoms/Select";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { api } from "@/utils/api";
+import { useRouter } from "next/router";
+import Loading from "../molecules/Loading";
+
+type attendeeData = {
+  id: number;
+  status: "pending" | "checked in" | "checked out" | "removed" | "canceled";
+  name: string;
+  email: string;
+  phone: string;
+};
+
+interface attendeeTableProps {
+  status: "pending" | "checked in" | "checked out" | "removed" | "canceled";
+  rows: attendeeData[];
+  totalNumberofData: number;
+  paginationModel: GridPaginationModel;
+  setPaginationModel: React.Dispatch<React.SetStateAction<GridPaginationModel>>;
+}
 
 interface ManageAttendeesProps {}
 
@@ -50,8 +74,7 @@ const eventColumns: GridColDef[] = [
         <Select
           value="PENDING"
           // value={role}
-          onChange={(event: any) => console.log(event.target.value)}
-        >
+          onChange={(event: any) => console.log(event.target.value)}>
           <MenuItem value="CHECKED IN">Checked in</MenuItem>
           <MenuItem value="CHECKED OUT">Checked out</MenuItem>
           <MenuItem value="PENDING">Pending</MenuItem>
@@ -62,57 +85,13 @@ const eventColumns: GridColDef[] = [
   },
 ];
 
-// below are dummy data, in the future we want to get data from backend and
-// format them like this
-let dummyDate: Date = new Date(2023, 0o1, 21);
-const dummyRows = [
-  {
-    id: 1,
-    check: false,
-    name: "Greatest Ball Handler",
-    email: "gbh@gmail.com",
-    phone: "123-456-7890",
-  },
-  {
-    id: 2,
-    check: false,
-    name: "Big Ballllahh",
-    email: "gbh@gmail.com",
-    phone: "123-456-7890",
-  },
-  {
-    id: 3,
-    check: false,
-    name: "Top Shottaahh",
-    email: "gbh@gmail.com",
-    phone: "123-456-7890",
-  },
-  {
-    id: 4,
-    check: false,
-    name: "Brita Filter",
-    email: "gbh@gmail.com",
-    phone: "123-456-7890",
-  },
-  {
-    id: 5,
-    check: false,
-    name: "Ollie The Otter",
-    email: "gbh@gmail.com",
-    phone: "123-456-7890",
-  },
-];
-
 const AttendeesTable = ({
   status,
-}: {
-  status:
-    | "pending"
-    | "checked in"
-    | "checked out"
-    | "registration removed"
-    | "canceled registration";
-}) => {
+  setPaginationModel,
+  paginationModel,
+  rows,
+  totalNumberofData,
+}: attendeeTableProps) => {
   // Search bar
   const [value, setValue] = React.useState("");
   const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -136,7 +115,13 @@ const AttendeesTable = ({
           onClick={handleSubmit}
         />
       </div>
-      <Table columns={eventColumns} rows={dummyRows} />
+      <Table
+        columns={eventColumns}
+        rows={rows}
+        setPaginationModel={setPaginationModel}
+        dataSetLength={totalNumberofData}
+        paginationModel={paginationModel}
+      />
     </div>
   );
 };
@@ -145,19 +130,130 @@ const AttendeesTable = ({
  * An ManageAttendees component
  */
 const ManageAttendees = ({}: ManageAttendeesProps) => {
+  const router = useRouter();
+  const eventid = router.query.eventid as string;
+
+  // For now -> we use the same state for all four tables
+  const [paginationModel, setPaginationModel] =
+    React.useState<GridPaginationModel>({
+      page: 1,
+      pageSize: 10,
+    });
+
+  const { data, isPending, isError, isPlaceholderData } = useQuery({
+    queryKey: ["event", eventid, paginationModel.page],
+    queryFn: async () => {
+      // TODO: Double check endpoint
+      // It currently returns list of ALL users, not just attendees for a specific event
+      const { data } = await api.get(
+        `/users?eventid=${eventid}&limit=${paginationModel.pageSize}`
+      );
+      return data["data"];
+    },
+    staleTime: Infinity,
+  });
+
+  let attendeeList: attendeeData[] = [];
+  data?.result.map((attendee: any) => {
+    attendeeList.push({
+      id: attendee.id,
+      status: attendee.status,
+      name: `${attendee.profile?.firstName} ${attendee.profile?.lastName}`,
+      email: attendee.email,
+      phone: attendee.profile?.phoneNumber || "123-456-7890", // TODO: Change to actual phone number
+    });
+  });
+  const totalNumberofData = data?.totalItems;
+  let cursor = "";
+  if (data?.cursor) {
+    cursor = data?.cursor;
+  }
+
+  const queryClient = useQueryClient();
+
+  const totalNumberOfPages = Math.ceil(
+    totalNumberofData / paginationModel.pageSize
+  );
+
+  // Prefetch the next page
+  useEffect(() => {
+    if (!isPlaceholderData && paginationModel.page < totalNumberOfPages) {
+      queryClient.prefetchQuery({
+        queryKey: ["event", eventid, paginationModel.page + 1],
+        queryFn: async () => {
+          const { data } = await api.get(
+            `/users?eventid=${eventid}&limit=${paginationModel.pageSize}&after=${cursor}`
+          );
+          return data["data"];
+        },
+      });
+    }
+  }, [data, queryClient, cursor, totalNumberofData, paginationModel.page]);
+
   const tabs = [
-    { label: "Pending", panel: <AttendeesTable status="pending" /> },
-    { label: "Checked in", panel: <AttendeesTable status="checked in" /> },
-    { label: "Checked out", panel: <AttendeesTable status="checked out" /> },
+    {
+      label: "Pending",
+      panel: (
+        <AttendeesTable
+          status="pending"
+          paginationModel={paginationModel}
+          setPaginationModel={setPaginationModel}
+          rows={attendeeList}
+          totalNumberofData={totalNumberofData}
+        />
+      ),
+    },
+    {
+      label: "Checked in",
+      panel: (
+        <AttendeesTable
+          status="checked in"
+          paginationModel={paginationModel}
+          setPaginationModel={setPaginationModel}
+          rows={attendeeList}
+          totalNumberofData={totalNumberofData}
+        />
+      ),
+    },
+    {
+      label: "Checked out",
+      panel: (
+        <AttendeesTable
+          status="checked out"
+          paginationModel={paginationModel}
+          setPaginationModel={setPaginationModel}
+          rows={attendeeList}
+          totalNumberofData={totalNumberofData}
+        />
+      ),
+    },
     {
       label: "Registration removed",
-      panel: <AttendeesTable status="registration removed" />,
+      panel: (
+        <AttendeesTable
+          status="removed"
+          paginationModel={paginationModel}
+          setPaginationModel={setPaginationModel}
+          rows={attendeeList}
+          totalNumberofData={totalNumberofData}
+        />
+      ),
     },
     {
       label: "Canceled registration",
-      panel: <AttendeesTable status="canceled registration" />,
+      panel: (
+        <AttendeesTable
+          status="canceled"
+          paginationModel={paginationModel}
+          setPaginationModel={setPaginationModel}
+          rows={attendeeList}
+          totalNumberofData={totalNumberofData}
+        />
+      ),
     },
   ];
+
+  if (isPending) return <Loading />;
 
   return (
     <>
