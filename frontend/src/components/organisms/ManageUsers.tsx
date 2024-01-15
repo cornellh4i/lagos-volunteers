@@ -9,6 +9,7 @@ import Link from "next/link";
 import { formatDateString } from "@/utils/helpers";
 import { api } from "@/utils/api";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
+import Loading from "@/components/molecules/Loading";
 
 interface ManageUsersProps {}
 
@@ -217,6 +218,8 @@ const ManageUsers = ({}: ManageUsersProps) => {
         />
       ),
     },
+
+    // TODO: implement pagination and fetching for blacklisted users
     {
       label: "Blacklisted",
       panel: (
@@ -227,8 +230,10 @@ const ManageUsers = ({}: ManageUsersProps) => {
           setPaginationModel={setPaginationModel}
         />
       ),
-    }, // need to change panel for Blacklisted
+    },
   ];
+
+  if (isPending) return <Loading />;
 
   return (
     <>

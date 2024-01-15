@@ -24,9 +24,9 @@ export const formatDateTimeRange = (
   startDateString: string,
   endDateString: string
 ) => {
-  const formatUTCTime = (date: Date) => {
-    const hours = date.getUTCHours();
-    const minutes = date.getUTCMinutes();
+  const formatLocalTime = (date: Date) => {
+    const hours = date.getHours();
+    const minutes = date.getMinutes();
 
     const period = hours < 12 ? "AM" : "PM";
     const formattedHours = hours % 12 === 0 ? 12 : hours % 12;
@@ -39,10 +39,10 @@ export const formatDateTimeRange = (
   const endDate = new Date(endDateString);
 
   const startDateFormatted = `${
-    startDate.getUTCMonth() + 1
-  }/${startDate.getUTCDate()}/${startDate.getUTCFullYear()}`;
-  const startTimeFormatted = formatUTCTime(startDate);
-  const endTimeFormatted = formatUTCTime(endDate);
+    startDate.getMonth() + 1
+  }/${startDate.getDate()}/${startDate.getFullYear()}`;
+  const startTimeFormatted = formatLocalTime(startDate);
+  const endTimeFormatted = formatLocalTime(endDate);
 
   const formattedDateTimeRange = `${startDateFormatted}, ${startTimeFormatted} - ${endTimeFormatted}`;
 

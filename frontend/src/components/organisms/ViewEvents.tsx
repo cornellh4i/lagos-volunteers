@@ -1,10 +1,10 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import BoxText from "@/components/atoms/BoxText";
 import Chip from "@/components/atoms/Chip";
 import TabContainer from "@/components/molecules/TabContainer";
 import EventCard from "@/components/organisms/EventCard";
 import CardList from "@/components/molecules/CardList";
-import { GridColDef, GridValueGetterParams } from "@mui/x-data-grid";
+import { GridColDef, GridPaginationModel } from "@mui/x-data-grid";
 import Table from "@/components/molecules/Table";
 import Button from "../atoms/Button";
 import Link from "next/link";
@@ -13,7 +13,7 @@ import { fetchUserIdFromDatabase, formatDateTimeRange } from "@/utils/helpers";
 import { Action } from "@/utils/types";
 import { api } from "@/utils/api";
 import ManageSearchIcon from "@mui/icons-material/ManageSearch";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import Loading from "@/components/molecules/Loading";
 import Snackbar from "@/components/atoms/Snackbar";
 
@@ -29,14 +29,22 @@ type event = {
   ownerId?: string;
 };
 
+type pastEventDetails = {
+  result: event[];
+  total: number;
+};
+
 interface pastEventProps {
-  eventDetails: {
-    result: event[];
-    countForVolunteer: number;
-    countForSupervisor: number;
-  };
-  fetchNextBatchOfPastVolunteerEvents?: () => void;
-  fetchNextBatchOfPastSupervisorEvents?: () => void;
+  pastVolunteerEvents: pastEventDetails;
+  pastSupervisorEvents: pastEventDetails;
+  paginationModelVolunteer: GridPaginationModel;
+  paginationModelSupervisor: GridPaginationModel;
+  setPaginationModelVolunteer: React.Dispatch<
+    React.SetStateAction<GridPaginationModel>
+  >;
+  setPaginationModelSupervisor: React.Dispatch<
+    React.SetStateAction<GridPaginationModel>
+  >;
 }
 
 interface EventCardProps {
@@ -77,8 +85,15 @@ const UpcomingEvents = ({ eventDetails }: EventCardProps) => {
   );
 };
 
-const PastEvents = ({ eventDetails }: pastEventProps) => {
-  const eventColumns: GridColDef[] = [
+const PastEvents = ({
+  pastVolunteerEvents,
+  pastSupervisorEvents,
+  paginationModelSupervisor,
+  paginationModelVolunteer,
+  setPaginationModelSupervisor,
+  setPaginationModelVolunteer,
+}: pastEventProps) => {
+  const volunteerEventColumns: GridColDef[] = [
     {
       field: "name",
       headerName: "Program Name",
@@ -121,7 +136,7 @@ const PastEvents = ({ eventDetails }: pastEventProps) => {
     },
   ];
 
-  const eventColumnsSupervisors: GridColDef[] = [
+  const SupervisoreventColumns: GridColDef[] = [
     {
       field: "name",
       headerName: "Program Name",
@@ -161,36 +176,21 @@ const PastEvents = ({ eventDetails }: pastEventProps) => {
     const day = date.substring(8, 10);
     return month + "/" + day + "/" + year;
   };
-
-  let pastEventRows: event[] = [];
-  let pastEventRowsSupervisors: event[] = [];
-
-  const { result, countForSupervisor, countForVolunteer } = eventDetails;
-
-  result.map((event) => {
-    if (event.role === "Volunteer") {
-      pastEventRows.push({
-        id: event.id,
-        role: event.role,
-        name: event.name,
-        startDate: getFormattedDate(event.startDate as string),
-        hours: event.hours,
-      });
-    } else if (event.role === "Supervisor") {
-      pastEventRowsSupervisors.push({
-        id: event.id,
-        name: event.name,
-        startDate: getFormattedDate(event.startDate as string),
-      });
-    }
-  });
-
   return (
     <>
-      <Table columns={eventColumns} rows={pastEventRows} />
       <Table
-        columns={eventColumnsSupervisors}
-        rows={pastEventRowsSupervisors}
+        columns={volunteerEventColumns}
+        rows={pastVolunteerEvents.result}
+        dataSetLength={pastVolunteerEvents.total}
+        paginationModel={paginationModelVolunteer}
+        setPaginationModel={setPaginationModelVolunteer}
+      />
+      <Table
+        columns={SupervisoreventColumns}
+        rows={pastSupervisorEvents.result}
+        dataSetLength={pastSupervisorEvents.total}
+        paginationModel={paginationModelSupervisor}
+        setPaginationModel={setPaginationModelSupervisor}
       />
     </>
   );
@@ -211,9 +211,26 @@ const ViewEvents = () => {
   };
 
   const [userid, setUserid] = useState<string>("");
-  const PAGE_SIZE = 10; // Number of records to fetch per page
+  const [volunteerPaginationModel, setVolunteerPaginationModel] =
+    useState<GridPaginationModel>({
+      page: 0,
+      pageSize: 5,
+    });
+  const [supervisorPaginationModel, setSupervisorPaginationModel] =
+    useState<GridPaginationModel>({
+      page: 0,
+      pageSize: 5,
+    });
 
-  const { data, isLoading, isError } = useQuery({
+  const PAGE_SIZE_VOLUNTEER = volunteerPaginationModel.pageSize;
+  const PAGE_SIZE_SUPERVISOR = supervisorPaginationModel.pageSize; // Number of records to fetch per page
+
+  // upcoming events does not require pagination so it is a different query
+  const {
+    data: upcomingEventsQuery,
+    isLoading,
+    isError,
+  } = useQuery({
     queryKey: ["events"],
     queryFn: async () => {
       // recall this is temp
@@ -225,25 +242,20 @@ const ViewEvents = () => {
       const upcomingEventsUserSupervises = await api.get(
         `/events?ownerid=${userid}&upcoming=true`
       );
-      const pastEventsUserRegisteredFor = await api.get(
-        `/events?userid=${userid}&upcoming=false&limit=${PAGE_SIZE}`
-      );
-      const pastEventsUserSupervises = await api.get(
-        `/events?ownerid=${userid}&upcoming=false&limit=${PAGE_SIZE}`
-      );
       return {
         upcomingRegistered: upcomingEventsUserRegisteredFor.data["data"],
-        pastRegistered: pastEventsUserRegisteredFor.data["data"],
         upcomingSupervised: upcomingEventsUserSupervises.data["data"],
-        pastSupervised: pastEventsUserSupervises.data["data"],
       };
     },
   });
 
   // Handle Upcoming Events
-  let upcomingEventsSupervisor = data?.upcomingSupervised.result || [];
-  let upcomingEventsVolunteer = data?.upcomingRegistered.result || [];
+  let upcomingEventsSupervisor =
+    upcomingEventsQuery?.upcomingSupervised.result || [];
+  let upcomingEventsVolunteer =
+    upcomingEventsQuery?.upcomingRegistered.result || [];
 
+  // making supervisor events come first
   const mergedUpcomingEvents: event[] = [
     ...upcomingEventsSupervisor,
     ...upcomingEventsVolunteer,
@@ -263,17 +275,49 @@ const ViewEvents = () => {
   });
 
   // Handle Past Events
-  const pastEventsSupervisor = data?.pastSupervised.result || [];
-  const pastEventsVolunteer = data?.pastRegistered.result || [];
+  // We need to separate the query for past events registered for and past events supervised
+  // because we need to handle pagination differently for each (state is different)
+  const {
+    data: pastEventsUserVolunteerdForQuery,
+    isPlaceholderData: isPastVolunteerPlaceHolder,
+  } = useQuery({
+    queryKey: ["volunteer_events", volunteerPaginationModel.page],
+    queryFn: async () => {
+      const userid = await fetchUserIdFromDatabase(user?.email as string);
+      const pastEventsUserRegisteredFor = await api.get(
+        `/events?userid=${userid}&upcoming=false&limit=${PAGE_SIZE_VOLUNTEER}`
+      );
+      return pastEventsUserRegisteredFor["data"];
+    },
+    staleTime: Infinity,
+    retry: false,
+  });
 
-  const mergedPastEvents: event[] = [
-    ...pastEventsSupervisor,
-    ...pastEventsVolunteer,
-  ];
+  const {
+    data: pastEventsUserSupervisedQuery,
+    isPlaceholderData: isPastSupervisorPlaceHolder,
+  } = useQuery({
+    queryKey: ["supervised_events", supervisorPaginationModel.page],
+    queryFn: async () => {
+      const userid = await fetchUserIdFromDatabase(user?.email as string);
+      const pastEventsUserSupervised = await api.get(
+        `/events?ownerid=${userid}&upcoming=false&limit=${PAGE_SIZE_SUPERVISOR}`
+      );
+      return pastEventsUserSupervised["data"];
+    },
+    staleTime: Infinity,
+    retry: false,
+  });
 
-  const allPastEvents: event[] = [];
-  mergedPastEvents.map((event: any) => {
-    allPastEvents.push({
+  const supervisorPastEvents = pastEventsUserSupervisedQuery?.data.result || [];
+  const volunteerPastEvents =
+    pastEventsUserVolunteerdForQuery?.data.result || [];
+
+  const supervisorAllPastEvents: event[] = [];
+  const volunteerAllPastEvents: event[] = [];
+
+  supervisorPastEvents.map((event: any) => {
+    supervisorAllPastEvents.push({
       id: event["id"],
       name: event["name"],
       location: event["location"],
@@ -284,41 +328,92 @@ const ViewEvents = () => {
     });
   });
 
-  const pastEventsDetails = {
-    result: allPastEvents,
-    countForVolunteer: data?.pastRegistered.count,
-    countForSupervisor: data?.pastSupervised.count,
+  volunteerPastEvents.map((event: any) => {
+    volunteerAllPastEvents.push({
+      id: event["id"],
+      name: event["name"],
+      location: event["location"],
+      startDate: event["startDate"],
+      endDate: event["endDate"],
+      role: userid === event["ownerId"] ? "Supervisor" : "Volunteer",
+      hours: computeHours(event["startDate"], event["endDate"]),
+    });
+  });
+
+  const volunteerPastEventsDetails = {
+    result: volunteerAllPastEvents,
+    total: pastEventsUserVolunteerdForQuery?.data.totalItems,
   };
 
-  // Handling pagination for Past Events
-  const {
-    data: nextBatchOfPastEventsVolunteer,
-    isLoading: isLoadingNextBatchOfPastEventsVolunteer,
-    isError: isErrorNextBatchOfPastEventsVolunteer,
-  } = useQuery({
-    queryKey: ["events", "next"],
-    queryFn: async () => {
-      // recall this is temp
-      const userid = await fetchUserIdFromDatabase(user?.email as string);
-      const pastEventsUserRegisteredFor = await api.get(
-        `/events?userid=${userid}&upcoming=false&limit=${PAGE_SIZE}&after=${data?.pastRegistered.next}`
-      );
-      return pastEventsUserRegisteredFor.data["data"];
-    },
-  });
+  const superVisorPastEventsDetails = {
+    result: supervisorAllPastEvents,
+    total: pastEventsUserSupervisedQuery?.data.totalItems,
+  };
 
-  const { data: nextBatchOfPastEventsSupervisor } = useQuery({
-    queryKey: ["events", "next"],
-    queryFn: async () => {
-      // recall this is temp
-      const userid = await fetchUserIdFromDatabase(user?.email as string);
-      const pastEventsUserSupervises = await api.get(
-        `/events?ownerid=${userid}&upcoming=false&limit=${PAGE_SIZE}&after=${data?.pastSupervised.next}`
-      );
+  const queryClient = useQueryClient();
+  const totalNumberOfPagesVolunteer = Math.ceil(
+    pastEventsUserVolunteerdForQuery?.data.totalItems / PAGE_SIZE_VOLUNTEER
+  );
+  const totalNumberOfPagesSupervisor = Math.ceil(
+    pastEventsUserSupervisedQuery?.data.totalItems / PAGE_SIZE_SUPERVISOR
+  );
 
-      return pastEventsUserSupervises.data["data"];
-    },
-  });
+  let cursorVolunteer = "";
+  let cursorSupervisor = "";
+  if (pastEventsUserVolunteerdForQuery?.data.cursor) {
+    cursorVolunteer = pastEventsUserVolunteerdForQuery?.data.cursor;
+  }
+
+  if (pastEventsUserSupervisedQuery?.data.cursor) {
+    cursorSupervisor = pastEventsUserSupervisedQuery?.data.cursor;
+  }
+
+  // Prefetch the next page for past events pagination
+  useEffect(() => {
+    if (
+      !isPastVolunteerPlaceHolder &&
+      volunteerPaginationModel.page < totalNumberOfPagesVolunteer
+    ) {
+      queryClient.prefetchQuery({
+        queryKey: ["volunteer_events", volunteerPaginationModel.page + 1],
+        queryFn: async () => {
+          const pastEventsUserRegisteredFor = await api.get(
+            `/events?userid=${userid}&upcoming=false&limit=${PAGE_SIZE_VOLUNTEER}&after=${cursorVolunteer}`
+          );
+          return pastEventsUserRegisteredFor["data"];
+        },
+      });
+    }
+  }, [
+    pastEventsUserVolunteerdForQuery,
+    queryClient,
+    volunteerPaginationModel,
+    cursorVolunteer,
+    totalNumberOfPagesVolunteer,
+  ]);
+
+  useEffect(() => {
+    if (
+      supervisorPaginationModel.page < totalNumberOfPagesSupervisor &&
+      !isPastSupervisorPlaceHolder
+    ) {
+      queryClient.prefetchQuery({
+        queryKey: ["supervised_events", supervisorPaginationModel.page + 1],
+        queryFn: async () => {
+          const pastEventsUserSupervised = await api.get(
+            `/events?ownerid=${userid}&upcoming=false&limit=${PAGE_SIZE_SUPERVISOR}&after=${cursorSupervisor}`
+          );
+          return pastEventsUserSupervised["data"];
+        },
+      });
+    }
+  }, [
+    pastEventsUserSupervisedQuery,
+    queryClient,
+    supervisorPaginationModel,
+    cursorSupervisor,
+    totalNumberOfPagesSupervisor,
+  ]);
 
   {
     const tabs = [
@@ -328,7 +423,16 @@ const ViewEvents = () => {
       },
       {
         label: "Past",
-        panel: <PastEvents eventDetails={pastEventsDetails} />,
+        panel: (
+          <PastEvents
+            paginationModelSupervisor={supervisorPaginationModel}
+            setPaginationModelSupervisor={setSupervisorPaginationModel}
+            paginationModelVolunteer={volunteerPaginationModel}
+            setPaginationModelVolunteer={setVolunteerPaginationModel}
+            pastVolunteerEvents={volunteerPastEventsDetails}
+            pastSupervisorEvents={superVisorPastEventsDetails}
+          />
+        ),
       },
     ];
     if (isLoading) return <Loading />;

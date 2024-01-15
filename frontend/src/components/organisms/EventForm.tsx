@@ -153,7 +153,7 @@ const EventForm = ({ eventId, eventType, eventDetails }: EventFormProps) => {
         userID: `${userid}`,
         event: {
           name: `${eventName}`,
-          location: `${location}`,
+          location: status === 0 ? "VIRTUAL" : `${location}`,
           description: `${eventDescription}`,
           startDate: new Date(startDateTime),
           endDate: new Date(endDateTime),

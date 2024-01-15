@@ -101,6 +101,7 @@ const getEvents = async (
   let includeDict: { [key: string]: any } = {};
 
   // Handles GET /events?upcoming=true and GET /events?upcoming=false
+  // TODO: Investigate creating events that occur in a few minutes into the future
   const dateTime = new Date();
   if (filter.upcoming === "true") {
     whereDict["startDate"] = {
@@ -145,7 +146,7 @@ const getEvents = async (
     skip: skip,
     cursor: cursor,
   });
-  const numberOfResults = queryResult.length;
+
   const lastPostInResults = take
     ? queryResult[take - 1]
     : queryResult[queryResult.length - 1];
