@@ -45,7 +45,6 @@ type FormValues = {
 /** An EventForm page */
 const EventForm = ({ eventId, eventType, eventDetails }: EventFormProps) => {
   const { user } = useAuth();
-  const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
@@ -391,7 +390,10 @@ const EventForm = ({ eventId, eventType, eventDetails }: EventFormProps) => {
               <Button>Cancel Event</Button>
             </div>
             <div className="sm:col-start-10 sm:col-span-3">
-              <Button type="submit" loading={isLoading}>
+              <Button
+                type="submit"
+                loading={editEventPending}
+                disabled={editEventPending}>
                 Save Changes
               </Button>
             </div>
