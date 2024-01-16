@@ -153,11 +153,7 @@ const getEvents = async (
     ? queryResult[take - 1]
     : queryResult[queryResult.length - 1];
   const myCursor = lastPostInResults ? lastPostInResults.id : undefined;
-  return {
-    result: queryResult,
-    cursor: myCursor,
-    totalItems: totalRecords,
-  };
+  return { result: queryResult, cursor: myCursor, totalItems: totalRecords };
 };
 
 /**
