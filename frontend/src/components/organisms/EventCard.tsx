@@ -13,11 +13,11 @@ import { Action } from "@/utils/types";
 import { formatDateTimeRange } from "@/utils/helpers";
 
 interface EventCardProps {
-  eventid: string | undefined;
+  eventid?: string;
   mainAction: Action;
   dropdownActions?: Action[];
-  title: string | undefined;
-  location: string | undefined;
+  title?: string;
+  location?: string;
   startDate: Date;
   endDate: Date;
 }
