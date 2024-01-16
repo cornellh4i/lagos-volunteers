@@ -22,8 +22,8 @@ const EventTemplate = ({ header, body, img, card }: EventTemplateProps) => {
 
         {/* Right column */}
         <div className="w-96">
-          {img}
-          <div className="bg-white mt-6 sticky top-5">{card}</div>
+          <div className="max-h-96 overflow-hidden">{img}</div>
+          <div className="mt-6 sticky top-5">{card}</div>
         </div>
       </div>
 
