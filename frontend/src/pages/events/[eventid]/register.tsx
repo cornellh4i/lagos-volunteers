@@ -17,7 +17,7 @@ const EventRegistration = () => {
   const eventid = router.query.eventid as string;
   const { user } = useAuth();
 
-  /** Fetches and updates the event details */
+  /** Tanstack query to fetch and update the event details */
   const { data, isLoading, isError } = useQuery({
     queryKey: ["event", eventid],
     queryFn: async () => {
