@@ -9,6 +9,7 @@ import Loading from "@/components/molecules/Loading";
 import { EventData } from "@/utils/types";
 import { api } from "@/utils/api";
 import { useQuery } from "@tanstack/react-query";
+import DefaultTemplate from "@/components/templates/DefaultTemplate";
 
 /** An EventCancellation page */
 const EventCancellation = () => {
@@ -16,10 +17,10 @@ const EventCancellation = () => {
   const eventid = router.query.eventid as string;
   const { user } = useAuth();
 
+  /** Tanstack query for fetching data */
   const { data, isLoading, isError } = useQuery({
     queryKey: ["event", eventid],
     queryFn: async () => {
-      // temp
       const userid = await fetchUserIdFromDatabase(user?.email as string);
       const { data } = await api.get(
         `/users/${userid}/registered?eventid=${eventid}`
@@ -27,15 +28,25 @@ const EventCancellation = () => {
       return data["data"];
     },
   });
-
   let eventData = data?.eventDetails;
   let eventAttendance = data?.attendance;
-  // TODO: Add Error Page
-  if (isError) return <div>Error</div>;
-  if (eventData == null) {
-    return <div>Error</div>;
+
+  /** If the user canceled their event registration */
+  const userHasCanceledAttendance =
+    eventAttendance && eventAttendance["canceled"];
+
+  /** Throw error if fetching error */
+
+  // TODO: make better
+  if (isError || eventData == null) {
+    return (
+      <DefaultTemplate>
+        Sorry, an error occurred while fetching the event.
+      </DefaultTemplate>
+    );
   }
 
+  /** Set event details */
   const eventDetails: EventData = {
     eventid: eventData["id"],
     location: eventData["location"],
@@ -50,13 +61,12 @@ const EventCancellation = () => {
     name: eventData["name"],
   };
 
-  const userHasCanceledAttendance =
-    eventAttendance && eventAttendance["canceled"];
-
+  // TODO: remove
   if (!eventAttendance) {
     router.push(`/events/${eventid}/register`);
   }
 
+  /** Loading screen */
   if (isLoading) return <Loading />;
 
   return (
