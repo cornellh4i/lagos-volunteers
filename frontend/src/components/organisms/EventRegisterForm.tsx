@@ -7,7 +7,6 @@ import Modal from "@/components/molecules/Modal";
 import Link from "next/link";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { Box, Grid } from "@mui/material";
-import { useRouter } from "next/router";
 import { useAuth } from "@/utils/AuthContext";
 import { fetchUserIdFromDatabase } from "@/utils/helpers";
 import { EventData } from "@/utils/types";
