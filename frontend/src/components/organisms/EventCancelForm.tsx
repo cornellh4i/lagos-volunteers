@@ -24,9 +24,7 @@ type FormValues = {
   cancelReason: string;
 };
 
-/**
- * A confirmation modal body
- */
+/** A confirmation modal body */
 const ModalBody = ({
   eventid,
   handleClose,
@@ -40,9 +38,7 @@ const ModalBody = ({
   const { user } = useAuth();
   const queryClient = useQueryClient();
 
-  /**
-   * Handles clicking the Cancel button
-   */
+  /** Handles clicking the Cancel button */
   const { mutate, isPending, isError } = useMutation({
     mutationKey: ["event", eventid],
     mutationFn: async () => {
@@ -79,17 +75,16 @@ const ModalBody = ({
   );
 };
 
-/**
- * An EventCancelForm component
- */
+/** An EventCancelForm component */
 const EventCancelForm = ({ event }: EventCancelFormProps) => {
+  /** React hook form */
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm<FormValues>();
 
-  // Confirmation modal
+  /** Confirmation modal */
   const [open, setOpen] = useState(false);
   const [cancelationMessage, setCancelationMessage] = useState("");
   const handleSubmitReason: SubmitHandler<FormValues> = async (data) => {
@@ -101,6 +96,7 @@ const EventCancelForm = ({ event }: EventCancelFormProps) => {
 
   return (
     <div>
+      {/* Modal */}
       <Modal
         open={open}
         handleClose={handleClose}
@@ -113,6 +109,7 @@ const EventCancelForm = ({ event }: EventCancelFormProps) => {
         }
       />
 
+      {/* Form */}
       <div className="justify-center center-items">
         <div className="space-y-2">
           <div className="flex items-center text-gray-400">
