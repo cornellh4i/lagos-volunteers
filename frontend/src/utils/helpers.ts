@@ -66,6 +66,7 @@ export const formatDateString = (dateString: string) => {
  * Converts DatePicker and TimePicker inputs to an ISO string
  * @param inputTime is the input time
  * @param inputDate is the inputDate
+ * @returns the ISO string
  */
 export const convertToISO = (inputTime: string, inputDate: string) => {
   var timeIndex = 0;
@@ -98,9 +99,11 @@ export const convertToISO = (inputTime: string, inputDate: string) => {
   return res;
 };
 
-/** Calculates the hours an event lasts for
+/**
+ * Calculates the hours an event lasts for
  * @param startTime is the start time
  * @param endTime is the end time
+ * @returns the hours
  */
 export const eventHours = (endTime: string, startTime: string) => {
   const end = new Date(endTime);
