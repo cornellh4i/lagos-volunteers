@@ -13,8 +13,7 @@ const NavBar = () => {
   const handleSignOut = async () => {
     try {
       await signOutUser();
-      // clear cache!!
-      queryClient.clear();
+      queryClient.clear(); // Clear cache for react query
       router.replace("/login");
     } catch (error) {
       console.log(error);
