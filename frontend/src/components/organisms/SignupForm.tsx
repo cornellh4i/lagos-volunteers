@@ -22,9 +22,12 @@ type FormValues = {
 };
 
 const SignupForm = () => {
-  const [signInWithEmailAndPassword] = useSignInWithEmailAndPassword(auth);
   const router = useRouter();
 
+  /** Firebase hooks */
+  const [signInWithEmailAndPassword] = useSignInWithEmailAndPassword(auth);
+
+  /** React hook form */
   const {
     register,
     handleSubmit,
@@ -32,15 +35,16 @@ const SignupForm = () => {
     formState: { errors },
   } = useForm<FormValues>();
 
+  /** Handle errors */
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-
   const handleErrors = (errors: any) => {
-    // possibly needs some extra verification for common error patterns
     const userAlreadyExistsPrisma = /Unique constraint failed/;
     const passwordLengthError =
       /The password must be a string with at least 6 characters./;
     const invalidEmailError = /The email address is badly formatted./;
     const EmailAlreadyExists = /A user with that email already exists/;
+
+    // TODO: add more common error patterns
 
     switch (true) {
       case userAlreadyExistsPrisma.test(errors):
@@ -56,22 +60,10 @@ const SignupForm = () => {
     }
   };
 
-  // State variables for the notification popups
+  /** State variables for the notification popups */
   const [notifOpen, setNotifOpen] = useState(false);
 
-  const SignUpErrorComponent = (): JSX.Element | null => {
-    setNotifOpen(true);
-    return errorMessage ? (
-      <Snackbar
-        variety="error"
-        open={notifOpen}
-        onClose={() => setNotifOpen(false)}
-      >
-        Error: {handleErrors(errorMessage)}
-      </Snackbar>
-    ) : null;
-  };
-
+  /** Tanstack query mutation to create a new user */
   const { mutateAsync, isPending, isError, error } = useMutation({
     mutationFn: async (data: FormValues) => {
       const { firstName, lastName, email, password } = data;
@@ -101,11 +93,17 @@ const SignupForm = () => {
     retry: false,
   });
 
+  /** Handles submit */
   const handleSubmitUser: SubmitHandler<FormValues> = async (data, event) => {
     try {
+      // Create a new user
       await mutateAsync(data);
+
+      // Log in
       const { email, password } = data;
       const signedInUser = await signInWithEmailAndPassword(email, password);
+
+      // Change URL
       if (signedInUser?.user) {
         router.push("/events/view");
       }
@@ -116,71 +114,82 @@ const SignupForm = () => {
   };
 
   return (
-    <form onSubmit={handleSubmit(handleSubmitUser)} className="space-y-4">
-      <SignUpErrorComponent />
-      <img src="/lfbi_logo.png" className="w-24" />
-      <div className="font-bold text-3xl">Sign Up</div>
-      <div>
-        <TextField
-          error={errors.email ? "Required" : undefined}
-          type="email"
-          label="Email"
-          {...register("email", { required: true })}
-        />
-      </div>
-      <div className="grid sm:space-x-4 grid-cols-1 sm:grid-cols-2 ">
-        <div className="pb-4 sm:pb-0">
+    <>
+      {/* Sign up error component */}
+      <Snackbar
+        variety="error"
+        open={notifOpen}
+        onClose={() => setNotifOpen(false)}
+      >
+        Error: {handleErrors(errorMessage)}
+      </Snackbar>
+
+      {/* Sign up form */}
+      <form onSubmit={handleSubmit(handleSubmitUser)} className="space-y-4">
+        <img src="/lfbi_logo.png" className="w-24" />
+        <div className="font-bold text-3xl">Sign Up</div>
+        <div>
           <TextField
-            error={errors.firstName ? "Required" : undefined}
-            label="First Name"
-            {...register("firstName", { required: true })}
+            error={errors.email ? "Required" : undefined}
+            type="email"
+            label="Email"
+            {...register("email", { required: true })}
+          />
+        </div>
+        <div className="grid sm:space-x-4 grid-cols-1 sm:grid-cols-2 ">
+          <div className="pb-4 sm:pb-0">
+            <TextField
+              error={errors.firstName ? "Required" : undefined}
+              label="First Name"
+              {...register("firstName", { required: true })}
+            />
+          </div>
+          <div>
+            <TextField
+              error={errors.lastName ? "Required" : undefined}
+              label="Last Name"
+              {...register("lastName", { required: true })}
+            />
+          </div>
+        </div>
+        <div>
+          <TextField
+            error={errors.password ? "Required" : undefined}
+            type="password"
+            label="Password"
+            {...register("password", { required: true })}
           />
         </div>
         <div>
           <TextField
-            error={errors.lastName ? "Required" : undefined}
-            label="Last Name"
-            {...register("lastName", { required: true })}
+            type="password"
+            error={
+              errors.confirmPassword
+                ? "Required"
+                : watch("password") != watch("confirmPassword")
+                ? "Passwords do not match"
+                : undefined
+            }
+            label="Confirm Password"
+            {...register("confirmPassword", { required: true })}
           />
         </div>
-      </div>
-      <div>
-        <TextField
-          error={errors.password ? "Required" : undefined}
-          type="password"
-          label="Password"
-          {...register("password", { required: true })}
-        />
-      </div>
-      <div>
-        <TextField
-          type="password"
-          error={
-            errors.confirmPassword
-              ? "Required"
-              : watch("password") != watch("confirmPassword")
-              ? "Passwords do not match"
-              : undefined
-          }
-          label="Confirm Password"
-          {...register("confirmPassword", { required: true })}
-        />
-      </div>
-      <div>
-        <Button loading={isPending} disabled={isPending} type="submit">
-          Continue
-        </Button>
-      </div>
-      <div className="justify-center flex flex-row">
-        <div>Have an account?&nbsp;</div>
-        <Link
-          href="/login"
-          className="text-primary-200 hover:underline no-underline"
-        >
-          Log in
-        </Link>
-      </div>
-    </form>
+        <div>
+          <Button loading={isPending} disabled={isPending} type="submit">
+            Continue
+          </Button>
+        </div>
+        <div className="justify-center flex flex-row">
+          <div>Have an account?&nbsp;</div>
+          <Link
+            href="/login"
+            className="text-primary-200 hover:underline no-underline"
+          >
+            Log in
+          </Link>
+        </div>
+      </form>
+    </>
   );
 };
 
