@@ -237,10 +237,10 @@ const ViewEvents = () => {
       const userid = await fetchUserIdFromDatabase(user?.email as string);
       setUserid(userid);
       const upcomingEventsUserRegisteredFor = await api.get(
-        `/events?userid=${userid}&upcoming=true`
+        `/events?userid=${userid}&date=upcoming`
       );
       const upcomingEventsUserSupervises = await api.get(
-        `/events?ownerid=${userid}&upcoming=true`
+        `/events?ownerid=${userid}&date=upcoming`
       );
       return {
         upcomingRegistered: upcomingEventsUserRegisteredFor.data["data"],
@@ -287,7 +287,7 @@ const ViewEvents = () => {
     queryFn: async () => {
       const userid = await fetchUserIdFromDatabase(user?.email as string);
       const pastEventsUserRegisteredFor = await api.get(
-        `/events?userid=${userid}&upcoming=false&limit=${PAGE_SIZE_VOLUNTEER}`
+        `/events?userid=${userid}&date=past&limit=${PAGE_SIZE_VOLUNTEER}`
       );
       return pastEventsUserRegisteredFor["data"];
     },
@@ -303,7 +303,7 @@ const ViewEvents = () => {
     queryFn: async () => {
       const userid = await fetchUserIdFromDatabase(user?.email as string);
       const pastEventsUserSupervised = await api.get(
-        `/events?ownerid=${userid}&upcoming=false&limit=${PAGE_SIZE_SUPERVISOR}`
+        `/events?ownerid=${userid}&date=past&limit=${PAGE_SIZE_SUPERVISOR}`
       );
       return pastEventsUserSupervised["data"];
     },
@@ -378,7 +378,7 @@ const ViewEvents = () => {
         queryKey: ["volunteer_events", volunteerPaginationModel.page + 1],
         queryFn: async () => {
           const pastEventsUserRegisteredFor = await api.get(
-            `/events?userid=${userid}&upcoming=false&limit=${PAGE_SIZE_VOLUNTEER}&after=${cursorVolunteer}`
+            `/events?userid=${userid}&date=past&limit=${PAGE_SIZE_VOLUNTEER}&after=${cursorVolunteer}`
           );
           return pastEventsUserRegisteredFor["data"];
         },
@@ -402,7 +402,7 @@ const ViewEvents = () => {
         queryKey: ["supervised_events", supervisorPaginationModel.page + 1],
         queryFn: async () => {
           const pastEventsUserSupervised = await api.get(
-            `/events?ownerid=${userid}&upcoming=false&limit=${PAGE_SIZE_SUPERVISOR}&after=${cursorSupervisor}`
+            `/events?ownerid=${userid}&date=past&limit=${PAGE_SIZE_SUPERVISOR}&after=${cursorSupervisor}`
           );
           return pastEventsUserSupervised["data"];
         },

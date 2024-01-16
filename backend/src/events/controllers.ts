@@ -53,7 +53,7 @@ const deleteEvent = async (eventID: string) => {
  */
 const getEvents = async (
   filter: {
-    upcoming?: string;
+    date?: string;
     ownerId?: string;
     userId?: string;
   },
@@ -100,17 +100,20 @@ const getEvents = async (
   let whereDict: { [key: string]: any } = {};
   let includeDict: { [key: string]: any } = {};
 
-  // Handles GET /events?upcoming=true and GET /events?upcoming=false
+  // Handles GET /events?date=upcoming and GET /events?date=past
   // TODO: Investigate creating events that occur in a few minutes into the future
   const dateTime = new Date();
-  if (filter.upcoming === "true") {
-    whereDict["startDate"] = {
-      gt: dateTime,
-    };
-  } else if (filter.upcoming === "false") {
-    whereDict["endDate"] = {
-      lt: dateTime,
-    };
+  switch (filter.date) {
+    case "upcoming":
+      whereDict["startDate"] = {
+        gt: dateTime,
+      };
+      break;
+    case "past":
+      whereDict["endDate"] = {
+        lt: dateTime,
+      };
+      break;
   }
 
   // Handles GET /events?ownerId=asdf
