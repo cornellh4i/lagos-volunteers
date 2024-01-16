@@ -428,6 +428,7 @@ const ManageUserProfile = () => {
           );
           return data["data"];
         },
+        staleTime: Infinity,
       });
     }
   }, [

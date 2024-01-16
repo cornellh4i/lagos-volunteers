@@ -202,6 +202,7 @@ const ManageUsers = ({}: ManageUsersProps) => {
       queryClient.prefetchQuery({
         queryKey: ["users", paginationModel.page + 1],
         queryFn: async () => fetchUsersBatch(cursor),
+        staleTime: Infinity,
       });
     }
   }, [data, queryClient, cursor, totalNumberofData, paginationModel.page]);

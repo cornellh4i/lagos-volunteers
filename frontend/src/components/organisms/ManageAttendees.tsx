@@ -136,7 +136,7 @@ const ManageAttendees = ({}: ManageAttendeesProps) => {
   // For now -> we use the same state for all four tables
   const [paginationModel, setPaginationModel] =
     React.useState<GridPaginationModel>({
-      page: 1,
+      page: 0,
       pageSize: 10,
     });
 
@@ -186,6 +186,7 @@ const ManageAttendees = ({}: ManageAttendeesProps) => {
           );
           return data["data"];
         },
+        staleTime: Infinity,
       });
     }
   }, [data, queryClient, cursor, totalNumberofData, paginationModel.page]);
