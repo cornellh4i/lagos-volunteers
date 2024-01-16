@@ -93,18 +93,6 @@ const LoginForm = () => {
   // State variables for the notification popups
   const [notifOpen, setNotifOpen] = useState(false);
 
-  const LoginErrorComponent = (): JSX.Element | null => {
-    return signInErrors ? (
-      <Snackbar
-        variety="error"
-        open={notifOpen}
-        onClose={() => setNotifOpen(false)}
-      >
-        Error: {handleErrors(signInErrors.code)}
-      </Snackbar>
-    ) : null;
-  };
-
   const handleLogin: SubmitHandler<FormValues> = async (data) => {
     const { email, password } = data;
     try {
@@ -116,57 +104,72 @@ const LoginForm = () => {
     setNotifOpen(true);
   };
   return (
-    <div className="space-y-4 ">
-      <LoginErrorComponent />
-      <img src="/lfbi_logo.png" className="w-24" />
-      <form onSubmit={handleSubmit(handleLogin)} className="space-y-4 ">
-        <div className="font-bold text-3xl"> Log In </div>
-        <TextField
-          error={errors.email ? "Required" : undefined}
-          label="Email"
-          type="email"
-          {...register("email", { required: true })}
-        />
-        <TextField
-          error={errors.password ? "Required" : undefined}
-          label="Password"
-          type="password"
-          {...register("password", { required: true })}
-        />
-        <div className="text-center">
-          <Link
-            href="/password/forgot"
-            className="text-primary-200 hover:underline no-underline"
+    <>
+      {/* Login error component */}
+      <Snackbar
+        variety="error"
+        open={notifOpen}
+        onClose={() => setNotifOpen(false)}
+      >
+        Error: {handleErrors(signInErrors?.code)}
+      </Snackbar>
+
+      {/* Login form */}
+      <div className="space-y-4">
+        <img src="/lfbi_logo.png" className="w-24" />
+        <form onSubmit={handleSubmit(handleLogin)} className="space-y-4">
+          <div className="font-bold text-3xl"> Log In </div>
+          <TextField
+            error={errors.email ? "Required" : undefined}
+            label="Email"
+            type="email"
+            {...register("email", { required: true })}
+          />
+          <TextField
+            error={errors.password ? "Required" : undefined}
+            label="Password"
+            type="password"
+            {...register("password", { required: true })}
+          />
+          <div className="text-center">
+            <Link
+              href="/password/forgot"
+              className="text-primary-200 hover:underline no-underline"
+            >
+              Forgot password?
+            </Link>
+          </div>
+          <Button
+            loading={signInLoading}
+            disabled={signInLoading}
+            type="submit"
           >
-            Forgot password?
+            Log in
+          </Button>
+        </form>
+        <div>
+          <Divider>or</Divider>
+        </div>
+        <div>
+          <Link href="/signup">
+            <Button type="submit" variety="secondary">
+              Sign up with email
+            </Button>
           </Link>
         </div>
-        <Button loading={signInLoading} disabled={signInLoading} type="submit">
-          Log in
+        <Button
+          loading={googleLoading}
+          disabled={googleLoading}
+          variety="secondary"
+          icon={<GoogleIcon />}
+          // We are paused on this feature for now...
+          // onClick={() => handleGoogleLogin()}
+          type="submit"
+        >
+          Continue with Google
         </Button>
-      </form>
-      <div>
-        <Divider>or</Divider>
       </div>
-      <div>
-        <Link href="/signup">
-          <Button type="submit" variety="secondary">
-            Sign up with email
-          </Button>
-        </Link>
-      </div>
-      <Button
-        loading={googleLoading}
-        disabled={googleLoading}
-        variety="secondary"
-        icon={<GoogleIcon />}
-        // We are paused on this feature for now...
-        // onClick={() => handleGoogleLogin()}
-        type="submit"
-      >
-        Continue with Google
-      </Button>
-    </div>
+    </>
   );
 };
 
