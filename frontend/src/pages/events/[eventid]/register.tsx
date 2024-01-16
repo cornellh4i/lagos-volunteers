@@ -9,6 +9,7 @@ import Loading from "@/components/molecules/Loading";
 import { EventData } from "@/utils/types";
 import { api } from "@/utils/api";
 import { useQuery } from "@tanstack/react-query";
+import DefaultTemplate from "@/components/templates/DefaultTemplate";
 
 /** An EventRegistration page */
 const EventRegistration = () => {
@@ -16,13 +17,10 @@ const EventRegistration = () => {
   const eventid = router.query.eventid as string;
   const { user } = useAuth();
 
-  /**
-   * Fetches and updates the event details
-   */
+  /** Fetches and updates the event details */
   const { data, isLoading, isError } = useQuery({
     queryKey: ["event", eventid],
     queryFn: async () => {
-      // temp
       const userid = await fetchUserIdFromDatabase(user?.email as string);
       const { data } = await api.get(
         `/users/${userid}/registered?eventid=${eventid}`
@@ -30,15 +28,25 @@ const EventRegistration = () => {
       return data["data"];
     },
   });
-
   let eventData = data?.eventDetails;
   let eventAttendance = data?.attendance;
+
+  /** If the user canceled their event registration */
+  const userHasCanceledAttendance =
+    eventAttendance && eventAttendance["canceled"];
+
+  /** Throw error if fetching error */
+
   // TODO: Add Error Page
-  if (isError) return <div>Error</div>;
-  if (eventData == null) {
-    return <div>Error</div>;
+  if (isError || eventData == null) {
+    return (
+      <DefaultTemplate>
+        Sorry, an error occurred while fetching the event.
+      </DefaultTemplate>
+    );
   }
 
+  /** Set event details */
   const eventDetails: EventData = {
     eventid: eventData["id"],
     location: eventData["location"],
@@ -52,13 +60,13 @@ const EventRegistration = () => {
     description: eventData["description"],
     name: eventData["name"],
   };
-  const userHasCanceledAttendance =
-    eventAttendance && eventAttendance["canceled"];
 
+  // TODO: remove
   if (userHasCanceledAttendance) {
     router.push(`/events/${eventid}/cancel`);
   }
 
+  /** Loading screen */
   if (isLoading) return <Loading />;
 
   return (
