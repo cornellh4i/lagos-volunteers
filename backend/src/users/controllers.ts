@@ -179,7 +179,7 @@ const getUsers = async (
 
   /* RESULT */
 
-  // Need to find the total number of records before pagination
+  // Find the total number of records before pagination is applied
   const totalRecords = await prisma.user.count({
     where: {
       AND: [whereDict],

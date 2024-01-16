@@ -131,7 +131,7 @@ const getEvents = async (
   }
 
   // Find the total number of records before pagination is applied
-  const totalNumberOfRecords = await prisma.event.count({
+  const totalRecords = await prisma.event.count({
     where: {
       AND: [whereDict],
     },
@@ -156,7 +156,7 @@ const getEvents = async (
   return {
     result: queryResult,
     cursor: myCursor,
-    totalItems: totalNumberOfRecords,
+    totalItems: totalRecords,
   };
 };
 
