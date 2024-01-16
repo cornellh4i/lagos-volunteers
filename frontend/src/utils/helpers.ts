@@ -97,3 +97,15 @@ export const convertToISO = (inputTime: string, inputDate: string) => {
   const res = dayjs(rawDateTime).toJSON();
   return res;
 };
+
+/** Calculates the hours an event lasts for
+ * @param startTime is the start time
+ * @param endTime is the end time
+ */
+export const eventHours = (endTime: string, startTime: string) => {
+  const end = new Date(endTime);
+  const start = new Date(startTime);
+  const diff = end.getTime() - start.getTime();
+  const hours = diff / (1000 * 3600);
+  return hours;
+};

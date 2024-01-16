@@ -13,13 +13,12 @@ import IconText from "../atoms/IconText";
 import LinearProgress from "@mui/material/LinearProgress";
 import Link from "next/link";
 import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
-import { IconButton } from "@mui/material";
-import { auth } from "@/utils/firebase";
+import { Box, IconButton } from "@mui/material";
 import { useRouter } from "next/router";
 import { Grid } from "@mui/material";
 import Modal from "@/components/molecules/Modal";
 import Loading from "@/components/molecules/Loading";
-import { formatDateString } from "@/utils/helpers";
+import { eventHours, formatDateString } from "@/utils/helpers";
 import Snackbar from "../atoms/Snackbar";
 import { api } from "@/utils/api";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -74,32 +73,24 @@ type modalBodyProps = {
   handleClose: () => void;
 };
 
-// use EndTime and StartTime to calculate hours
-const eventHours = (endTime: string, startTime: string) => {
-  const end = new Date(endTime);
-  const start = new Date(startTime);
-  const diff = end.getTime() - start.getTime();
-  const hours = diff / (1000 * 3600);
-  return hours;
-};
-
+/** Confirmation modal for blacklisting a user */
 const ModalBody = ({ status, blacklistFunc, handleClose }: modalBodyProps) => {
   return (
     <div>
-      <p>
+      <Box sx={{ textAlign: "center", marginBottom: 3 }}>
         {status == "ACTIVE"
           ? "Are you sure you want to blacklist this user?"
           : "Are you sure you want to remove this member from the blacklist?"}
-      </p>
+      </Box>
       <Grid container spacing={2}>
         <Grid item md={6} xs={12}>
-          <Button type="button" onClick={handleClose}>
+          <Button variety="secondary" onClick={handleClose}>
             Cancel
           </Button>
         </Grid>
         <Grid item md={6} xs={12}>
-          <Button type="button" onClick={blacklistFunc}>
-            {status == "ACTIVE" ? "Blacklist" : "Remove"}
+          <Button variety="error" onClick={blacklistFunc}>
+            {status == "ACTIVE" ? "Yes, blacklist" : "Remove"}
           </Button>
         </Grid>
       </Grid>
@@ -107,9 +98,7 @@ const ModalBody = ({ status, blacklistFunc, handleClose }: modalBodyProps) => {
   );
 };
 
-/**
- * A ManageUserProfile component
- */
+/** A ManageUserProfile component */
 const Status = ({
   userRole,
   userStatus,
@@ -493,12 +482,43 @@ const ManageUserProfile = () => {
 
   return (
     <>
-      <div className="mb-3">
-        <RoleChangeIndicatorOnSuccessComponent />
-        <RoleChangeIndicatorOnFailureComponent />
-        <StatusChangeIndicatorOnSuccessComponent />
-        <StatusChangeIndicatorOnFailureComponent />
-      </div>
+      {/* RoleChangeIndicatorOnSuccessComponent */}
+      <Snackbar
+        variety="success"
+        open={roleChangeNotifOpenOnSuccess}
+        onClose={() => setRoleChangeNotifOpenOnSuccess(false)}
+      >
+        {`Success: You have successfully updated ${userProfileDetails?.name}'s role!`}
+      </Snackbar>
+
+      {/* RoleChangeIndicatorOnFailureComponent */}
+      <Snackbar
+        variety="error"
+        open={roleChangeNotifOpenOnFailure}
+        onClose={() => setRoleChangeNotifOpenOnFailure(false)}
+      >
+        {"Error: The request was not successful. Please Try again!"}
+      </Snackbar>
+
+      {/* StatusChangeIndicatorOnSuccessComponent */}
+      <Snackbar
+        variety="success"
+        open={statusChangeNotifOnSuccess}
+        onClose={() => setStatusChangeNotifOnSuccess(false)}
+      >
+        {`Success: ${userProfileDetails?.name}'s blacklist status was successfully updated!`}
+      </Snackbar>
+
+      {/* StatusChangeIndicatorOnFailureComponent */}
+      <Snackbar
+        variety="error"
+        open={statusChangeNotifOnFailure}
+        onClose={() => setStatusChangeNotifOnFailure(false)}
+      >
+        {"Error: The request was not successful. Please Try again!"}
+      </Snackbar>
+
+      {/* Manage user profile */}
       <IconText
         icon={
           <Link href="/users/view" className="no-underline">
