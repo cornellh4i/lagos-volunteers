@@ -44,8 +44,8 @@ const ProfileForm = ({ userDetails }: ProfileFormProps) => {
   const queryClient = useQueryClient();
 
   /** State variables for the notification popups */
-  const [SuccessNotificationOpen, setSuccessNotificationOpen] = useState(false);
-  const [ErrorNotificationOpen, setErrorNotificationOpen] = useState(false);
+  const [successNotificationOpen, setSuccessNotificationOpen] = useState(false);
+  const [errorNotificationOpen, setErrorNotificationOpen] = useState(false);
 
   /** Handles form errors */
   const [errorMessage, setErrorMessage] = React.useState<string>("");
@@ -158,7 +158,7 @@ const ProfileForm = ({ userDetails }: ProfileFormProps) => {
       {/* Profile update error snackbar */}
       <Snackbar
         variety="error"
-        open={ErrorNotificationOpen}
+        open={errorNotificationOpen}
         onClose={() => setErrorNotificationOpen(false)}
       >
         Error: {handleErrors(errorMessage)}
@@ -167,7 +167,7 @@ const ProfileForm = ({ userDetails }: ProfileFormProps) => {
       {/* Profile update success snackbar */}
       <Snackbar
         variety="success"
-        open={SuccessNotificationOpen}
+        open={successNotificationOpen}
         onClose={() => setSuccessNotificationOpen(false)}
       >
         Success: Profile update was successful!
