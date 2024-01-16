@@ -25,6 +25,7 @@ const EditEvent = () => {
   const router = useRouter();
   const eventid = router.query.eventid as string;
 
+  /** Tanstack query for fetching event data */
   const { data, isLoading, isError } = useQuery({
     queryKey: ["event", eventid],
     queryFn: async () => {
@@ -32,7 +33,6 @@ const EditEvent = () => {
       return data["data"];
     },
   });
-
   let event: eventData = {
     eventName: data?.name,
     location: data?.location,
@@ -47,6 +47,7 @@ const EditEvent = () => {
     mode: data?.mode,
   };
 
+  /** Loading screen */
   if (isLoading) return <Loading />;
 
   return (
