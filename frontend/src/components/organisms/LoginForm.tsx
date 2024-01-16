@@ -144,15 +144,17 @@ const LoginForm = () => {
         <Button loading={signInLoading} disabled={signInLoading} type="submit">
           Log in
         </Button>
-        <div>
-          <Divider>or</Divider>
-        </div>
       </form>
-      <Link href="/signup">
-        <Button type="submit" variety="secondary">
-          Sign up with email
-        </Button>
-      </Link>
+      <div>
+        <Divider>or</Divider>
+      </div>
+      <div>
+        <Link href="/signup">
+          <Button type="submit" variety="secondary">
+            Sign up with email
+          </Button>
+        </Link>
+      </div>
       <Button
         loading={googleLoading}
         disabled={googleLoading}
