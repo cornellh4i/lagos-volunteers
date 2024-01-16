@@ -3,12 +3,9 @@ import Divider from "@mui/material/Divider";
 import Button from "../atoms/Button";
 import TextField from "../atoms/TextField";
 import { useForm, SubmitHandler } from "react-hook-form";
-import { useAuth } from "@/utils/AuthContext";
 import { useRouter } from "next/router";
 import Link from "next/link";
 import { auth } from "@/utils/firebase";
-import Alert from "../atoms/Alert";
-
 import {
   useSignInWithEmailAndPassword,
   useSignInWithGoogle,
@@ -55,6 +52,8 @@ const GoogleIcon = () => {
 
 const LoginForm = () => {
   const router = useRouter();
+
+  /** Firebase hooks */
   const [
     signInWithEmailAndPassword,
     signedInUser,
@@ -62,10 +61,7 @@ const LoginForm = () => {
     signInErrors,
   ] = useSignInWithEmailAndPassword(auth);
 
-  // Sign in With Google
-  const [signInWithGoogle, googleUser, googleLoading, googleError] =
-    useSignInWithGoogle(auth);
-
+  /** React hook form */
   const {
     register,
     handleSubmit,
@@ -73,6 +69,10 @@ const LoginForm = () => {
     formState: { errors },
   } = useForm<FormValues>();
 
+  /** State variables for the notification popups */
+  const [notifOpen, setNotifOpen] = useState(false);
+
+  /** Handle login errors */
   const handleErrors = (errors: any) => {
     switch (errors) {
       case "auth/invalid-email":
@@ -90,9 +90,7 @@ const LoginForm = () => {
     }
   };
 
-  // State variables for the notification popups
-  const [notifOpen, setNotifOpen] = useState(false);
-
+  /** Handles login */
   const handleLogin: SubmitHandler<FormValues> = async (data) => {
     const { email, password } = data;
     try {
@@ -103,6 +101,11 @@ const LoginForm = () => {
     } catch (err) {}
     setNotifOpen(true);
   };
+
+  /** Sign in with Google */
+  const [signInWithGoogle, googleUser, googleLoading, googleError] =
+    useSignInWithGoogle(auth);
+
   return (
     <>
       {/* Login error component */}
@@ -162,7 +165,6 @@ const LoginForm = () => {
           disabled={googleLoading}
           variety="secondary"
           icon={<GoogleIcon />}
-          // We are paused on this feature for now...
           // onClick={() => handleGoogleLogin()}
           type="submit"
         >
