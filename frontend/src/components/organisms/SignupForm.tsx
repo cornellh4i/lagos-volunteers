@@ -65,7 +65,8 @@ const SignupForm = () => {
       <Snackbar
         variety="error"
         open={notifOpen}
-        onClose={() => setNotifOpen(false)}>
+        onClose={() => setNotifOpen(false)}
+      >
         Error: {handleErrors(errorMessage)}
       </Snackbar>
     ) : null;
@@ -174,7 +175,8 @@ const SignupForm = () => {
         <div>Have an account?&nbsp;</div>
         <Link
           href="/login"
-          className="text-primary hover:underline no-underline">
+          className="text-primary-200 hover:underline no-underline"
+        >
           Log in
         </Link>
       </div>
