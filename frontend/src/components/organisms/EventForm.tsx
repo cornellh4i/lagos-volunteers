@@ -95,7 +95,8 @@ const EventForm = ({ eventId, eventType, eventDetails }: EventFormProps) => {
       <Snackbar
         variety="error"
         open={notifOpen}
-        onClose={() => setNotifOpen(false)}>
+        onClose={() => setNotifOpen(false)}
+      >
         Error: {errorMessage}
       </Snackbar>
     ) : null;
@@ -106,7 +107,8 @@ const EventForm = ({ eventId, eventType, eventDetails }: EventFormProps) => {
       <Snackbar
         variety="success"
         open={notifOpen}
-        onClose={() => setNotifOpen(false)}>
+        onClose={() => setNotifOpen(false)}
+      >
         {successMessage}
       </Snackbar>
     ) : null;
@@ -234,7 +236,8 @@ const EventForm = ({ eventId, eventType, eventDetails }: EventFormProps) => {
           ? handleSubmit(handleCreateEvent)
           : handleSubmit(handleEditEvent)
       }
-      className="space-y-4">
+      className="space-y-4"
+    >
       <CreateSuccessComponent />
       <CreateErrorComponent />
       <div className="font-bold text-3xl">
@@ -315,7 +318,8 @@ const EventForm = ({ eventId, eventType, eventDetails }: EventFormProps) => {
             aria-labelledby="demo-row-radio-buttons-group-label"
             name="row-radio-buttons-group"
             defaultValue={eventDetails ? eventDetails.mode : "VIRTUAL"}
-            sx={{ borderRadius: 2, borderColor: "primary.main" }}>
+            sx={{ borderRadius: 2, borderColor: "primary.main" }}
+          >
             <FormControlLabel
               value="VIRTUAL"
               control={<Radio />}
@@ -393,7 +397,8 @@ const EventForm = ({ eventId, eventType, eventDetails }: EventFormProps) => {
               <Button
                 type="submit"
                 loading={editEventPending}
-                disabled={editEventPending}>
+                disabled={editEventPending}
+              >
                 Save Changes
               </Button>
             </div>

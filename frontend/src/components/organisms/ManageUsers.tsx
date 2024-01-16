@@ -93,10 +93,12 @@ const Active = ({
             display: "flex",
             alignItems: "center",
             justifyContent: "flex-end",
-          }}>
+          }}
+        >
           <Link
             href={`/users/${params.row.id}/manage`}
-            className="no-underline">
+            className="no-underline"
+          >
             <Button variety="tertiary" icon={<AccountBoxIcon />}>
               View Profile
             </Button>

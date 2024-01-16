@@ -112,7 +112,7 @@ const LoginForm = () => {
       if (signedInUser) {
         router.push("/events/view");
       }
-    } catch (err) { }
+    } catch (err) {}
     setNotifOpen(true);
   };
   return (

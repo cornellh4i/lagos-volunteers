@@ -77,7 +77,9 @@ const VerticalTabContainer = ({
           {rightAlignedComponent}
           <Select value={value} onChange={handleChange}>
             {tabs.map((tab, index) => (
-              <MenuItem key={index} value={String(index)}>{tab.label}</MenuItem>
+              <MenuItem key={index} value={String(index)}>
+                {tab.label}
+              </MenuItem>
             ))}
           </Select>
         </div>

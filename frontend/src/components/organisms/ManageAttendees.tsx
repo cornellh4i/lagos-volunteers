@@ -74,7 +74,8 @@ const eventColumns: GridColDef[] = [
         <Select
           value="PENDING"
           // value={role}
-          onChange={(event: any) => console.log(event.target.value)}>
+          onChange={(event: any) => console.log(event.target.value)}
+        >
           <MenuItem value="CHECKED IN">Checked in</MenuItem>
           <MenuItem value="CHECKED OUT">Checked out</MenuItem>
           <MenuItem value="PENDING">Pending</MenuItem>

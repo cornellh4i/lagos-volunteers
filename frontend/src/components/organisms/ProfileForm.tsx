@@ -79,7 +79,8 @@ const ProfileForm = ({ userDetails }: ProfileFormProps) => {
         <Snackbar
           variety="error"
           open={ErrorNotificationOpen}
-          onClose={() => setErrorNotificationOpen(false)}>
+          onClose={() => setErrorNotificationOpen(false)}
+        >
           Error: {handleErrors(errorMessage)}
         </Snackbar>
       );
@@ -93,7 +94,8 @@ const ProfileForm = ({ userDetails }: ProfileFormProps) => {
         <Snackbar
           variety="success"
           open={SuccessNotificationOpen}
-          onClose={() => setSuccessNotificationOpen(false)}>
+          onClose={() => setSuccessNotificationOpen(false)}
+        >
           Success: Profile update was successful!
         </Snackbar>
       );
@@ -238,7 +240,8 @@ const ProfileForm = ({ userDetails }: ProfileFormProps) => {
             variety="secondary"
             onClick={() => {
               reset(userDetails, { keepDefaultValues: true });
-            }}>
+            }}
+          >
             Cancel
           </Button>
         </div>

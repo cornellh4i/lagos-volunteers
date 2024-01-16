@@ -38,7 +38,6 @@ export type Action =
   | "manage attendees"
   | "edit";
 
-
 export type UserData = {
   id: string;
   email: string;
@@ -51,4 +50,4 @@ export type UserData = {
   verified?: boolean;
   disciplinaryNotices?: number;
   imageUrl?: string;
-}
+};
