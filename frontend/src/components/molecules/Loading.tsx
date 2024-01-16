@@ -6,11 +6,11 @@ function Loading() {
   return (
     <div>
       <Backdrop
-        sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
+        sx={{ color: "#568124", zIndex: (theme) => theme.zIndex.drawer + 1 }}
         invisible
         open
       >
-        <CircularProgress />
+        <CircularProgress color="inherit" />
       </Backdrop>
     </div>
   );
