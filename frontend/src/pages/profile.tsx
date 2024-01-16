@@ -8,11 +8,13 @@ import Card from "@/components/molecules/Card";
 import { api } from "@/utils/api";
 import { useQuery } from "@tanstack/react-query";
 import Loading from "@/components/molecules/Loading";
+import Error from "@/components/organisms/Error";
 
 /** A Profile page */
 const Profile = () => {
   const { user } = useAuth();
 
+  /** Tanstack query to fetch user details */
   const { data, isLoading, isError } = useQuery({
     queryKey: ["profile", user?.email],
     queryFn: async () => {
@@ -21,29 +23,22 @@ const Profile = () => {
     },
   });
 
+  /** Loading screen */
   if (isLoading) return <Loading />;
 
-  // TODO: Add Error Page
-  if (isError)
-    return (
-      <div className="flex justify-center items-center h-screen">
-        <div className="text-center">
-          Aw! An error occurred :(
-          <p>Please try again</p>
-        </div>
-      </div>
-    );
+  /** Error page */
+
+  // TODO: make better
+  if (isError) return <Error />;
 
   return (
     <CenteredTemplate>
-      <Banner>
-        <Avatar
-          name={`${data?.profile.firstName} ${data?.profile.lastName}`}
-          startDate={new Date(data?.createdAt)}
-          image={data?.profile.imageURL}
-          email={data?.email}
-        />
-      </Banner>
+      <Avatar
+        name={`${data?.profile.firstName} ${data?.profile.lastName}`}
+        startDate={new Date(data?.createdAt)}
+        image={data?.profile.imageURL}
+        email={data?.email}
+      />
       <h3 className="text-xl font-normal">Member Status</h3>
       <Card className="mb-3">
         <h3 className="mt-0 mb-2 font-normal">

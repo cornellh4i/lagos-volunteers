@@ -9,7 +9,7 @@ import Loading from "@/components/molecules/Loading";
 import { EventData } from "@/utils/types";
 import { api } from "@/utils/api";
 import { useQuery } from "@tanstack/react-query";
-import DefaultTemplate from "@/components/templates/DefaultTemplate";
+import Error from "@/components/organisms/Error";
 
 /** An EventRegistration page */
 const EventRegistration = () => {
@@ -39,11 +39,7 @@ const EventRegistration = () => {
 
   // TODO: Add Error Page
   if (isError || eventData == null) {
-    return (
-      <DefaultTemplate>
-        Sorry, an error occurred while fetching the event.
-      </DefaultTemplate>
-    );
+    return <Error />;
   }
 
   /** Set event details */
