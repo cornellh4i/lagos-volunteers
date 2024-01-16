@@ -41,16 +41,16 @@ interface ProfileFormProps {
 }
 
 const ProfileForm = ({ userDetails }: ProfileFormProps) => {
-  const [success, setSuccess] = React.useState<boolean>(false);
-  const [error, setError] = React.useState<boolean>(false);
-  const [errorMessage, setErrorMessage] = React.useState<string>("");
-  // State variables for the notification popups
-  const [SuccessNotificationOpen, setSuccessNotificationOpen] = useState(false);
-  const [ErrorNotificationOpen, setErrorNotificationOpen] = useState(false);
   const queryClient = useQueryClient();
 
+  /** State variables for the notification popups */
+  const [SuccessNotificationOpen, setSuccessNotificationOpen] = useState(false);
+  const [ErrorNotificationOpen, setErrorNotificationOpen] = useState(false);
+
+  /** Handles form errors */
+  const [errorMessage, setErrorMessage] = React.useState<string>("");
   const handleErrors = (errors: any) => {
-    const errorParsed = errors?.split("/")[1].slice(0, -2);
+    const errorParsed = errors?.split("/")[1]?.slice(0, -2);
     switch (errorParsed) {
       case "invalid-email":
         return "Invalid email address format.";
@@ -73,36 +73,7 @@ const ProfileForm = ({ userDetails }: ProfileFormProps) => {
     }
   };
 
-  const ProfileUpdateErrorSnackBar = (): JSX.Element | null => {
-    if (error) {
-      return (
-        <Snackbar
-          variety="error"
-          open={ErrorNotificationOpen}
-          onClose={() => setErrorNotificationOpen(false)}
-        >
-          Error: {handleErrors(errorMessage)}
-        </Snackbar>
-      );
-    }
-    return null;
-  };
-
-  const ProfileUpdateSuccessSnackBar = (): JSX.Element | null => {
-    if (success) {
-      return (
-        <Snackbar
-          variety="success"
-          open={SuccessNotificationOpen}
-          onClose={() => setSuccessNotificationOpen(false)}
-        >
-          Success: Profile update was successful!
-        </Snackbar>
-      );
-    }
-    return null;
-  };
-
+  /** React hook form */
   const {
     register,
     handleSubmit,
@@ -122,13 +93,15 @@ const ProfileForm = ({ userDetails }: ProfileFormProps) => {
     },
   });
 
-  // Handle checkbox
+  /** Handles checkbox */
+
   // TODO: Implement this
   const [checked, setChecked] = useState(false);
   const handleCheckbox = () => {
     setChecked((checked) => !checked);
   };
 
+  /** Tanstack query mutation to reauthenticate the user session */
   const ReAuthenticateUserSession = useMutation({
     mutationFn: async (data: any) => {
       const currentUser = auth.currentUser;
@@ -143,6 +116,7 @@ const ProfileForm = ({ userDetails }: ProfileFormProps) => {
     retry: false,
   });
 
+  /** Tanstack query mutation to update user password in Firebase */
   const updateUserPasswordInFirebase = useMutation({
     mutationFn: async (data: any) => {
       const user = auth.currentUser as User;
@@ -151,6 +125,7 @@ const ProfileForm = ({ userDetails }: ProfileFormProps) => {
     retry: false,
   });
 
+  /** Tanstack query mutation to update the user profile */
   const updateProfileInDB = useMutation({
     mutationFn: async (data: any) => {
       return api.put(`/users/${userDetails.id}/profile`, {
@@ -165,88 +140,106 @@ const ProfileForm = ({ userDetails }: ProfileFormProps) => {
     retry: false,
   });
 
+  /** Handles form submit */
   const handleChanges: SubmitHandler<FormValues> = async (data) => {
     try {
       await ReAuthenticateUserSession.mutateAsync(data);
       await updateUserPasswordInFirebase.mutateAsync(data);
       await updateProfileInDB.mutateAsync(data);
-      setSuccess(true);
       setSuccessNotificationOpen(true);
     } catch (error: any) {
-      setError(true);
       setErrorNotificationOpen(true);
       setErrorMessage(error.message);
     }
   };
 
   return (
-    <form onSubmit={handleSubmit(handleChanges)} className="space-y-4">
-      <ProfileUpdateErrorSnackBar />
-      <ProfileUpdateSuccessSnackBar />
-      <TextField
-        label="Email"
-        disabled={true}
-        error={errors.email ? "Required" : undefined}
-        {...register("email", { required: true })}
-      />
-      <TextField
-        label="First name"
-        error={errors.firstName ? "Required" : undefined}
-        {...register("firstName", { required: true })}
-      />
-      <TextField
-        label="Last name"
-        error={errors.lastName ? "Required" : undefined}
-        {...register("lastName", { required: true })}
-      />
-      <TextField
-        label="Preferred name"
-        error={errors.preferredName ? "Required" : undefined}
-        {...register("preferredName", { required: true })}
-      />
-      <TextField
-        type="password"
-        label="Old password"
-        error={errors.oldPassword ? "Required" : undefined}
-        {...register("oldPassword", { required: true })}
-      />
-      <TextField
-        type="password"
-        label="New password "
-        {...register("newPassword", { required: false })}
-      />
-      <TextField
-        type="password"
-        label="Confirm new password"
-        error={
-          watch("newPassword") === watch("confirmNewPassword")
-            ? undefined
-            : "Passwords must match"
-        }
-        {...register("confirmNewPassword", { required: false })}
-      />
-      <Checkbox
-        checked={checked}
-        onChange={handleCheckbox}
-        label="Email notifications"
-      />
-      <div className="sm:space-x-4 grid grid-cols-1 sm:grid-cols-2">
-        <div className="pb-4 sm:pb-0">
-          <Button type="submit">Save Changes</Button>
+    <>
+      {/* Profile update error snackbar */}
+      <Snackbar
+        variety="error"
+        open={ErrorNotificationOpen}
+        onClose={() => setErrorNotificationOpen(false)}
+      >
+        Error: {handleErrors(errorMessage)}
+      </Snackbar>
+
+      {/* Profile update success snackbar */}
+      <Snackbar
+        variety="success"
+        open={SuccessNotificationOpen}
+        onClose={() => setSuccessNotificationOpen(false)}
+      >
+        Success: Profile update was successful!
+      </Snackbar>
+
+      {/* Profile form */}
+      <form onSubmit={handleSubmit(handleChanges)} className="space-y-4">
+        <TextField
+          label="Email"
+          disabled={true}
+          error={errors.email ? "Required" : undefined}
+          {...register("email", { required: true })}
+        />
+        <TextField
+          label="First name"
+          error={errors.firstName ? "Required" : undefined}
+          {...register("firstName", { required: true })}
+        />
+        <TextField
+          label="Last name"
+          error={errors.lastName ? "Required" : undefined}
+          {...register("lastName", { required: true })}
+        />
+        <TextField
+          label="Preferred name"
+          error={errors.preferredName ? "Required" : undefined}
+          {...register("preferredName", { required: true })}
+        />
+        <TextField
+          type="password"
+          label="Old password"
+          error={errors.oldPassword ? "Required" : undefined}
+          {...register("oldPassword", { required: true })}
+        />
+        <TextField
+          type="password"
+          label="New password "
+          {...register("newPassword", { required: false })}
+        />
+        <TextField
+          type="password"
+          label="Confirm new password"
+          error={
+            watch("newPassword") === watch("confirmNewPassword")
+              ? undefined
+              : "Passwords must match"
+          }
+          {...register("confirmNewPassword", { required: false })}
+        />
+        <Checkbox
+          checked={checked}
+          onChange={handleCheckbox}
+          label="Email notifications"
+        />
+        <div className="sm:space-x-4 grid grid-cols-1 sm:grid-cols-2">
+          <div className="pb-4 sm:pb-0">
+            <Button
+              type="button"
+              variety="secondary"
+              onClick={() => {
+                reset(userDetails, { keepDefaultValues: true });
+              }}
+            >
+              Cancel
+            </Button>
+          </div>
+          <div>
+            <Button type="submit">Save Changes</Button>
+          </div>
         </div>
-        <div>
-          <Button
-            type="button"
-            variety="secondary"
-            onClick={() => {
-              reset(userDetails, { keepDefaultValues: true });
-            }}
-          >
-            Cancel
-          </Button>
-        </div>
-      </div>
-    </form>
+      </form>
+    </>
   );
 };
 
