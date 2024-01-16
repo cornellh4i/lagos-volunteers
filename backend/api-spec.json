@@ -483,7 +483,7 @@
         "description": "",
         "parameters": [
           {
-            "name": "upcoming",
+            "name": "date",
             "in": "query",
             "type": "string"
           },

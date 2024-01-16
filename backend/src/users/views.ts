@@ -18,17 +18,29 @@ userRouter.post(
   NoAuth as RequestHandler,
   async (req: Request, res: Response) => {
     // #swagger.tags = ['Users']
-    // if you're seeing this, no you didn't
     let user;
     const { password, ...rest } = req.body;
     try {
+      // Create user in local database
       user = await userController.createUser(
         rest,
         rest.profile,
         rest.preferences,
         rest.permissions
       );
-      if (user && process.env.NODE_ENV !== "test") {
+
+      // If local user doesn't exist, throw error
+      if (!user) {
+        throw Error("Failed to create local user");
+      }
+
+      // If test environment, return user without firebase auth
+      else if (process.env.NODE_ENV === "test") {
+        return res.status(201).send({ success: true, data: user });
+      }
+
+      // Otherwise, create user in Firebase
+      else {
         const fbUser = await firebase.auth().createUser({
           uid: user.id,
           email: rest.email,
@@ -42,6 +54,7 @@ userRouter.post(
         }
       }
     } catch (e: any) {
+      // If user exists in local database but not in Firebase, delete user
       if (user) {
         try {
           await userController.deleteUser(user.id);
