@@ -98,8 +98,10 @@ const LoginForm = () => {
       if (signedInUser) {
         router.push("/events/view");
       }
-    } catch (err) {}
-    setNotifOpen(true);
+    } catch (err) {
+      setNotifOpen(true);
+    }
+    
   };
 
   /** Sign in with Google */
