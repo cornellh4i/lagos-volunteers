@@ -266,11 +266,7 @@ const eventData: Prisma.EventCreateInput[] = [
 async function main() {
   console.log(`Start seeding ...`);
 
-  await prisma.eventEnrollment.deleteMany({});
   await prisma.event.deleteMany({});
-  await prisma.userPreferences.deleteMany({});
-  await prisma.profile.deleteMany({});
-  await prisma.permission.deleteMany({});
   await prisma.user.deleteMany({});
 
   for (const u of userData) {

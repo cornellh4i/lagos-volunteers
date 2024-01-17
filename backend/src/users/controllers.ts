@@ -582,63 +582,11 @@ const getUsersSorted = async (req: Request) => {
  * Deleting a user is little bit tricky because we have to delete all the records. Check back to this
  */
 const deleteUser = async (userID: string) => {
-  // First we check if the user records exist
-  const preferences = await prisma.userPreferences.findFirst({
+  return prisma.user.delete({
     where: {
-      userId: userID,
+      id: userID,
     },
   });
-  const profile = await prisma.profile.findFirst({
-    where: {
-      userId: userID,
-    },
-  });
-  const permission = await prisma.permission.findFirst({
-    where: {
-      userId: userID,
-    },
-  });
-  const events = await prisma.eventEnrollment.findMany({
-    where: {
-      userId: userID,
-    },
-  });
-
-  return Promise.all([
-    preferences &&
-      prisma.userPreferences.delete({
-        where: {
-          userId: userID,
-        },
-      }),
-
-    events &&
-      prisma.eventEnrollment.deleteMany({
-        where: {
-          userId: userID,
-        },
-      }),
-
-    profile &&
-      prisma.profile.delete({
-        where: {
-          userId: userID,
-        },
-      }),
-
-    permission &&
-      prisma.permission.delete({
-        where: {
-          userId: userID,
-        },
-      }),
-
-    prisma.user.delete({
-      where: {
-        id: userID,
-      },
-    }),
-  ]);
 };
 
 export default {
