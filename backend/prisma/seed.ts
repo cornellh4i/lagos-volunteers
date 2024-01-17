@@ -22,7 +22,9 @@ async function createPoolOfRandomUsers(pool: number) {
     users.push(createRandomUser());
   }
 
-  users.map(async (user) => {
+  console.log(`Created ${users.length} random users`);
+
+  for (const user of users) {
     const createdUser = await prisma.user.create({
       data: {
         email: user.email,
@@ -42,9 +44,8 @@ async function createPoolOfRandomUsers(pool: number) {
         },
       },
     });
-    console.log(`Created user with id: ${createdUser.id}`);
     userDataSeed.push(createdUser);
-  });
+  };
   console.log("Done creating pool of random users");
 }
 
@@ -58,6 +59,7 @@ async function createPoolOfRandomEvents(pool: number) {
   for (let i = 0; i < pool; i++) {
     events.push(createRandomEvent());
   }
+  console.log(`Created ${events.length} random events`)
   const supervisors: User[] = [];
   // create 20 supervisors to host various events
   for (let i = 0; i < 20; i++) {
@@ -83,7 +85,7 @@ async function createPoolOfRandomEvents(pool: number) {
     });
     supervisors.push(createdSupervisor);
   }
-  events.map(async (event, index) => {
+  for (const event of events) {
     const randomSuperVisor = supervisors[Math.floor(Math.random() * 20)];
     const createdEvent = await prisma.event.create({
       data: {
@@ -119,9 +121,8 @@ async function createPoolOfRandomEvents(pool: number) {
         },
       });
     }
-    console.log(`Created event with id: ${createdEvent.id}`);
     eventDataSeed.push(createdEvent);
-  });
+  };
 
   console.log("Done creating pool of random events");
 }
@@ -265,7 +266,7 @@ const eventData: Prisma.EventCreateInput[] = [
 
 async function main() {
   console.log(`Start seeding ...`);
-
+// This is for seeding purposes only. Everytime seed, we will get constraint errors becuause we are creating the same data again.
   await prisma.event.deleteMany({});
   await prisma.user.deleteMany({});
 
@@ -273,7 +274,6 @@ async function main() {
     const user = await prisma.user.create({
       data: u,
     });
-    console.log(`Created user with id: ${user.id}`);
   }
 
   for (const e of eventData) {
@@ -301,17 +301,15 @@ async function main() {
         },
       });
     }
-
-    console.log(`Created event with id: ${event.id}`);
   }
 
   await createPoolOfRandomUsers(100);
   await createPoolOfRandomEvents(100);
 
+  console.log(`Seeded ${await prisma.user.count()} users.`);
+  console.log(`Seeded ${await prisma.event.count()} events.`);
   console.log(`Seeding finished.`);
 }
-// This is for demo purposes only. Everytime we start the server, our seed script will run.
-// But, we will get constraint errors becuause we are creating the same data again.
 
 main()
   .then(async () => {
