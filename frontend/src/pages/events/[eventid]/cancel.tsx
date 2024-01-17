@@ -28,7 +28,7 @@ const EventCancellation = () => {
       return data["data"];
     },
   });
-  let eventData = data?.eventDetails;
+  let eventData = data?.eventDetails || {};
   let eventAttendance = data?.attendance;
 
   /** If the user canceled their event registration */
@@ -38,23 +38,23 @@ const EventCancellation = () => {
   /** Throw error if fetching error */
 
   // TODO: make better
-  if (isError || eventData == null) {
+  if (isError) {
     return <Error />;
   }
 
   /** Set event details */
   const eventDetails: EventData = {
-    eventid: eventData["id"],
-    location: eventData["location"],
-    datetime: formatDateTimeRange(eventData["startDate"], eventData["endDate"]),
-    capacity: eventData["capacity"],
-    image_src: eventData["imageURL"],
-    tags: eventData["tags"],
+    eventid: eventData.id,
+    location: eventData.location,
+    datetime: formatDateTimeRange(eventData.startDate, eventData.endDate),
+    capacity: eventData.capacity,
+    image_src: eventData.imageURL,
+    tags: eventData.tags,
     supervisors: [
-      `${eventData["owner"]["profile"]["firstName"]} ${eventData["owner"]["profile"]["lastName"]}`,
+      `${eventData.owner?.profile?.firstName} ${eventData.owner?.profile?.lastName}`,
     ],
-    description: eventData["description"],
-    name: eventData["name"],
+    description: eventData.description,
+    name: eventData.name,
   };
 
   // TODO: remove
