@@ -10,6 +10,7 @@ import { formatDateString } from "@/utils/helpers";
 import { api } from "@/utils/api";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import Loading from "@/components/molecules/Loading";
+import Card from "../molecules/Card";
 
 interface ManageUsersProps {}
 
@@ -99,7 +100,7 @@ const Active = ({
             href={`/users/${params.row.id}/manage`}
             className="no-underline"
           >
-            <Button variety="tertiary" icon={<AccountBoxIcon />}>
+            <Button variety="tertiary" size="small" icon={<AccountBoxIcon />}>
               View Profile
             </Button>
           </Link>
@@ -108,7 +109,7 @@ const Active = ({
     },
   ];
 
-  // Search bar
+  /** Search bar */
   const [value, setValue] = React.useState("");
   const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
     setValue(event.target.value);
@@ -130,30 +131,30 @@ const Active = ({
           onClick={handleSubmit}
         />
       </div>
-      <Table
-        columns={eventColumns}
-        rows={initalRowData}
-        dataSetLength={usersLength}
-        paginationModel={paginationModel}
-        setPaginationModel={setPaginationModel}
-      />
+      <Card size="table">
+        <Table
+          columns={eventColumns}
+          rows={initalRowData}
+          dataSetLength={usersLength}
+          paginationModel={paginationModel}
+          setPaginationModel={setPaginationModel}
+        />
+      </Card>
     </div>
   );
 };
 
-/**
- * A ManageUsers component
- */
+/** A ManageUsers component */
 const ManageUsers = ({}: ManageUsersProps) => {
+  /** Pagination model for the table */
   const [paginationModel, setPaginationModel] = useState<GridPaginationModel>({
     page: 0,
-    pageSize: 15,
+    pageSize: 20,
   });
-
   let cursor = "";
 
+  /** If a valid cursor is passed, fetch the next batch of users */
   const fetchUsersBatch = async (cursor?: string) => {
-    // If a valid cursor is passed, fetch the next batch of users
     if (cursor !== "") {
       const { response, data } = await api.get(
         `/users?limit=${paginationModel.pageSize}&after=${cursor}`
@@ -167,6 +168,7 @@ const ManageUsers = ({}: ManageUsersProps) => {
     }
   };
 
+  /** Tanstack query for fetching users */
   const { data, isPending, error, isPlaceholderData } = useQuery({
     queryKey: ["users", paginationModel.page],
     queryFn: async () => {
@@ -174,13 +176,11 @@ const ManageUsers = ({}: ManageUsersProps) => {
     },
     staleTime: Infinity,
   });
-
   const rows: userInfo[] = [];
   const totalNumberofData = data?.data.totalItems;
   if (data?.data.cursor) {
     cursor = data.data.cursor;
   }
-
   data?.data.result.map((user: any) => {
     rows.push({
       id: user.id,
@@ -191,14 +191,12 @@ const ManageUsers = ({}: ManageUsersProps) => {
       hours: user.hours, // TODO: properly calculate hours
     });
   });
-
-  const queryClient = useQueryClient();
-
   const totalNumberOfPages = Math.ceil(
     totalNumberofData / paginationModel.pageSize
   );
 
   // Prefetch the next page
+  const queryClient = useQueryClient();
   useEffect(() => {
     if (!isPlaceholderData && paginationModel.page < totalNumberOfPages) {
       queryClient.prefetchQuery({
@@ -236,16 +234,15 @@ const ManageUsers = ({}: ManageUsersProps) => {
     },
   ];
 
+  /** Loading screen */
   if (isPending) return <Loading />;
 
   return (
     <>
-      <div>
-        <TabContainer
-          left={<div className="font-semibold text-3xl">Manage Members</div>}
-          tabs={tabs}
-        />
-      </div>
+      <TabContainer
+        left={<div className="font-semibold text-3xl">Manage Members</div>}
+        tabs={tabs}
+      />
     </>
   );
 };

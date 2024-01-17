@@ -9,13 +9,16 @@ import Table from "@/components/molecules/Table";
 import Button from "../atoms/Button";
 import Link from "next/link";
 import { useAuth } from "@/utils/AuthContext";
-import { fetchUserIdFromDatabase, formatDateTimeRange } from "@/utils/helpers";
+import {
+  eventHours,
+  fetchUserIdFromDatabase,
+  formatDateTimeRange,
+} from "@/utils/helpers";
 import { Action } from "@/utils/types";
 import { api } from "@/utils/api";
 import ManageSearchIcon from "@mui/icons-material/ManageSearch";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import Loading from "@/components/molecules/Loading";
-import Snackbar from "@/components/atoms/Snackbar";
 
 type event = {
   id?: string;
@@ -52,19 +55,21 @@ interface EventCardProps {
 }
 
 const UpcomingEvents = ({ eventDetails }: EventCardProps) => {
-  const EmptyEventsComponent = () => {
-    return (
-      <div className="p-10">
-        <div className="text-center">You have no upcoming events :(</div>
-      </div>
-    );
-  };
   return (
     <div>
       <Link href="/events/create">
         <Button className="w-full sm:w-max mb-2">Create New Event</Button>
       </Link>
-      {eventDetails.length == 0 && <EmptyEventsComponent />}
+
+      {/* Display when no events are found */}
+      {/* TODO: make this look better */}
+      {eventDetails.length == 0 && (
+        <div className="p-10">
+          <div className="text-center">You have no upcoming events</div>
+        </div>
+      )}
+
+      {/* List of events */}
       <CardList>
         {eventDetails.map((event) => (
           <EventCard
@@ -77,7 +82,7 @@ const UpcomingEvents = ({ eventDetails }: EventCardProps) => {
             mainAction={
               event.role === "Supervisor" ? "manage attendees" : "rsvp"
             }
-            // hard-coded for now but main-action is determined based on the user and their status
+            // TODO: hard-coded for now but main-action is determined based on the user and their status
           />
         ))}
       </CardList>
@@ -170,12 +175,6 @@ const PastEvents = ({
     },
   ];
 
-  const getFormattedDate = (date: string) => {
-    const month = date.substring(5, 7);
-    const year = date.substring(0, 4);
-    const day = date.substring(8, 10);
-    return month + "/" + day + "/" + year;
-  };
   return (
     <>
       <Table
@@ -196,21 +195,12 @@ const PastEvents = ({
   );
 };
 
-/**
- * A ViewEvents component is where a user can view and manage their events.
- */
+/** A ViewEvents component is where a user can view and manage their events. */
 const ViewEvents = () => {
   const { user } = useAuth();
-
-  const computeHours = (startDate: string, endDate: string) => {
-    const start = new Date(startDate).getTime();
-    const end = new Date(endDate).getTime();
-    const diffInMilliseconds = end - start;
-    const diffInHours = diffInMilliseconds / (1000 * 60 * 60);
-    return Math.round(diffInHours);
-  };
-
   const [userid, setUserid] = useState<string>("");
+
+  /** Table pagination models and page sizes */
   const [volunteerPaginationModel, setVolunteerPaginationModel] =
     useState<GridPaginationModel>({
       page: 0,
@@ -221,9 +211,10 @@ const ViewEvents = () => {
       page: 0,
       pageSize: 5,
     });
-
   const PAGE_SIZE_VOLUNTEER = volunteerPaginationModel.pageSize;
   const PAGE_SIZE_SUPERVISOR = supervisorPaginationModel.pageSize; // Number of records to fetch per page
+
+  /** Tanstack query for fetching upcoming events */
 
   // upcoming events does not require pagination so it is a different query
   const {
@@ -249,7 +240,7 @@ const ViewEvents = () => {
     },
   });
 
-  // Handle Upcoming Events
+  // Handle upcoming events
   let upcomingEventsSupervisor =
     upcomingEventsQuery?.upcomingSupervised.result || [];
   let upcomingEventsVolunteer =
@@ -270,11 +261,11 @@ const ViewEvents = () => {
       startDate: event["startDate"],
       endDate: event["endDate"],
       role: userid === event["ownerId"] ? "Supervisor" : "Volunteer",
-      hours: computeHours(event["startDate"], event["endDate"]),
+      hours: eventHours(event["startDate"], event["endDate"]),
     });
   });
 
-  // Handle Past Events
+  // Handling past events
   // We need to separate the query for past events registered for and past events supervised
   // because we need to handle pagination differently for each (state is different)
   let cursorVolunteer = "";
@@ -326,7 +317,7 @@ const ViewEvents = () => {
       startDate: event["startDate"],
       endDate: event["endDate"],
       role: userid === event["ownerId"] ? "Supervisor" : "Volunteer",
-      hours: computeHours(event["startDate"], event["endDate"]),
+      hours: eventHours(event["startDate"], event["endDate"]),
     });
   });
 
@@ -338,7 +329,7 @@ const ViewEvents = () => {
       startDate: event["startDate"],
       endDate: event["endDate"],
       role: userid === event["ownerId"] ? "Supervisor" : "Volunteer",
-      hours: computeHours(event["startDate"], event["endDate"]),
+      hours: eventHours(event["startDate"], event["endDate"]),
     });
   });
 
@@ -392,7 +383,6 @@ const ViewEvents = () => {
     cursorVolunteer,
     totalNumberOfPagesVolunteer,
   ]);
-
   useEffect(() => {
     if (
       supervisorPaginationModel.page < totalNumberOfPagesSupervisor &&

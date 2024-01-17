@@ -1,19 +1,15 @@
 import React, { ChangeEvent, FormEvent, useEffect } from "react";
 import TabContainer from "@/components/molecules/TabContainer";
-import {
-  GridColDef,
-  GridValueGetterParams,
-  GridPaginationModel,
-} from "@mui/x-data-grid";
+import { GridColDef, GridPaginationModel } from "@mui/x-data-grid";
 import Table from "@/components/molecules/Table";
 import { MenuItem } from "@mui/material";
-import Button from "../atoms/Button";
 import SearchBar from "../atoms/SearchBar";
 import Select from "../atoms/Select";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { api } from "@/utils/api";
 import { useRouter } from "next/router";
 import Loading from "../molecules/Loading";
+import Card from "../molecules/Card";
 
 type attendeeData = {
   id: number;
@@ -47,7 +43,7 @@ const eventColumns: GridColDef[] = [
     field: "email",
     headerName: "Email",
     minWidth: 200,
-    // flex: 0.5,
+    flex: 0.5,
     renderHeader: (params) => (
       <div style={{ fontWeight: "bold" }}>{params.colDef.headerName}</div>
     ),
@@ -56,7 +52,7 @@ const eventColumns: GridColDef[] = [
     field: "phone",
     headerName: "Phone number",
     minWidth: 200,
-    // flex: 0.5,
+    flex: 0.5,
     renderHeader: (params) => (
       <div style={{ fontWeight: "bold" }}>{params.colDef.headerName}</div>
     ),
@@ -65,15 +61,15 @@ const eventColumns: GridColDef[] = [
     field: "status",
     headerName: "Status",
     minWidth: 175,
-    // flex: 0.5,
+    flex: 0.5,
     renderHeader: (params) => (
       <div style={{ fontWeight: "bold" }}>{params.colDef.headerName}</div>
     ),
     renderCell: () => (
       <div className="w-full">
         <Select
+          size="small"
           value="PENDING"
-          // value={role}
           onChange={(event: any) => console.log(event.target.value)}
         >
           <MenuItem value="CHECKED IN">Checked in</MenuItem>
@@ -93,7 +89,7 @@ const AttendeesTable = ({
   rows,
   totalNumberofData,
 }: attendeeTableProps) => {
-  // Search bar
+  /** Search bar */
   const [value, setValue] = React.useState("");
   const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
     setValue(event.target.value);
@@ -107,7 +103,7 @@ const AttendeesTable = ({
   };
 
   return (
-    <div>
+    <>
       <div className="pb-5 w-full sm:w-[600px]">
         <SearchBar
           placeholder="Search member by name, email"
@@ -116,31 +112,32 @@ const AttendeesTable = ({
           onClick={handleSubmit}
         />
       </div>
-      <Table
-        columns={eventColumns}
-        rows={rows}
-        setPaginationModel={setPaginationModel}
-        dataSetLength={totalNumberofData}
-        paginationModel={paginationModel}
-      />
-    </div>
+      <Card size="table">
+        <Table
+          columns={eventColumns}
+          rows={rows}
+          setPaginationModel={setPaginationModel}
+          dataSetLength={totalNumberofData}
+          paginationModel={paginationModel}
+        />
+      </Card>
+    </>
   );
 };
 
-/**
- * An ManageAttendees component
- */
+/** A ManageAttendees component */
 const ManageAttendees = ({}: ManageAttendeesProps) => {
   const router = useRouter();
   const eventid = router.query.eventid as string;
 
-  // For now -> we use the same state for all four tables
+  // TODO: For now -> we use the same state for all four tables
   const [paginationModel, setPaginationModel] =
     React.useState<GridPaginationModel>({
       page: 0,
       pageSize: 10,
     });
 
+  /** Tanstack query to fetch attendees data */
   const { data, isPending, isError, isPlaceholderData } = useQuery({
     queryKey: ["event", eventid, paginationModel.page],
     queryFn: async () => {
@@ -154,6 +151,7 @@ const ManageAttendees = ({}: ManageAttendeesProps) => {
     staleTime: Infinity,
   });
 
+  // Set attendees list, total entries, and total pages
   let attendeeList: attendeeData[] = [];
   data?.result.map((attendee: any) => {
     attendeeList.push({
@@ -165,18 +163,13 @@ const ManageAttendees = ({}: ManageAttendeesProps) => {
     });
   });
   const totalNumberofData = data?.totalItems;
-  let cursor = "";
-  if (data?.cursor) {
-    cursor = data?.cursor;
-  }
-
-  const queryClient = useQueryClient();
-
+  let cursor = data?.cursor ? data?.cursor : "";
   const totalNumberOfPages = Math.ceil(
     totalNumberofData / paginationModel.pageSize
   );
 
   // Prefetch the next page
+  const queryClient = useQueryClient();
   useEffect(() => {
     if (!isPlaceholderData && paginationModel.page < totalNumberOfPages) {
       queryClient.prefetchQuery({
@@ -192,6 +185,7 @@ const ManageAttendees = ({}: ManageAttendeesProps) => {
     }
   }, [data, queryClient, cursor, totalNumberofData, paginationModel.page]);
 
+  /** Attendees list tabs */
   const tabs = [
     {
       label: "Pending",
@@ -255,6 +249,7 @@ const ManageAttendees = ({}: ManageAttendeesProps) => {
     },
   ];
 
+  /** Loading screen */
   if (isPending) return <Loading />;
 
   return (
@@ -264,9 +259,7 @@ const ManageAttendees = ({}: ManageAttendeesProps) => {
       <div>Event recap here</div>
       <br />
       <div className="font-semibold text-2xl mb-6">Manage Volunteers</div>
-      <div>
-        <TabContainer fullWidth tabs={tabs} />
-      </div>
+      <TabContainer fullWidth tabs={tabs} />
     </>
   );
 };

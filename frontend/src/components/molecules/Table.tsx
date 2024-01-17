@@ -6,19 +6,13 @@ interface TableProps {
   columns: GridColDef<object>[];
   /** The table rows represented as an object array */
   rows: Object[];
-  /** The length of the entire dataset [NEEDED FOR PAGINATION] */
+  /** The length of the entire dataset */
   dataSetLength: number;
-  /** The number of elements to display per page default is 15*/
-  pageSize?: number;
-
-  /** The pagination model should come from the data layer which is usually the parent component*/
+  /** The pagination model should come from the data layer, the parent component */
   paginationModel: GridPaginationModel;
   setPaginationModel: React.Dispatch<React.SetStateAction<GridPaginationModel>>;
 }
-/**
- * A Table component
- */
-// initialCursor
+/** A Table component */
 const Table = ({
   columns,
   rows,

@@ -106,8 +106,8 @@ export const convertToISO = (inputTime: string, inputDate: string) => {
  * @returns the hours
  */
 export const eventHours = (endTime: string, startTime: string) => {
-  const end = new Date(endTime);
   const start = new Date(startTime);
+  const end = new Date(endTime);
   const diff = end.getTime() - start.getTime();
   const hours = diff / (1000 * 3600);
   return hours;

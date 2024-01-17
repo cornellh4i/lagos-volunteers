@@ -108,13 +108,13 @@ const Status = ({
   setStatusChangeNotifOnFailure,
   setStatusChangeNotifOnSuccess,
 }: userStatusProps) => {
-  /* State Vars for the Blacklist Confirmation modal */
+  /** State variables for the blacklist confirmation modal */
   const [open, setOpen] = useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
 
+  /** Tanstack query mutation for changing the user role */
   const queryClient = useQueryClient();
-
   const { mutateAsync: changeUserRole } = useMutation({
     mutationFn: async (variables: { role: string }) => {
       const { role } = variables;
@@ -133,6 +133,7 @@ const Status = ({
     },
   });
 
+  /** Tanstack query mutation for changing user status */
   const { mutateAsync: changeUserStatus } = useMutation({
     mutationFn: async () => {
       const status = userStatus == "ACTIVE" ? "INACTIVE" : "ACTIVE";
@@ -287,12 +288,8 @@ const VerifyCertificate = ({ totalHours }: verifyData) => {
 const ManageUserProfile = () => {
   const router = useRouter();
   const { userid } = router.query;
-  const [paginationModel, setPaginationModel] = useState<GridPaginationModel>({
-    page: 0,
-    pageSize: 10,
-  });
 
-  // State variables for the notification popups
+  /** State variables for the notification popups */
   const [statusChangeNotifOnSuccess, setStatusChangeNotifOnSuccess] =
     useState(false);
   const [statusChangeNotifOnFailure, setStatusChangeNotifOnFailure] =
@@ -302,54 +299,7 @@ const ManageUserProfile = () => {
   const [roleChangeNotifOpenOnFailure, setRoleChangeNotifOpenOnFailure] =
     useState(false);
 
-  const RoleChangeIndicatorOnSuccessComponent = (): JSX.Element | null => {
-    return roleChangeNotifOpenOnSuccess ? (
-      <Snackbar
-        variety="success"
-        open={roleChangeNotifOpenOnSuccess}
-        onClose={() => setRoleChangeNotifOpenOnSuccess(false)}
-      >
-        {`Success: You have successfully updated ${userProfileDetails?.name}'s role!`}
-      </Snackbar>
-    ) : null;
-  };
-
-  const RoleChangeIndicatorOnFailureComponent = (): JSX.Element | null => {
-    return roleChangeNotifOpenOnFailure ? (
-      <Snackbar
-        variety="error"
-        open={roleChangeNotifOpenOnFailure}
-        onClose={() => setRoleChangeNotifOpenOnFailure(false)}
-      >
-        {"Error: The request was not successful. Please Try again!"}
-      </Snackbar>
-    ) : null;
-  };
-
-  const StatusChangeIndicatorOnSuccessComponent = (): JSX.Element | null => {
-    return statusChangeNotifOnSuccess ? (
-      <Snackbar
-        variety="success"
-        open={statusChangeNotifOnSuccess}
-        onClose={() => setStatusChangeNotifOnSuccess(false)}
-      >
-        {`Success: ${userProfileDetails?.name}'s blacklist status was successfully updated!`}
-      </Snackbar>
-    ) : null;
-  };
-
-  const StatusChangeIndicatorOnFailureComponent = (): JSX.Element | null => {
-    return statusChangeNotifOnFailure ? (
-      <Snackbar
-        variety="error"
-        open={statusChangeNotifOnFailure}
-        onClose={() => setStatusChangeNotifOnFailure(false)}
-      >
-        {"Error: The request was not successful. Please Try again!"}
-      </Snackbar>
-    ) : null;
-  };
-
+  /** Tanstack query for fetching the user profile data */
   const {
     data: userProfileDetailsQuery,
     isPending: userProfileFetchPending,
@@ -361,7 +311,6 @@ const ManageUserProfile = () => {
       return data["data"];
     },
   });
-
   let userProfileDetails: userProfileData = {
     name: `${userProfileDetailsQuery?.profile?.firstName} ${userProfileDetailsQuery?.profile?.lastName}`,
     role: userProfileDetailsQuery?.role,
@@ -373,6 +322,13 @@ const ManageUserProfile = () => {
     imgSrc: userProfileDetailsQuery?.profile?.imageURL,
   };
 
+  /** Pagination model for the event history table */
+  const [paginationModel, setPaginationModel] = useState<GridPaginationModel>({
+    page: 0,
+    pageSize: 10,
+  });
+
+  /** Tanstack query for fetching the events a user is registered for */
   const {
     data: registeredEventsQuery,
     isPending: registeredEventsQueryPending,
@@ -388,17 +344,14 @@ const ManageUserProfile = () => {
     },
     staleTime: Infinity,
   });
-
   let cursor = "";
   if (registeredEventsQuery?.cursor) {
     cursor = registeredEventsQuery.cursor;
   }
-
   const totalNumberofData = registeredEventsQuery?.totalItems;
   const totalNumberofPages = Math.ceil(
     totalNumberofData / paginationModel.pageSize
   );
-
   const registeredEvents: eventRegistrationData[] = [];
   registeredEventsQuery?.result.map((event: any) => {
     registeredEvents.push({
@@ -409,9 +362,8 @@ const ManageUserProfile = () => {
     });
   });
 
-  const queryClient = useQueryClient();
-
   // Prefetch the next page
+  const queryClient = useQueryClient();
   useEffect(() => {
     if (!isPlaceholderData && paginationModel.page < totalNumberofPages) {
       queryClient.prefetchQuery({
