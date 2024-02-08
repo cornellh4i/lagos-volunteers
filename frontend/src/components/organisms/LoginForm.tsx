@@ -3,12 +3,9 @@ import Divider from "@mui/material/Divider";
 import Button from "../atoms/Button";
 import TextField from "../atoms/TextField";
 import { useForm, SubmitHandler } from "react-hook-form";
-import { useAuth } from "@/utils/AuthContext";
 import { useRouter } from "next/router";
 import Link from "next/link";
 import { auth } from "@/utils/firebase";
-import Alert from "../atoms/Alert";
-
 import {
   useSignInWithEmailAndPassword,
   useSignInWithGoogle,
@@ -54,8 +51,9 @@ const GoogleIcon = () => {
 };
 
 const LoginForm = () => {
-  const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
+
+  /** Firebase hooks */
   const [
     signInWithEmailAndPassword,
     signedInUser,
@@ -63,10 +61,7 @@ const LoginForm = () => {
     signInErrors,
   ] = useSignInWithEmailAndPassword(auth);
 
-  // Sign in With Google
-  const [signInWithGoogle, googleUser, googleLoading, googleError] =
-    useSignInWithGoogle(auth);
-
+  /** React hook form */
   const {
     register,
     handleSubmit,
@@ -74,6 +69,10 @@ const LoginForm = () => {
     formState: { errors },
   } = useForm<FormValues>();
 
+  /** State variables for the notification popups */
+  const [notifOpen, setNotifOpen] = useState(false);
+
+  /** Handle login errors */
   const handleErrors = (errors: any) => {
     switch (errors) {
       case "auth/invalid-email":
@@ -91,105 +90,89 @@ const LoginForm = () => {
     }
   };
 
-  // State variables for the notification popups
-  const [notifOpen, setNotifOpen] = useState(false);
-
-  const LoginErrorComponent = (): JSX.Element | null => {
-    setNotifOpen(true);
-    return signInErrors ? (
-      <Snackbar
-        variety="error"
-        open={notifOpen}
-        onClose={() => setNotifOpen(false)}
-      >
-        Error: {handleErrors(signInErrors.code)}
-      </Snackbar>
-    ) : null;
-  };
-
-  const handleGoogleLogin = async () => {
-    setIsLoading(true);
-    try {
-      await signInWithGoogle();
-      if (googleUser) {
-        router.push("/events/view");
-      }
-    } catch (err) {}
-    setIsLoading(false);
-  };
-
+  /** Handles login */
   const handleLogin: SubmitHandler<FormValues> = async (data) => {
-    setIsLoading(true);
     const { email, password } = data;
-
     try {
       await signInWithEmailAndPassword(email, password);
       if (signedInUser) {
         router.push("/events/view");
       }
-    } catch (err) {}
-    setIsLoading(false);
+    } catch (err) {
+      setNotifOpen(true);
+    }
   };
+
+  /** Sign in with Google */
+  const [signInWithGoogle, googleUser, googleLoading, googleError] =
+    useSignInWithGoogle(auth);
+
   return (
-    <div className="space-y-4 ">
-      <LoginErrorComponent />
-      <img src="/lfbi_logo.png" className="w-24" />
-      <form onSubmit={handleSubmit(handleLogin)} className="space-y-4 ">
-        <div className="font-bold text-3xl"> Log In </div>
-        <div>
+    <>
+      {/* Login error component */}
+      <Snackbar
+        variety="error"
+        open={notifOpen}
+        onClose={() => setNotifOpen(false)}
+      >
+        Error: {handleErrors(signInErrors?.code)}
+      </Snackbar>
+
+      {/* Login form */}
+      <div className="space-y-4">
+        <img src="/lfbi_logo.png" className="w-24" />
+        <form onSubmit={handleSubmit(handleLogin)} className="space-y-4">
+          <div className="font-bold text-3xl"> Log In </div>
           <TextField
             error={errors.email ? "Required" : undefined}
             label="Email"
             type="email"
-            {...register("email", { required: "true" })}
+            {...register("email", { required: true })}
           />
-        </div>
-        <div>
           <TextField
             error={errors.password ? "Required" : undefined}
             label="Password"
             type="password"
-            {...register("password", { required: "true" })}
+            {...register("password", { required: true })}
           />
-        </div>
-        <div className="text-center">
-          <Link
-            href="/password/forgot"
-            className="text-primary-200 hover:underline no-underline"
+          <div className="text-center">
+            <Link
+              href="/password/forgot"
+              className="text-primary-200 hover:underline no-underline"
+            >
+              Forgot password?
+            </Link>
+          </div>
+          <Button
+            loading={signInLoading}
+            disabled={signInLoading}
+            type="submit"
           >
-            Forgot password?
-          </Link>
-        </div>
-        <div>
-          <Button loading={isLoading} type="submit">
             Log in
           </Button>
-        </div>
+        </form>
         <div>
           <Divider>or</Divider>
         </div>
-      </form>
-      <div>
-        <Link href="/signup">
-          <Button type="submit" variety="secondary">
-            Sign up with email
-          </Button>
-        </Link>
-      </div>
-      <div>
+        <div>
+          <Link href="/signup">
+            <Button type="submit" variety="secondary">
+              Sign up with email
+            </Button>
+          </Link>
+        </div>
         <Button
           loading={googleLoading}
           disabled={googleLoading}
           variety="secondary"
           icon={<GoogleIcon />}
-          // We are paused on this feature for now...
           // onClick={() => handleGoogleLogin()}
           type="submit"
         >
           Continue with Google
         </Button>
       </div>
-    </div>
+    </>
   );
 };
 

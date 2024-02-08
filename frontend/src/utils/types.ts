@@ -37,3 +37,17 @@ export type Action =
   | "publish"
   | "manage attendees"
   | "edit";
+
+export type UserData = {
+  id: string;
+  email: string;
+  firstName: string;
+  lastName: string;
+  nickname: string;
+  role?: string;
+  status?: string;
+  createdAt?: string;
+  verified?: boolean;
+  disciplinaryNotices?: number;
+  imageUrl?: string;
+};

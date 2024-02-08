@@ -50,7 +50,7 @@ eventRouter.delete("/:eventid", async (req: Request, res: Response) => {
 eventRouter.get("/", async (req: Request, res: Response) => {
   // #swagger.tags = ['Events']
   const filter = {
-    upcoming: req.query.upcoming as string,
+    date: req.query.date as string,
     ownerId: req.query.ownerid as string,
     userId: req.query.userid as string,
   };

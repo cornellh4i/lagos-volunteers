@@ -1,16 +1,15 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import Button from "../atoms/Button";
 import TextField from "../atoms/TextField";
 import Checkbox from "../atoms/Checkbox";
 import { auth } from "@/utils/firebase";
 import { useForm, SubmitHandler } from "react-hook-form";
-import { useRouter } from "next/router";
-import { BASE_URL } from "@/utils/constants";
-import { useUpdatePassword } from "react-firebase-hooks/auth";
-import Alert from "../atoms/Alert";
 import { reauthenticateWithCredential, EmailAuthProvider } from "firebase/auth";
 import Snackbar from "../atoms/Snackbar";
 import { api } from "@/utils/api";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { updatePassword } from "firebase/auth";
+import { User } from "firebase/auth";
 
 type FormValues = {
   email: string;
@@ -42,14 +41,16 @@ interface ProfileFormProps {
 }
 
 const ProfileForm = ({ userDetails }: ProfileFormProps) => {
-  const router = useRouter();
-  const [updatePassword, updating, error] = useUpdatePassword(auth);
-  const [success, setSuccess] = React.useState<boolean>(false);
-  const [isLoading, setIsLoading] = React.useState<boolean>(false);
-  const [errorMessage, setErrorMessage] = React.useState<string>("");
+  const queryClient = useQueryClient();
 
+  /** State variables for the notification popups */
+  const [successNotificationOpen, setSuccessNotificationOpen] = useState(false);
+  const [errorNotificationOpen, setErrorNotificationOpen] = useState(false);
+
+  /** Handles form errors */
+  const [errorMessage, setErrorMessage] = React.useState<string>("");
   const handleErrors = (errors: any) => {
-    const errorParsed = errors?.split("/")[1].slice(0, -2);
+    const errorParsed = errors?.split("/")[1]?.slice(0, -2);
     switch (errorParsed) {
       case "invalid-email":
         return "Invalid email address format.";
@@ -68,53 +69,11 @@ const ProfileForm = ({ userDetails }: ProfileFormProps) => {
       case "too-many-requests":
         return "You have made too many requests to change your password. Please try again later.";
       default:
-        return "Something went wrong.";
+        return "Something went wrong. Please try again";
     }
   };
 
-  // State variables for the notification popups
-  const [notifOpen, setNotifOpen] = useState(false);
-
-  const ProfileErrorComponent = (): JSX.Element | null => {
-    setNotifOpen(true);
-    return error ? (
-      <Snackbar
-        variety="error"
-        open={notifOpen}
-        onClose={() => setNotifOpen(false)}
-      >
-        Error: {handleErrors(error?.message)}
-      </Snackbar>
-    ) : null;
-  };
-
-  const ProfileReauthenticationErrorComponent = (): JSX.Element | null => {
-    setNotifOpen(true);
-    return errorMessage.length > 0 ? (
-      <Snackbar
-        variety="error"
-        open={notifOpen}
-        onClose={() => setNotifOpen(false)}
-      >
-        Error: {handleErrors(errorMessage)}
-      </Snackbar>
-    ) : null;
-  };
-
-  const ProfileSuccessComponent = (): JSX.Element | null => {
-    setNotifOpen(true);
-    return !error && !(errorMessage.length > 0) && success ? (
-      <Snackbar
-        variety="success"
-        open={notifOpen}
-        onClose={() => setNotifOpen(false)}
-      >
-        Success: Profile update was successful. Please refresh the page to see
-        your changes!
-      </Snackbar>
-    ) : null;
-  };
-
+  /** React hook form */
   const {
     register,
     handleSubmit,
@@ -134,110 +93,120 @@ const ProfileForm = ({ userDetails }: ProfileFormProps) => {
     },
   });
 
-  // Handle checkbox
+  /** Handles checkbox */
+
+  // TODO: Implement this
   const [checked, setChecked] = useState(false);
   const handleCheckbox = () => {
     setChecked((checked) => !checked);
   };
 
-  const handleChanges: SubmitHandler<FormValues> = async (data) => {
-    const {
-      email,
-      firstName,
-      lastName,
-      preferredName,
-      oldPassword,
-      newPassword,
-      confirmNewPassword,
-    } = data;
-
-    try {
-      setIsLoading(true);
-      // Update profile in DB
-      const url = BASE_URL as string;
-      const userid = userDetails.id;
-      const { response } = await api.put(`/users/${userid}/profile`, {
-        firstName: firstName,
-        lastName: lastName,
-        nickname: preferredName,
-      });
+  /** Tanstack query mutation to reauthenticate the user session */
+  const ReAuthenticateUserSession = useMutation({
+    mutationFn: async (data: any) => {
       const currentUser = auth.currentUser;
-
-      // Update password in Firebase
-      if (newPassword !== "" && currentUser != null) {
-        // first re-authenticate the user to check if the old password is correct
-
-        const credentials = EmailAuthProvider.credential(email, oldPassword);
-        reauthenticateWithCredential(currentUser, credentials)
-          .then(() => {
-            updatePassword(newPassword).then(() => {
-              setSuccess(true);
-              setIsLoading(false);
-            });
-          })
-          .catch((error) => {
-            setErrorMessage(error.message);
-            setIsLoading(false);
-          });
+      if (currentUser != null) {
+        const credentials = EmailAuthProvider.credential(
+          data.email,
+          data.oldPassword
+        );
+        return reauthenticateWithCredential(currentUser, credentials);
       }
-      setErrorMessage("");
-      setIsLoading(false);
-    } catch (error) {
-      setIsLoading(false);
-      console.log(error);
+    },
+    retry: false,
+  });
+
+  /** Tanstack query mutation to update user password in Firebase */
+  const updateUserPasswordInFirebase = useMutation({
+    mutationFn: async (data: any) => {
+      const user = auth.currentUser as User;
+      return updatePassword(user, data.newPassword);
+    },
+    retry: false,
+  });
+
+  /** Tanstack query mutation to update the user profile */
+  const updateProfileInDB = useMutation({
+    mutationFn: async (data: any) => {
+      return api.put(`/users/${userDetails.id}/profile`, {
+        firstName: data.firstName,
+        lastName: data.lastName,
+        nickname: data.preferredName,
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["profile"] });
+    },
+    retry: false,
+  });
+
+  /** Handles form submit */
+  const handleChanges: SubmitHandler<FormValues> = async (data) => {
+    try {
+      await ReAuthenticateUserSession.mutateAsync(data);
+      await updateUserPasswordInFirebase.mutateAsync(data);
+      await updateProfileInDB.mutateAsync(data);
+      setSuccessNotificationOpen(true);
+    } catch (error: any) {
+      setErrorNotificationOpen(true);
+      setErrorMessage(error.message);
     }
   };
 
   return (
-    <form onSubmit={handleSubmit(handleChanges)} className="space-y-4">
-      <ProfileErrorComponent />
-      <ProfileSuccessComponent />
-      <ProfileReauthenticationErrorComponent />
-      <div>
+    <>
+      {/* Profile update error snackbar */}
+      <Snackbar
+        variety="error"
+        open={errorNotificationOpen}
+        onClose={() => setErrorNotificationOpen(false)}
+      >
+        Error: {handleErrors(errorMessage)}
+      </Snackbar>
+
+      {/* Profile update success snackbar */}
+      <Snackbar
+        variety="success"
+        open={successNotificationOpen}
+        onClose={() => setSuccessNotificationOpen(false)}
+      >
+        Success: Profile update was successful!
+      </Snackbar>
+
+      {/* Profile form */}
+      <form onSubmit={handleSubmit(handleChanges)} className="space-y-4">
         <TextField
           label="Email"
           disabled={true}
           error={errors.email ? "Required" : undefined}
-          {...register("email", { required: "true" })}
+          {...register("email", { required: true })}
         />
-      </div>
-      <div>
         <TextField
           label="First name"
           error={errors.firstName ? "Required" : undefined}
-          {...register("firstName", { required: "true" })}
+          {...register("firstName", { required: true })}
         />
-      </div>
-      <div>
         <TextField
           label="Last name"
           error={errors.lastName ? "Required" : undefined}
-          {...register("lastName", { required: "true" })}
+          {...register("lastName", { required: true })}
         />
-      </div>
-      <div>
         <TextField
           label="Preferred name"
           error={errors.preferredName ? "Required" : undefined}
-          {...register("preferredName", { required: "true" })}
+          {...register("preferredName", { required: true })}
         />
-      </div>
-      <div>
         <TextField
           type="password"
           label="Old password"
           error={errors.oldPassword ? "Required" : undefined}
-          {...register("oldPassword", { required: "false" })}
+          {...register("oldPassword", { required: true })}
         />
-      </div>
-      <div>
         <TextField
           type="password"
           label="New password "
-          {...register("newPassword", { required: "false" })}
+          {...register("newPassword", { required: false })}
         />
-      </div>
-      <div>
         <TextField
           type="password"
           label="Confirm new password"
@@ -246,35 +215,31 @@ const ProfileForm = ({ userDetails }: ProfileFormProps) => {
               ? undefined
               : "Passwords must match"
           }
-          {...register("confirmNewPassword", { required: "false" })}
+          {...register("confirmNewPassword", { required: false })}
         />
-      </div>
-      <div>
         <Checkbox
           checked={checked}
           onChange={handleCheckbox}
           label="Email notifications"
         />
-      </div>
-      <div className="sm:space-x-4 grid grid-cols-1 sm:grid-cols-2">
-        <div className="pb-4 sm:pb-0">
-          <Button loading={isLoading} disabled={isLoading} type="submit">
-            Save Changes
-          </Button>
+        <div className="sm:space-x-4 grid grid-cols-1 sm:grid-cols-2">
+          <div className="pb-4 sm:pb-0">
+            <Button
+              type="button"
+              variety="secondary"
+              onClick={() => {
+                reset(userDetails, { keepDefaultValues: true });
+              }}
+            >
+              Cancel
+            </Button>
+          </div>
+          <div>
+            <Button type="submit">Save Changes</Button>
+          </div>
         </div>
-        <div>
-          <Button
-            type="button"
-            variety="secondary"
-            onClick={() => {
-              reset(userDetails, { keepDefaultValues: true });
-            }}
-          >
-            Cancel
-          </Button>
-        </div>
-      </div>
-    </form>
+      </form>
+    </>
   );
 };
 

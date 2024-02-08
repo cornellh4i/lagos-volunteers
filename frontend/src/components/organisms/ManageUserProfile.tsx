@@ -7,23 +7,21 @@ import MenuItem from "@mui/material/MenuItem";
 import { SelectChangeEvent } from "@mui/material/Select";
 import Select from "../atoms/Select";
 import Table from "@/components/molecules/Table";
-import { GridColDef } from "@mui/x-data-grid";
+import { GridColDef, GridPaginationModel } from "@mui/x-data-grid";
 import HourglassEmptyIcon from "@mui/icons-material/HourglassEmpty";
 import IconText from "../atoms/IconText";
 import LinearProgress from "@mui/material/LinearProgress";
 import Link from "next/link";
 import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
-import { IconButton } from "@mui/material";
-import { auth } from "@/utils/firebase";
-import Alert from "../atoms/Alert";
+import { Box, IconButton } from "@mui/material";
 import { useRouter } from "next/router";
 import { Grid } from "@mui/material";
 import Modal from "@/components/molecules/Modal";
 import Loading from "@/components/molecules/Loading";
-import { formatDateString } from "@/utils/helpers";
-import { UserRole, UserStatus } from "@/utils/types";
+import { eventHours, formatDateString } from "@/utils/helpers";
 import Snackbar from "../atoms/Snackbar";
 import { api } from "@/utils/api";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
 type userProfileData = {
   name: string;
@@ -36,16 +34,34 @@ type userProfileData = {
   imgSrc?: string;
 };
 
-type userStatusData = {
+interface userStatusProps {
   userRole: string;
   userStatus: string;
   userID: string;
+  setRoleChangeNotifOpenOnSuccess: React.Dispatch<
+    React.SetStateAction<boolean>
+  >;
+  setRoleChangeNotifOpenOnFailure: React.Dispatch<
+    React.SetStateAction<boolean>
+  >;
+  setStatusChangeNotifOnSuccess: React.Dispatch<React.SetStateAction<boolean>>;
+  setStatusChangeNotifOnFailure: React.Dispatch<React.SetStateAction<boolean>>;
+}
+
+type eventRegistrationData = {
+  id: string;
+  program: string;
+  date: string;
+  hours: number;
 };
 
-type userRegistrationData = {
+interface userRegistrationProps {
   totalHours: number;
-  userRegistrations: any[];
-};
+  userRegistrations: eventRegistrationData[];
+  paginationModel: GridPaginationModel;
+  setPaginationModel: React.Dispatch<React.SetStateAction<GridPaginationModel>>;
+  totalNumberofData: number;
+}
 
 type verifyData = {
   totalHours: number;
@@ -57,23 +73,24 @@ type modalBodyProps = {
   handleClose: () => void;
 };
 
+/** Confirmation modal for blacklisting a user */
 const ModalBody = ({ status, blacklistFunc, handleClose }: modalBodyProps) => {
   return (
     <div>
-      <p>
+      <Box sx={{ textAlign: "center", marginBottom: 3 }}>
         {status == "ACTIVE"
           ? "Are you sure you want to blacklist this user?"
           : "Are you sure you want to remove this member from the blacklist?"}
-      </p>
+      </Box>
       <Grid container spacing={2}>
         <Grid item md={6} xs={12}>
-          <Button type="button" onClick={handleClose}>
+          <Button variety="secondary" onClick={handleClose}>
             Cancel
           </Button>
         </Grid>
         <Grid item md={6} xs={12}>
-          <Button type="button" onClick={blacklistFunc}>
-            {status == "ACTIVE" ? "Blacklist" : "Remove"}
+          <Button variety="error" onClick={blacklistFunc}>
+            {status == "ACTIVE" ? "Yes, blacklist" : "Remove"}
           </Button>
         </Grid>
       </Grid>
@@ -81,67 +98,61 @@ const ModalBody = ({ status, blacklistFunc, handleClose }: modalBodyProps) => {
   );
 };
 
-/**
- * A ManageUserProfile component
- */
-const Status = ({ userRole, userStatus, userID }: userStatusData) => {
-  /* State Vars for the Blacklist Confirmation modal */
+/** A ManageUserProfile component */
+const Status = ({
+  userRole,
+  userStatus,
+  userID,
+  setRoleChangeNotifOpenOnSuccess,
+  setRoleChangeNotifOpenOnFailure,
+  setStatusChangeNotifOnFailure,
+  setStatusChangeNotifOnSuccess,
+}: userStatusProps) => {
+  /** State variables for the blacklist confirmation modal */
   const [open, setOpen] = useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
 
-  /* State Vars for Specific to Status Tab */
-  const [role, setRole] = useState(userRole);
-  const [status, setStatus] = useState(userStatus);
-  const handleUserRoleChange = async (event: SelectChangeEvent) => {
-    try {
-      // FETCH Prep
-      const val = event.target.value;
-      const currentUser = auth.currentUser;
-
-      // FETCH Call
-      const { response } = await api.patch(`/users/${userID}/role`, {
-        role: val,
+  /** Tanstack query mutation for changing the user role */
+  const queryClient = useQueryClient();
+  const { mutateAsync: changeUserRole } = useMutation({
+    mutationFn: async (variables: { role: string }) => {
+      const { role } = variables;
+      const { data } = await api.patch(`/users/${userID}/role`, {
+        role: role,
       });
+      return data;
+    },
+    retry: false,
+    onSuccess: () => {
+      setRoleChangeNotifOpenOnSuccess(true);
+      queryClient.invalidateQueries({ queryKey: ["user", userID] });
+    },
+    onError: () => {
+      setRoleChangeNotifOpenOnFailure(true);
+    },
+  });
 
-      // FETCH Response
-      if (response.ok) {
-        localStorage.setItem("role", "true");
-        window.location.reload(); // relaod the window to reset the indicator
-      }
-    } catch (error) {
-      localStorage.setItem("role", "false");
-    }
-    setRole(event.target.value);
-  };
-
-  const handleBlacklist = async () => {
-    var bodyval = "";
-    if (status == "ACTIVE") {
-      bodyval = "HOLD";
-    } else if (status == "HOLD") {
-      bodyval = "ACTIVE";
-    } else {
-      bodyval = "INACTIVE";
-    }
-    try {
-      // FETCH Prep
-      const currentUser = auth.currentUser;
-      const { response } = await api.patch(`/users/${userID}/status`, {
-        status: bodyval,
+  /** Tanstack query mutation for changing user status */
+  const { mutateAsync: changeUserStatus } = useMutation({
+    mutationFn: async () => {
+      const status = userStatus == "ACTIVE" ? "INACTIVE" : "ACTIVE";
+      const { data } = await api.patch(`/users/${userID}/status`, {
+        status: status,
       });
-
-      // FETCH Response
-      if (response.ok) {
-        localStorage.setItem("blacklist", "true");
-        window.location.reload(); // reload the window to reset the indicator
-      }
-    } catch (error) {
-      localStorage.setItem("blacklist", "false");
-    }
-    setStatus(bodyval);
-    handleClose(); // closes the modal
-  };
+      return data;
+    },
+    retry: false,
+    onSuccess: () => {
+      setStatusChangeNotifOnSuccess(true);
+      handleClose();
+      queryClient.invalidateQueries({ queryKey: ["user", userID] });
+    },
+    onError: () => {
+      setStatusChangeNotifOnFailure(true);
+      handleClose();
+    },
+  });
 
   return (
     <>
@@ -151,8 +162,8 @@ const Status = ({ userRole, userStatus, userID }: userStatusData) => {
           handleClose={handleClose}
           children={
             <ModalBody
-              status={status}
-              blacklistFunc={handleBlacklist}
+              status={userStatus}
+              blacklistFunc={changeUserStatus}
               handleClose={handleClose}
             />
           }
@@ -160,8 +171,10 @@ const Status = ({ userRole, userStatus, userID }: userStatusData) => {
         <FormControl className="w-full sm:w-1/2">
           <Select
             label="Assign role"
-            value={role}
-            onChange={handleUserRoleChange}
+            value={userRole}
+            onChange={(event: SelectChangeEvent) =>
+              changeUserRole({ role: event.target.value })
+            }
           >
             <MenuItem value="VOLUNTEER">Volunteer</MenuItem>
             <MenuItem value="SUPERVISOR">Supervisor</MenuItem>
@@ -172,7 +185,7 @@ const Status = ({ userRole, userStatus, userID }: userStatusData) => {
         <div className="pt-2">Blacklist</div>
         <div className="w-full sm:w-1/4">
           <Button onClick={handleOpen}>
-            {status == "ACTIVE"
+            {userStatus == "ACTIVE"
               ? "Blacklist Member"
               : "Remove Member from Blacklist"}
           </Button>
@@ -185,7 +198,10 @@ const Status = ({ userRole, userStatus, userID }: userStatusData) => {
 const Registrations = ({
   totalHours,
   userRegistrations,
-}: userRegistrationData) => {
+  paginationModel,
+  setPaginationModel,
+  totalNumberofData,
+}: userRegistrationProps) => {
   const eventColumns: GridColDef[] = [
     {
       field: "program",
@@ -208,22 +224,20 @@ const Registrations = ({
     },
   ];
 
-  // use EndTime and StartTime to calculate hours
-  const eventHours = (endTime: string, startTime: string) => {
-    const end = new Date(endTime);
-    const start = new Date(startTime);
-    const diff = end.getTime() - start.getTime();
-    const hours = diff / (1000 * 3600);
-    return hours;
-  };
-  console.log(userRegistrations);
-
-  const eventRows = userRegistrations.map((event) => ({
-    id: event.event.id,
-    program: event.event.name,
-    date: formatDateString(event.event.startDate),
-    hours: eventHours(event.event.endDate, event.event.startDate), // TODO: how to get hours for event?
-  }));
+  if (userRegistrations.length == 0) {
+    return (
+      <>
+        <IconText icon={<HourglassEmptyIcon className="text-gray-400" />}>
+          <div className="font-bold">
+            {totalHours.toString()} Hours Volunteered
+          </div>
+        </IconText>
+        <div className="text-center">
+          <p>This user has not registered for any events!</p>
+        </div>
+      </>
+    );
+  }
 
   return (
     <>
@@ -232,7 +246,13 @@ const Registrations = ({
           {totalHours.toString()} Hours Volunteered
         </div>
       </IconText>
-      <Table columns={eventColumns} rows={eventRows} />
+      <Table
+        columns={eventColumns}
+        rows={userRegistrations}
+        paginationModel={paginationModel}
+        setPaginationModel={setPaginationModel}
+        dataSetLength={totalNumberofData}
+      />
     </>
   );
 };
@@ -269,163 +289,188 @@ const ManageUserProfile = () => {
   const router = useRouter();
   const { userid } = router.query;
 
-  const [userProfileDetails, setUserProfileDetails] = useState<
-    userProfileData | null | undefined
-  >(null);
-  const [registeredEvents, setRegisteredEvents] = useState<any[]>([]);
+  /** State variables for the notification popups */
+  const [statusChangeNotifOnSuccess, setStatusChangeNotifOnSuccess] =
+    useState(false);
+  const [statusChangeNotifOnFailure, setStatusChangeNotifOnFailure] =
+    useState(false);
+  const [roleChangeNotifOpenOnSuccess, setRoleChangeNotifOpenOnSuccess] =
+    useState(false);
+  const [roleChangeNotifOpenOnFailure, setRoleChangeNotifOpenOnFailure] =
+    useState(false);
 
-  // State variables for the notification popups
-  const [notifOpen, setNotifOpen] = useState(false);
-
-  /* State Vars for Blacklist and UserRoleChange Indicators  */
-  const [userRoleIndicator, setUserRoleIndicator] = useState<string>("");
-  const [blacklistIndicator, setBlacklistIndicator] = useState<string>("");
-  const ChangeIndicatorComponent = (): JSX.Element | null => {
-    if (userRoleIndicator != "") {
-      setNotifOpen(true);
-      return userRoleIndicator === "SUCCESS" ? (
-        <Snackbar
-          variety="success"
-          open={notifOpen}
-          onClose={() => setNotifOpen(false)}
-        >
-          {`Success: You have successfully updated ${userProfileDetails?.name}'s role!`}
-        </Snackbar>
-      ) : (
-        <Snackbar
-          variety="error"
-          open={notifOpen}
-          onClose={() => setNotifOpen(false)}
-        >
-          {"Error: The request was not successful. Please Try again!"}
-        </Snackbar>
-      );
-    } else if (blacklistIndicator != "") {
-      setNotifOpen(true);
-      return blacklistIndicator === "SUCCESS" ? (
-        <Snackbar
-          variety="success"
-          open={notifOpen}
-          onClose={() => setNotifOpen(false)}
-        >
-          {`Success: ${userProfileDetails?.name}'s blacklist status was successfully updated!`}
-        </Snackbar>
-      ) : (
-        <Snackbar
-          variety="error"
-          open={notifOpen}
-          onClose={() => setNotifOpen(false)}
-        >
-          {"Error: User blacklist status has not changed. Please Try again!"}
-        </Snackbar>
-      );
-    } else {
-      return null;
-    }
-  };
-
-  const fetchUserDetails = async () => {
-    try {
+  /** Tanstack query for fetching the user profile data */
+  const {
+    data: userProfileDetailsQuery,
+    isPending: userProfileFetchPending,
+    isError,
+  } = useQuery({
+    queryKey: ["user", userid],
+    queryFn: async () => {
       const { data } = await api.get(`/users/${userid}/profile`);
-      const result = {
-        name:
-          data["data"]["profile"]["firstName"] +
-          " " +
-          data["data"]["profile"]["lastName"],
-        role: data["data"]["role"],
-        email: data["data"]["email"],
-        joinDate: formatDateString(data["data"]["createdAt"]),
-        userid: data["data"]["id"],
-        hours: data["data"]["hours"],
-        status: data["data"]["status"],
-        imgSrc: data["data"]["profile"]["imageURL"],
-      };
-      setUserProfileDetails(result);
-    } catch (error) {
-      console.error(error);
-    }
-  };
-  const fetchUserRegistrations = async () => {
-    try {
-      const { data } = await api.get(`/users/${userid}/registered`);
-      setRegisteredEvents(data["data"]["events"]);
-    } catch (error) {
-      console.error(error);
-    }
+      return data["data"];
+    },
+  });
+  let userProfileDetails: userProfileData = {
+    name: `${userProfileDetailsQuery?.profile?.firstName} ${userProfileDetailsQuery?.profile?.lastName}`,
+    role: userProfileDetailsQuery?.role,
+    email: userProfileDetailsQuery?.email,
+    joinDate: formatDateString(userProfileDetailsQuery?.createdAt),
+    userid: userProfileDetailsQuery?.id,
+    hours: userProfileDetailsQuery?.hours,
+    status: userProfileDetailsQuery?.status,
+    imgSrc: userProfileDetailsQuery?.profile?.imageURL,
   };
 
+  /** Pagination model for the event history table */
+  const [paginationModel, setPaginationModel] = useState<GridPaginationModel>({
+    page: 0,
+    pageSize: 10,
+  });
+
+  /** Tanstack query for fetching the events a user is registered for */
+  const {
+    data: registeredEventsQuery,
+    isPending: registeredEventsQueryPending,
+    isError: registeredEventsQueryError,
+    isPlaceholderData,
+  } = useQuery({
+    queryKey: ["user_events", userid, paginationModel.page],
+    queryFn: async () => {
+      const { data } = await api.get(
+        `/events?userid=${userid}&limit=${paginationModel.pageSize}`
+      );
+      return data["data"];
+    },
+    staleTime: Infinity,
+  });
+  let cursor = "";
+  if (registeredEventsQuery?.cursor) {
+    cursor = registeredEventsQuery.cursor;
+  }
+  const totalNumberofData = registeredEventsQuery?.totalItems;
+  const totalNumberofPages = Math.ceil(
+    totalNumberofData / paginationModel.pageSize
+  );
+  const registeredEvents: eventRegistrationData[] = [];
+  registeredEventsQuery?.result.map((event: any) => {
+    registeredEvents.push({
+      id: event.id,
+      program: event.name,
+      date: formatDateString(event.startDate),
+      hours: eventHours(event.endDate, event.startDate),
+    });
+  });
+
+  // Prefetch the next page
+  const queryClient = useQueryClient();
   useEffect(() => {
-    // check if localStorage has status change
-    const blacklistStatusChange = localStorage.getItem("blacklist");
-    const roleStatusChange = localStorage.getItem("role");
-
-    if (blacklistStatusChange) {
-      if (blacklistStatusChange === "true") {
-        setBlacklistIndicator("SUCCESS");
-      } else {
-        setBlacklistIndicator("FAILURE");
-      }
-      localStorage.removeItem("blacklist");
+    if (!isPlaceholderData && paginationModel.page < totalNumberofPages) {
+      queryClient.prefetchQuery({
+        queryKey: ["user_events", userid, paginationModel.page + 1],
+        queryFn: async () => {
+          const { data } = await api.get(
+            `/events?userid=${userid}&limit=${paginationModel.pageSize}&after=${cursor}`
+          );
+          return data["data"];
+        },
+        staleTime: Infinity,
+      });
     }
+  }, [
+    registeredEventsQuery,
+    queryClient,
+    cursor,
+    totalNumberofData,
+    paginationModel.page,
+  ]);
 
-    setTimeout(() => {
-      setBlacklistIndicator("");
-      setUserRoleIndicator("");
-    }, 4000);
+  const tabs = [
+    {
+      label: "Status",
+      panel: (
+        <Status
+          userRole={userProfileDetails.role}
+          userStatus={userProfileDetails.status}
+          userID={userProfileDetails.userid}
+          setRoleChangeNotifOpenOnSuccess={setRoleChangeNotifOpenOnSuccess}
+          setRoleChangeNotifOpenOnFailure={setRoleChangeNotifOpenOnFailure}
+          setStatusChangeNotifOnSuccess={setStatusChangeNotifOnSuccess}
+          setStatusChangeNotifOnFailure={setStatusChangeNotifOnFailure}
+        />
+      ),
+    },
+    {
+      label: "Registrations",
+      panel: (
+        <Registrations
+          totalHours={userProfileDetails.hours}
+          userRegistrations={registeredEvents}
+          paginationModel={paginationModel}
+          setPaginationModel={setPaginationModel}
+          totalNumberofData={totalNumberofData}
+        />
+      ),
+    },
+    {
+      label: "Verify Certificate Request",
+      panel: <VerifyCertificate totalHours={userProfileDetails.hours} />,
+    },
+  ];
 
-    if (roleStatusChange) {
-      if (roleStatusChange === "true") {
-        setUserRoleIndicator("SUCCESS");
-      } else {
-        setUserRoleIndicator("FAILURE");
-      }
-      localStorage.removeItem("role");
-    }
+  if (isError || registeredEventsQueryError) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <div className="text-center">
+          Aw! An error occurred :(
+          <p>Please try again</p>
+        </div>
+      </div>
+    );
+  }
 
-    const fetchData = async () => {
-      if (router.isReady) {
-        await fetchUserDetails();
-        await fetchUserRegistrations();
-      }
-    };
-    fetchData();
-  }, [router.isReady]);
-
-  const tabs =
-    // ensures that there is data in userProfileDetails
-    userProfileDetails
-      ? [
-          {
-            label: "Status",
-            panel: (
-              <Status
-                userRole={userProfileDetails.role}
-                userStatus={userProfileDetails.status}
-                userID={userProfileDetails.userid}
-              />
-            ),
-          },
-          {
-            label: "Registrations",
-            panel: (
-              <Registrations
-                totalHours={userProfileDetails.hours}
-                userRegistrations={registeredEvents}
-              />
-            ),
-          },
-          {
-            label: "Verify Certificate Request",
-            panel: <VerifyCertificate totalHours={userProfileDetails.hours} />,
-          },
-        ]
-      : [];
+  if (userProfileFetchPending || registeredEventsQueryPending)
+    return <Loading />;
 
   return (
     <>
-      <div className="mb-3">
-        <ChangeIndicatorComponent />
-      </div>
+      {/* RoleChangeIndicatorOnSuccessComponent */}
+      <Snackbar
+        variety="success"
+        open={roleChangeNotifOpenOnSuccess}
+        onClose={() => setRoleChangeNotifOpenOnSuccess(false)}
+      >
+        {`Success: You have successfully updated ${userProfileDetails?.name}'s role!`}
+      </Snackbar>
+
+      {/* RoleChangeIndicatorOnFailureComponent */}
+      <Snackbar
+        variety="error"
+        open={roleChangeNotifOpenOnFailure}
+        onClose={() => setRoleChangeNotifOpenOnFailure(false)}
+      >
+        {"Error: The request was not successful. Please Try again!"}
+      </Snackbar>
+
+      {/* StatusChangeIndicatorOnSuccessComponent */}
+      <Snackbar
+        variety="success"
+        open={statusChangeNotifOnSuccess}
+        onClose={() => setStatusChangeNotifOnSuccess(false)}
+      >
+        {`Success: ${userProfileDetails?.name}'s blacklist status was successfully updated!`}
+      </Snackbar>
+
+      {/* StatusChangeIndicatorOnFailureComponent */}
+      <Snackbar
+        variety="error"
+        open={statusChangeNotifOnFailure}
+        onClose={() => setStatusChangeNotifOnFailure(false)}
+      >
+        {"Error: The request was not successful. Please Try again!"}
+      </Snackbar>
+
+      {/* Manage user profile */}
       <IconText
         icon={
           <Link href="/users/view" className="no-underline">
@@ -437,22 +482,18 @@ const ManageUserProfile = () => {
       >
         <div className="pl-2 text-3xl font-bold text-black">Member Profile</div>
       </IconText>
-      {userProfileDetails ? (
-        <div>
-          <div className="pt-5 pb-5">
-            <UserProfile
-              name={userProfileDetails.name}
-              role={userProfileDetails.role}
-              email={userProfileDetails.email}
-              joinDate={userProfileDetails.joinDate}
-              imgSrc={userProfileDetails.imgSrc}
-            />
-          </div>
-          <TabContainer tabs={tabs} />
+      <div>
+        <div className="pt-5 pb-5">
+          <UserProfile
+            name={userProfileDetails.name}
+            role={userProfileDetails.role}
+            email={userProfileDetails.email}
+            joinDate={userProfileDetails.joinDate}
+            imgSrc={userProfileDetails.imgSrc}
+          />
         </div>
-      ) : (
-        <Loading />
-      )}
+        <TabContainer tabs={tabs} />
+      </div>
     </>
   );
 };

@@ -1,12 +1,17 @@
 import React from "react";
+import Backdrop from "@mui/material/Backdrop";
 import CircularProgress from "@mui/material/CircularProgress";
 
 function Loading() {
   return (
-    <div className="h-screen bg-white">
-      <div className="flex justify-center items-center h-full">
-        <CircularProgress />
-      </div>
+    <div>
+      <Backdrop
+        sx={{ color: "#568124", zIndex: (theme) => theme.zIndex.drawer + 1 }}
+        invisible
+        open
+      >
+        <CircularProgress color="inherit" />
+      </Backdrop>
     </div>
   );
 }

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import EventDetails from "./EventDetails";
 import IconText from "../atoms/IconText";
 import CustomCheckbox from "../atoms/Checkbox";
@@ -6,20 +6,18 @@ import Button from "../atoms/Button";
 import Modal from "@/components/molecules/Modal";
 import Link from "next/link";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-import { Grid } from "@mui/material";
-import { useRouter } from "next/router";
+import { Box, Grid } from "@mui/material";
 import { useAuth } from "@/utils/AuthContext";
 import { fetchUserIdFromDatabase } from "@/utils/helpers";
 import { EventData } from "@/utils/types";
 import { api } from "@/utils/api";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 interface EventRegisterFormProps {
   event: EventData;
 }
 
-/**
- * A confirmation modal body
- */
+/** A confirmation modal body */
 const ModalBody = ({
   eventid,
   handleClose,
@@ -27,59 +25,57 @@ const ModalBody = ({
   eventid: string;
   handleClose: () => void;
 }) => {
-  const router = useRouter();
   const { user } = useAuth();
+  const queryClient = useQueryClient();
 
-  /**
-   * Handles clicking the Register button
-   */
-  const handleRegister = async () => {
-    const attendeeid = await fetchUserIdFromDatabase(user?.email as string);
-    try {
+  /** Handles clicking the Register button */
+  const { mutate, isPending, isError } = useMutation({
+    mutationKey: ["event", eventid],
+    mutationFn: async () => {
+      const attendeeid = await fetchUserIdFromDatabase(user?.email as string);
       await api.post(`/events/${eventid}/attendees`, {
         attendeeid: attendeeid,
       });
-    } catch (error) {
-      console.error(error);
-    }
-    router.reload();
-  };
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["event", eventid] });
+      handleClose();
+    },
+  });
 
   return (
     <div>
-      <h2>Terms and Conditions</h2>
-      <p>
+      <Box sx={{ textAlign: "center" }}>
+        <h2>Terms and Conditions</h2>
+      </Box>
+      <Box sx={{ marginBottom: 3 }}>
         By registering, I agree that I will attend the event. If I cannot
         attend, I will cancel my registration at least 24 hours before the event
         begins. Failure to cancel my registration may negatively impact my
         status as a volunteer
-      </p>
+      </Box>
       <Grid container spacing={2}>
         <Grid item md={6} xs={12}>
-          <Button type="button" onClick={handleClose}>
-            Disagree
+          <Button variety="secondary" onClick={handleClose}>
+            Decline
           </Button>
         </Grid>
         <Grid item md={6} xs={12}>
-          <Button type="button" onClick={handleRegister}>
-            Agree & Continue
-          </Button>
+          <Button onClick={mutate}>Agree and register</Button>
         </Grid>
       </Grid>
     </div>
   );
 };
 
-/**
- * An EventRegisterForm component
- */
+/** An EventRegisterForm component */
 const EventRegisterForm = ({ event }: EventRegisterFormProps) => {
   const [checked, setChecked] = useState(false);
   const handleChange = () => {
     setChecked((checked) => !checked);
   };
 
-  // Confirmation modal
+  /** Confirmation modal */
   const [open, setOpen] = useState(false);
   const handleOpen = () => {
     if (checked) {
@@ -90,6 +86,7 @@ const EventRegisterForm = ({ event }: EventRegisterFormProps) => {
 
   return (
     <div>
+      {/* Confirmation modal */}
       <Modal
         open={open}
         handleClose={handleClose}
@@ -98,6 +95,7 @@ const EventRegisterForm = ({ event }: EventRegisterFormProps) => {
         }
       />
 
+      {/* Register form */}
       <div className="justify-center center-items grid grid-cols-4 grid-rows-6`">
         <div className="space-y-4 col-start-1 col-end-5">
           <div className="flex items-center text-gray-400">

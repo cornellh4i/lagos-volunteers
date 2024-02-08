@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { useRouter } from "next/router";
 import EventForm from "@/components/organisms/EventForm";
 import CenteredTemplate from "@/components/templates/CenteredTemplate";
 import Loading from "@/components/molecules/Loading";
 import { api } from "@/utils/api";
+import { useQuery } from "@tanstack/react-query";
 
 type eventData = {
   eventName: string;
@@ -23,49 +24,35 @@ type eventData = {
 const EditEvent = () => {
   const router = useRouter();
   const eventid = router.query.eventid as string;
-  const [eventDetails, setEventDetails] = useState<
-    eventData | null | undefined
-  >(null);
 
-  const fetchEventDetails = async () => {
-    try {
-      // Make API call
-      const { data } = await await api.get(`/events/${eventid}`);
-
-      // Set event details
-      setEventDetails({
-        eventName: data["data"]["name"],
-        location: data["data"]["location"],
-        volunteerSignUpCap: data["data"]["capacity"],
-        eventDescription: data["data"]["description"],
-        eventImage: data["data"]["eventImage"] || "",
-        rsvpLinkImage: data["data"]["rsvpLinkImage"] || "",
-        startDate: data["data"]["startDate"],
-        endDate: data["data"]["endDate"],
-        startTime: data["data"]["startDate"],
-        endTime: data["data"]["endDate"],
-        mode: data["data"]["mode"],
-      });
-    } catch (error) {
-      console.log(error);
-    }
+  /** Tanstack query for fetching event data */
+  const { data, isLoading, isError } = useQuery({
+    queryKey: ["event", eventid],
+    queryFn: async () => {
+      const { data } = await api.get(`/events/${eventid}`);
+      return data["data"];
+    },
+  });
+  let event: eventData = {
+    eventName: data?.name,
+    location: data?.location,
+    volunteerSignUpCap: data?.capacity,
+    eventDescription: data?.description,
+    eventImage: data?.eventImage || "",
+    rsvpLinkImage: data?.rsvpLinkImage || "",
+    startDate: data?.startDate,
+    endDate: data?.endDate,
+    startTime: data?.startDate,
+    endTime: data?.endDate,
+    mode: data?.mode,
   };
 
-  useEffect(() => {
-    fetchEventDetails();
-  }, []);
+  /** Loading screen */
+  if (isLoading) return <Loading />;
 
   return (
     <CenteredTemplate>
-      {eventDetails ? (
-        <EventForm
-          eventId={eventid}
-          eventType="edit"
-          eventDetails={eventDetails}
-        />
-      ) : (
-        <Loading />
-      )}
+      <EventForm eventId={eventid} eventType="edit" eventDetails={event} />
     </CenteredTemplate>
   );
 };
