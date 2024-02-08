@@ -365,8 +365,7 @@ const EventForm = ({ eventId, eventType, eventDetails }: EventFormProps) => {
           error={errors.eventDescription ? "Required" : undefined}
           {...register("eventDescription", { required: true })}
         />
-        <Upload label="Event Image" />
-        <Dropzone setError={setDropzoneError} />
+        <Dropzone setError={setDropzoneError} label="Event Image" />
         <TextCopy
           label="RSVP Link Image"
           text={
