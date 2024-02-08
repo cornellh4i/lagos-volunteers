@@ -24,7 +24,8 @@ const Avatar = ({ image, name, startDate, email, phone }: AvatarProps) => {
       <div className="p-6 text-center sm:text-left">
         <div className="text-2xl font-semibold">{name}</div>
         <div className="pt-2">
-          Joined {startDate.toLocaleDateString("en-US")}
+          {/* Nigeria uses DD/MM/YY */}
+          Joined {startDate.toLocaleDateString("en-GB")}
         </div>
         <div className="pt-1">{email}</div>
         <div className="pt-1">{phone}</div>

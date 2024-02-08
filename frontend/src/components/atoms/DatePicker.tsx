@@ -37,7 +37,7 @@ const CustomDatePicker = forwardRef(
               textField: { fullWidth: true, error: error !== "" },
             }}
             ref={ref}
-            format="MM/DD/YYYY"
+            format="DD/MM/YYYY"
             defaultValue={value ? dayjs(value) : undefined}
             disablePast={true}
             {...props}

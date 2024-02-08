@@ -38,13 +38,14 @@ model Profile {
   disciplinaryNotices Int?    @default(0)
   user                User    @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   userId              String
+  phoneNumber         String?
 
   @@id([userId])
 }
 
 model UserPreferences {
   // User settings info
-  user                  User    @relation(fields: [userId], references: [id])
+  user                  User    @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId                String
   sendEmailNotification Boolean @default(true)
   sendPromotions        Boolean @default(false)
@@ -53,7 +54,7 @@ model UserPreferences {
 }
 
 model Permission {
-  user           User    @relation(fields: [userId], references: [id], name: "RolePermission")
+  user           User    @relation(fields: [userId], references: [id], name: "RolePermission", onDelete: Cascade)
   userId         String
   canCreateEvent Boolean @default(false)
   canEditEvent   Boolean @default(false)
@@ -102,8 +103,8 @@ model EventEnrollment {
   // Attendees info
   eventId            String
   userId             String
-  event              Event    @relation(fields: [eventId], references: [id])
-  user               User     @relation(fields: [userId], references: [id])
+  event              Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  user               User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   showedUp           Boolean? @default(false)
   workedHours        Int?     @default(0)
   canceled           Boolean? @default(false)

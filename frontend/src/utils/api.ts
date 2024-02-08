@@ -118,7 +118,7 @@ const handleResponse = async (response: Response) => {
     } else {
       data = await response.blob();
     }
-    return { response: response, data: data };
+    return Promise.resolve({ response: response, data: data });
   } else {
     return Promise.reject(`Request failed with status ${response.status}`);
   }

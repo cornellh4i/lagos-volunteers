@@ -39,6 +39,7 @@ const HorizontalTabContainer = ({
               >
                 {tabs.map((tab, index) => (
                   <Tab
+                    key={index}
                     className="normal-case text-xl py-1 min-h-0"
                     disableRipple
                     label={tab.label}
@@ -50,7 +51,7 @@ const HorizontalTabContainer = ({
           </div>
           <div className="h-screen mt-6">
             {tabs.map((tab, index) => (
-              <TabPanel className="p-0 mt-4" value={String(index)}>
+              <TabPanel key={index} className="p-0 mt-4" value={String(index)}>
                 {tab.panel}
               </TabPanel>
             ))}
@@ -76,7 +77,9 @@ const VerticalTabContainer = ({
           {rightAlignedComponent}
           <Select value={value} onChange={handleChange}>
             {tabs.map((tab, index) => (
-              <MenuItem value={String(index)}>{tab.label}</MenuItem>
+              <MenuItem key={index} value={String(index)}>
+                {tab.label}
+              </MenuItem>
             ))}
           </Select>
         </div>

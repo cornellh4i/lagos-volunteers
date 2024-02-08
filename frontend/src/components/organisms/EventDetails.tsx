@@ -39,7 +39,7 @@ const EventDetails = ({
           </div>
           <div className="space-y-0.5 mb-4">
             <IconText icon={<LocationOnIcon className="text-gray-400" />}>
-              LOCATION ({location})
+              {location}
             </IconText>
             <IconText icon={<CalendarMonthIcon className="text-gray-400" />}>
               {datetime}

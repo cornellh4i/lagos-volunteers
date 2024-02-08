@@ -53,7 +53,7 @@ const deleteEvent = async (eventID: string) => {
  */
 const getEvents = async (
   filter: {
-    upcoming?: string;
+    date?: string;
     ownerId?: string;
     userId?: string;
   },
@@ -100,12 +100,20 @@ const getEvents = async (
   let whereDict: { [key: string]: any } = {};
   let includeDict: { [key: string]: any } = {};
 
-  // Handles GET /events?upcoming=true
-  if (filter.upcoming === "true") {
-    const dateTime = new Date();
-    whereDict["startDate"] = {
-      gt: dateTime,
-    };
+  // Handles GET /events?date=upcoming and GET /events?date=past
+  // TODO: Investigate creating events that occur in a few minutes into the future
+  const dateTime = new Date();
+  switch (filter.date) {
+    case "upcoming":
+      whereDict["startDate"] = {
+        gt: dateTime,
+      };
+      break;
+    case "past":
+      whereDict["endDate"] = {
+        lt: dateTime,
+      };
+      break;
   }
 
   // Handles GET /events?ownerId=asdf
@@ -121,6 +129,13 @@ const getEvents = async (
       },
     };
   }
+
+  // Find the total number of records before pagination is applied
+  const totalRecords = await prisma.event.count({
+    where: {
+      AND: [whereDict],
+    },
+  });
 
   /* RESULT */
 
@@ -138,7 +153,7 @@ const getEvents = async (
     ? queryResult[take - 1]
     : queryResult[queryResult.length - 1];
   const myCursor = lastPostInResults ? lastPostInResults.id : undefined;
-  return { result: queryResult, cursor: myCursor };
+  return { result: queryResult, cursor: myCursor, totalItems: totalRecords };
 };
 
 /**

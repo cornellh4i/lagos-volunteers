@@ -32,8 +32,8 @@ const DrawerAppBar = ({ navs, buttons }: AppBarProps) => {
   const drawer = (
     <Box onClick={handleDrawerToggle} sx={{ textAlign: "center" }}>
       <List>
-        {navs.map((nav) => (
-          <Link href={nav.link} className="text-black no-underline">
+        {navs.map((nav, index) => (
+          <Link key={index} href={nav.link} className="text-black no-underline">
             <ListItem key={nav.label} disablePadding>
               <ListItemButton sx={{ textAlign: "center" }}>
                 <ListItemText primary={nav.label} />
@@ -41,8 +41,8 @@ const DrawerAppBar = ({ navs, buttons }: AppBarProps) => {
             </ListItem>
           </Link>
         ))}
-        {buttons.map((button) => (
-          <ListItem disablePadding>
+        {buttons.map((button, index) => (
+          <ListItem key={index} disablePadding>
             <ListItemButton
               onClick={button.onClick}
               sx={{ textAlign: "center" }}
@@ -74,16 +74,17 @@ const DrawerAppBar = ({ navs, buttons }: AppBarProps) => {
 
           {/* Navbar items */}
           <Box className="hidden md:flex">
-            {navs.map((nav) => (
-              <Link href={nav.link}>
+            {navs.map((nav, index) => (
+              <Link key={index} href={nav.link}>
                 <Button className="text-black normal-case">{nav.label}</Button>
               </Link>
             ))}
 
             {/* Right aligned components */}
             <div className="ml-2 min-w-0">
-              {buttons.map((button) => (
+              {buttons.map((button, index) => (
                 <Button
+                  key={index}
                   onClick={button.onClick}
                   className="text-black normal-case"
                 >

@@ -24,9 +24,9 @@ export const formatDateTimeRange = (
   startDateString: string,
   endDateString: string
 ) => {
-  const formatUTCTime = (date: Date) => {
-    const hours = date.getUTCHours();
-    const minutes = date.getUTCMinutes();
+  const formatLocalTime = (date: Date) => {
+    const hours = date.getHours();
+    const minutes = date.getMinutes();
 
     const period = hours < 12 ? "AM" : "PM";
     const formattedHours = hours % 12 === 0 ? 12 : hours % 12;
@@ -39,10 +39,10 @@ export const formatDateTimeRange = (
   const endDate = new Date(endDateString);
 
   const startDateFormatted = `${
-    startDate.getUTCMonth() + 1
-  }/${startDate.getUTCDate()}/${startDate.getUTCFullYear()}`;
-  const startTimeFormatted = formatUTCTime(startDate);
-  const endTimeFormatted = formatUTCTime(endDate);
+    startDate.getMonth() + 1
+  }/${startDate.getDate()}/${startDate.getFullYear()}`;
+  const startTimeFormatted = formatLocalTime(startDate);
+  const endTimeFormatted = formatLocalTime(endDate);
 
   const formattedDateTimeRange = `${startDateFormatted}, ${startTimeFormatted} - ${endTimeFormatted}`;
 
@@ -66,10 +66,9 @@ export const formatDateString = (dateString: string) => {
  * Converts DatePicker and TimePicker inputs to an ISO string
  * @param inputTime is the input time
  * @param inputDate is the inputDate
+ * @returns the ISO string
  */
 export const convertToISO = (inputTime: string, inputDate: string) => {
-  console.log(inputTime);
-  console.log(inputDate);
   var timeIndex = 0;
   var counter = 0;
   const time = String(inputTime);
@@ -96,7 +95,20 @@ export const convertToISO = (inputTime: string, inputDate: string) => {
     }
   }
   const rawDateTime = date.substring(0, dateIndex) + time.substring(timeIndex);
-  console.log(rawDateTime);
   const res = dayjs(rawDateTime).toJSON();
   return res;
+};
+
+/**
+ * Calculates the hours an event lasts for
+ * @param startTime is the start time
+ * @param endTime is the end time
+ * @returns the hours
+ */
+export const eventHours = (endTime: string, startTime: string) => {
+  const start = new Date(startTime);
+  const end = new Date(endTime);
+  const diff = end.getTime() - start.getTime();
+  const hours = diff / (1000 * 3600);
+  return hours;
 };
