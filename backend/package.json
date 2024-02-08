@@ -2,7 +2,6 @@
   "name": "backend",
   "version": "1.0.0",
   "main": "src/index.ts",
-  "license": "MIT",
   "dependencies": {
     "@prisma/client": "^5.3.1",
     "@sendgrid/mail": "^7.7.0",
