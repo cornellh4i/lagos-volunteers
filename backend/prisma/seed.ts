@@ -45,7 +45,7 @@ async function createPoolOfRandomUsers(pool: number) {
       },
     });
     userDataSeed.push(createdUser);
-  };
+  }
   console.log("Done creating pool of random users");
 }
 
@@ -59,7 +59,7 @@ async function createPoolOfRandomEvents(pool: number) {
   for (let i = 0; i < pool; i++) {
     events.push(createRandomEvent());
   }
-  console.log(`Created ${events.length} random events`)
+  console.log(`Created ${events.length} random events`);
   const supervisors: User[] = [];
   // create 20 supervisors to host various events
   for (let i = 0; i < 20; i++) {
@@ -122,7 +122,7 @@ async function createPoolOfRandomEvents(pool: number) {
       });
     }
     eventDataSeed.push(createdEvent);
-  };
+  }
 
   console.log("Done creating pool of random events");
 }
@@ -266,7 +266,7 @@ const eventData: Prisma.EventCreateInput[] = [
 
 async function main() {
   console.log(`Start seeding ...`);
-// This is for seeding purposes only. Everytime seed, we will get constraint errors becuause we are creating the same data again.
+  // This is for seeding purposes only. Everytime seed, we will get constraint errors becuause we are creating the same data again.
   await prisma.event.deleteMany({});
   await prisma.user.deleteMany({});
 

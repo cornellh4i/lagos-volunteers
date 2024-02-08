@@ -60,7 +60,7 @@ const EventRegistration = () => {
   /** Loading screen */
   if (isLoading) return <Loading />;
 
-    // TODO: Add Error Page
+  // TODO: Add Error Page
   if (isError) {
     return <Error />;
   }

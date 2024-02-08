@@ -101,7 +101,6 @@ const LoginForm = () => {
     } catch (err) {
       setNotifOpen(true);
     }
-    
   };
 
   /** Sign in with Google */
