@@ -20,6 +20,7 @@ import Snackbar from "../atoms/Snackbar";
 import { convertToISO, fetchUserIdFromDatabase } from "@/utils/helpers";
 import { api } from "@/utils/api";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import Dropzone from "../atoms/Dropzone";
 
 interface EventFormProps {
   eventId?: string | string[] | undefined;
@@ -45,6 +46,9 @@ type FormValues = {
 const EventForm = ({ eventId, eventType, eventDetails }: EventFormProps) => {
   const { user } = useAuth();
   const queryClient = useQueryClient();
+
+  /** Dropzone errors */
+  const [dropzoneError, setDropzoneError] = useState("");
 
   /** State variables for the notification popups */
   const [successNotificationOpen, setSuccessNotificationOpen] = useState(false);
@@ -362,6 +366,7 @@ const EventForm = ({ eventId, eventType, eventDetails }: EventFormProps) => {
           {...register("eventDescription", { required: true })}
         />
         <Upload label="Event Image" />
+        <Dropzone setError={setDropzoneError} />
         <TextCopy
           label="RSVP Link Image"
           text={

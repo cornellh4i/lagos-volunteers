@@ -10,6 +10,7 @@ import { EventData } from "@/utils/types";
 import { api } from "@/utils/api";
 import { useQuery } from "@tanstack/react-query";
 import Error from "@/components/organisms/Error";
+import ViewEventDetails from "@/components/organisms/ViewEventDetails";
 
 /** An EventRegistration page */
 const EventRegistration = () => {
@@ -66,13 +67,14 @@ const EventRegistration = () => {
   }
 
   return (
-    <CenteredTemplate>
-      {eventAttendance ? (
-        <EventConfirmation event={eventDetails} confirmation="register" />
-      ) : (
-        <EventRegisterForm event={eventDetails} />
-      )}
-    </CenteredTemplate>
+    <ViewEventDetails />
+    // <CenteredTemplate>
+    //   {eventAttendance ? (
+    //     <EventConfirmation event={eventDetails} confirmation="register" />
+    //   ) : (
+    //     <EventRegisterForm event={eventDetails} />
+    //   )}
+    // </CenteredTemplate>
   );
 };
 
