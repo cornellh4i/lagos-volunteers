@@ -3,6 +3,7 @@ import BoxText from "@/components/atoms/BoxText";
 import Chip from "@/components/atoms/Chip";
 import TabContainer from "@/components/molecules/TabContainer";
 import EventCard from "@/components/organisms/EventCard";
+import EventCardNew from "@/components/organisms/EventCardNew";
 import CardList from "@/components/molecules/CardList";
 import { GridColDef, GridPaginationModel } from "@mui/x-data-grid";
 import Table from "@/components/molecules/Table";
@@ -105,7 +106,13 @@ const UpcomingEvents = () => {
       )}
 
       {/* List of events */}
-      <CardList>
+      {eventDetails.map((event) => (
+        <div>
+          <div className="mt-5" />
+          <EventCardNew />
+        </div>
+      ))}
+      {/* <CardList>
         {eventDetails.map((event) => (
           <EventCard
             key={event.id}
@@ -120,7 +127,7 @@ const UpcomingEvents = () => {
             // TODO: hard-coded for now but main-action is determined based on the user and their status
           />
         ))}
-      </CardList>
+      </CardList> */}
     </div>
   );
 };
