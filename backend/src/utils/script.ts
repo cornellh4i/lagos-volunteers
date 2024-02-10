@@ -10,6 +10,7 @@ export interface dummyUser {
   lastName: string;
   nickname: string;
   role: Role;
+  phone?: string;
 }
 
 type Mode = "IN_PERSON" | "VIRTUAL";
@@ -34,6 +35,7 @@ export function createRandomUser(): dummyUser {
   const firstName = faker.person.firstName();
   const lastName = faker.person.lastName();
   const nickname = faker.person.firstName();
+  const phone = faker.phone.number();
   const role = faker.helpers.arrayElement([
     "VOLUNTEER",
     "ADMIN",
@@ -47,6 +49,7 @@ export function createRandomUser(): dummyUser {
     lastName,
     nickname,
     role,
+    phone,
   };
 }
 

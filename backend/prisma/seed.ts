@@ -35,6 +35,7 @@ async function createPoolOfRandomUsers(pool: number) {
             lastName: user.lastName,
             nickname: user.nickname,
             imageURL: user.imageURL,
+            phoneNumber: user.phone,
           },
         },
         preferences: {
@@ -74,6 +75,7 @@ async function createPoolOfRandomEvents(pool: number) {
             lastName: supervisor.lastName,
             nickname: supervisor.nickname,
             imageURL: supervisor.imageURL,
+            phoneNumber: supervisor.phone,
           },
         },
         preferences: {
