@@ -79,7 +79,7 @@ const ModalBody = ({ status, blacklistFunc, handleClose }: modalBodyProps) => {
   return (
     <div>
       <Box sx={{ textAlign: "center", marginBottom: 3 }}>
-        {status == "ACTIVE"
+        {status == "Active"
           ? "Are you sure you want to blacklist this user?"
           : "Are you sure you want to remove this member from the blacklist?"}
       </Box>
@@ -91,7 +91,7 @@ const ModalBody = ({ status, blacklistFunc, handleClose }: modalBodyProps) => {
         </Grid>
         <Grid item md={6} xs={12}>
           <Button variety="secondary" onClick={blacklistFunc}>
-            {status == "ACTIVE" ? "Yes, blacklist" : "Yes, Remove"}
+            {status == "Active" ? "Yes, blacklist" : "Yes, Remove"}
           </Button>
         </Grid>
       </Grid>
@@ -240,7 +240,7 @@ const ManageUserProfileNew = () => {
   /** Tanstack query mutation for changing user status */
   const { mutateAsync: changeUserStatus } = useMutation({
     mutationFn: async () => {
-      const status2Change = status == "ACTIVE" ? "INACTIVE" : "ACTIVE";
+      const status2Change = status == "Active" ? "Inactive" : "Active";
       const { data } = await api.patch(`/users/${userid}/status`, {
         status: status2Change,
       });
@@ -302,7 +302,7 @@ const ManageUserProfileNew = () => {
             onClose={() => setStatusChangeNotifOnSuccess(false)}
             severity="success">
             {`Success: ${name} is now ${
-              status === "ACTIVE" ? ` an active ` : ` a blacklisted `
+              status === "Active" ? ` an active ` : ` a blacklisted `
             } member`}
           </Alert>
         )}
@@ -344,15 +344,15 @@ const ManageUserProfileNew = () => {
         </Card>
         <Card>
           <h3 className="mb-2 mt-0">
-            {name} is {status === "ACTIVE" ? ` an active ` : ` a blacklisted `}
+            {name} is {status === "Active" ? ` an active ` : ` a blacklisted `}
             member
           </h3>
           <div className="mb-4">
-            {status === "ACTIVE"
+            {status === "Active"
               ? "Would you like to blacklist this member? This will stop them from registering for and attending future events."
               : "Would you like to remove this member from the blacklist?"}
           </div>
-          {status === "ACTIVE" ? (
+          {status === "Active" ? (
             <Button variety="error" onClick={handleOpen}>
               Blacklist
             </Button>

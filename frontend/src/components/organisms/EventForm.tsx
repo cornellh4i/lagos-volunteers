@@ -59,7 +59,7 @@ const EventForm = ({ eventId, eventType, eventDetails }: EventFormProps) => {
   // For deciding whether to show "In-person" or "Virtual"
   // 0: no show, 1: show yes.
   const [status, setStatus] = React.useState(
-    eventDetails ? (eventDetails.mode === "IN_PERSON" ? 1 : 0) : 0
+    eventDetails ? (eventDetails.mode === "In_Person" ? 1 : 0) : 0
   );
   const radioHandler = (status: number) => {
     setStatus(status);
@@ -119,7 +119,7 @@ const EventForm = ({ eventId, eventType, eventDetails }: EventFormProps) => {
   /** Tanstack mutation for creating a new event */
   const { mutateAsync, isPending, isError, isSuccess } = useMutation({
     mutationFn: async (data: FormValues) => {
-      const mode = status === 0 ? "VIRTUAL" : "IN_PERSON";
+      const mode = status === 0 ? "Virtual" : "In_Person";
       const {
         eventName,
         location,
@@ -137,7 +137,7 @@ const EventForm = ({ eventId, eventType, eventDetails }: EventFormProps) => {
         userID: `${userid}`,
         event: {
           name: `${eventName}`,
-          location: status === 0 ? "VIRTUAL" : `${location}`,
+          location: status === 0 ? "Virtual" : `${location}`,
           description: `${eventDescription}`,
           startDate: new Date(startDateTime),
           endDate: new Date(endDateTime),
@@ -159,7 +159,7 @@ const EventForm = ({ eventId, eventType, eventDetails }: EventFormProps) => {
   /** Tanstack mutation for updating an existing event */
   const { mutateAsync: editEvent, isPending: editEventPending } = useMutation({
     mutationFn: async (data: FormValues) => {
-      const mode = status === 0 ? "VIRTUAL" : "IN_PERSON";
+      const mode = status === 0 ? "Virtual" : "In_Person";
       const { startTime, startDate, endTime, endDate } = getValues();
       const startDateTime = convertToISO(startTime, startDate);
       const endDateTime = convertToISO(endTime, endDate);
@@ -219,8 +219,7 @@ const EventForm = ({ eventId, eventType, eventDetails }: EventFormProps) => {
       <Snackbar
         variety="error"
         open={errorNotificationOpen}
-        onClose={() => setErrorNotificationOpen(false)}
-      >
+        onClose={() => setErrorNotificationOpen(false)}>
         Error: {errorMessage}
       </Snackbar>
 
@@ -232,8 +231,7 @@ const EventForm = ({ eventId, eventType, eventDetails }: EventFormProps) => {
       <Snackbar
         variety="success"
         open={successNotificationOpen}
-        onClose={() => setSuccessNotificationOpen(false)}
-      >
+        onClose={() => setSuccessNotificationOpen(false)}>
         {successMessage}
       </Snackbar>
 
@@ -243,8 +241,7 @@ const EventForm = ({ eventId, eventType, eventDetails }: EventFormProps) => {
             ? handleSubmit(handleCreateEvent)
             : handleSubmit(handleEditEvent)
         }
-        className="space-y-4"
-      >
+        className="space-y-4">
         <div className="font-bold text-3xl">
           {eventType == "create" ? "Create Event" : "Edit Event"}
         </div>
@@ -322,17 +319,16 @@ const EventForm = ({ eventId, eventType, eventDetails }: EventFormProps) => {
               row
               aria-labelledby="demo-row-radio-buttons-group-label"
               name="row-radio-buttons-group"
-              defaultValue={eventDetails ? eventDetails.mode : "VIRTUAL"}
-              sx={{ borderRadius: 2, borderColor: "primary.main" }}
-            >
+              defaultValue={eventDetails ? eventDetails.mode : "Virtual"}
+              sx={{ borderRadius: 2, borderColor: "primary.main" }}>
               <FormControlLabel
-                value="VIRTUAL"
+                value="Virtual"
                 control={<Radio />}
                 label={<Typography sx={{ fontSize: 15 }}>Virtual</Typography>}
                 onClick={() => radioHandler(0)}
               />
               <FormControlLabel
-                value="IN_PERSON"
+                value="In_Person"
                 control={<Radio />}
                 label={<Typography sx={{ fontSize: 15 }}>In-Person</Typography>}
                 onClick={() => radioHandler(1)}
@@ -402,8 +398,7 @@ const EventForm = ({ eventId, eventType, eventDetails }: EventFormProps) => {
                 <Button
                   type="submit"
                   loading={editEventPending}
-                  disabled={editEventPending}
-                >
+                  disabled={editEventPending}>
                   Save Changes
                 </Button>
               </div>

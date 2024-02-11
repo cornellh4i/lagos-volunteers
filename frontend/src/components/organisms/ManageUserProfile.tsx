@@ -78,7 +78,7 @@ const ModalBody = ({ status, blacklistFunc, handleClose }: modalBodyProps) => {
   return (
     <div>
       <Box sx={{ textAlign: "center", marginBottom: 3 }}>
-        {status == "ACTIVE"
+        {status == "Active"
           ? "Are you sure you want to blacklist this user?"
           : "Are you sure you want to remove this member from the blacklist?"}
       </Box>
@@ -90,7 +90,7 @@ const ModalBody = ({ status, blacklistFunc, handleClose }: modalBodyProps) => {
         </Grid>
         <Grid item md={6} xs={12}>
           <Button variety="error" onClick={blacklistFunc}>
-            {status == "ACTIVE" ? "Yes, blacklist" : "Remove"}
+            {status == "Active" ? "Yes, blacklist" : "Remove"}
           </Button>
         </Grid>
       </Grid>
@@ -136,7 +136,7 @@ const Status = ({
   /** Tanstack query mutation for changing user status */
   const { mutateAsync: changeUserStatus } = useMutation({
     mutationFn: async () => {
-      const status = userStatus == "ACTIVE" ? "INACTIVE" : "ACTIVE";
+      const status = userStatus == "Active" ? "Inactive" : "Active";
       const { data } = await api.patch(`/users/${userID}/status`, {
         status: status,
       });
@@ -184,7 +184,7 @@ const Status = ({
         <div className="pt-2">Blacklist</div>
         <div className="w-full sm:w-1/4">
           <Button onClick={handleOpen}>
-            {userStatus == "ACTIVE"
+            {userStatus == "Active"
               ? "Blacklist Member"
               : "Remove Member from Blacklist"}
           </Button>

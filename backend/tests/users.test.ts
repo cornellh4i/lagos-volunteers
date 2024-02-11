@@ -55,7 +55,7 @@ describe("Testing PUT /users/:userid/profile", () => {
     const user = {
       email: "testeditprof@gmail.com",
       role: "Admin",
-      status: "ACTIVE",
+      status: "Active",
       hours: 0,
       profile: {
         firstName: "Arizona",
@@ -137,9 +137,9 @@ describe("Testing PATCH /users/:userid/status", () => {
     const userid = users.body.data.result[9].id;
     const response = await request(app)
       .patch("/users/" + userid + "/status")
-      .send({ status: "INACTIVE" });
+      .send({ status: "Inactive" });
     const data = response.body.data;
-    expect(data.status).toBe("INACTIVE");
+    expect(data.status).toBe("Inactive");
     expect(response.status).toBe(200);
   });
 });
@@ -159,8 +159,8 @@ describe("Testing PATCH /users/:userid/hours", () => {
 });
 
 describe("Testing /users/search", () => {
-  test("GET users with status=ACTIVE", async () => {
-    const response = await request(app).get("/users/search?status=ACTIVE");
+  test("GET users with status=Active", async () => {
+    const response = await request(app).get("/users/search?status=Active");
     expect(response.status).toBe(200);
   });
 
@@ -205,16 +205,16 @@ describe("Testing /users/search", () => {
     expect(response.status).toBe(200);
   });
 
-  test("GET users with hours=0&firstName=Alice&status=ACTIVE", async () => {
+  test("GET users with hours=0&firstName=Alice&status=Active", async () => {
     const response = await request(app).get(
-      "/users/search?hours=0&firstName=Alice&status=ACTIVE"
+      "/users/search?hours=0&firstName=Alice&status=Active"
     );
     const data = response.body.data;
 
     for (let i = 0; i < data.length; i++) {
       expect(data[i].hours).toBe(0);
       expect(data[i].profile.firstName).toBe("Alice");
-      expect(data[i].status).toBe("ACTIVE");
+      expect(data[i].status).toBe("Active");
     }
     expect(response.status).toBe(200);
   });
