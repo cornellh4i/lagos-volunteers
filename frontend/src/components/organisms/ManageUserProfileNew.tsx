@@ -13,9 +13,9 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/router";
 import Loading from "../molecules/Loading";
 import { SelectChangeEvent } from "@mui/material/Select";
-import Alert from "../atoms/Alert";
 import { Box, Grid } from "@mui/material";
 import Modal from "../molecules/Modal";
+import Snackbar from "../atoms/Snackbar";
 
 type userProfileData = {
   name: string;
@@ -280,39 +280,43 @@ const ManageUserProfileNew = () => {
       <div className="mb-2">
         {/* RoleChangeIndicatorOnSuccessComponent */}
         {roleChangeNotifOpenOnSuccess && (
-          <Alert
+          <Snackbar
             onClose={() => setRoleChangeNotifOpenOnSuccess(false)}
-            severity="success">
+            open={roleChangeNotifOpenOnSuccess}
+            variety="success">
             {`Success: ${name} is now ${
               role === "Admin" ? ` an ${role}` : ` a ${role}`
             }`}
-          </Alert>
+          </Snackbar>
         )}
         {/* RoleChangeIndicatorOnFailureComponent */}
         {roleChangeNotifOpenOnFailure && (
-          <Alert
+          <Snackbar
             onClose={() => setRoleChangeNotifOpenOnFailure(false)}
-            severity="error">
-            {`Error: ${name}'s role could not be changed`}
-          </Alert>
+            open={roleChangeNotifOpenOnFailure}
+            variety="error">
+            {`Error: ${name}'s role could not be changed. Please try again`}
+          </Snackbar>
         )}
         {/* StatusChangeIndicatorOnSuccessComponent */}
         {statusChangeNotifOnSuccess && (
-          <Alert
+          <Snackbar
             onClose={() => setStatusChangeNotifOnSuccess(false)}
-            severity="success">
+            open={statusChangeNotifOnSuccess}
+            variety="success">
             {`Success: ${name} is now ${
               status === "Active" ? ` an active ` : ` a blacklisted `
             } member`}
-          </Alert>
+          </Snackbar>
         )}
         {/* StatusChangeIndicatorOnFailureComponent */}
         {statusChangeNotifOnFailure && (
-          <Alert
+          <Snackbar
             onClose={() => setStatusChangeNotifOnFailure(false)}
-            severity="error">
-            {`Error: ${name}'s status could not be changed`}
-          </Alert>
+            open={statusChangeNotifOnFailure}
+            variety="error">
+            {`Error: ${name}'s status could not be changed. Please try again`}
+          </Snackbar>
         )}
       </div>
 
@@ -344,7 +348,7 @@ const ManageUserProfileNew = () => {
         </Card>
         <Card>
           <h3 className="mb-2 mt-0">
-            {name} is {status === "Active" ? ` an active ` : ` a blacklisted `}
+            {name} is {status === "Active" ? ` an Active ` : ` a Blacklisted `}
             member
           </h3>
           <div className="mb-4">
