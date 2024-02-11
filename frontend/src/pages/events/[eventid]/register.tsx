@@ -54,9 +54,9 @@ const EventRegistration = () => {
   };
 
   // TODO: remove
-  if (userHasCanceledAttendance) {
-    router.push(`/events/${eventid}/cancel`);
-  }
+  // if (userHasCanceledAttendance) {
+  //   router.push(`/events/${eventid}/cancel`);
+  // }
 
   /** Loading screen */
   if (isLoading) return <Loading />;

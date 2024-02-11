@@ -9,34 +9,104 @@ import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
 import PersonIcon from "@mui/icons-material/Person";
 import FmdGoodIcon from "@mui/icons-material/FmdGood";
 import GroupsIcon from "@mui/icons-material/Groups";
+import { useRouter } from "next/router";
+import { useAuth } from "@/utils/AuthContext";
+import { useQuery } from "@tanstack/react-query";
+import { api } from "@/utils/api";
+import { fetchUserIdFromDatabase } from "@/utils/helpers";
+import { formatDateTimeRange } from "@/utils/helpers";
+import { EventData } from "@/utils/types";
+import Loading from "@/components/molecules/Loading";
 
 interface ViewEventDetailsProps {}
 
 const ViewEventDetails = () => {
+  const router = useRouter();
+  const id = router.query.eventid as string;
+  const { user } = useAuth();
+  const [userid, setUserid] = React.useState("");
+
+  /** Tanstack query to fetch and update the event details */
+  const { data, isLoading, isError } = useQuery({
+    queryKey: ["event", id],
+    queryFn: async () => {
+      const userid = await fetchUserIdFromDatabase(user?.email as string);
+      setUserid(userid);
+      const { data } = await api.get(
+        `/users/${userid}/registered?eventid=${id}`
+      );
+      return data["data"];
+    },
+  });
+
+  let eventData = data?.eventDetails || {};
+  let eventAttendance = data?.attendance;
+
+  /** If the user canceled their event registration */
+  const userHasCanceledAttendance =
+    eventAttendance && eventAttendance["canceled"];
+
+  /** Set event details */
+  const {
+    eventid,
+    location,
+    datetime,
+    capacity,
+    image_src,
+    tags,
+    supervisors,
+    description,
+    name,
+  }: EventData = {
+    eventid: eventData.id,
+    location: eventData.location,
+    datetime: formatDateTimeRange(eventData.startDate, eventData.endDate),
+    capacity: eventData.capacity,
+    image_src: eventData.imageURL,
+    tags: eventData.tags,
+    supervisors: [
+      `${eventData.owner?.profile?.firstName} ${eventData.owner?.profile?.lastName}`,
+    ],
+    description: eventData.description,
+    name: eventData.name,
+  };
+
+  if (isLoading) return <Loading />;
+
+  const formatDateTimeToUI = (datetime: string) => {
+    const [date, timeRange] = datetime.split(", ");
+    const formattedDate = new Date(date).toLocaleString("en-GB", {
+      weekday: "long",
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    });
+
+    return [formattedDate, timeRange];
+  };
+  const dateHeader = formatDateTimeToUI(datetime);
+
   return (
     <EventTemplate
       header={
         <div>
-          <div className="font-semibold text-3xl">TEFAP Outreach</div>
+          <div className="font-semibold text-3xl">{name}</div>
           <div className="mt-5" />
           <div className="grid gap-2 xl:gap-6 xl:grid-cols-2">
             <IconTextHeader
               icon={<CalendarTodayIcon />}
-              header={<>Wednesday, November 8</>}
-              body={<>9:00-11:00 AM WAT</>}
+              header={<>{dateHeader[0]}</>}
+              body={<>{dateHeader[1]}</>}
             />
-            <IconTextHeader
-              icon={<FmdGoodIcon />}
-              header={<>Plot 2, Lagos Food Bank Building</>}
-            />
+            <IconTextHeader icon={<FmdGoodIcon />} header={<>{location}</>} />
             <IconTextHeader
               icon={<PersonIcon />}
-              header={<>Jason Zheng</>}
+              header={<>{supervisors[0]}</>}
               body={<>Supervisor</>}
             />
             <IconTextHeader
               icon={<GroupsIcon />}
-              header={<>30 volunteers needed</>}
+              header={<>{capacity} volunteers needed</>}
             />
           </div>
           <div className="mt-5" />
@@ -48,7 +118,9 @@ const ViewEventDetails = () => {
           <Divider />
           <div className="mt-5"></div>
 
-          <div>FOOD BANK COMMUNITY OUTREACH</div>
+          <div>{name}</div>
+          <div>{description}</div>
+          {/* TODO: Format description */}
           <div>Kindly find below the details of the outreach:</div>
           <div className="mt-5"></div>
           <div>
@@ -129,13 +201,24 @@ const ViewEventDetails = () => {
           <Divider />
           <div className="mt-5"></div>
 
-          <div className="font-semibold">Plot 2, Lagos Food Bank Building</div>
-          <div>40 Olu Aboderin St, Idi Mangoro 101233, Lagos, Nigeria</div>
+          <div className="font-semibold">{location}</div>
           <div className="bg-red-300 mt-5">Future location widget here</div>
         </div>
       }
-      img={<img className="w-full rounded-2xl" src="/lfbi_splash.png" />}
-      card={<EventRegisterCard action="register" />}
+      img={<img className="w-full rounded-2xl" src={image_src} />}
+      card={
+        <EventRegisterCard
+          action={
+            userHasCanceledAttendance
+              ? "cancel confirmation"
+              : eventAttendance
+              ? "cancel"
+              : "register"
+          }
+          eventId={eventid}
+          attendeeId={userid}
+        />
+      }
     />
   );
 };
