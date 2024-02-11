@@ -23,13 +23,13 @@ export type EventDTO = {
   capacity: number;
 };
 
-export type EventMode = "VIRTUAL" | "IN_PERSON";
+export type EventMode = "Virtual" | "In_Person";
 
-export type EventStatus = "ACTIVE" | "COMPLETED" | "CANCELED";
+export type EventStatus = "Active" | "COMPLETED" | "Canceled";
 
-export type UserStatus = "ACTIVE" | "INACTIVE" | "HOLD";
+export type UserStatus = "Active" | "Inactive" | "Hold";
 
-export type UserRole = "VOLUNTEER" | "SUPERVISOR" | "ADMIN";
+export type UserRole = "Volunteer" | "Supervisor" | "Admin";
 
 export type Action =
   | "rsvp"

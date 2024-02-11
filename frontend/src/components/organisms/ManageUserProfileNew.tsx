@@ -284,7 +284,7 @@ const ManageUserProfileNew = () => {
             onClose={() => setRoleChangeNotifOpenOnSuccess(false)}
             severity="success">
             {`Success: ${name} is now ${
-              role === "ADMIN" ? ` an ${role}` : ` a ${role}`
+              role === "Admin" ? ` an ${role}` : ` a ${role}`
             }`}
           </Alert>
         )}
@@ -326,7 +326,7 @@ const ManageUserProfileNew = () => {
       <div className="grid gap-4 md:grid-cols-2">
         <Card>
           <h3 className="mb-2 mt-0">
-            {name} is {role === "ADMIN" ? ` an ${role}` : ` a ${role}`}
+            {name} is {role === "Admin" ? ` an ${role}` : ` a ${role}`}
           </h3>
           <div className="mb-4">
             This member currently has {hours} hours of volunteer experience.
@@ -337,9 +337,9 @@ const ManageUserProfileNew = () => {
             onChange={(event: SelectChangeEvent) =>
               changeUserRole({ role: event.target.value })
             }>
-            <MenuItem value="VOLUNTEER">Volunteer</MenuItem>
-            <MenuItem value="SUPERVISOR">Supervisor</MenuItem>
-            <MenuItem value="ADMIN">Admin</MenuItem>
+            <MenuItem value="Volunteer">Volunteer</MenuItem>
+            <MenuItem value="Supervisor">Supervisor</MenuItem>
+            <MenuItem value="Admin">Admin</MenuItem>
           </Select>
         </Card>
         <Card>

@@ -174,11 +174,10 @@ const Status = ({
             value={userRole}
             onChange={(event: SelectChangeEvent) =>
               changeUserRole({ role: event.target.value })
-            }
-          >
-            <MenuItem value="VOLUNTEER">Volunteer</MenuItem>
-            <MenuItem value="SUPERVISOR">Supervisor</MenuItem>
-            <MenuItem value="ADMIN">Admin</MenuItem>
+            }>
+            <MenuItem value="Volunteer">Volunteer</MenuItem>
+            <MenuItem value="Supervisor">Supervisor</MenuItem>
+            <MenuItem value="Admin">Admin</MenuItem>
           </Select>
         </FormControl>
 
@@ -438,8 +437,7 @@ const ManageUserProfile = () => {
       <Snackbar
         variety="success"
         open={roleChangeNotifOpenOnSuccess}
-        onClose={() => setRoleChangeNotifOpenOnSuccess(false)}
-      >
+        onClose={() => setRoleChangeNotifOpenOnSuccess(false)}>
         {`Success: You have successfully updated ${userProfileDetails?.name}'s role!`}
       </Snackbar>
 
@@ -447,8 +445,7 @@ const ManageUserProfile = () => {
       <Snackbar
         variety="error"
         open={roleChangeNotifOpenOnFailure}
-        onClose={() => setRoleChangeNotifOpenOnFailure(false)}
-      >
+        onClose={() => setRoleChangeNotifOpenOnFailure(false)}>
         {"Error: The request was not successful. Please Try again!"}
       </Snackbar>
 
@@ -456,8 +453,7 @@ const ManageUserProfile = () => {
       <Snackbar
         variety="success"
         open={statusChangeNotifOnSuccess}
-        onClose={() => setStatusChangeNotifOnSuccess(false)}
-      >
+        onClose={() => setStatusChangeNotifOnSuccess(false)}>
         {`Success: ${userProfileDetails?.name}'s blacklist status was successfully updated!`}
       </Snackbar>
 
@@ -465,8 +461,7 @@ const ManageUserProfile = () => {
       <Snackbar
         variety="error"
         open={statusChangeNotifOnFailure}
-        onClose={() => setStatusChangeNotifOnFailure(false)}
-      >
+        onClose={() => setStatusChangeNotifOnFailure(false)}>
         {"Error: The request was not successful. Please Try again!"}
       </Snackbar>
 
@@ -478,8 +473,7 @@ const ManageUserProfile = () => {
               <ArrowBackIosNewIcon className="text-gray-400" />
             </IconButton>
           </Link>
-        }
-      >
+        }>
         <div className="pl-2 text-3xl font-bold text-black">Member Profile</div>
       </IconText>
       <div>

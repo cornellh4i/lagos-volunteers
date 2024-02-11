@@ -42,14 +42,19 @@ const Profile = () => {
       <h3 className="text-xl font-normal">Member Status</h3>
       <Card className="mb-3">
         <h3 className="mt-0 mb-2 font-normal">
-          You are a <span className="font-bold">Volunteer</span>
+          You are{" "}
+          <span className="font-bold">
+            {data?.role === "Admin" ? "an Admin" : `a ${data?.role}`}
+          </span>
         </h3>
-        You are currently a volunteer. Volunters are allowed to register for and
-        attend events.
+        You are currently{" "}
+        {data?.role === "Admin" ? "an Admin" : `a ${data?.role}`}.{" "}
+        {data?.role === "Admin" ? "Admin" : `a ${data?.role}`} are allowed to
+        register for and attend events.
       </Card>
       <Card>
         <h3 className="mt-0 mb-2 font-normal">
-          You are an <span className="font-bold">Active Member</span>
+          You are an <span className="font-bold">{data?.status} Member</span>
         </h3>
         You are currently an active member. Your account is active and you are
         able to access all normal website functions.
