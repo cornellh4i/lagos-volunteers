@@ -74,6 +74,7 @@ const getEvents = async (
     default: { id: sort.order },
     name: [{ name: sort.order }, defaultCursor],
     location: [{ location: sort.order }, defaultCursor],
+    startDate: [{ startDate: sort.order }, defaultCursor],
   };
 
   /* PAGINATION */
@@ -105,11 +106,13 @@ const getEvents = async (
   const dateTime = new Date();
   switch (filter.date) {
     case "upcoming":
-      whereDict["startDate"] = {
-        gt: dateTime,
+      // An event that has started but not ended is still considered upcoming
+      whereDict["endDate"] = {
+        gte: dateTime,
       };
       break;
     case "past":
+      // An event is considered past if it has ended
       whereDict["endDate"] = {
         lt: dateTime,
       };

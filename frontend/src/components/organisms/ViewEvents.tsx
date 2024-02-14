@@ -49,10 +49,10 @@ const UpcomingEvents = () => {
       const userid = await fetchUserIdFromDatabase(user?.email as string);
       setUserid(userid);
       const upcomingEventsUserRegisteredFor = await api.get(
-        `/events?userid=${userid}&date=upcoming`
+        `/events?userid=${userid}&date=upcoming&sort=startDate:desc`
       );
       const upcomingEventsUserSupervises = await api.get(
-        `/events?ownerid=${userid}&date=upcoming`
+        `/events?ownerid=${userid}&date=upcoming&sort=startDate:desc`
       );
       return {
         upcomingRegistered: upcomingEventsUserRegisteredFor.data["data"],
@@ -213,8 +213,8 @@ const PastEvents = () => {
       location: event["location"],
       startDate: event["startDate"],
       endDate: event["endDate"],
-      role: userid === event["ownerId"] ? "Supervisor" : "Volunteer",
-      hours: eventHours(event["startDate"], event["endDate"]),
+      role: "Supervisor",
+      hours: eventHours(event["endDate"], event["startDate"]),
     });
   });
 
@@ -225,8 +225,8 @@ const PastEvents = () => {
       location: event["location"],
       startDate: event["startDate"],
       endDate: event["endDate"],
-      role: userid === event["ownerId"] ? "Supervisor" : "Volunteer",
-      hours: eventHours(event["startDate"], event["endDate"]),
+      role: "Volunteer",
+      hours: eventHours(event["endDate"], event["startDate"]),
     });
   });
 
@@ -381,6 +381,9 @@ const PastEvents = () => {
     },
   ];
 
+  console.log(pastVolunteerEvents);
+  console.log(pastSupervisorEvents);
+
   /** Loading screen */
   // if (isLoading) return <Loading />;
 
@@ -413,6 +416,7 @@ const ViewEvents = () => {
     const tabs = [
       {
         label: "Upcoming",
+        // TODO: For upcoming events, only a max of 10 events are returned from the server, include a load more button to fetch more events
         panel: <UpcomingEvents />,
       },
       {
