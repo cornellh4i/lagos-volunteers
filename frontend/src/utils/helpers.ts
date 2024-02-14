@@ -52,14 +52,14 @@ export const formatDateTimeRange = (
 /**
  * Formats the provided date string
  * @param dateString is the input date string
- * @returns the date formatted as mm/dd/yyyy
+ * @returns the date formatted as dd/mm/yyyy
  */
 export const formatDateString = (dateString: string) => {
   const date = new Date(dateString);
   const month = (date.getMonth() + 1).toString().padStart(2, "0");
   const day = date.getDate().toString().padStart(2, "0");
   const year = date.getFullYear();
-  return `${month}/${day}/${year}`;
+  return `${day}/${month}/${year}`;
 };
 
 /**
@@ -110,7 +110,7 @@ export const eventHours = (endTime: string, startTime: string) => {
   const end = new Date(endTime);
   const diff = end.getTime() - start.getTime();
   const hours = diff / (1000 * 3600);
-  return hours;
+  return Math.round(hours);
 };
 
 /**

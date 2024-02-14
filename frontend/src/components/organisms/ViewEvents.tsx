@@ -16,6 +16,7 @@ import ManageSearchIcon from "@mui/icons-material/ManageSearch";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import Loading from "@/components/molecules/Loading";
 import Error from "./Error";
+import { formatDateString } from "@/utils/helpers";
 
 export type event = {
   id: string;
@@ -211,7 +212,7 @@ const PastEvents = () => {
       id: event["id"],
       name: event["name"],
       location: event["location"],
-      startDate: event["startDate"],
+      startDate: formatDateString(event["startDate"]),
       endDate: event["endDate"],
       role: "Supervisor",
       hours: eventHours(event["endDate"], event["startDate"]),
@@ -223,7 +224,7 @@ const PastEvents = () => {
       id: event["id"],
       name: event["name"],
       location: event["location"],
-      startDate: event["startDate"],
+      startDate: formatDateString(event["startDate"]),
       endDate: event["endDate"],
       role: "Volunteer",
       hours: eventHours(event["endDate"], event["startDate"]),
@@ -380,9 +381,6 @@ const PastEvents = () => {
       },
     },
   ];
-
-  console.log(pastVolunteerEvents);
-  console.log(pastSupervisorEvents);
 
   /** Loading screen */
   // if (isLoading) return <Loading />;
