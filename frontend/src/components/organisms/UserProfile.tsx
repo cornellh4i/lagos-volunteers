@@ -3,6 +3,7 @@ import IconText from "../atoms/IconText";
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import PersonIcon from "@mui/icons-material/Person";
 import EmailIcon from "@mui/icons-material/Email";
+import { stringAvatar } from "@/utils/helpers";
 
 /** default royalty free avatar image */
 export const FALLBACK_AVATAR_URL =
@@ -32,6 +33,7 @@ const UserProfile = ({
       <div className="flex items-center">
         <img
           src={imgSrc || FALLBACK_AVATAR_URL}
+          {...stringAvatar(name)}
           alt={FALLBACK_AVATOR_ALT}
           className="rounded-full w-24 h-24"
         />
