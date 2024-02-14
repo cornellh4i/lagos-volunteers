@@ -17,6 +17,7 @@ import { fetchUserIdFromDatabase } from "@/utils/helpers";
 import { formatDateTimeRange } from "@/utils/helpers";
 import { EventData } from "@/utils/types";
 import Loading from "@/components/molecules/Loading";
+import { formatDateTimeToUI } from "@/utils/helpers";
 
 interface ViewEventDetailsProps {}
 
@@ -73,17 +74,6 @@ const ViewEventDetails = () => {
 
   if (isLoading) return <Loading />;
 
-  const formatDateTimeToUI = (datetime: string) => {
-    const [date, timeRange] = datetime.split(", ");
-    const formattedDate = new Date(date).toLocaleString("en-GB", {
-      weekday: "long",
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-    });
-
-    return [formattedDate, timeRange];
-  };
   const dateHeader = formatDateTimeToUI(datetime);
 
   return (

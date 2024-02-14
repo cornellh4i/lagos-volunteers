@@ -112,3 +112,22 @@ export const eventHours = (endTime: string, startTime: string) => {
   const hours = diff / (1000 * 3600);
   return hours;
 };
+
+/**
+ * Formats a datetime string to a user-friendly format.
+ * Format for date is : "Weekday, Month Day, Year"
+ *
+ * @param datetime - The datetime string to be formatted.
+ * @returns An array containing the formatted date and the time range.
+ */
+export const formatDateTimeToUI = (datetime: string) => {
+  const [date, timeRange] = datetime.split(", ");
+  const formattedDate = new Date(date).toLocaleString("en-GB", {
+    weekday: "long",
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  });
+
+  return [formattedDate, timeRange];
+};
