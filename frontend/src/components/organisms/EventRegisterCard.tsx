@@ -37,7 +37,8 @@ const ModalBody = ({ handleClose, mutateFn }: modalProps) => {
           display: "flex",
           justifyContent: "center",
           alignItems: "center",
-        }}>
+        }}
+      >
         <div>Are you sure you want to cancel?</div>
       </Box>
       <Grid container spacing={2}>
@@ -150,7 +151,8 @@ const EventRegisterCard = ({
           <Button
             onClick={handleEventResgistration}
             disabled={!isChecked}
-            loading={isPending}>
+            loading={isPending}
+          >
             Register
           </Button>
         </Card>
