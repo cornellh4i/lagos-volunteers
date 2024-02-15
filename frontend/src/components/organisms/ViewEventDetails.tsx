@@ -1,9 +1,8 @@
 import React from "react";
 import EventTemplate from "../templates/EventTemplate";
-import EventRegisterCard from "./EventRegisterCard";
+import EventCardRegister from "./EventCardRegister";
 import Divider from "@mui/material/Divider";
 import IconTextHeader from "../atoms/IconTextHeader";
-
 import LocationOnIcon from "@mui/icons-material/LocationOn";
 import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
 import PersonIcon from "@mui/icons-material/Person";
@@ -18,6 +17,8 @@ import { formatDateTimeRange } from "@/utils/helpers";
 import { EventData } from "@/utils/types";
 import Loading from "@/components/molecules/Loading";
 import { formatDateTimeToUI } from "@/utils/helpers";
+import EventCardCancelConfirmation from "./EventCardCancelConfirmation";
+import EventCardCancel from "./EventCardCancel";
 
 interface ViewEventDetailsProps {}
 
@@ -197,17 +198,13 @@ const ViewEventDetails = () => {
       }
       img={<img className="w-full rounded-2xl" src={image_src} />}
       card={
-        <EventRegisterCard
-          action={
-            userHasCanceledAttendance
-              ? "cancel confirmation"
-              : eventAttendance
-              ? "cancel"
-              : "register"
-          }
-          eventId={eventid}
-          attendeeId={userid}
-        />
+        userHasCanceledAttendance ? (
+          <EventCardCancelConfirmation />
+        ) : eventAttendance ? (
+          <EventCardCancel eventId={eventid} attendeeId={userid} />
+        ) : (
+          <EventCardRegister eventId={eventid} attendeeId={userid} />
+        )
       }
     />
   );
