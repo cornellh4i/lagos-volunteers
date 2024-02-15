@@ -15,7 +15,7 @@ const Avatar = ({ image, name, startDate, email, phone }: AvatarProps) => {
   return (
     <div className="sm:flex">
       <div className="flex justify-center my-auto">
-        <MuiAvatar src={image} {...stringAvatar(name)}></MuiAvatar>
+        <MuiAvatar src={image} {...stringAvatar(name)} />
       </div>
       <div className="p-6 text-center sm:text-left">
         <div className="text-2xl font-semibold">{name}</div>
