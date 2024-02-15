@@ -4,64 +4,47 @@ import IconText from "../atoms/IconText";
 import FmdGoodIcon from "@mui/icons-material/FmdGood";
 import Button from "../atoms/Button";
 import FiberManualRecordIcon from "@mui/icons-material/FiberManualRecord";
-import { event } from "../organisms/ViewEvents";
-import { useRouter } from "next/router";
-import { isToday, isTomorrow, formatRelative, isPast, format } from "date-fns";
+import { ViewEventsEvent } from "@/utils/types";
+import { format } from "date-fns";
+import Link from "next/link";
+import { displayDateInfo } from "@/utils/helpers";
 
 interface EventCardNewProps {
-  event: event;
+  event: ViewEventsEvent;
 }
 
-interface EventCardContentProps {
-  jsFormattedDate: Date;
-  formattedTime: string;
-  name: string;
-  location: string;
-  role: string;
-  navigateFunc: () => void;
-}
-
-const EventCardContent = ({
-  jsFormattedDate,
-  formattedTime,
-  name,
-  location,
-  role,
-  navigateFunc,
-}: EventCardContentProps) => {
-  const displayDateInfo = (date: Date) => {
-    if (isPast(date)) {
-      return "Ongoing";
-    } else if (isToday(date)) {
-      return "Today";
-    } else if (isTomorrow(date)) {
-      return "Tomorrow";
-    } else {
-      return "Upcoming";
-    }
-  };
+const EventCardContent = ({ event }: EventCardNewProps) => {
+  const formattedStartTime = format(new Date(event.startDate), "hh:mm a");
+  const formattedEndTime = format(new Date(event.endDate), "hh:mm a");
+  const timeRange = `${formattedStartTime} - ${formattedEndTime}`;
+  const date = new Date(event.startDate);
+  const dateInfo = displayDateInfo(date);
+  const url =
+    event.role === "Supervisor"
+      ? `/events/${event.id}/attendees`
+      : `/events/${event.id}/register`;
+  const buttonText =
+    event.role === "Supervisor" ? "Manage Event" : "View Event Details";
 
   return (
     <div>
       <div className="flex flex-row gap-4">
         <div className="font-semibold text-orange-500">
           <IconText icon={<FiberManualRecordIcon className="text-xs" />}>
-            {displayDateInfo(jsFormattedDate)}
+            {dateInfo}
           </IconText>
         </div>
-        <div>{formattedTime}</div>
+        <div>{timeRange}</div>
       </div>
-      <div className="my-3 text-2xl font-semibold">{name}</div>
+      <div className="my-3 text-2xl font-semibold">{event.name}</div>
       <IconText icon={<FmdGoodIcon className="text-gray-500" />}>
-        {location}
+        {event.location}
       </IconText>
       <div className="mt-3" />
       {/* Bad UX behavior: Looks like button is as wide as length of location so it looks different with different event.  */}
-      {role === "Supervisor" ? (
-        <Button onClick={navigateFunc}>Manage Event</Button>
-      ) : (
-        <Button onClick={navigateFunc}>View Event Details</Button>
-      )}
+      <Link href={url}>
+        <Button>{buttonText}</Button>
+      </Link>
     </div>
   );
 };
@@ -69,12 +52,7 @@ const EventCardContent = ({
 const EventCardNew = ({ event }: EventCardNewProps) => {
   // Date formatting shenanigans
   const formattedStartDate = format(new Date(event.startDate), "d MMMM yyyy");
-  const formattedStartTime = format(new Date(event.startDate), "hh:mm a");
-  const formattedEndTime = format(new Date(event.endDate), "hh:mm a");
   const weekdayStartDate = format(new Date(event.startDate), "EEEE");
-  const timeRange = `${formattedStartTime} - ${formattedEndTime}`;
-
-  const router = useRouter();
 
   return (
     <div>
@@ -94,18 +72,7 @@ const EventCardNew = ({ event }: EventCardNewProps) => {
 
         {/* Event card */}
         <Card>
-          <EventCardContent
-            formattedTime={timeRange}
-            name={event.name}
-            location={event.location}
-            jsFormattedDate={new Date(event.startDate)}
-            role={event.role === "Supervisor" ? "Supervisor" : "Volunteer"}
-            navigateFunc={
-              event.role === "Supervisor"
-                ? () => router.push(`/events/${event.id}/attendees`)
-                : () => router.push(`/events/${event.id}/register`)
-            }
-          />
+          <EventCardContent event={event} />
         </Card>
       </div>
 
@@ -128,22 +95,11 @@ const EventCardNew = ({ event }: EventCardNewProps) => {
             <div className="flex">
               {/* Card left content */}
               <div className="md:max-w-xs">
-                <EventCardContent
-                  formattedTime={timeRange}
-                  name={event.name}
-                  location={event.location}
-                  role={event.role}
-                  jsFormattedDate={new Date(event.startDate)}
-                  navigateFunc={
-                    event.role === "Supervisor"
-                      ? () => router.push(`/events/${event.id}/attendees`)
-                      : () => router.push(`/events/${event.id}/register`)
-                  }
-                />
+                <EventCardContent event={event} />
               </div>
 
               {/* Card right image */}
-              <div className="hidden flex-1 md:block md:pl-6">
+              <div className="flex-1 hidden md:block md:pl-6">
                 <div className="relative h-full w-full overflow-auto rounded-2xl">
                   <img
                     className="absolute right-0 h-full rounded-2xl w-[300px] object-cover"

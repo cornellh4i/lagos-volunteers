@@ -10,28 +10,13 @@ import Button from "../atoms/Button";
 import Link from "next/link";
 import { useAuth } from "@/utils/AuthContext";
 import { eventHours, fetchUserIdFromDatabase } from "@/utils/helpers";
-import { Action } from "@/utils/types";
+import { Action, ViewEventsEvent } from "@/utils/types";
 import { api } from "@/utils/api";
 import ManageSearchIcon from "@mui/icons-material/ManageSearch";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import Loading from "@/components/molecules/Loading";
 import Error from "./Error";
 import { formatDateString } from "@/utils/helpers";
-
-export type event = {
-  id: string;
-  name: string;
-  location: string;
-  actions?: Action[];
-  startDate: string;
-  endDate: string;
-  role: string;
-  hours: number;
-  ownerId?: string;
-  description?: string;
-  capacity?: number;
-  imageURL?: string;
-};
 
 /** Displays upcoming events for the user */
 const UpcomingEvents = () => {
@@ -64,31 +49,35 @@ const UpcomingEvents = () => {
 
   // Handle upcoming events
   let upcomingEventsSupervisor =
-    upcomingEventsQuery?.upcomingSupervised.result.map((event: event) => {
-      return {
-        id: event["id"],
-        name: event["name"],
-        location: event["location"],
-        startDate: event["startDate"],
-        endDate: event["endDate"],
-        role: "Supervisor",
-        hours: eventHours(event["startDate"], event["endDate"]),
-        img_src: event["imageURL"],
-      };
-    }) || [];
+    upcomingEventsQuery?.upcomingSupervised.result.map(
+      (event: ViewEventsEvent) => {
+        return {
+          id: event["id"],
+          name: event["name"],
+          location: event["location"],
+          startDate: event["startDate"],
+          endDate: event["endDate"],
+          role: "Supervisor",
+          hours: eventHours(event["startDate"], event["endDate"]),
+          img_src: event["imageURL"],
+        };
+      }
+    ) || [];
   let upcomingEventsVolunteer =
-    upcomingEventsQuery?.upcomingRegistered.result.map((event: event) => {
-      return {
-        id: event["id"],
-        name: event["name"],
-        location: event["location"],
-        startDate: event["startDate"],
-        endDate: event["endDate"],
-        role: "Volunteer",
-        hours: eventHours(event["startDate"], event["endDate"]),
-        imageURL: event["imageURL"],
-      };
-    }) || [];
+    upcomingEventsQuery?.upcomingRegistered.result.map(
+      (event: ViewEventsEvent) => {
+        return {
+          id: event["id"],
+          name: event["name"],
+          location: event["location"],
+          startDate: event["startDate"],
+          endDate: event["endDate"],
+          role: "Volunteer",
+          hours: eventHours(event["startDate"], event["endDate"]),
+          imageURL: event["imageURL"],
+        };
+      }
+    ) || [];
 
   /** Loading screen */
   if (isLoading) return <Loading />;
@@ -109,7 +98,7 @@ const UpcomingEvents = () => {
         </div>
       )}
       {/* List of Upcoming events user supervises */}
-      {upcomingEventsSupervisor.map((event: event) => (
+      {upcomingEventsSupervisor.map((event: ViewEventsEvent) => (
         <div>
           <div className="mt-5" />
           <EventCardNew key={event.id} event={event} />
@@ -117,7 +106,7 @@ const UpcomingEvents = () => {
       ))}
 
       {/* List of Upcoming events user registered for */}
-      {upcomingEventsVolunteer.map((event: event) => (
+      {upcomingEventsVolunteer.map((event: ViewEventsEvent) => (
         <div>
           <div className="mt-5" />
           <EventCardNew key={event.id} event={event} />
@@ -204,8 +193,8 @@ const PastEvents = () => {
   const volunteerPastEvents =
     pastEventsUserVolunteerdForQuery?.data.result || [];
 
-  const supervisorAllPastEvents: event[] = [];
-  const volunteerAllPastEvents: event[] = [];
+  const supervisorAllPastEvents: ViewEventsEvent[] = [];
+  const volunteerAllPastEvents: ViewEventsEvent[] = [];
 
   supervisorPastEvents.map((event: any) => {
     supervisorAllPastEvents.push({

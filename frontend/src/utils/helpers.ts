@@ -1,5 +1,6 @@
 import dayjs from "dayjs";
 import { api } from "./api";
+import { isToday, isTomorrow, isPast } from "date-fns";
 
 /**
  * This functions performs a search in the DB based on the email of the user that
@@ -166,3 +167,20 @@ export function stringAvatar(name: string) {
     children: `${name.split(" ")[0][0]}${name.split(" ")[1][0]}`,
   };
 }
+
+/**
+ * Displays the date info
+ * @param date is the date object
+ * @returns one of ongoing, today, tomorrow, or upcoming
+ */
+export const displayDateInfo = (date: Date) => {
+  if (isPast(date)) {
+    return "Ongoing";
+  } else if (isToday(date)) {
+    return "Today";
+  } else if (isTomorrow(date)) {
+    return "Tomorrow";
+  } else {
+    return "Upcoming";
+  }
+};
