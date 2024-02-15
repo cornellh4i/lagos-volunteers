@@ -1,3 +1,5 @@
+// TODO: Deprecated by Avatar
+
 import React from "react";
 import IconText from "../atoms/IconText";
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
