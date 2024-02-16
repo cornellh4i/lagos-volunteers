@@ -41,15 +41,15 @@ const Profile = () => {
       />
       <h3 className="text-xl font-normal">Member Status</h3>
       <Card className="mb-3">
+        {/* TODO: this string parsing stuff is really really ugly right now
+        and should absolutely be refactored into something sane ASAP */}
         <h3 className="mt-0 mb-2 font-normal">
-          You are{" "}
-          <span className="font-bold">
-            {data?.role === "Admin" ? "an Admin" : `a ${data?.role}`}
-          </span>
+          You are {data?.role === "Admin" ? "an " : "a "}
+          <span className="font-bold">{data?.role}</span>
         </h3>
         You are currently{" "}
         {data?.role === "Admin" ? "an Admin" : `a ${data?.role}`}.{" "}
-        {data?.role === "An Admin" ? "Admin" : `A ${data?.role}`} is allowed to
+        {data?.role === "Admin" ? "An Admin" : `A ${data?.role}`} is allowed to
         register for and attend events.
       </Card>
       <Card>
