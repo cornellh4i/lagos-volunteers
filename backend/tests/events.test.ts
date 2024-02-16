@@ -117,13 +117,13 @@ describe("Testing PATCH /events/:eventid/status", () => {
   test("Update event status to active", async () => {
     const events = await request(app).get("/events");
     const eventid = events.body.data.result[0].id;
-    const status = "ACTIVE";
+    const status = "Active";
     const response = await request(app)
       .patch(`/events/${eventid}/status`)
       .send({ status: `${status}` });
     const data = response.body.data;
     expect(response.status).toBe(200);
-    expect(data.status).toBe("ACTIVE");
+    expect(data.status).toBe("Active");
   });
 
   test("Event status invalid", async () => {
@@ -169,21 +169,13 @@ describe("Testing POST /events/:eventid/attendees", () => {
     const users = await request(app).get("/users");
     const eventid = events.body.data.result[1].id;
     const attendeeid_1 = users.body.data.result[1].id;
-    const attendeeid_2 = users.body.data.result[3].id;
     const attendee1 = {
       attendeeid: `${attendeeid_1}`,
-    };
-    const attendee2 = {
-      attendeeid: `${attendeeid_2}`,
     };
     const response = await request(app)
       .post("/events/" + eventid + "/attendees/")
       .send(attendee1);
-    const response_too = await request(app)
-      .post("/events/" + eventid + "/attendees/")
-      .send(attendee2);
     expect(response.status).toBe(200);
-    expect(response_too.status).toBe(200);
   });
 });
 

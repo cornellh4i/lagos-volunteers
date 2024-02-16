@@ -1,5 +1,6 @@
 import dayjs from "dayjs";
 import { api } from "./api";
+import { isToday, isTomorrow, isPast } from "date-fns";
 
 /**
  * This functions performs a search in the DB based on the email of the user that
@@ -52,14 +53,14 @@ export const formatDateTimeRange = (
 /**
  * Formats the provided date string
  * @param dateString is the input date string
- * @returns the date formatted as mm/dd/yyyy
+ * @returns the date formatted as dd/mm/yyyy
  */
 export const formatDateString = (dateString: string) => {
   const date = new Date(dateString);
   const month = (date.getMonth() + 1).toString().padStart(2, "0");
   const day = date.getDate().toString().padStart(2, "0");
   const year = date.getFullYear();
-  return `${month}/${day}/${year}`;
+  return `${day}/${month}/${year}`;
 };
 
 /**
@@ -110,5 +111,76 @@ export const eventHours = (endTime: string, startTime: string) => {
   const end = new Date(endTime);
   const diff = end.getTime() - start.getTime();
   const hours = diff / (1000 * 3600);
-  return hours;
+  return Math.round(hours);
+};
+
+/**
+ * Formats a datetime string to a user-friendly format.
+ * Format for date is : "Weekday, Month Day, Year"
+ *
+ * @param datetime - The datetime string to be formatted.
+ * @returns An array containing the formatted date and the time range.
+ */
+export const formatDateTimeToUI = (datetime: string) => {
+  const [date, timeRange] = datetime.split(", ");
+  const formattedDate = new Date(date).toLocaleString("en-GB", {
+    weekday: "long",
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  });
+
+  return [formattedDate, timeRange];
+};
+
+/**
+ * Generates a string avatar for the given name
+ * @param name is the name of the user
+ */
+export function stringAvatar(name: string) {
+  function stringToColor(string: string) {
+    let hash = 0;
+    let i;
+
+    /* eslint-disable no-bitwise */
+    for (i = 0; i < string.length; i += 1) {
+      hash = string.charCodeAt(i) + ((hash << 5) - hash);
+    }
+
+    let color = "#";
+
+    for (i = 0; i < 3; i += 1) {
+      const value = (hash >> (i * 8)) & 0xff;
+      color += `00${value.toString(16)}`.slice(-2);
+    }
+    /* eslint-enable no-bitwise */
+
+    return color;
+  }
+  return {
+    sx: {
+      bgcolor: stringToColor(name),
+      height: "125px",
+      width: "125px",
+      fontSize: "75px",
+    },
+    children: `${name.split(" ")[0][0]}${name.split(" ")[1][0]}`,
+  };
+}
+
+/**
+ * Displays the date info
+ * @param date is the date object
+ * @returns one of ongoing, today, tomorrow, or upcoming
+ */
+export const displayDateInfo = (date: Date) => {
+  if (isPast(date)) {
+    return "Ongoing";
+  } else if (isToday(date)) {
+    return "Today";
+  } else if (isTomorrow(date)) {
+    return "Tomorrow";
+  } else {
+    return "Upcoming";
+  }
 };

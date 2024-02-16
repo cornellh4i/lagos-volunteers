@@ -35,6 +35,7 @@ async function createPoolOfRandomUsers(pool: number) {
             lastName: user.lastName,
             nickname: user.nickname,
             imageURL: user.imageURL,
+            phoneNumber: user.phone,
           },
         },
         preferences: {
@@ -67,13 +68,14 @@ async function createPoolOfRandomEvents(pool: number) {
     const createdSupervisor = await prisma.user.create({
       data: {
         email: supervisor.email,
-        role: "SUPERVISOR",
+        role: "Supervisor",
         profile: {
           create: {
             firstName: supervisor.firstName,
             lastName: supervisor.lastName,
             nickname: supervisor.nickname,
             imageURL: supervisor.imageURL,
+            phoneNumber: supervisor.phone,
           },
         },
         preferences: {
@@ -152,7 +154,7 @@ const userData: Prisma.UserCreateInput[] = [
         nickname: "Gracey",
       },
     },
-    role: "SUPERVISOR",
+    role: "Supervisor",
   },
   {
     email: "prisma@hey.com",
@@ -163,7 +165,7 @@ const userData: Prisma.UserCreateInput[] = [
         nickname: "Destiny",
       },
     },
-    role: "ADMIN",
+    role: "Admin",
   },
 ];
 

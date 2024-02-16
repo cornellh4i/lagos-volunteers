@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import BoxText from "@/components/atoms/BoxText";
 import Chip from "@/components/atoms/Chip";
 import TabContainer from "@/components/molecules/TabContainer";
 import EventCard from "@/components/organisms/EventCard";
@@ -11,24 +10,13 @@ import Button from "../atoms/Button";
 import Link from "next/link";
 import { useAuth } from "@/utils/AuthContext";
 import { eventHours, fetchUserIdFromDatabase } from "@/utils/helpers";
-import { Action } from "@/utils/types";
+import { Action, ViewEventsEvent } from "@/utils/types";
 import { api } from "@/utils/api";
 import ManageSearchIcon from "@mui/icons-material/ManageSearch";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import Loading from "@/components/molecules/Loading";
 import Error from "./Error";
-
-type event = {
-  id?: string;
-  name?: string;
-  location?: string;
-  actions?: Action[];
-  startDate?: string;
-  endDate?: string;
-  role?: string;
-  hours?: number;
-  ownerId?: string;
-};
+import { formatDateString } from "@/utils/helpers";
 
 /** Displays upcoming events for the user */
 const UpcomingEvents = () => {
@@ -47,10 +35,10 @@ const UpcomingEvents = () => {
       const userid = await fetchUserIdFromDatabase(user?.email as string);
       setUserid(userid);
       const upcomingEventsUserRegisteredFor = await api.get(
-        `/events?userid=${userid}&date=upcoming`
+        `/events?userid=${userid}&date=upcoming&sort=startDate:desc`
       );
       const upcomingEventsUserSupervises = await api.get(
-        `/events?ownerid=${userid}&date=upcoming`
+        `/events?ownerid=${userid}&date=upcoming&sort=startDate:desc`
       );
       return {
         upcomingRegistered: upcomingEventsUserRegisteredFor.data["data"],
@@ -61,29 +49,35 @@ const UpcomingEvents = () => {
 
   // Handle upcoming events
   let upcomingEventsSupervisor =
-    upcomingEventsQuery?.upcomingSupervised.result || [];
+    upcomingEventsQuery?.upcomingSupervised.result.map(
+      (event: ViewEventsEvent) => {
+        return {
+          id: event["id"],
+          name: event["name"],
+          location: event["location"],
+          startDate: event["startDate"],
+          endDate: event["endDate"],
+          role: "Supervisor",
+          hours: eventHours(event["startDate"], event["endDate"]),
+          img_src: event["imageURL"],
+        };
+      }
+    ) || [];
   let upcomingEventsVolunteer =
-    upcomingEventsQuery?.upcomingRegistered.result || [];
-
-  // making supervisor events come first
-  const mergedUpcomingEvents: event[] = [
-    ...upcomingEventsSupervisor,
-    ...upcomingEventsVolunteer,
-  ];
-
-  const allUpcomingEvents: event[] = [];
-  mergedUpcomingEvents.map((event: any) => {
-    allUpcomingEvents.push({
-      id: event["id"],
-      name: event["name"],
-      location: event["location"],
-      startDate: event["startDate"],
-      endDate: event["endDate"],
-      role: userid === event["ownerId"] ? "Supervisor" : "Volunteer",
-      hours: eventHours(event["startDate"], event["endDate"]),
-    });
-  });
-  const eventDetails = allUpcomingEvents;
+    upcomingEventsQuery?.upcomingRegistered.result.map(
+      (event: ViewEventsEvent) => {
+        return {
+          id: event["id"],
+          name: event["name"],
+          location: event["location"],
+          startDate: event["startDate"],
+          endDate: event["endDate"],
+          role: "Volunteer",
+          hours: eventHours(event["startDate"], event["endDate"]),
+          imageURL: event["imageURL"],
+        };
+      }
+    ) || [];
 
   /** Loading screen */
   if (isLoading) return <Loading />;
@@ -94,24 +88,31 @@ const UpcomingEvents = () => {
   return (
     <div>
       <Link href="/events/create">
-        <Button className="w-full sm:w-max mb-2">Create New Event</Button>
+        <Button className="mb-2 w-full sm:w-max">Create New Event</Button>
       </Link>
-
       {/* Display when no events are found */}
       {/* TODO: make this look better */}
-      {eventDetails.length == 0 && (
+      {upcomingEventsSupervisor.length == 0 && upcomingEventsVolunteer == 0 && (
         <div className="p-10">
           <div className="text-center">You have no upcoming events</div>
         </div>
       )}
-
-      {/* List of events */}
-      {eventDetails.map((event) => (
+      {/* List of Upcoming events user supervises */}
+      {upcomingEventsSupervisor.map((event: ViewEventsEvent) => (
         <div>
           <div className="mt-5" />
-          <EventCardNew />
+          <EventCardNew key={event.id} event={event} />
         </div>
       ))}
+
+      {/* List of Upcoming events user registered for */}
+      {upcomingEventsVolunteer.map((event: ViewEventsEvent) => (
+        <div>
+          <div className="mt-5" />
+          <EventCardNew key={event.id} event={event} />
+        </div>
+      ))}
+
       {/* <CardList>
         {eventDetails.map((event) => (
           <EventCard
@@ -192,18 +193,18 @@ const PastEvents = () => {
   const volunteerPastEvents =
     pastEventsUserVolunteerdForQuery?.data.result || [];
 
-  const supervisorAllPastEvents: event[] = [];
-  const volunteerAllPastEvents: event[] = [];
+  const supervisorAllPastEvents: ViewEventsEvent[] = [];
+  const volunteerAllPastEvents: ViewEventsEvent[] = [];
 
   supervisorPastEvents.map((event: any) => {
     supervisorAllPastEvents.push({
       id: event["id"],
       name: event["name"],
       location: event["location"],
-      startDate: event["startDate"],
+      startDate: formatDateString(event["startDate"]),
       endDate: event["endDate"],
-      role: userid === event["ownerId"] ? "Supervisor" : "Volunteer",
-      hours: eventHours(event["startDate"], event["endDate"]),
+      role: "Supervisor",
+      hours: eventHours(event["endDate"], event["startDate"]),
     });
   });
 
@@ -212,10 +213,10 @@ const PastEvents = () => {
       id: event["id"],
       name: event["name"],
       location: event["location"],
-      startDate: event["startDate"],
+      startDate: formatDateString(event["startDate"]),
       endDate: event["endDate"],
-      role: userid === event["ownerId"] ? "Supervisor" : "Volunteer",
-      hours: eventHours(event["startDate"], event["endDate"]),
+      role: "Volunteer",
+      hours: eventHours(event["endDate"], event["startDate"]),
     });
   });
 
@@ -402,6 +403,7 @@ const ViewEvents = () => {
     const tabs = [
       {
         label: "Upcoming",
+        // TODO: For upcoming events, only a max of 10 events are returned from the server, include a load more button to fetch more events
         panel: <UpcomingEvents />,
       },
       {
@@ -414,7 +416,7 @@ const ViewEvents = () => {
       <>
         <TabContainer
           tabs={tabs}
-          left={<div className="font-semibold text-3xl">My Events</div>}
+          left={<div className="text-3xl font-semibold">My Events</div>}
         />
       </>
     );

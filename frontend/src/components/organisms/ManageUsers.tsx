@@ -184,7 +184,7 @@ const ManageUsers = ({}: ManageUsersProps) => {
   data?.data.result.map((user: any) => {
     rows.push({
       id: user.id,
-      name: user.profile?.firstName + user.profile?.lastName,
+      name: user.profile?.firstName + " " + user.profile?.lastName,
       email: user.email,
       role: user.status,
       date: new Date(formatDateString(user.createdAt)),

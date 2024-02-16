@@ -1,7 +1,7 @@
 // script to seed databse with dummy data
 import { faker } from "@faker-js/faker";
 
-type Role = "VOLUNTEER" | "ADMIN" | "SUPERVISOR";
+type Role = "Volunteer" | "Admin" | "Supervisor";
 
 export interface dummyUser {
   email: string;
@@ -10,10 +10,11 @@ export interface dummyUser {
   lastName: string;
   nickname: string;
   role: Role;
+  phone?: string;
 }
 
-type Mode = "IN_PERSON" | "VIRTUAL";
-type Status = "DRAFT" | "ACTIVE" | "CANCELLED" | "COMPLETED";
+type Mode = "In_Person" | "Virtual";
+type Status = "Draft" | "Active" | "Cancelled" | "Completed";
 
 export interface dummyEvent {
   name: string;
@@ -34,10 +35,11 @@ export function createRandomUser(): dummyUser {
   const firstName = faker.person.firstName();
   const lastName = faker.person.lastName();
   const nickname = faker.person.firstName();
+  const phone = faker.phone.number();
   const role = faker.helpers.arrayElement([
-    "VOLUNTEER",
-    "ADMIN",
-    "SUPERVISOR",
+    "Volunteer",
+    "Admin",
+    "Supervisor",
   ]) as Role;
 
   return {
@@ -47,6 +49,7 @@ export function createRandomUser(): dummyUser {
     lastName,
     nickname,
     role,
+    phone,
   };
 }
 
@@ -61,12 +64,12 @@ export function createRandomEvent(): dummyEvent {
   const capacity = faker.number.int({ min: 10, max: 1000 });
   const imageURL = faker.image.urlLoremFlickr({ category: "people" });
   const status = faker.helpers.arrayElement([
-    "DRAFT",
-    "ACTIVE",
-    "CANCELLED",
-    "COMPLETED",
+    "Draft",
+    "Active",
+    "Cancelled",
+    "Completed",
   ]) as Status;
-  const mode = faker.helpers.arrayElement(["IN_PERSON", "VIRTUAL"]) as Mode;
+  const mode = faker.helpers.arrayElement(["In_Person", "Virtual"]) as Mode;
   const tags = faker.lorem.words(3).split(" ");
 
   return {
