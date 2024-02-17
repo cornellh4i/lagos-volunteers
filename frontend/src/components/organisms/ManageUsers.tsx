@@ -187,7 +187,7 @@ const ManageUsers = ({}: ManageUsersProps) => {
       name: user.profile?.firstName + " " + user.profile?.lastName,
       email: user.email,
       role: user.status,
-      date: new Date(formatDateString(user.createdAt)),
+      date: new Date(user.createdAt),
       hours: user.hours, // TODO: properly calculate hours
     });
   });

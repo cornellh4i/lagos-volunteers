@@ -147,7 +147,7 @@ const ManageUserProfileNew = () => {
     name: `${userProfileDetailsQuery?.profile?.firstName} ${userProfileDetailsQuery?.profile?.lastName}`,
     role: userProfileDetailsQuery?.role,
     email: userProfileDetailsQuery?.email,
-    joinDate: formatDateString(userProfileDetailsQuery?.createdAt),
+    joinDate: userProfileDetailsQuery?.createdAt,
     userId: userProfileDetailsQuery?.id,
     hours: userProfileDetailsQuery?.hours,
     status: userProfileDetailsQuery?.status,
