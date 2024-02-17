@@ -120,7 +120,8 @@ const handleResponse = async (response: Response) => {
     }
     return Promise.resolve({ response: response, data: data });
   } else {
-    return Promise.reject(`Request failed with status ${response.status}`);
+    const responseWithErrors = await response.json();
+    return Promise.reject({message: responseWithErrors.error, status: response.status});
   }
 };
 
