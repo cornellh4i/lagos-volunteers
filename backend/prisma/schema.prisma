@@ -18,11 +18,11 @@ model User {
   email     String   @unique
 
   // User info
-  role          userRole?         @default(Volunteer)
+  role          userRole?         @default(VOLUNTEER)
   profile       Profile?
   verified      Boolean?          @default(false)
   hours         Int?              @default(0) //toal hours workd
-  status        UserStatus?       @default(Active)
+  status        UserStatus?       @default(ACTIVE)
   createdEvents Event[]           @relation(name: "EventOwner")
   events        EventEnrollment[]
   preferences   UserPreferences?
@@ -78,8 +78,8 @@ model Event {
   imageURL    String?
   startDate   DateTime
   endDate     DateTime
-  mode        EventMode?        @default(In_Person)
-  status      EventStatus?      @default(Draft)
+  mode        EventMode?        @default(IN_PERSON)
+  status      EventStatus?      @default(DRAFT)
   owner       User              @relation(fields: [ownerId], references: [id], name: "EventOwner")
   ownerId     String
   attendees   EventEnrollment[]
@@ -114,25 +114,25 @@ model EventEnrollment {
 }
 
 enum userRole {
-  Admin
-  Volunteer
-  Supervisor
+  ADMIN
+  VOLUNTEER
+  SUPERVISOR
 }
 
 enum UserStatus {
-  Active
-  Inactive
-  Hold
+  ACTIVE
+  INACTIVE
+  HOLD
 }
 
 enum EventStatus {
-  Draft
-  Active
-  Completed
-  Canceled
+  DRAFT
+  ACTIVE
+  COMPLETED
+  CANCELED
 }
 
 enum EventMode {
-  Virtual
-  In_Person
+  VIRTUAL
+  IN_PERSON
 }
