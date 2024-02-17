@@ -95,7 +95,7 @@ const LoginForm = () => {
     const { email, password } = data;
     try {
       await signInWithEmailAndPassword(email, password);
-      if (signInErrors){
+      if (signInErrors!==undefined){
         throw signInErrors;
       }
       if (signedInUser) {
