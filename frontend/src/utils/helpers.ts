@@ -184,3 +184,13 @@ export const displayDateInfo = (date: Date) => {
     return "Upcoming";
   }
 };
+
+/**
+ * Formats the first character of a string to uppercase and the rest to lowercase.
+ * 
+ * @param str - The string to be formatted.
+ * @returns The formatted string.
+ */
+export const formatRoleOrStatus = (str: string) => {
+    return str[0]+str.substring(1).toLowerCase();
+  }

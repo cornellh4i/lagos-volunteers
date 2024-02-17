@@ -16,6 +16,7 @@ import { SelectChangeEvent } from "@mui/material/Select";
 import { Box, Grid } from "@mui/material";
 import Modal from "../molecules/Modal";
 import Snackbar from "../atoms/Snackbar";
+import { formatRoleOrStatus } from "@/utils/helpers";
 
 type userProfileData = {
   name: string;
@@ -285,7 +286,7 @@ const ManageUserProfileNew = () => {
         variety="success"
       >
         {`Success: ${name} is now ${
-          role === "ADMIN" ? ` an ${role}` : ` a ${role}`
+          role === "ADMIN" ? ` an ${formatRoleOrStatus(role)}` : ` a ${formatRoleOrStatus(role)}`
         }`}
       </Snackbar>
 
@@ -329,7 +330,7 @@ const ManageUserProfileNew = () => {
       <div className="grid gap-4 md:grid-cols-2">
         <Card>
           <h3 className="mb-2 mt-0">
-            {name} is {role === "ADMIN" ? ` an ${role}` : ` a ${role}`}
+            {name} is {role === "ADMIN" ? "an Admin" : `a ${formatRoleOrStatus(role)}`}
           </h3>
           <div className="mb-4">
             This member currently has {hours} hours of volunteer experience.
