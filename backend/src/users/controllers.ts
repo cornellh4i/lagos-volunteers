@@ -11,7 +11,11 @@ import prisma from "../../client";
 const getUsers = async (req: Request, res: Response) => {
   // #swagger.tags = ['Users']
   try {
-    const users = await prisma.user.findMany();
+    const users = await prisma.user.findMany({
+      include: {
+        profile: true,
+      },
+    });
     res.status(200).json(users);
   } catch (error: any) {
     // Do we need to log the error?
