@@ -10,6 +10,13 @@ describe("Testing GET /users", () => {
   });
 });
 
+describe("Testing GET /users onboarding", () => {
+  test("Get all users in DB", async () => {
+    const response = await request(app).get("/users");
+    expect(response.status).toBe(200);
+  });
+});
+
 describe("Testing POST /users", () => {
   test("POST Create a new user", async () => {
     const user = {
