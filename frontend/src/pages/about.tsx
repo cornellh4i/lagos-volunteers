@@ -7,6 +7,9 @@ const About = () => {
     <>
       <Button text="hello" />
       Hello there
+      <div className="bg-yellow-300 bg-opacity-10 tracking-tighter w-6/12">
+        Hello
+      </div>
     </>
   );
 };
