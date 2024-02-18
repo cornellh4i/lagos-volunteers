@@ -12,8 +12,12 @@ const handleClick = () => {
 const User = () => {
   const router = useRouter();
   const { userid } = router.query;
-  // return <>Hello user {userid}!</>;
-  <button onClick={handleClick}>cat fact</button>;
+  return (
+    <div>
+      <p>Hello user {userid}!</p>
+      <button onClick={handleClick}>cat fact</button>
+    </div>
+  );
 };
 
 export default User;
