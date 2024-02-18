@@ -191,7 +191,7 @@ const getUsers = async (
       AND: [whereDict],
     },
     include: {
-      profile: true,
+      profile: true, //this is already added for onboarding?
       events: eventId ? true : false,
     },
     orderBy: sortDict[sort.key],
