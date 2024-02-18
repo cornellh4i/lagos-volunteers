@@ -1,19 +1,14 @@
 import React from "react";
-import dynamic from "next/dynamic";
-import DefaultTemplate from "@/components/templates/DefaultTemplate";
+import Button from "@/components/Button";
 
-const DynamicAboutPage = dynamic(
-  () => import("../components/organisms/About"),
-  {
-    ssr: false,
-  }
-);
-
-const AboutPage = () => {
+/** An About page */
+const About = () => {
   return (
-    <DefaultTemplate>
-      <DynamicAboutPage edit={true} />
-    </DefaultTemplate>
+    <>
+      <Button />
+      Hello there
+    </>
   );
 };
-export default AboutPage;
+
+export default About;
