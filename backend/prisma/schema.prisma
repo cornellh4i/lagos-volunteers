@@ -16,13 +16,14 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   email     String   @unique
+  phone     String?  @unique
 
   // User info
-  role          userRole?         @default(VOLUNTEER)
+  role          userRole?         @default(Volunteer)
   profile       Profile?
   verified      Boolean?          @default(false)
   hours         Int?              @default(0) //toal hours workd
-  status        UserStatus?       @default(ACTIVE)
+  status        UserStatus?       @default(Active)
   createdEvents Event[]           @relation(name: "EventOwner")
   events        EventEnrollment[]
   preferences   UserPreferences?
@@ -31,14 +32,18 @@ model User {
 
 model Profile {
   // Profile info
-  firstName           String?
-  lastName            String?
-  nickname            String?
-  imageURL            String?
-  disciplinaryNotices Int?    @default(0)
-  user                User    @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  userId              String
-  phoneNumber         String?
+  firstName   String?
+  lastName    String?
+  nickname    String?
+  bio         String?
+  following   Int?     @default(0)
+  followers   Int?     @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  userId      String
+  imageURL    String?
+  phoneNumber String?
 
   @@id([userId])
 }
@@ -78,8 +83,8 @@ model Event {
   imageURL    String?
   startDate   DateTime
   endDate     DateTime
-  mode        EventMode?        @default(IN_PERSON)
-  status      EventStatus?      @default(DRAFT)
+  mode        EventMode?        @default(In_Person)
+  status      EventStatus?      @default(Draft)
   owner       User              @relation(fields: [ownerId], references: [id], name: "EventOwner")
   ownerId     String
   attendees   EventEnrollment[]
@@ -114,25 +119,25 @@ model EventEnrollment {
 }
 
 enum userRole {
-  ADMIN
-  VOLUNTEER
-  SUPERVISOR
+  Admin
+  Volunteer
+  Supervisor
 }
 
 enum UserStatus {
-  ACTIVE
-  INACTIVE
-  HOLD
+  Active
+  Inactive
+  Hold
 }
 
 enum EventStatus {
-  DRAFT
-  ACTIVE
-  COMPLETED
-  CANCELED
+  Draft
+  Active
+  Completed
+  Canceled
 }
 
 enum EventMode {
-  VIRTUAL
-  IN_PERSON
+  Virtual
+  In_Person
 }

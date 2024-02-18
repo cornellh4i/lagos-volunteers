@@ -1,7 +1,7 @@
 // script to seed databse with dummy data
 import { faker } from "@faker-js/faker";
 
-type Role = "VOLUNTEER" | "ADMIN" | "SUPERVISOR";
+type Role = "Volunteer" | "Admin" | "Supervisor";
 
 export interface dummyUser {
   email: string;
@@ -9,6 +9,7 @@ export interface dummyUser {
   firstName: string;
   lastName: string;
   nickname: string;
+  phone: string;
   role: Role;
 }
 
@@ -34,10 +35,11 @@ export function createRandomUser(): dummyUser {
   const firstName = faker.person.firstName();
   const lastName = faker.person.lastName();
   const nickname = faker.person.firstName();
+  const phone = "123123123";
   const role = faker.helpers.arrayElement([
-    "VOLUNTEER",
-    "ADMIN",
-    "SUPERVISOR",
+    "Volunteer",
+    "Admin",
+    "Supervisor",
   ]) as Role;
 
   return {
@@ -46,6 +48,7 @@ export function createRandomUser(): dummyUser {
     firstName,
     lastName,
     nickname,
+    phone,
     role,
   };
 }

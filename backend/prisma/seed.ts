@@ -35,6 +35,7 @@ async function createPoolOfRandomUsers(pool: number) {
             lastName: user.lastName,
             nickname: user.nickname,
             imageURL: user.imageURL,
+            phoneNumber: user.phone,
           },
         },
         preferences: {
@@ -67,13 +68,14 @@ async function createPoolOfRandomEvents(pool: number) {
     const createdSupervisor = await prisma.user.create({
       data: {
         email: supervisor.email,
-        role: "SUPERVISOR",
+        role: "Supervisor",
         profile: {
           create: {
             firstName: supervisor.firstName,
             lastName: supervisor.lastName,
             nickname: supervisor.nickname,
             imageURL: supervisor.imageURL,
+            phoneNumber: supervisor.phone,
           },
         },
         preferences: {
@@ -135,6 +137,8 @@ const userData: Prisma.UserCreateInput[] = [
         firstName: "Alice",
         lastName: "Smith",
         nickname: "Asmithy",
+        imageURL: "https://example.com/alice.jpg",
+        phoneNumber: "+1234567890",
       },
     },
     preferences: {
@@ -152,7 +156,7 @@ const userData: Prisma.UserCreateInput[] = [
         nickname: "Gracey",
       },
     },
-    role: "SUPERVISOR",
+    role: "Supervisor",
   },
   {
     email: "prisma@hey.com",
@@ -163,7 +167,7 @@ const userData: Prisma.UserCreateInput[] = [
         nickname: "Destiny",
       },
     },
-    role: "ADMIN",
+    role: "Admin",
   },
 ];
 
@@ -269,6 +273,7 @@ async function main() {
   // This is for seeding purposes only. Everytime seed, we will get constraint errors becuause we are creating the same data again.
   await prisma.event.deleteMany({});
   await prisma.user.deleteMany({});
+  await prisma.profile.deleteMany();
 
   for (const u of userData) {
     const user = await prisma.user.create({
