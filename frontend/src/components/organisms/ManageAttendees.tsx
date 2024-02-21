@@ -2,6 +2,7 @@ import React, { ChangeEvent, FormEvent, useEffect } from "react";
 import TabContainer from "@/components/molecules/TabContainer";
 import { GridColDef, GridPaginationModel } from "@mui/x-data-grid";
 import Table from "@/components/molecules/Table";
+import Modal from "@/components/molecules/Modal";
 import { MenuItem } from "@mui/material";
 import SearchBar from "../atoms/SearchBar";
 import Select from "../atoms/Select";
@@ -123,6 +124,16 @@ const AttendeesTable = ({
       </Card>
     </>
   );
+};
+
+interface modalProps {
+  handleClose: () => void;
+  mutateFn: () => void;
+}
+
+/** A modal to duplicate events */
+const ModalBody = ({ handleClose, mutateFn }: modalProps) => {
+  return <div>Hello World!</div>;
 };
 
 /** A ManageAttendees component */
