@@ -79,6 +79,21 @@ describe("Testing PUT /events/:eventid", () => {
   });
 });
 
+describe("Testing GET /events/:eventid", () => {
+  test("Get existing event", async () => {
+    const events = await request(app).get("/events");
+    const eventid = events.body.data.result[1].id;
+    const response = await request(app).get("/events/" + eventid);
+    expect(response.status).toBe(200);
+  });
+
+  test("Get non-existing event", async () => {
+    const eventid = -1;
+    const response = await request(app).get("/events/" + eventid);
+    expect(response.body.data).toEqual(null);
+  });
+});
+
 describe("Testing POST /events/:eventid/attendees", () => {
   test("Add attendee for existing event", async () => {
     const events = await request(app).get("/events");
@@ -92,21 +107,6 @@ describe("Testing POST /events/:eventid/attendees", () => {
       .post("/events/" + eventid + "/attendees/")
       .send(attendee1);
     expect(response.status).toBe(200);
-  });
-});
-
-describe("Testing GET /events/:eventid", () => {
-  test("Get existing event", async () => {
-    const events = await request(app).get("/events");
-    const eventid = events.body.data.result[1].id;
-    const response = await request(app).get("/events/" + eventid);
-    expect(response.status).toBe(200);
-  });
-
-  test("Get non-existing event", async () => {
-    const eventid = -1;
-    const response = await request(app).get("/events/" + eventid);
-    expect(response.body.data).toEqual(null);
   });
 });
 
