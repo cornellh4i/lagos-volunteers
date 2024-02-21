@@ -12,6 +12,7 @@ import { useSignInWithEmailAndPassword } from "react-firebase-hooks/auth";
 import Snackbar from "../atoms/Snackbar";
 import { api } from "@/utils/api";
 import { useMutation } from "@tanstack/react-query";
+import { sendEmailVerification } from "firebase/auth";
 
 type FormValues = {
   firstName: string;
