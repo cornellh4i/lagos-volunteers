@@ -137,22 +137,6 @@ describe("Testing PATCH /events/:eventid/status", () => {
   });
 });
 
-describe("Testing POST /events/:eventid/attendees", () => {
-  test("Add attendee for existing event", async () => {
-    const events = await request(app).get("/events");
-    const users = await request(app).get("/users");
-    const eventid = events.body.data.result[1].id;
-    const attendeeid_1 = users.body.data.result[1].id;
-    const attendee1 = {
-      attendeeid: `${attendeeid_1}`,
-    };
-    const response = await request(app)
-      .post("/events/" + eventid + "/attendees/")
-      .send(attendee1);
-    expect(response.status).toBe(200);
-  });
-});
-
 describe("Testing PATCH /events/:eventid/owner", () => {
   test("Change current owner", async () => {
     const events = await request(app).get("/events");
@@ -176,6 +160,22 @@ describe("Testing PATCH /events/:eventid/owner", () => {
       .patch("/events/" + eventid + "/owner")
       .send({ ownerid: `${ownerid}` });
     expect(response.status).toBe(500);
+  });
+});
+
+describe("Testing POST /events/:eventid/attendees", () => {
+  test("Add attendee for existing event", async () => {
+    const events = await request(app).get("/events");
+    const users = await request(app).get("/users");
+    const eventid = events.body.data.result[1].id;
+    const attendeeid_1 = users.body.data.result[1].id;
+    const attendee1 = {
+      attendeeid: `${attendeeid_1}`,
+    };
+    const response = await request(app)
+      .post("/events/" + eventid + "/attendees/")
+      .send(attendee1);
+    expect(response.status).toBe(200);
   });
 });
 
