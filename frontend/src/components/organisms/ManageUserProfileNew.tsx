@@ -16,6 +16,7 @@ import { SelectChangeEvent } from "@mui/material/Select";
 import { Box, Grid } from "@mui/material";
 import Modal from "../molecules/Modal";
 import Snackbar from "../atoms/Snackbar";
+import { formatRoleOrStatus } from "@/utils/helpers";
 
 type userProfileData = {
   name: string;
@@ -79,7 +80,7 @@ const ModalBody = ({ status, blacklistFunc, handleClose }: modalBodyProps) => {
   return (
     <div>
       <Box sx={{ textAlign: "center", marginBottom: 3 }}>
-        {status == "Active"
+        {status == "ACTIVE"
           ? "Are you sure you want to blacklist this user?"
           : "Are you sure you want to remove this member from the blacklist?"}
       </Box>
@@ -91,7 +92,7 @@ const ModalBody = ({ status, blacklistFunc, handleClose }: modalBodyProps) => {
         </Grid>
         <Grid item md={6} xs={12}>
           <Button variety="secondary" onClick={blacklistFunc}>
-            {status == "Active" ? "Yes, blacklist" : "Yes, Remove"}
+            {status == "ACTIVE" ? "Yes, blacklist" : "Yes, Remove"}
           </Button>
         </Grid>
       </Grid>
@@ -240,7 +241,7 @@ const ManageUserProfileNew = () => {
   /** Tanstack query mutation for changing user status */
   const { mutateAsync: changeUserStatus } = useMutation({
     mutationFn: async () => {
-      const status2Change = status == "Active" ? "Inactive" : "Active";
+      const status2Change = status == "ACTIVE" ? "INACTIVE" : "ACTIVE";
       const { data } = await api.patch(`/users/${userid}/status`, {
         status: status2Change,
       });
@@ -285,7 +286,7 @@ const ManageUserProfileNew = () => {
         variety="success"
       >
         {`Success: ${name} is now ${
-          role === "Admin" ? ` an ${role}` : ` a ${role}`
+          role === "ADMIN" ? ` an ${formatRoleOrStatus(role)}` : ` a ${formatRoleOrStatus(role)}`
         }`}
       </Snackbar>
 
@@ -305,7 +306,7 @@ const ManageUserProfileNew = () => {
         variety="success"
       >
         {`Success: ${name} is now ${
-          status === "Active" ? ` an active ` : ` a blacklisted `
+          status === "ACTIVE" ? ` an active ` : ` a blacklisted `
         } member`}
       </Snackbar>
 
@@ -329,7 +330,7 @@ const ManageUserProfileNew = () => {
       <div className="grid gap-4 md:grid-cols-2">
         <Card>
           <h3 className="mb-2 mt-0">
-            {name} is {role === "Admin" ? ` an ${role}` : ` a ${role}`}
+            {name} is {role === "ADMIN" ? "an Admin" : `a ${formatRoleOrStatus(role)}`}
           </h3>
           <div className="mb-4">
             This member currently has {hours} hours of volunteer experience.
@@ -341,22 +342,22 @@ const ManageUserProfileNew = () => {
               changeUserRole({ role: event.target.value })
             }
           >
-            <MenuItem value="Volunteer">Volunteer</MenuItem>
-            <MenuItem value="Supervisor">Supervisor</MenuItem>
-            <MenuItem value="Admin">Admin</MenuItem>
+            <MenuItem value="VOLUNTEER">Volunteer</MenuItem>
+            <MenuItem value="SUPERVISOR">Supervisor</MenuItem>
+            <MenuItem value="ADMIN">Admin</MenuItem>
           </Select>
         </Card>
         <Card>
           <h3 className="mb-2 mt-0">
-            {name} is {status === "Active" ? ` an Active ` : ` a Blacklisted `}
+            {name} is {status === "ACTIVE" ? ` an Active ` : ` a Blacklisted `}
             member
           </h3>
           <div className="mb-4">
-            {status === "Active"
+            {status === "ACTIVE"
               ? "Would you like to blacklist this member? This will stop them from registering for and attending future events."
               : "Would you like to remove this member from the blacklist?"}
           </div>
-          {status === "Active" ? (
+          {status === "ACTIVE" ? (
             <Button variety="error" onClick={handleOpen}>
               Blacklist
             </Button>

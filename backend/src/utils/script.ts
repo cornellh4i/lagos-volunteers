@@ -1,7 +1,7 @@
 // script to seed databse with dummy data
 import { faker } from "@faker-js/faker";
 
-type Role = "Volunteer" | "Admin" | "Supervisor";
+type Role = "VOLUNTEER" | "ADMIN" | "SUPERVISOR";
 
 export interface dummyUser {
   email: string;
@@ -13,8 +13,8 @@ export interface dummyUser {
   phone?: string;
 }
 
-type Mode = "In_Person" | "Virtual";
-type Status = "Draft" | "Active" | "Cancelled" | "Completed";
+type Mode = "IN_PERSON" | "VIRTUAL";
+type Status = "DRAFT" | "ACTIVE" | "CANCELED" | "COMPLETED";
 
 export interface dummyEvent {
   name: string;
@@ -37,9 +37,9 @@ export function createRandomUser(): dummyUser {
   const nickname = faker.person.firstName();
   const phone = faker.phone.number();
   const role = faker.helpers.arrayElement([
-    "Volunteer",
-    "Admin",
-    "Supervisor",
+    "VOLUNTEER",
+    "ADMIN",
+    "SUPERVISOR",
   ]) as Role;
 
   return {
@@ -64,12 +64,12 @@ export function createRandomEvent(): dummyEvent {
   const capacity = faker.number.int({ min: 10, max: 1000 });
   const imageURL = faker.image.urlLoremFlickr({ category: "people" });
   const status = faker.helpers.arrayElement([
-    "Draft",
-    "Active",
-    "Cancelled",
-    "Completed",
+    "DRAFT",
+    "ACTIVE",
+    "CANCELLED",
+    "COMPLETED",
   ]) as Status;
-  const mode = faker.helpers.arrayElement(["In_Person", "Virtual"]) as Mode;
+  const mode = faker.helpers.arrayElement(["IN_PERSON", "VIRTUAL"]) as Mode;
   const tags = faker.lorem.words(3).split(" ");
 
   return {

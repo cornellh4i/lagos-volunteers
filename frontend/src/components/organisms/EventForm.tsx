@@ -59,7 +59,7 @@ const EventForm = ({ eventId, eventType, eventDetails }: EventFormProps) => {
   // For deciding whether to show "In-person" or "Virtual"
   // 0: no show, 1: show yes.
   const [status, setStatus] = React.useState(
-    eventDetails ? (eventDetails.mode === "In_Person" ? 1 : 0) : 0
+    eventDetails ? (eventDetails.mode === "IN_PERSON" ? 1 : 0) : 0
   );
   const radioHandler = (status: number) => {
     setStatus(status);
@@ -119,7 +119,7 @@ const EventForm = ({ eventId, eventType, eventDetails }: EventFormProps) => {
   /** Tanstack mutation for creating a new event */
   const { mutateAsync, isPending, isError, isSuccess } = useMutation({
     mutationFn: async (data: FormValues) => {
-      const mode = status === 0 ? "Virtual" : "In_Person";
+      const mode = status === 0 ? "VIRTUAL" : "IN_PERSON";
       const {
         eventName,
         location,
@@ -137,7 +137,7 @@ const EventForm = ({ eventId, eventType, eventDetails }: EventFormProps) => {
         userID: `${userid}`,
         event: {
           name: `${eventName}`,
-          location: status === 0 ? "Virtual" : `${location}`,
+          location: status === 0 ? "VIRTUAL" : `${location}`,
           description: `${eventDescription}`,
           startDate: new Date(startDateTime),
           endDate: new Date(endDateTime),
@@ -159,7 +159,7 @@ const EventForm = ({ eventId, eventType, eventDetails }: EventFormProps) => {
   /** Tanstack mutation for updating an existing event */
   const { mutateAsync: editEvent, isPending: editEventPending } = useMutation({
     mutationFn: async (data: FormValues) => {
-      const mode = status === 0 ? "Virtual" : "In_Person";
+      const mode = status === 0 ? "VIRTUAL" : "IN_PERSON";
       const { startTime, startDate, endTime, endDate } = getValues();
       const startDateTime = convertToISO(startTime, startDate);
       const endDateTime = convertToISO(endTime, endDate);
