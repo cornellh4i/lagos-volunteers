@@ -11,6 +11,9 @@ import Select from "../atoms/Select";
 import DatePicker from "../atoms/DatePicker";
 import TimePicker from "../atoms/TimePicker";
 import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
+import { convertToISO, fetchUserIdFromDatabase } from "@/utils/helpers";
+import { useAuth } from "@/utils/AuthContext";
+import router from "next/router";
 import { api } from "@/utils/api";
 import { useRouter } from "next/router";
 import Loading from "../molecules/Loading";
@@ -132,20 +135,184 @@ const AttendeesTable = ({
 
 interface modalProps {
   handleClose: () => void;
-  mutateFn: () => void;
+  eventDetails?: FormValues;
 }
 
+type FormValues = {
+  startDate: string;
+  endDate: string;
+  startTime: string;
+  endTime: string;
+};
+
 /** A duplicate event modal body */
-const ModalBody = ({ handleClose, mutateFn }: modalProps) => {
+const ModalBody = ({ handleClose, eventDetails }: modalProps) => {
+  const { user } = useAuth();
+  const queryClient = useQueryClient();
+
+  /** State variables for the notification popups */
+  const [successNotificationOpen, setSuccessNotificationOpen] = useState(false);
+  const [errorNotificationOpen, setErrorNotificationOpen] = useState(false);
+
   /** React hook form */
+  const {
+    register,
+    handleSubmit,
+    watch,
+    getValues,
+    setValue,
+    control,
+    formState: { errors },
+  } = useForm<FormValues>(
+    eventDetails
+      ? {
+          defaultValues: {
+            startDate: eventDetails.startDate,
+            endDate: eventDetails.endDate,
+            startTime: eventDetails.startTime,
+            endTime: eventDetails.endTime,
+          },
+        }
+      : {}
+  );
+
+  /** Handles form errors for time and date validation */
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const timeAndDateValidation = () => {
+    const { startTime, startDate, endTime, endDate } = getValues();
+    const startDateTime = convertToISO(startTime, startDate);
+    const endDateTime = convertToISO(endTime, endDate);
+    if (new Date(startDateTime) >= new Date(endDateTime)) {
+      setErrorNotificationOpen(true);
+      setErrorMessage(
+        "End Date and Time must be later than Start Date and Time"
+      );
+      return false;
+    } else {
+      setErrorMessage(null);
+    }
+    return true;
+  };
+
+  const back = () => {
+    router.push("/events/view");
+  };
+
+  /** Tanstack mutation for creating a new event */
+  const { mutateAsync, isPending, isError, isSuccess } = useMutation({
+    mutationFn: async (data: FormValues) => {
+      const mode = "TODO";
+      const { startDate, endDate, startTime, endTime } = data;
+      const startDateTime = convertToISO(startTime, startDate);
+      const endDateTime = convertToISO(endTime, endDate);
+      const userid = await fetchUserIdFromDatabase(user?.email as string);
+      const { response } = await api.post("/events", {
+        userID: `${userid}`,
+        event: {
+          name: "TODO",
+          location: "TODO",
+          description: "TODO",
+          startDate: new Date(startDateTime),
+          endDate: new Date(endDateTime),
+          capacity: 1000000000000000000000000000,
+          mode: `${mode}`,
+        },
+      });
+      return response;
+    },
+    retry: false,
+    onSuccess: () => {
+      setSuccessNotificationOpen(true);
+      let countdown = 3;
+      setSuccessMessage("Successfully Created Event! Redirecting...");
+      setTimeout(back, 1000);
+    },
+  });
+
+  /** Helper for handling duplicating events */
+  const handleDuplicateEvent: SubmitHandler<FormValues> = async (data) => {
+    try {
+      const validation = timeAndDateValidation();
+      if (validation) {
+        await mutateAsync(data);
+        handleClose();
+      }
+    } catch (error) {
+      console.error(error);
+      setErrorNotificationOpen(true);
+      setErrorMessage(
+        "We were unable to duplicate this event. Please try again"
+      );
+    }
+  };
 
   return (
     <div>
-      <form onSubmit={() => console.log("submitted")}>
+      <form onSubmit={handleSubmit(handleDuplicateEvent)}>
         <div className="font-bold text-3xl">Duplicate Event</div>
         <div>Create a new event with the same information as this one.</div>
         <div>Everything except the volunteer list will be copied over.</div>
-
+        <div className="sm:space-x-4 grid grid-cols-1 sm:grid-cols-2">
+          <div className="pb-4 sm:pb-0">
+            <Controller
+              name="startDate"
+              control={control}
+              rules={{ required: true }}
+              defaultValue={undefined}
+              render={({ field }) => (
+                <DatePicker
+                  label="Start Date"
+                  error={errors.startDate ? "Required" : undefined}
+                  {...field}
+                />
+              )}
+            />
+          </div>
+          <Controller
+            name="endDate"
+            control={control}
+            rules={{ required: true }}
+            defaultValue={undefined}
+            render={({ field }) => (
+              <DatePicker
+                error={errors.endDate ? "Required" : undefined}
+                label="End Date"
+                {...field}
+              />
+            )}
+          />
+        </div>
+        <div className="sm:space-x-4 grid grid-cols-1 sm:grid-cols-2">
+          <div className="pb-4 sm:pb-0">
+            <Controller
+              name="startTime"
+              control={control}
+              rules={{ required: true }}
+              defaultValue={undefined}
+              render={({ field }) => (
+                <TimePicker
+                  error={errors.startTime ? "Required" : undefined}
+                  label="Start Time"
+                  {...field}
+                />
+              )}
+            />
+          </div>
+          <Controller
+            name="endTime"
+            control={control}
+            rules={{ required: true }}
+            defaultValue={undefined}
+            render={({ field }) => (
+              <TimePicker
+                error={errors.endTime ? "Required" : undefined}
+                label="End Time"
+                {...field}
+              />
+            )}
+          />
+        </div>
         <Grid container spacing={2}>
           <Grid item md={6} xs={12}>
             <Button variety="secondary" onClick={handleClose}>
@@ -293,22 +460,6 @@ const ManageAttendees = ({}: ManageAttendeesProps) => {
     setOpen(!open);
   };
 
-  /** Handles clicking the Duplicate button */
-  const {
-    mutate,
-    isPending: isCancelPending,
-    isError: isCancelError,
-  } = useMutation({
-    mutationKey: ["event", eventid],
-    mutationFn: async () => {
-      /** TODO: submit the form and create the event */
-    },
-    onSuccess: () => {
-      /** TODO: redirect to new event page */
-      handleClose();
-    },
-  });
-
   /** Loading screen */
   if (isPending) return <Loading />;
 
@@ -317,7 +468,7 @@ const ManageAttendees = ({}: ManageAttendeesProps) => {
       <Modal
         open={open}
         handleClose={handleClose}
-        children={<ModalBody handleClose={handleClose} mutateFn={mutate} />}
+        children={<ModalBody handleClose={handleClose} />}
       />
 
       <div className="flex justify-between">
