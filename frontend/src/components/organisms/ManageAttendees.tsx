@@ -1,4 +1,4 @@
-import React, { ChangeEvent, FormEvent, useEffect } from "react";
+import React, { ChangeEvent, FormEvent, useEffect, useState } from "react";
 import TabContainer from "@/components/molecules/TabContainer";
 import { GridColDef, GridPaginationModel } from "@mui/x-data-grid";
 import Table from "@/components/molecules/Table";
@@ -132,9 +132,15 @@ interface modalProps {
   mutateFn: () => void;
 }
 
-/** A modal to duplicate events */
+/** A duplicate event modal body */
 const ModalBody = ({ handleClose, mutateFn }: modalProps) => {
-  return <div>Hello World!</div>;
+  return (
+    <div>
+      <Button variety="secondary" onClick={handleClose}>
+        Cancel
+      </Button>
+    </div>
+  );
 };
 
 /** A ManageAttendees component */
@@ -261,16 +267,33 @@ const ManageAttendees = ({}: ManageAttendeesProps) => {
     },
   ];
 
+  // State for modal
+  const [open, setOpen] = useState(false);
+  const handleClose = () => setOpen(false);
+
+  const handleDuplicateEvent = async () => {
+    setOpen(!open);
+  };
+
   /** Loading screen */
   if (isPending) return <Loading />;
 
   return (
     <>
+      <Modal
+        open={open}
+        handleClose={handleClose}
+        children={
+          <ModalBody
+            handleClose={handleClose}
+            mutateFn={() => console.log("TODO")}
+          />
+        }
+      />
+
       <div className="flex justify-between">
         <div className="font-semibold text-3xl mb-6">Malta Outreach</div>
-        <form onSubmit={() => console.log("duplicate event")}>
-          <Button type="submit">Duplicate Event</Button>
-        </form>
+        <Button onClick={handleDuplicateEvent}>Duplicate Event</Button>
       </div>
       <div className="font-semibold text-2xl mb-6">Event Recap</div>
       <div>Event recap here</div>
