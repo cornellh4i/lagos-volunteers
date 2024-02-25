@@ -5,6 +5,7 @@ import Table from "@/components/molecules/Table";
 import Modal from "@/components/molecules/Modal";
 import { MenuItem } from "@mui/material";
 import SearchBar from "../atoms/SearchBar";
+import Button from "../atoms/Button";
 import Select from "../atoms/Select";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { api } from "@/utils/api";
@@ -265,7 +266,12 @@ const ManageAttendees = ({}: ManageAttendeesProps) => {
 
   return (
     <>
-      <div className="font-semibold text-3xl mb-6">Malta Outreach</div>
+      <div className="flex justify-between">
+        <div className="font-semibold text-3xl mb-6">Malta Outreach</div>
+        <form onSubmit={() => console.log("duplicate event")}>
+          <Button type="submit">Duplicate Event</Button>
+        </form>
+      </div>
       <div className="font-semibold text-2xl mb-6">Event Recap</div>
       <div>Event recap here</div>
       <br />
