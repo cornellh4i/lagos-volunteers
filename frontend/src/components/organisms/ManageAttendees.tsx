@@ -3,11 +3,14 @@ import TabContainer from "@/components/molecules/TabContainer";
 import { GridColDef, GridPaginationModel } from "@mui/x-data-grid";
 import Table from "@/components/molecules/Table";
 import Modal from "@/components/molecules/Modal";
-import { MenuItem } from "@mui/material";
+import { useForm, SubmitHandler, Controller } from "react-hook-form";
+import { MenuItem, Grid } from "@mui/material";
 import SearchBar from "../atoms/SearchBar";
 import Button from "../atoms/Button";
 import Select from "../atoms/Select";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import DatePicker from "../atoms/DatePicker";
+import TimePicker from "../atoms/TimePicker";
+import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
 import { api } from "@/utils/api";
 import { useRouter } from "next/router";
 import Loading from "../molecules/Loading";
@@ -134,11 +137,26 @@ interface modalProps {
 
 /** A duplicate event modal body */
 const ModalBody = ({ handleClose, mutateFn }: modalProps) => {
+  /** React hook form */
+
   return (
     <div>
-      <Button variety="secondary" onClick={handleClose}>
-        Cancel
-      </Button>
+      <form onSubmit={() => console.log("submitted")}>
+        <div className="font-bold text-3xl">Duplicate Event</div>
+        <div>Create a new event with the same information as this one.</div>
+        <div>Everything except the volunteer list will be copied over.</div>
+
+        <Grid container spacing={2}>
+          <Grid item md={6} xs={12}>
+            <Button variety="secondary" onClick={handleClose}>
+              Cancel
+            </Button>
+          </Grid>
+          <Grid item md={6} xs={12}>
+            <Button type="submit">Duplicate</Button>
+          </Grid>
+        </Grid>
+      </form>
     </div>
   );
 };
@@ -275,6 +293,22 @@ const ManageAttendees = ({}: ManageAttendeesProps) => {
     setOpen(!open);
   };
 
+  /** Handles clicking the Duplicate button */
+  const {
+    mutate,
+    isPending: isCancelPending,
+    isError: isCancelError,
+  } = useMutation({
+    mutationKey: ["event", eventid],
+    mutationFn: async () => {
+      /** TODO: submit the form and create the event */
+    },
+    onSuccess: () => {
+      /** TODO: redirect to new event page */
+      handleClose();
+    },
+  });
+
   /** Loading screen */
   if (isPending) return <Loading />;
 
@@ -283,17 +317,14 @@ const ManageAttendees = ({}: ManageAttendeesProps) => {
       <Modal
         open={open}
         handleClose={handleClose}
-        children={
-          <ModalBody
-            handleClose={handleClose}
-            mutateFn={() => console.log("TODO")}
-          />
-        }
+        children={<ModalBody handleClose={handleClose} mutateFn={mutate} />}
       />
 
       <div className="flex justify-between">
         <div className="font-semibold text-3xl mb-6">Malta Outreach</div>
-        <Button onClick={handleDuplicateEvent}>Duplicate Event</Button>
+        <div>
+          <Button onClick={handleDuplicateEvent}>Duplicate Event</Button>
+        </div>
       </div>
       <div className="font-semibold text-2xl mb-6">Event Recap</div>
       <div>Event recap here</div>
