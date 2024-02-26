@@ -1,0 +1,5 @@
+build:
+  docker:
+    web: backend/Dockerfile
+  
+release: npx prisma migrate deploy
