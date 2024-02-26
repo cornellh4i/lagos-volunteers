@@ -202,7 +202,7 @@ const ModalBody = ({ handleClose, eventDetails }: modalProps) => {
   /** Tanstack mutation for creating a new event */
   const { mutateAsync, isPending, isError, isSuccess } = useMutation({
     mutationFn: async (data: FormValues) => {
-      const mode = "TODO";
+      const mode = "Virtual";
       const { startDate, endDate, startTime, endTime } = data;
       const startDateTime = convertToISO(startTime, startDate);
       const endDateTime = convertToISO(endTime, endDate);
@@ -210,12 +210,12 @@ const ModalBody = ({ handleClose, eventDetails }: modalProps) => {
       const { response } = await api.post("/events", {
         userID: `${userid}`,
         event: {
-          name: "TODO",
-          location: "TODO",
+          name: "TODO: get current name, location, description, capacity, mode",
+          location: "Virtual",
           description: "TODO",
           startDate: new Date(startDateTime),
           endDate: new Date(endDateTime),
-          capacity: 1000000000000000000000000000,
+          capacity: 100,
           mode: `${mode}`,
         },
       });
@@ -236,7 +236,7 @@ const ModalBody = ({ handleClose, eventDetails }: modalProps) => {
       const validation = timeAndDateValidation();
       if (validation) {
         await mutateAsync(data);
-        handleClose();
+        // handleClose();
       }
     } catch (error) {
       console.error(error);
