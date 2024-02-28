@@ -20,11 +20,11 @@ const EventCardContent = ({ event }: EventCardNewProps) => {
   const date = new Date(event.startDate);
   const dateInfo = displayDateInfo(date);
   const url =
-    event.role === "Supervisor"
+    event.role === "SUPERVISOR"
       ? `/events/${event.id}/attendees`
       : `/events/${event.id}/register`;
   const buttonText =
-    event.role === "Supervisor" ? "Manage Event" : "View Event Details";
+    event.role === "SUPERVISOR" ? "Manage Event" : "View Event Details";
 
   return (
     <div>

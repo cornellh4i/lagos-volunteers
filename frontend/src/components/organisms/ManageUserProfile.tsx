@@ -78,7 +78,7 @@ const ModalBody = ({ status, blacklistFunc, handleClose }: modalBodyProps) => {
   return (
     <div>
       <Box sx={{ textAlign: "center", marginBottom: 3 }}>
-        {status == "Active"
+        {status == "ACTIVE"
           ? "Are you sure you want to blacklist this user?"
           : "Are you sure you want to remove this member from the blacklist?"}
       </Box>
@@ -90,7 +90,7 @@ const ModalBody = ({ status, blacklistFunc, handleClose }: modalBodyProps) => {
         </Grid>
         <Grid item md={6} xs={12}>
           <Button variety="error" onClick={blacklistFunc}>
-            {status == "Active" ? "Yes, blacklist" : "Remove"}
+            {status == "ACTIVE" ? "Yes, blacklist" : "Remove"}
           </Button>
         </Grid>
       </Grid>
@@ -136,7 +136,7 @@ const Status = ({
   /** Tanstack query mutation for changing user status */
   const { mutateAsync: changeUserStatus } = useMutation({
     mutationFn: async () => {
-      const status = userStatus == "Active" ? "Inactive" : "Active";
+      const status = userStatus == "ACTIVE" ? "Inactive" : "Active";
       const { data } = await api.patch(`/users/${userID}/status`, {
         status: status,
       });
@@ -176,16 +176,16 @@ const Status = ({
               changeUserRole({ role: event.target.value })
             }
           >
-            <MenuItem value="Volunteer">Volunteer</MenuItem>
-            <MenuItem value="Supervisor">Supervisor</MenuItem>
-            <MenuItem value="Admin">Admin</MenuItem>
+            <MenuItem value="VOLUNTEER">Volunteer</MenuItem>
+            <MenuItem value="SUPERVISOR">Supervisor</MenuItem>
+            <MenuItem value="ADMIN">Admin</MenuItem>
           </Select>
         </FormControl>
 
         <div className="pt-2">Blacklist</div>
         <div className="w-full sm:w-1/4">
           <Button onClick={handleOpen}>
-            {userStatus == "Active"
+            {userStatus == "ACTIVE"
               ? "Blacklist Member"
               : "Remove Member from Blacklist"}
           </Button>

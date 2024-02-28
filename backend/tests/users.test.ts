@@ -14,12 +14,12 @@ describe("Testing POST /users", () => {
   test("POST Create a new user", async () => {
     const user = {
       email: "desi2@gmail.com",
-      role: "Admin",
+      role: "ADMIN",
     };
     const response = await request(app).post("/users").send(user);
     const data = response.body.data;
     expect(data.email).toBe("desi2@gmail.com");
-    expect(data.role).toBe("Admin");
+    expect(data.role).toBe("ADMIN");
 
     expect(response.status).toBe(201);
   });
@@ -54,8 +54,8 @@ describe("Testing PUT /users/:userid/profile", () => {
   test("edit a user's profile with an existing and not existing fields", async () => {
     const user = {
       email: "testeditprof@gmail.com",
-      role: "Admin",
-      status: "Active",
+      role: "ADMIN",
+      status: "ACTIVE",
       hours: 0,
       profile: {
         firstName: "Arizona",
@@ -123,9 +123,9 @@ describe("Testing PATCH /users/:userid/role", () => {
     const userid = users.body.data.result[9].id;
     const response = await request(app)
       .patch("/users/" + userid + "/role")
-      .send({ role: "Supervisor" });
+      .send({ role: "SUPERVISOR" });
     const data = response.body.data;
-    expect(data.role).toBe("Supervisor");
+    expect(data.role).toBe("SUPERVISOR");
     expect(response.status).toBe(200);
   });
 });
@@ -137,9 +137,9 @@ describe("Testing PATCH /users/:userid/status", () => {
     const userid = users.body.data.result[9].id;
     const response = await request(app)
       .patch("/users/" + userid + "/status")
-      .send({ status: "Inactive" });
+      .send({ status: "INACTIVE" });
     const data = response.body.data;
-    expect(data.status).toBe("Inactive");
+    expect(data.status).toBe("INACTIVE");
     expect(response.status).toBe(200);
   });
 });
@@ -159,8 +159,8 @@ describe("Testing PATCH /users/:userid/hours", () => {
 });
 
 describe("Testing /users/search", () => {
-  test("GET users with status=Active", async () => {
-    const response = await request(app).get("/users/search?status=Active");
+  test("GET users with status=ACTIVE", async () => {
+    const response = await request(app).get("/users/search?status=ACTIVE");
     expect(response.status).toBe(200);
   });
 
@@ -173,11 +173,11 @@ describe("Testing /users/search", () => {
     expect(response.status).toBe(200);
   });
 
-  test("GET users with role=Admin", async () => {
-    const response = await request(app).get("/users/search?role=Admin");
+  test("GET users with role=ADMIN", async () => {
+    const response = await request(app).get("/users/search?role=ADMIN");
     const data = response.body.data;
     for (let i = 0; i < data.length; i++) {
-      expect(data[i].role).toBe("Admin");
+      expect(data[i].role).toBe("ADMIN");
     }
     expect(response.status).toBe(200);
   });
@@ -205,16 +205,16 @@ describe("Testing /users/search", () => {
     expect(response.status).toBe(200);
   });
 
-  test("GET users with hours=0&firstName=Alice&status=Active", async () => {
+  test("GET users with hours=0&firstName=Alice&status=ACTIVE", async () => {
     const response = await request(app).get(
-      "/users/search?hours=0&firstName=Alice&status=Active"
+      "/users/search?hours=0&firstName=Alice&status=ACTIVE"
     );
     const data = response.body.data;
 
     for (let i = 0; i < data.length; i++) {
       expect(data[i].hours).toBe(0);
       expect(data[i].profile.firstName).toBe("Alice");
-      expect(data[i].status).toBe("Active");
+      expect(data[i].status).toBe("ACTIVE");
     }
     expect(response.status).toBe(200);
   });
