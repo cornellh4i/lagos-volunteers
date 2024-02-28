@@ -6,6 +6,8 @@ import Layout from "@/components/Layout";
 import { AuthProvider } from "@/utils/AuthContext";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
+const rootElement = () => document.getElementById("__next");
+
 export const theme = createTheme({
   typography: {
     fontFamily: "Inter, sans-serif",
@@ -29,6 +31,28 @@ export const theme = createTheme({
     },
     background: {
       default: "#FFFFFF",
+    },
+  },
+  components: {
+    MuiPopover: {
+      defaultProps: {
+        container: rootElement,
+      },
+    },
+    MuiPopper: {
+      defaultProps: {
+        container: rootElement,
+      },
+    },
+    MuiDialog: {
+      defaultProps: {
+        container: rootElement,
+      },
+    },
+    MuiModal: {
+      defaultProps: {
+        container: rootElement,
+      },
     },
   },
 });
