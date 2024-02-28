@@ -1,11 +1,18 @@
 import React, { useEffect } from "react";
 import { useRouter } from "next/router";
-import { auth } from "@/utils/firebase"; // Import your Firebase configuration
+import { auth } from "@/utils/firebase";
 import WelcomeTemplate from "@/components/templates/WelcomeTemplate";
+import Button from "@/components/atoms/Button";
 import CircularProgress from "@mui/material/CircularProgress";
+import {
+  useSignInWithEmailAndPassword,
+  useSendEmailVerification,
+} from "react-firebase-hooks/auth";
 
-const verify = () => {
+const Verify = () => {
   const router = useRouter();
+  const [sendEmailVerification, sending, emailError] =
+    useSendEmailVerification(auth);
 
   useEffect(() => {
     const checkUserVerification = () => {
@@ -29,21 +36,36 @@ const verify = () => {
     checkUserVerification();
   }, []);
 
+  const handleResendEmail = async () => {
+    // Implement logic to resend verification email
+    const emailSent = await sendEmailVerification(); // Send email verification
+  };
+
   return (
     <WelcomeTemplate>
-      {/* Display loading spinner while checking verification */}
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          height: "100vh",
-        }}
-      >
-        <CircularProgress />
+      <div className="max-w-lg mx-auto border border-gray-300 rounded-lg p-6">
+        <div className="text-center">
+          <h2 className="text-xl font-bold mb-4">Verify Your Email</h2>
+          <p className="text-gray-700 mb-4">
+            We've sent a verification email to your email address. Please check
+            your inbox and click on the verification link to verify your email
+            address.
+          </p>
+          <p className="text-gray-700 mb-4">
+            If you haven't received the email within a few minutes, please check
+            your spam folder.
+          </p>
+          <Button
+            onClick={handleResendEmail}
+            variety="primary"
+            className="w-full"
+          >
+            Resend Verification Email
+          </Button>
+        </div>
       </div>
     </WelcomeTemplate>
   );
 };
 
-export default verify;
+export default Verify;
