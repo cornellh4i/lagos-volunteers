@@ -19,12 +19,16 @@ const style = {
 };
 
 const styleSmall = {
+  overflow: "scroll",
+  height: "80%",
   width: "80%",
   padding: 4,
   display: { xs: "block", md: "none" },
 };
 
 const styleLarge = {
+  overflow: "scroll",
+  height: "80%",
   width: 500,
   padding: "4rem 6rem",
   display: { xs: "none", md: "block" },
