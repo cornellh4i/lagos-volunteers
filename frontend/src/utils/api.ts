@@ -83,7 +83,7 @@ const handleRequest = async (
   url: string,
   requiresToken: boolean,
   headers?: { [key: string]: string },
-  body?: object,
+  body?: object
 ) => {
   let options;
   if (requiresToken) {
@@ -121,7 +121,10 @@ const handleResponse = async (response: Response) => {
     return Promise.resolve({ response: response, data: data });
   } else {
     const responseWithErrors = await response.json();
-    return Promise.reject({message: responseWithErrors.error, status: response.status});
+    return Promise.reject({
+      message: responseWithErrors.error,
+      status: response.status,
+    });
   }
 };
 
