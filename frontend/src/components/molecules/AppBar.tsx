@@ -57,7 +57,12 @@ const DrawerAppBar = ({ navs, buttons }: AppBarProps) => {
 
   return (
     <Box sx={{ display: "flex" }}>
-      <AppBar color="default" component="nav" elevation={0} position="static">
+      <AppBar
+        sx={{ background: "transparent" }}
+        component="nav"
+        elevation={0}
+        position="static"
+      >
         <Toolbar
           variant="dense"
           sx={{
