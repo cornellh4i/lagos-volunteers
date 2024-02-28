@@ -202,21 +202,35 @@ const ModalBody = ({ handleClose, eventDetails }: modalProps) => {
   /** Tanstack mutation for creating a new event */
   const { mutateAsync, isPending, isError, isSuccess } = useMutation({
     mutationFn: async (data: FormValues) => {
-      const mode = "Virtual";
+      const eventid = router.query.eventid as string;
+      const eventResponse = await api.get(`/events/${eventid}`);
+      const eventData = eventResponse.data;
       const { startDate, endDate, startTime, endTime } = data;
       const startDateTime = convertToISO(startTime, startDate);
       const endDateTime = convertToISO(endTime, endDate);
       const userid = await fetchUserIdFromDatabase(user?.email as string);
+      console.log({
+        userID: `${userid}`,
+        event: {
+          name: `${eventData.name}`,
+          location: `${eventData.location}`,
+          description: `${eventData.description}`,
+          startDate: new Date(startDateTime),
+          endDate: new Date(endDateTime),
+          capacity: +eventData.capacity,
+          mode: `${eventData.mode}`,
+        },
+      });
       const { response } = await api.post("/events", {
         userID: `${userid}`,
         event: {
-          name: "TODO: get current name, location, description, capacity, mode",
-          location: "Virtual",
-          description: "TODO",
+          name: `${eventData.name}`,
+          location: `${eventData.location}`,
+          description: `${eventData.description}`,
           startDate: new Date(startDateTime),
           endDate: new Date(endDateTime),
-          capacity: 100,
-          mode: `${mode}`,
+          capacity: +eventData.capacity,
+          mode: `${eventData.mode}`,
         },
       });
       return response;
@@ -224,7 +238,6 @@ const ModalBody = ({ handleClose, eventDetails }: modalProps) => {
     retry: false,
     onSuccess: () => {
       setSuccessNotificationOpen(true);
-      let countdown = 3;
       setSuccessMessage("Successfully Created Event! Redirecting...");
       setTimeout(back, 1000);
     },
