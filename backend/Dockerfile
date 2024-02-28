@@ -4,11 +4,16 @@ RUN mkdir /usr/app
 WORKDIR /usr/app
 
 
-COPY . .
+# Install dependencies
+COPY package.json .
+
+RUN yarn install
+
+
 COPY .env.production .env
+COPY . .
 
 ENV NODE_ENV=production
-RUN yarn install --production
 
 
 EXPOSE 8000
