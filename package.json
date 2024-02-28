@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "build": "(cd backend && yarn run build) && (cd frontend && yarn run build)",
+    "setup": "(cd backend && yarn run setup) && (cd frontend && yarn run setup)",
     "test": "cd backend && yarn run test",
     "start": "(cd backend && yarn run start) & (cd frontend && yarn run start)"
   }
