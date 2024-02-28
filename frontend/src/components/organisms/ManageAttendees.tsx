@@ -5,6 +5,7 @@ import Table from "@/components/molecules/Table";
 import Modal from "@/components/molecules/Modal";
 import { useForm, SubmitHandler, Controller } from "react-hook-form";
 import { MenuItem, Grid } from "@mui/material";
+import FileCopyIcon from "@mui/icons-material/FileCopy";
 import SearchBar from "../atoms/SearchBar";
 import Button from "../atoms/Button";
 import Select from "../atoms/Select";
@@ -201,36 +202,23 @@ const ModalBody = ({ handleClose, eventDetails }: modalProps) => {
 
   /** Tanstack mutation for creating a new event */
   const { mutateAsync, isPending, isError, isSuccess } = useMutation({
-    mutationFn: async (data: FormValues) => {
+    mutationFn: async (formData: FormValues) => {
       const eventid = router.query.eventid as string;
-      const eventResponse = await api.get(`/events/${eventid}`);
-      const eventData = eventResponse.data;
-      const { startDate, endDate, startTime, endTime } = data;
+      const { data } = await api.get(`/events/${eventid}`);
+      const { startDate, endDate, startTime, endTime } = formData;
       const startDateTime = convertToISO(startTime, startDate);
       const endDateTime = convertToISO(endTime, endDate);
       const userid = await fetchUserIdFromDatabase(user?.email as string);
-      console.log({
-        userID: `${userid}`,
-        event: {
-          name: `${eventData.name}`,
-          location: `${eventData.location}`,
-          description: `${eventData.description}`,
-          startDate: new Date(startDateTime),
-          endDate: new Date(endDateTime),
-          capacity: +eventData.capacity,
-          mode: `${eventData.mode}`,
-        },
-      });
       const { response } = await api.post("/events", {
         userID: `${userid}`,
         event: {
-          name: `${eventData.name}`,
-          location: `${eventData.location}`,
-          description: `${eventData.description}`,
+          name: `${data["data"].name}`,
+          location: `${data["data"].location}`,
+          description: `${data["data"].description}`,
           startDate: new Date(startDateTime),
           endDate: new Date(endDateTime),
-          capacity: +eventData.capacity,
-          mode: `${eventData.mode}`,
+          capacity: +data["data"].capacity,
+          mode: `${data["data"].mode}`,
         },
       });
       return response;
@@ -262,12 +250,19 @@ const ModalBody = ({ handleClose, eventDetails }: modalProps) => {
 
   return (
     <div>
-      <form onSubmit={handleSubmit(handleDuplicateEvent)}>
-        <div className="font-bold text-3xl">Duplicate Event</div>
-        <div>Create a new event with the same information as this one.</div>
-        <div>Everything except the volunteer list will be copied over.</div>
-        <div className="sm:space-x-4 grid grid-cols-1 sm:grid-cols-2">
-          <div className="pb-4 sm:pb-0">
+      <form onSubmit={handleSubmit(handleDuplicateEvent)} className="space-y-4">
+        <div className="font-bold text-center text-2xl">Duplicate Event</div>
+        <div className="mb-12">
+          <div className="text-center">
+            Create a new event with the same information as this one.
+          </div>
+          <div className="text-center">
+            Everything except the volunteer list will be copied over.
+          </div>
+        </div>
+        <div className="font-bold">Date and Time for New Event</div>
+        <div className="sm:space-x-0 grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="pb-0 sm:pb-0">
             <Controller
               name="startDate"
               control={control}
@@ -275,29 +270,14 @@ const ModalBody = ({ handleClose, eventDetails }: modalProps) => {
               defaultValue={undefined}
               render={({ field }) => (
                 <DatePicker
-                  label="Start Date"
+                  label={<span className="font-medium">Start Date</span>}
                   error={errors.startDate ? "Required" : undefined}
                   {...field}
                 />
               )}
             />
           </div>
-          <Controller
-            name="endDate"
-            control={control}
-            rules={{ required: true }}
-            defaultValue={undefined}
-            render={({ field }) => (
-              <DatePicker
-                error={errors.endDate ? "Required" : undefined}
-                label="End Date"
-                {...field}
-              />
-            )}
-          />
-        </div>
-        <div className="sm:space-x-4 grid grid-cols-1 sm:grid-cols-2">
-          <div className="pb-4 sm:pb-0">
+          <div className="pb-0 sm:pb-0">
             <Controller
               name="startTime"
               control={control}
@@ -306,25 +286,44 @@ const ModalBody = ({ handleClose, eventDetails }: modalProps) => {
               render={({ field }) => (
                 <TimePicker
                   error={errors.startTime ? "Required" : undefined}
-                  label="Start Time"
+                  label={<span className="font-medium">Start Time</span>}
                   {...field}
                 />
               )}
             />
           </div>
-          <Controller
-            name="endTime"
-            control={control}
-            rules={{ required: true }}
-            defaultValue={undefined}
-            render={({ field }) => (
-              <TimePicker
-                error={errors.endTime ? "Required" : undefined}
-                label="End Time"
-                {...field}
-              />
-            )}
-          />
+        </div>
+        <div className="sm:space-x-0 grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="pb-0 sm:pb-0">
+            <Controller
+              name="endDate"
+              control={control}
+              rules={{ required: true }}
+              defaultValue={undefined}
+              render={({ field }) => (
+                <DatePicker
+                  error={errors.endDate ? "Required" : undefined}
+                  label={<span className="font-medium">End Date</span>}
+                  {...field}
+                />
+              )}
+            />
+          </div>
+          <div className="pb-0 sm:pb-0">
+            <Controller
+              name="endTime"
+              control={control}
+              rules={{ required: true }}
+              defaultValue={undefined}
+              render={({ field }) => (
+                <TimePicker
+                  error={errors.endTime ? "Required" : undefined}
+                  label={<span className="font-medium">End Time</span>}
+                  {...field}
+                />
+              )}
+            />
+          </div>
         </div>
         <Grid container spacing={2}>
           <Grid item md={6} xs={12}>
@@ -487,7 +486,9 @@ const ManageAttendees = ({}: ManageAttendeesProps) => {
       <div className="flex justify-between">
         <div className="font-semibold text-3xl mb-6">Malta Outreach</div>
         <div>
-          <Button onClick={handleDuplicateEvent}>Duplicate Event</Button>
+          <Button onClick={handleDuplicateEvent} icon={<FileCopyIcon />}>
+            Duplicate Event
+          </Button>
         </div>
       </div>
       <div className="font-semibold text-2xl mb-6">Event Recap</div>
