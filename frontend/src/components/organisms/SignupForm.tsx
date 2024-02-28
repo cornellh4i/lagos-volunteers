@@ -8,11 +8,13 @@ import { BASE_URL } from "@/utils/constants";
 import { useForm, SubmitHandler } from "react-hook-form";
 import Alert from "../atoms/Alert";
 import { useRouter } from "next/router";
-import { useSignInWithEmailAndPassword } from "react-firebase-hooks/auth";
+import {
+  useSignInWithEmailAndPassword,
+  useSendEmailVerification,
+} from "react-firebase-hooks/auth";
 import Snackbar from "../atoms/Snackbar";
 import { api } from "@/utils/api";
 import { useMutation } from "@tanstack/react-query";
-import { sendEmailVerification } from "firebase/auth";
 
 type FormValues = {
   firstName: string;
@@ -27,6 +29,8 @@ const SignupForm = () => {
 
   /** Firebase hooks */
   const [signInWithEmailAndPassword] = useSignInWithEmailAndPassword(auth);
+  const [sendEmailVerification, sending, emailError] =
+    useSendEmailVerification(auth);
 
   /** React hook form */
   const {
@@ -97,10 +101,15 @@ const SignupForm = () => {
       // Log in
       const { email, password } = data;
       const signedInUser = await signInWithEmailAndPassword(email, password);
+      const emailSent = await sendEmailVerification(); // Send email verification
 
       // Change URL
       if (signedInUser?.user) {
-        router.push("/events/view");
+        //router.push("/events/view");
+        router.push({
+          pathname: "/verify",
+          query: { email: email, password: password }, // Pass user information as query parameters
+        });
       }
     } catch (error: any) {
       setNotifOpen(true);
