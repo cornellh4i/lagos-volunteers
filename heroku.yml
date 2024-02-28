@@ -1,6 +1,0 @@
-build:
-  docker:
-    web: backend/Dockerfile
-  
-release: 
-  command: npx prisma migrate deploy
