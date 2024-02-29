@@ -9,7 +9,6 @@ RUN yarn install
 RUN npx prisma generate
 COPY . .
 
-
 ENV NODE_ENV=production
 
 EXPOSE 8000
