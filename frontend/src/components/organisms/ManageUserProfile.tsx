@@ -136,7 +136,7 @@ const Status = ({
   /** Tanstack query mutation for changing user status */
   const { mutateAsync: changeUserStatus } = useMutation({
     mutationFn: async () => {
-      const status = userStatus == "ACTIVE" ? "INACTIVE" : "ACTIVE";
+      const status = userStatus == "ACTIVE" ? "Inactive" : "Active";
       const { data } = await api.patch(`/users/${userID}/status`, {
         status: status,
       });

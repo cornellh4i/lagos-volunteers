@@ -76,14 +76,8 @@ const SignupForm = () => {
         },
         password,
       };
-      // Using fetch directly here because no auth headers need to be passed.
-      const response = fetch(`${BASE_URL}/users`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(post),
-      });
+
+      const { response } = await api.post("/users", post, false);
       if (!(await response).ok) {
         const errorData = await (await response).json();
         throw new Error(errorData.error);

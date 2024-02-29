@@ -11,6 +11,7 @@ import { api } from "@/utils/api";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import Loading from "@/components/molecules/Loading";
 import Card from "../molecules/Card";
+import { formatRoleOrStatus } from "@/utils/helpers";
 
 interface ManageUsersProps {}
 
@@ -184,10 +185,10 @@ const ManageUsers = ({}: ManageUsersProps) => {
   data?.data.result.map((user: any) => {
     rows.push({
       id: user.id,
-      name: user.profile?.firstName + user.profile?.lastName,
+      name: user.profile?.firstName + " " + user.profile?.lastName,
       email: user.email,
-      role: user.status,
-      date: new Date(formatDateString(user.createdAt)),
+      role: formatRoleOrStatus(user.role),
+      date: new Date(user.createdAt),
       hours: user.hours, // TODO: properly calculate hours
     });
   });

@@ -20,6 +20,7 @@ import Snackbar from "../atoms/Snackbar";
 import { convertToISO, fetchUserIdFromDatabase } from "@/utils/helpers";
 import { api } from "@/utils/api";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import Dropzone from "../atoms/Dropzone";
 
 interface EventFormProps {
   eventId?: string | string[] | undefined;
@@ -45,6 +46,9 @@ type FormValues = {
 const EventForm = ({ eventId, eventType, eventDetails }: EventFormProps) => {
   const { user } = useAuth();
   const queryClient = useQueryClient();
+
+  /** Dropzone errors */
+  const [dropzoneError, setDropzoneError] = useState("");
 
   /** State variables for the notification popups */
   const [successNotificationOpen, setSuccessNotificationOpen] = useState(false);
@@ -318,17 +322,17 @@ const EventForm = ({ eventId, eventType, eventDetails }: EventFormProps) => {
               row
               aria-labelledby="demo-row-radio-buttons-group-label"
               name="row-radio-buttons-group"
-              defaultValue={eventDetails ? eventDetails.mode : "VIRTUAL"}
+              defaultValue={eventDetails ? eventDetails.mode : "Virtual"}
               sx={{ borderRadius: 2, borderColor: "primary.main" }}
             >
               <FormControlLabel
-                value="VIRTUAL"
+                value="Virtual"
                 control={<Radio />}
                 label={<Typography sx={{ fontSize: 15 }}>Virtual</Typography>}
                 onClick={() => radioHandler(0)}
               />
               <FormControlLabel
-                value="IN_PERSON"
+                value="In_Person"
                 control={<Radio />}
                 label={<Typography sx={{ fontSize: 15 }}>In-Person</Typography>}
                 onClick={() => radioHandler(1)}
@@ -361,7 +365,7 @@ const EventForm = ({ eventId, eventType, eventDetails }: EventFormProps) => {
           error={errors.eventDescription ? "Required" : undefined}
           {...register("eventDescription", { required: true })}
         />
-        <Upload label="Event Image" />
+        <Dropzone setError={setDropzoneError} label="Event Image" />
         <TextCopy
           label="RSVP Link Image"
           text={

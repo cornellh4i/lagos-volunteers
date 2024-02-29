@@ -2,8 +2,6 @@
   "name": "backend",
   "version": "1.0.0",
   "main": "src/index.ts",
-  "author": "Archit Mehta",
-  "license": "MIT",
   "dependencies": {
     "@prisma/client": "^5.9.1",
     "@sendgrid/mail": "^8.1.0",
@@ -29,13 +27,13 @@
     "typescript": "^5.3.3"
   },
   "scripts": {
-    "build": "yarn install && npx prisma migrate dev && yarn prisma db seed && yarn swagger",
-    "test": "yarn run build && NODE_ENV=test jest",
-    "test:ci": "NODE_ENV=test prisma db seed && jest",
+    "setup": "yarn install && npx prisma migrate dev && yarn prisma db seed && yarn swagger",
+    "test": "yarn run setup && NODE_ENV=test jest",
+    "test:ci": "NODE_ENV=test prisma db seed && jest -i",
     "start": "npx prisma studio & yarn run backend",
     "backend": "nodemon -r dotenv/config src/index.ts",
     "swagger": "ts-node -r dotenv/config src/swagger.ts",
-    "build:local": "tsc",
+    "build": "tsc",
     "start:local": "ts-node -r dotenv/config src/index.ts"
   },
   "prisma": {
