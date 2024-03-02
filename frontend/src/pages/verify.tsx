@@ -10,6 +10,7 @@ import {
 } from "react-firebase-hooks/auth";
 import { useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "@/utils/AuthContext";
+import { fetchUserIdFromDatabase, updateVerifiedStatus } from "@/utils/helpers";
 
 const Verify = () => {
   const router = useRouter();
@@ -20,21 +21,32 @@ const Verify = () => {
   const queryClient = useQueryClient();
 
   useEffect(() => {
-    const checkUserVerification = () => {
-      // Check if user is signed in
-      const user = auth.currentUser;
-      if (user) {
-        // Check if user's email is verified
-        if (user.emailVerified) {
-          // If email is verified, redirect to home page
-          router.push("/events/view");
+    const checkUserVerification = async () => {
+      try {
+        // Check if user is signed in
+        const user = auth.currentUser;
+        const emailParam = user?.email as string;
+        console.log(user);
+
+        // Fetch user ID asynchronously
+        const userId = await fetchUserIdFromDatabase(emailParam);
+        console.log(userId);
+        if (user) {
+          // Check if user's email is verified
+          if (user.emailVerified) {
+            // If email is verified, redirect to home page
+            updateVerifiedStatus(userId, true);
+            router.push("/events/view");
+          } else {
+            // If email is not verified, stay on verification page
+            console.log("Email not verified");
+          }
         } else {
-          // If email is not verified, stay on verification page
-          console.log("Email not verified");
+          // If user is not signed in, redirect to login page
+          router.push("/login");
         }
-      } else {
-        // If user is not signed in, redirect to login page
-        router.push("/login");
+      } catch (error) {
+        console.error("Error checking user verification:", error);
       }
     };
 
