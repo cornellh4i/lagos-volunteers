@@ -8,11 +8,16 @@ import {
   useSignInWithEmailAndPassword,
   useSendEmailVerification,
 } from "react-firebase-hooks/auth";
+import { useQueryClient } from "@tanstack/react-query";
+import { useAuth } from "@/utils/AuthContext";
 
 const Verify = () => {
   const router = useRouter();
   const [sendEmailVerification, sending, emailError] =
     useSendEmailVerification(auth);
+
+  const { user, loading, error, signOutUser } = useAuth();
+  const queryClient = useQueryClient();
 
   useEffect(() => {
     const checkUserVerification = () => {
@@ -36,6 +41,16 @@ const Verify = () => {
     checkUserVerification();
   }, []);
 
+  const handleSignOut = async () => {
+    try {
+      await signOutUser();
+      queryClient.clear(); // Clear cache for react query
+      router.replace("/login");
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   const handleResendEmail = async () => {
     // Implement logic to resend verification email
     const emailSent = await sendEmailVerification(); // Send email verification
@@ -58,9 +73,12 @@ const Verify = () => {
           <Button
             onClick={handleResendEmail}
             variety="primary"
-            className="w-full"
+            className="w-full mb-4"
           >
             Resend Verification Email
+          </Button>
+          <Button onClick={handleSignOut} variety="primary" className="w-full">
+            Signout
           </Button>
         </div>
       </div>
