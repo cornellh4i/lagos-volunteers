@@ -68,7 +68,7 @@ async function createPoolOfRandomEvents(pool: number) {
     const createdSupervisor = await prisma.user.create({
       data: {
         email: supervisor.email,
-        role: "Supervisor",
+        role: "SUPERVISOR",
         profile: {
           create: {
             firstName: supervisor.firstName,
@@ -154,7 +154,7 @@ const userData: Prisma.UserCreateInput[] = [
         nickname: "Gracey",
       },
     },
-    role: "Supervisor",
+    role: "SUPERVISOR",
   },
   {
     email: "prisma@hey.com",
@@ -165,7 +165,7 @@ const userData: Prisma.UserCreateInput[] = [
         nickname: "Destiny",
       },
     },
-    role: "Admin",
+    role: "ADMIN",
   },
 ];
 

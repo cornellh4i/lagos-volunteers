@@ -1,0 +1,9 @@
+version: '3.8'
+services:
+  server:
+    image: lagos-volunteer-platform
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"

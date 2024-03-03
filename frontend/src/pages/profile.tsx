@@ -9,6 +9,7 @@ import { api } from "@/utils/api";
 import { useQuery } from "@tanstack/react-query";
 import Loading from "@/components/molecules/Loading";
 import Error from "@/components/organisms/Error";
+import { formatRoleOrStatus } from "@/utils/helpers";
 
 /** A Profile page */
 const Profile = () => {
@@ -31,6 +32,7 @@ const Profile = () => {
   // TODO: make better
   if (isError) return <Error />;
 
+
   return (
     <CenteredTemplate>
       <Avatar
@@ -44,21 +46,21 @@ const Profile = () => {
         {/* TODO: this string parsing stuff is really really ugly right now
         and should absolutely be refactored into something sane ASAP */}
         <h3 className="mt-0 mb-2 font-normal">
-          You are {data?.role === "Admin" ? "an " : "a "}
-          <span className="font-bold">{data?.role}</span>
+          You are {data?.role === "ADMIN" ? "an " : "a "}
+          <span className="font-bold">{formatRoleOrStatus(data.role)}</span>
         </h3>
         You are currently{" "}
-        {data?.role === "Admin" ? "an Admin" : `a ${data?.role}`}.{" "}
-        {data?.role === "Admin" ? "An Admin" : `A ${data?.role}`} is allowed to
+        {data?.role === "ADMIN" ? "an Admin" : `a ${data?.role.toLowerCase()}`}.{" "}
+        {data?.role === "ADMIN" ? "An Admin" : `A ${formatRoleOrStatus(data?.role)}`} is allowed to
         register for and attend events.
       </Card>
       <Card>
         <h3 className="mt-0 mb-2 font-normal">
-          You are an <span className="font-bold">{data?.status} Member</span>
+          You are an <span className="font-bold">{formatRoleOrStatus(data?.status)} Member</span>
         </h3>
         You are currently an {data?.status.toLowerCase()} member. Your account
         is {data?.status.toLowerCase()} and you are{" "}
-        {data?.status === "Active" ? "able to" : "not able to"} access all
+        {data?.status === "ACTIVE" ? "able to" : "not able to"} access all
         normal website functions.
       </Card>
       <h3 className="text-xl font-normal">My Profile</h3>
