@@ -101,6 +101,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     "/signup",
     "/password/forgot",
     "/password/reset/*",
+    "/verify",
   ];
 
   // Paths that can be accessed freely when not logged in
@@ -120,11 +121,10 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       if (!user && !publicPaths.includes(path)) {
         router.replace("/login");
         setIsAuthenticated(false);
-      } else if (user && user.emailVerified == false && path !== "/verify") {
-        router.replace("/verify");
-        setIsAuthenticated(false);
-      } else if (user && authPaths.includes(path)) {
+      } else if (user && user.emailVerified && authPaths.includes(path)) {
         router.replace("/events/view");
+      } else if (user && !user.emailVerified && path !== "/verify") {
+        router.replace("/verify");
       } else {
         setIsAuthenticated(true);
       }

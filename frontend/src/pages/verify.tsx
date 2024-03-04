@@ -20,38 +20,38 @@ const Verify = () => {
   const { user, loading, error, signOutUser } = useAuth();
   const queryClient = useQueryClient();
 
-  useEffect(() => {
-    const checkUserVerification = async () => {
-      try {
-        // Check if user is signed in
-        const user = auth.currentUser;
-        const emailParam = user?.email as string;
-        console.log(user);
+  // useEffect(() => {
+  //   const checkUserVerification = async () => {
+  //     try {
+  //       // Check if user is signed in
+  //       const user = auth.currentUser;
+  //       const emailParam = user?.email as string;
+  //       console.log(user);
 
-        // Fetch user ID asynchronously
-        const userId = await fetchUserIdFromDatabase(emailParam);
-        console.log(userId);
-        if (user) {
-          // Check if user's email is verified
-          if (user.emailVerified) {
-            // If email is verified, redirect to home page
-            updateVerifiedStatus(userId, true);
-            router.push("/events/view");
-          } else {
-            // If email is not verified, stay on verification page
-            console.log("Email not verified");
-          }
-        } else {
-          // If user is not signed in, redirect to login page
-          router.push("/login");
-        }
-      } catch (error) {
-        console.error("Error checking user verification:", error);
-      }
-    };
+  //       // Fetch user ID asynchronously
+  //       const userId = await fetchUserIdFromDatabase(emailParam);
+  //       console.log(userId);
+  //       if (user) {
+  //         // Check if user's email is verified
+  //         if (user.emailVerified) {
+  //           // If email is verified, redirect to home page
+  //           updateVerifiedStatus(userId, true);
+  //           router.push("/events/view");
+  //         } else {
+  //           // If email is not verified, stay on verification page
+  //           console.log("Email not verified");
+  //         }
+  //       } else {
+  //         // If user is not signed in, redirect to login page
+  //         router.push("/login");
+  //       }
+  //     } catch (error) {
+  //       console.error("Error checking user verification:", error);
+  //     }
+  //   };
 
-    checkUserVerification();
-  }, []);
+  //   checkUserVerification();
+  // }, []);
 
   const handleSignOut = async () => {
     try {
