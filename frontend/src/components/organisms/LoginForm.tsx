@@ -98,7 +98,7 @@ const LoginForm = () => {
       const user = userCred?.user;
       if (user) {
         router.push("/events/view");
-      }else{
+      } else {
         throw signInErrors;
       }
     } catch (err) {
