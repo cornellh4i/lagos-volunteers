@@ -121,7 +121,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   ];
 
   // Paths that can be accessed only by admins
-  const adminPaths = ["/manage", "/users/view"];
+  const adminPaths = [...supervisorPaths, "/manage", "/users/view"];
 
   const router = useRouter();
   useEffect(() => {
