@@ -252,7 +252,6 @@ const ModalBody = ({ handleClose, eventDetails, eventid }: modalProps) => {
 
   return (
     <div>
-      {/* Error component */}
       <Snackbar
         variety="error"
         open={errorNotificationOpen}
@@ -260,8 +259,6 @@ const ModalBody = ({ handleClose, eventDetails, eventid }: modalProps) => {
       >
         Error: {errorMessage}
       </Snackbar>
-
-      {/* Success component */}
 
       <Snackbar
         variety="success"
