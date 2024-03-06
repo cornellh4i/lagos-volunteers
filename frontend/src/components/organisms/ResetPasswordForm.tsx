@@ -4,6 +4,8 @@ import TextField from "../atoms/TextField";
 import Link from "next/link";
 import { useForm, SubmitHandler } from "react-hook-form";
 
+//commit message
+
 type FormValues = {
   password: string;
   confirmPassword: string;
