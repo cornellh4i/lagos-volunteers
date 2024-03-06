@@ -137,6 +137,7 @@ const AttendeesTable = ({
 interface modalProps {
   handleClose: () => void;
   eventDetails?: FormValues;
+  eventid: string;
 }
 
 type FormValues = {
@@ -147,7 +148,7 @@ type FormValues = {
 };
 
 /** A duplicate event modal body */
-const ModalBody = ({ handleClose, eventDetails }: modalProps) => {
+const ModalBody = ({ handleClose, eventDetails, eventid }: modalProps) => {
   const { user } = useAuth();
   const queryClient = useQueryClient();
 
@@ -203,7 +204,7 @@ const ModalBody = ({ handleClose, eventDetails }: modalProps) => {
   /** Tanstack mutation for creating a new event */
   const { mutateAsync, isPending, isError, isSuccess } = useMutation({
     mutationFn: async (formData: FormValues) => {
-      const eventid = router.query.eventid as string;
+      // const eventid = router.query.eventid as string;
       const { data } = await api.get(`/events/${eventid}`);
       const { startDate, endDate, startTime, endTime } = formData;
       const startDateTime = convertToISO(startTime, startDate);
@@ -332,7 +333,9 @@ const ModalBody = ({ handleClose, eventDetails }: modalProps) => {
             </Button>
           </Grid>
           <Grid item md={6} xs={12}>
-            <Button type="submit">Duplicate</Button>
+            <Button type="submit" loading={isPending}>
+              Duplicate
+            </Button>
           </Grid>
         </Grid>
       </form>
@@ -480,7 +483,7 @@ const ManageAttendees = ({}: ManageAttendeesProps) => {
       <Modal
         open={open}
         handleClose={handleClose}
-        children={<ModalBody handleClose={handleClose} />}
+        children={<ModalBody eventid={eventid} handleClose={handleClose} />}
       />
 
       <div className="flex justify-between">
