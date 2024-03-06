@@ -11,6 +11,7 @@ import Button from "../atoms/Button";
 import Select from "../atoms/Select";
 import DatePicker from "../atoms/DatePicker";
 import TimePicker from "../atoms/TimePicker";
+import Snackbar from "../atoms/Snackbar";
 import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
 import { convertToISO, fetchUserIdFromDatabase } from "@/utils/helpers";
 import { useAuth } from "@/utils/AuthContext";
@@ -251,6 +252,25 @@ const ModalBody = ({ handleClose, eventDetails, eventid }: modalProps) => {
 
   return (
     <div>
+      {/* Error component */}
+      <Snackbar
+        variety="error"
+        open={errorNotificationOpen}
+        onClose={() => setErrorNotificationOpen(false)}
+      >
+        Error: {errorMessage}
+      </Snackbar>
+
+      {/* Success component */}
+
+      <Snackbar
+        variety="success"
+        open={successNotificationOpen}
+        onClose={() => setSuccessNotificationOpen(false)}
+      >
+        {successMessage}
+      </Snackbar>
+
       <form onSubmit={handleSubmit(handleDuplicateEvent)} className="space-y-4">
         <div className="font-bold text-center text-2xl">Duplicate Event</div>
         <div className="mb-12">
