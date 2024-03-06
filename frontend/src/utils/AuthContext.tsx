@@ -113,6 +113,16 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     "/_error",
   ];
 
+  // Paths that can be accessed only by supervisors
+  const supervisorPaths = [
+    "/events/[eventid]/attendees",
+    "/events/[eventid]/edit",
+    "/events/create",
+  ];
+
+  // Paths that can be accessed only by admins
+  const adminPaths = ["/manage", "/users/view"];
+
   const router = useRouter();
   useEffect(() => {
     const path = router.asPath;
