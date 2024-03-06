@@ -124,7 +124,7 @@ This project aims to develop a volunteer management system for Lagos Food Bank I
   - Akinfolami Akin-Alamu
   - Jason Zheng
 - Developers
-  - JJ Bai
+  - Jiayi Bai
   - Daniel Botros
   - Sneha Rajaraman
   - Sophie Wang
