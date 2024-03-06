@@ -95,7 +95,7 @@ This project aims to develop a volunteer management system for Lagos Food Bank I
   - Arushi Aggarwal
   - Owen Chen
   - Hubert He
-  - Tuni Le
+  - Trung-Nghia Le
   - Brandon Lerit
   - Diego Marques
   - Tanvi Mavani
