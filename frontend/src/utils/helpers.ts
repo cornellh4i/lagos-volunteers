@@ -1,6 +1,6 @@
 import dayjs from "dayjs";
 import { api } from "./api";
-import { isToday, isTomorrow, isPast } from "date-fns";
+import { isToday, isTomorrow, isPast, format, parse } from "date-fns";
 
 /**
  * This functions performs a search in the DB based on the email of the user that
@@ -69,35 +69,60 @@ export const formatDateString = (dateString: string) => {
  * @param inputDate is the inputDate
  * @returns the ISO string
  */
-export const convertToISO = (inputTime: string, inputDate: string) => {
-  var timeIndex = 0;
-  var counter = 0;
-  const time = String(inputTime);
-  const date = String(inputDate);
-  for (let i = 0; i < time.length; i++) {
-    if (time[i] === " ") {
-      counter += 1;
-      if (counter === 4) {
-        timeIndex = i;
-        counter = 0;
-        break;
-      }
-    }
-  }
-  var dateIndex = 0;
-  for (let i = 0; i < date.length; i++) {
-    if (date[i] === " ") {
-      counter += 1;
-      if (counter === 4) {
-        dateIndex = i;
-        counter = 0;
-        break;
-      }
-    }
-  }
-  const rawDateTime = date.substring(0, dateIndex) + time.substring(timeIndex);
-  const res = dayjs(rawDateTime).toJSON();
-  return res;
+export const convertToISO = (inputTime: Date, inputDate: Date) => {
+  console.log(inputTime)
+  // const formattedInputTime = inputTime.toLocaleDateString('en-GB');
+  // const formattedInputDate = inputDate.toLocaleDateString('en-GB');
+  
+  // const parsedStartDate = parse(
+  //   ,
+  //   "yyyy-MM-dd'T'HH:mm:ss.SSSX",
+  //   new Date()
+  // );
+  // console.log(parsedStartDate);
+  // const parsedEndDate = parse(
+  //   formattedInputDate,
+  //   "yyyy-MM-dd'T'HH:mm:ss.SSSX",
+  //   new Date()
+  // );
+  // console.log(parsedEndDate);
+  // const combinedDateTime = new Date(
+  //   parsedStartDate.getFullYear(),
+  //   parsedStartDate.getMonth(),
+  //   parsedStartDate.getDate(),
+  //   parsedEndDate.getHours(),
+  //   parsedEndDate.getMinutes(),
+  //   parsedEndDate.getSeconds(),
+  //   parsedEndDate.getMilliseconds()
+  // );
+  // var timeIndex = 0;
+  // var counter = 0;
+  // const time = String(inputTime);
+  // const date = String(inputDate);
+  // for (let i = 0; i < time.length; i++) {
+  //   if (time[i] === " ") {
+  //     counter += 1;
+  //     if (counter === 4) {
+  //       timeIndex = i;
+  //       counter = 0;
+  //       break;
+  //     }
+  //   }
+  // }
+  // var dateIndex = 0;
+  // for (let i = 0; i < date.length; i++) {
+  //   if (date[i] === " ") {
+  //     counter += 1;
+  //     if (counter === 4) {
+  //       dateIndex = i;
+  //       counter = 0;
+  //       break;
+  //     }
+  //   }
+  // }
+  // const rawDateTime = date.substring(0, dateIndex) + time.substring(timeIndex);
+  // const res = dayjs(rawDateTime).toJSON();
+  return null;
 };
 
 /**

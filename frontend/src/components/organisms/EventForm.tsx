@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import DatePicker from "../atoms/DatePicker";
 import TimePicker from "../atoms/TimePicker";
@@ -21,6 +21,8 @@ import { convertToISO, fetchUserIdFromDatabase } from "@/utils/helpers";
 import { api } from "@/utils/api";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import Dropzone from "../atoms/Dropzone";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { DateValidationError } from "@mui/x-date-pickers/models";
 
 interface EventFormProps {
   eventId?: string | string[] | undefined;
@@ -35,10 +37,10 @@ type FormValues = {
   eventDescription: string;
   eventImage: string;
   rsvpLinkImage: string;
-  startDate: string;
-  endDate: string;
-  startTime: string;
-  endTime: string;
+  startDate: Date;
+  endDate: Date;
+  startTime: Date;
+  endTime: Date;
   mode: string;
 };
 
@@ -49,6 +51,9 @@ const EventForm = ({ eventId, eventType, eventDetails }: EventFormProps) => {
 
   /** Dropzone errors */
   const [dropzoneError, setDropzoneError] = useState("");
+
+  /** Date Validation errors */
+  const [validationError, setValidationError] = React.useState<any>(null);
 
   /** State variables for the notification popups */
   const [successNotificationOpen, setSuccessNotificationOpen] = useState(false);
@@ -72,6 +77,7 @@ const EventForm = ({ eventId, eventType, eventDetails }: EventFormProps) => {
     watch,
     getValues,
     setValue,
+    trigger,
     control,
     formState: { errors },
   } = useForm<FormValues>(
@@ -96,10 +102,39 @@ const EventForm = ({ eventId, eventType, eventDetails }: EventFormProps) => {
   /** Handles form errors for time and date validation */
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
+
+  const validationErrorMessage = React.useMemo(() => {
+    switch (validationError) {
+      case "startDate": {
+        return "Start date should be before end date";
+      }
+      case "endDate": {
+        return "End date should be after start date";
+      }
+      case "startTime": {
+        return "Start time should be before end time";
+      }
+
+      case "endTime": {
+        return "End time should be after start time";
+      }
+
+      default: {
+        return "";
+      }
+    }
+  }, [validationError]);
+
+      const startDateTime = convertToISO(watch('startTime'), watch('startDate'));
+      const endDateTime = convertToISO(watch("endTime"), watch("endDate"));
+
+      console.log(startDateTime, endDateTime);
+
   const timeAndDateValidation = () => {
     const { startTime, startDate, endTime, endDate } = getValues();
     const startDateTime = convertToISO(startTime, startDate);
     const endDateTime = convertToISO(endTime, endDate);
+    console.log(startDateTime, endDateTime);
     if (new Date(startDateTime) >= new Date(endDateTime)) {
       setErrorNotificationOpen(true);
       setErrorMessage(
@@ -185,6 +220,7 @@ const EventForm = ({ eventId, eventType, eventDetails }: EventFormProps) => {
     },
   });
 
+  
   /** Helper for handling creating events */
   const handleCreateEvent: SubmitHandler<FormValues> = async (data) => {
     try {
@@ -198,6 +234,7 @@ const EventForm = ({ eventId, eventType, eventDetails }: EventFormProps) => {
       setErrorMessage("We were unable to create this event. Please try again");
     }
   };
+  console.log(errors);
 
   /** Helper for handling editing events */
   const handleEditEvent: SubmitHandler<FormValues> = async (data) => {
@@ -219,8 +256,7 @@ const EventForm = ({ eventId, eventType, eventDetails }: EventFormProps) => {
       <Snackbar
         variety="error"
         open={errorNotificationOpen}
-        onClose={() => setErrorNotificationOpen(false)}
-      >
+        onClose={() => setErrorNotificationOpen(false)}>
         Error: {errorMessage}
       </Snackbar>
 
@@ -232,8 +268,7 @@ const EventForm = ({ eventId, eventType, eventDetails }: EventFormProps) => {
       <Snackbar
         variety="success"
         open={successNotificationOpen}
-        onClose={() => setSuccessNotificationOpen(false)}
-      >
+        onClose={() => setSuccessNotificationOpen(false)}>
         {successMessage}
       </Snackbar>
 
@@ -243,8 +278,7 @@ const EventForm = ({ eventId, eventType, eventDetails }: EventFormProps) => {
             ? handleSubmit(handleCreateEvent)
             : handleSubmit(handleEditEvent)
         }
-        className="space-y-4"
-      >
+        className="space-y-4">
         <div className="font-bold text-3xl">
           {eventType == "create" ? "Create Event" : "Edit Event"}
         </div>
@@ -260,12 +294,21 @@ const EventForm = ({ eventId, eventType, eventDetails }: EventFormProps) => {
             <Controller
               name="startDate"
               control={control}
-              rules={{ required: true }}
+              rules={{
+                required: true,
+                validate: (value) => value <= watch("endDate"),
+              }}
               defaultValue={undefined}
               render={({ field }) => (
                 <DatePicker
                   label="Start Date"
-                  error={errors.startDate ? "Required" : undefined}
+                  error={
+                    errors.startDate?.type === "required"
+                      ? "Required"
+                      : errors.startDate?.type === "validate"
+                      ? "Start date should be before end date"
+                      : undefined
+                  }
                   {...field}
                 />
               )}
@@ -274,11 +317,20 @@ const EventForm = ({ eventId, eventType, eventDetails }: EventFormProps) => {
           <Controller
             name="endDate"
             control={control}
-            rules={{ required: true }}
+            rules={{
+              required: true,
+              validate: (value) => value >= watch("startDate"),
+            }}
             defaultValue={undefined}
             render={({ field }) => (
               <DatePicker
-                error={errors.endDate ? "Required" : undefined}
+                error={
+                  errors.endDate?.type === "required"
+                    ? "Required"
+                    : errors.endDate?.type === "validate"
+                    ? "End date should be after start date"
+                    : undefined
+                }
                 label="End Date"
                 {...field}
               />
@@ -290,11 +342,20 @@ const EventForm = ({ eventId, eventType, eventDetails }: EventFormProps) => {
             <Controller
               name="startTime"
               control={control}
-              rules={{ required: true }}
+              rules={{
+                required: true,
+                validate: (value) => value < watch("endTime"),
+              }}
               defaultValue={undefined}
               render={({ field }) => (
                 <TimePicker
-                  error={errors.startTime ? "Required" : undefined}
+                  error={
+                    errors.startTime?.type === "required"
+                      ? "Required"
+                      : errors.startTime?.type === "validate"
+                      ? "Start time should be before end time"
+                      : undefined
+                  }
                   label="Start Time"
                   {...field}
                 />
@@ -304,11 +365,20 @@ const EventForm = ({ eventId, eventType, eventDetails }: EventFormProps) => {
           <Controller
             name="endTime"
             control={control}
-            rules={{ required: true }}
+            rules={{
+              required: true,
+              validate: (value) => value > watch("startTime"),
+            }}
             defaultValue={undefined}
             render={({ field }) => (
               <TimePicker
-                error={errors.endTime ? "Required" : undefined}
+                error={
+                  errors.endTime?.type === "required"
+                    ? "Required"
+                    : errors.endTime?.type === "validate"
+                    ? "End time should be after start time"
+                    : undefined
+                }
                 label="End Time"
                 {...field}
               />
@@ -323,8 +393,7 @@ const EventForm = ({ eventId, eventType, eventDetails }: EventFormProps) => {
               aria-labelledby="demo-row-radio-buttons-group-label"
               name="row-radio-buttons-group"
               defaultValue={eventDetails ? eventDetails.mode : "Virtual"}
-              sx={{ borderRadius: 2, borderColor: "primary.main" }}
-            >
+              sx={{ borderRadius: 2, borderColor: "primary.main" }}>
               <FormControlLabel
                 value="Virtual"
                 control={<Radio />}
@@ -402,8 +471,7 @@ const EventForm = ({ eventId, eventType, eventDetails }: EventFormProps) => {
                 <Button
                   type="submit"
                   loading={editEventPending}
-                  disabled={editEventPending}
-                >
+                  disabled={editEventPending}>
                   Save Changes
                 </Button>
               </div>
