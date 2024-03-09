@@ -1,16 +1,12 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import { auth } from "@/utils/firebase";
 import WelcomeTemplate from "@/components/templates/WelcomeTemplate";
 import Button from "@/components/atoms/Button";
-import CircularProgress from "@mui/material/CircularProgress";
-import {
-  useSignInWithEmailAndPassword,
-  useSendEmailVerification,
-} from "react-firebase-hooks/auth";
+import { useSendEmailVerification } from "react-firebase-hooks/auth";
 import { useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "@/utils/AuthContext";
-import { fetchUserIdFromDatabase, updateVerifiedStatus } from "@/utils/helpers";
+import Snackbar from "@/components/atoms/Snackbar";
 
 const Verify = () => {
   const router = useRouter();
@@ -19,39 +15,6 @@ const Verify = () => {
 
   const { user, loading, error, signOutUser } = useAuth();
   const queryClient = useQueryClient();
-
-  // useEffect(() => {
-  //   const checkUserVerification = async () => {
-  //     try {
-  //       // Check if user is signed in
-  //       const user = auth.currentUser;
-  //       const emailParam = user?.email as string;
-  //       console.log(user);
-
-  //       // Fetch user ID asynchronously
-  //       const userId = await fetchUserIdFromDatabase(emailParam);
-  //       console.log(userId);
-  //       if (user) {
-  //         // Check if user's email is verified
-  //         if (user.emailVerified) {
-  //           // If email is verified, redirect to home page
-  //           updateVerifiedStatus(userId, true);
-  //           router.push("/events/view");
-  //         } else {
-  //           // If email is not verified, stay on verification page
-  //           console.log("Email not verified");
-  //         }
-  //       } else {
-  //         // If user is not signed in, redirect to login page
-  //         router.push("/login");
-  //       }
-  //     } catch (error) {
-  //       console.error("Error checking user verification:", error);
-  //     }
-  //   };
-
-  //   checkUserVerification();
-  // }, []);
 
   const handleSignOut = async () => {
     try {
@@ -63,13 +26,24 @@ const Verify = () => {
     }
   };
 
+  // State for managing the snackbar
+  const [notifOpen, setNotifOpen] = useState(false);
+
   const handleResendEmail = async () => {
     // Implement logic to resend verification email
     const emailSent = await sendEmailVerification(); // Send email verification
+    setNotifOpen(true); // Open the snackbar
   };
 
   return (
     <WelcomeTemplate>
+      <Snackbar
+        variety="success"
+        open={notifOpen}
+        onClose={() => setNotifOpen(false)}
+      >
+        Resent Verficiation Email
+      </Snackbar>
       <div className="max-w-lg mx-auto border border-gray-300 rounded-lg p-6">
         <div className="text-center">
           <h2 className="text-xl font-bold mb-4">Verify Your Email</h2>

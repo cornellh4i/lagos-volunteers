@@ -16,25 +16,6 @@ export const fetchUserIdFromDatabase = async (email: string) => {
 };
 
 /**
- * Updates the verified status of a user in the database using the API.
- * @param userId The ID of the user to update.
- * @param verified The new verified status.
- * @returns A promise resolving to the updated user.
- */
-export const updateVerifiedStatus = async (
-  userId: string,
-  verified: boolean
-) => {
-  try {
-    const response = await api.put(`/users/${userId}`, { verified }); // Send verified status in request body
-    return response.data;
-  } catch (error) {
-    console.error("Error updating user verified status:", error);
-    throw error;
-  }
-};
-
-/**
  * This functions formats 2 date strings in the format: 00:00 AM - 00:00 PM
  * @param startDateString: string
  * @param endDateString: string

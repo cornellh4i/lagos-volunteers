@@ -105,11 +105,7 @@ const SignupForm = () => {
 
       // Change URL
       if (signedInUser?.user) {
-        //router.push("/events/view");
-        router.push({
-          pathname: "/verify",
-          query: { email: email, password: password }, // Pass user information as query parameters
-        });
+        router.push("/verify");
       }
     } catch (error: any) {
       setNotifOpen(true);

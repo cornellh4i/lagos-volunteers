@@ -95,7 +95,7 @@ const LoginForm = () => {
     const { email, password } = data;
     try {
       await signInWithEmailAndPassword(email, password);
-      if (signedInUser.emailVerified) {
+      if (signedInUser?.user.emailVerified) {
         router.push("/events/view");
       }
     } catch (err) {
