@@ -121,20 +121,66 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   ];
 
   // Paths that can be accessed only by admins
-  const adminPaths = [...supervisorPaths, "/manage", "/users/view"];
+  const adminPaths = ["/manage", "/users/view"];
 
   const router = useRouter();
   useEffect(() => {
     const path = router.asPath;
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      if (!user && !publicPaths.includes(path)) {
-        router.replace("/login");
-        setIsAuthenticated(false);
-      } else if (user && authPaths.includes(path)) {
-        router.replace("/events/view");
+    // NOTE: added async to callback function
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+      // CURRENTLY WORKING ON:
+
+      if (user) {
+        // User is authenticated
+        // Check if user has custom claims
+        const idTokenResult = await user.getIdTokenResult();
+        const { claims } = idTokenResult;
+        if (claims) {
+          // Redirect based on user role
+          if (claims.Role === "Admin") {
+            // Admin can access any path
+            setIsAuthenticated(true);
+          } else if (claims.Role === "Supervisor") {
+            // Supervisors only denied paths exclusively for admins
+            if (!adminPaths.includes(path)) {
+              setIsAuthenticated(true);
+            } else {
+              router.replace("/events/view");
+            }
+          } else if (claims.Role === "Volunteer") {
+            // Volunteers cannot access adminPaths or supervisorPaths paths
+            if (!adminPaths.includes(path) && !supervisorPaths.includes(path)) {
+              setIsAuthenticated(true);
+            } else {
+              router.replace("/events/view");
+            }
+          } else {
+            router.replace("/login");
+            setIsAuthenticated(false);
+          }
+        } else {
+          // No custom claims found, redirect to login
+          router.replace("/login");
+          setIsAuthenticated(false);
+        }
       } else {
-        setIsAuthenticated(true);
+        // User is not authenticated
+        if (!publicPaths.includes(path)) {
+          router.replace("/login");
+          setIsAuthenticated(false);
+        } else {
+          setIsAuthenticated(true);
+        }
       }
+
+      // if (!user && !publicPaths.includes(path)) {
+      //   router.replace("/login");
+      //   setIsAuthenticated(false);
+      // } else if (user && authPaths.includes(path)) {
+      //   router.replace("/events/view");
+      // } else {
+      //   setIsAuthenticated(true);
+      // }
     });
     return unsubscribe;
   }, [user, router, loading]);
