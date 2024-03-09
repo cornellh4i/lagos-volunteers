@@ -45,12 +45,25 @@ const userData: Prisma.UserCreateInput[] = [
       ],
     },
   },
+  {
+    email: "alice@hey.com",
+    name: "Alice",
+    profile: {
+      create: {
+        bio: "Student volunteer",
+        following: 100,
+        followers: 100,
+        createdAt: new Date(),
+        UpdatedAt: new Date(),
+      },
+    },
+  },
 ];
 
 async function main() {
   // This is for demo purposes only. Everytime we start the server, our seed script will run.
   // But, we will get constraint errors becuause we are creating the same data again.
-
+  await prisma.profile.deleteMany();
   console.log("deleting previous seed data");
   await prisma.post.deleteMany();
   await prisma.user.deleteMany();
