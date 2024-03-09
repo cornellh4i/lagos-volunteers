@@ -4,16 +4,18 @@ import TextField from "../atoms/TextField";
 import Link from "next/link";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { useUpdatePassword } from "react-firebase-hooks/auth";
+import { verifyPasswordResetCode, confirmPasswordReset } from "firebase/auth";
+import { auth } from "@/utils/firebase";
+import { Router, useRouter } from "next/router";
 
 //commit message
-
 type FormValues = {
   password: string;
   confirmPassword: string;
 };
-
 /** A ResetPassword page */
 const ResetPassword = () => {
+  const router = useRouter();
   const getParameterByName = (
     name: string,
     url: string = window.location.href
@@ -25,29 +27,36 @@ const ResetPassword = () => {
     if (!results[2]) return "";
     return decodeURIComponent(results[2].replace(/\+/g, " "));
   };
-
-  const actionCode = getParameterByName("oobCode");
-  const mode = getParameterByName("mode");
-  const apiKey = getParameterByName("apiKey");
-  const continueUrl = getParameterByName("continueUrl");
-  const lang = getParameterByName("lang");
-
-  console.log(actionCode);
-  console.log(mode);
-  console.log(apiKey);
-  console.log(continueUrl);
-  console.log(lang);
-
+  const actionCode = getParameterByName("oobCode") as string;
   const {
     register,
     handleSubmit,
     watch,
     formState: { errors },
   } = useForm<FormValues>();
-
   const handleSubmitForm: SubmitHandler<FormValues> = async (data) => {
     const { password, confirmPassword } = data;
-    console.log(password, confirmPassword);
+    if (password != confirmPassword) {
+      return;
+    }
+    verifyPasswordResetCode(auth, actionCode)
+      .then(() => {
+        const newPassword = password;
+        // Save the new password.
+        confirmPasswordReset(auth, actionCode, newPassword)
+          .then((resp) => {
+            // Password reset has been confirmed and new password updated.
+            router.push("/login");
+          })
+          .catch((error) => {
+            // Error occurred during confirmation. The code might have expired or the
+            // password is too weak.
+          });
+      })
+      .catch((error) => {
+        // Invalid or expired action code. Ask user to try to reset the password
+        // again.
+      });
   };
   return (
     <form onSubmit={handleSubmit(handleSubmitForm)} className="space-y-4">
@@ -81,7 +90,7 @@ const ResetPassword = () => {
         />
       </div>
       <div>
-        <Button>Reset Password</Button>
+        <Button type="submit">Reset Password</Button>
       </div>
       <div className="justify-center flex flex-row text-sm">
         <Link href="/" className="text-black">
@@ -92,5 +101,4 @@ const ResetPassword = () => {
     </form>
   );
 };
-
 export default ResetPassword;
