@@ -217,6 +217,7 @@ const ModalBody = ({ handleClose, eventDetails, eventid }: modalProps) => {
           name: `${data["data"].name}`,
           location: `${data["data"].location}`,
           description: `${data["data"].description}`,
+          imageURL: `${data["data"].imageURL}`,
           startDate: new Date(startDateTime),
           endDate: new Date(endDateTime),
           capacity: +data["data"].capacity,
@@ -239,10 +240,8 @@ const ModalBody = ({ handleClose, eventDetails, eventid }: modalProps) => {
       const validation = timeAndDateValidation();
       if (validation) {
         await mutateAsync(data);
-        // handleClose();
       }
     } catch (error) {
-      console.error(error);
       setErrorNotificationOpen(true);
       setErrorMessage(
         "We were unable to duplicate this event. Please try again"
