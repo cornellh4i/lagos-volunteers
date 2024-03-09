@@ -11,7 +11,11 @@ import prisma from "../../client";
 const getUsers = async (req: Request, res: Response) => {
   // #swagger.tags = ['Users']
   try {
-    const users = await prisma.user.findMany();
+    const users = await prisma.user.findMany({
+      include: {
+        profile: true, // Include the profile for each user
+      },
+    });
     res.status(200).json(users);
   } catch (error: any) {
     // Do we need to log the error?
@@ -41,7 +45,20 @@ const createNewUser = async (req: Request, res: Response) => {
   }
 };
 
+/**
+ * Deletes a user given the specified userid
+ * @param userId: id of user to delete
+ */
+const deleteUser = async (userId: number) => {
+  return prisma.user.delete({
+    where: {
+      id: userId,
+    },
+  });
+};
+
 export default {
   getUsers,
   createNewUser,
+  deleteUser,
 };
