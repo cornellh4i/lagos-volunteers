@@ -49,23 +49,7 @@
           "Users"
         ],
         "description": "",
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "password": {
-                  "example": "any"
-                },
-                "rest": {
-                  "example": "any"
-                }
-              }
-            }
-          }
-        ],
+        "parameters": [],
         "responses": {
           "200": {
             "description": "OK"
@@ -206,18 +190,7 @@
           "Users"
         ],
         "description": "",
-        "parameters": [
-          {
-            "name": "after",
-            "in": "query",
-            "type": "string"
-          },
-          {
-            "name": "limit",
-            "in": "query",
-            "type": "string"
-          }
-        ],
+        "parameters": [],
         "responses": {}
       }
     },
@@ -237,13 +210,7 @@
           "Users"
         ],
         "description": "",
-        "parameters": [
-          {
-            "name": "sort",
-            "in": "query",
-            "type": "string"
-          }
-        ],
+        "parameters": [],
         "responses": {}
       }
     },
@@ -384,11 +351,6 @@
             "in": "path",
             "required": true,
             "type": "string"
-          },
-          {
-            "name": "eventid",
-            "in": "query",
-            "type": "string"
           }
         ],
         "responses": {}
@@ -474,7 +436,11 @@
         ],
         "description": "",
         "parameters": [],
-        "responses": {}
+        "responses": {
+          "401": {
+            "description": "Unauthorized"
+          }
+        }
       },
       "get": {
         "tags": [
@@ -513,7 +479,11 @@
             "type": "string"
           }
         ],
-        "responses": {}
+        "responses": {
+          "401": {
+            "description": "Unauthorized"
+          }
+        }
       }
     },
     "/events/{eventid}": {
@@ -530,7 +500,11 @@
             "type": "string"
           }
         ],
-        "responses": {}
+        "responses": {
+          "401": {
+            "description": "Unauthorized"
+          }
+        }
       },
       "delete": {
         "tags": [
@@ -545,7 +519,11 @@
             "type": "string"
           }
         ],
-        "responses": {}
+        "responses": {
+          "401": {
+            "description": "Unauthorized"
+          }
+        }
       },
       "get": {
         "description": "",
@@ -557,7 +535,11 @@
             "type": "string"
           }
         ],
-        "responses": {}
+        "responses": {
+          "401": {
+            "description": "Unauthorized"
+          }
+        }
       }
     },
     "/events/upcoming": {
@@ -567,7 +549,11 @@
         ],
         "description": "",
         "parameters": [],
-        "responses": {}
+        "responses": {
+          "401": {
+            "description": "Unauthorized"
+          }
+        }
       }
     },
     "/events/current": {
@@ -577,7 +563,11 @@
         ],
         "description": "",
         "parameters": [],
-        "responses": {}
+        "responses": {
+          "401": {
+            "description": "Unauthorized"
+          }
+        }
       }
     },
     "/events/past": {
@@ -587,7 +577,11 @@
         ],
         "description": "",
         "parameters": [],
-        "responses": {}
+        "responses": {
+          "401": {
+            "description": "Unauthorized"
+          }
+        }
       }
     },
     "/events/{eventid}/attendees": {
@@ -602,14 +596,13 @@
             "in": "path",
             "required": true,
             "type": "string"
-          },
-          {
-            "name": "userid",
-            "in": "query",
-            "type": "string"
           }
         ],
-        "responses": {}
+        "responses": {
+          "401": {
+            "description": "Unauthorized"
+          }
+        }
       },
       "post": {
         "tags": [
@@ -636,7 +629,11 @@
             }
           }
         ],
-        "responses": {}
+        "responses": {
+          "401": {
+            "description": "Unauthorized"
+          }
+        }
       },
       "put": {
         "tags": [
@@ -666,7 +663,11 @@
             }
           }
         ],
-        "responses": {}
+        "responses": {
+          "401": {
+            "description": "Unauthorized"
+          }
+        }
       }
     },
     "/events/{eventid}/status": {
@@ -695,7 +696,11 @@
             }
           }
         ],
-        "responses": {}
+        "responses": {
+          "401": {
+            "description": "Unauthorized"
+          }
+        }
       }
     },
     "/events/{eventid}/owner": {
@@ -724,7 +729,11 @@
             }
           }
         ],
-        "responses": {}
+        "responses": {
+          "401": {
+            "description": "Unauthorized"
+          }
+        }
       }
     },
     "/events/{eventid}/attendees/{attendeeid}/confirm": {
@@ -747,7 +756,11 @@
             "type": "string"
           }
         ],
-        "responses": {}
+        "responses": {
+          "401": {
+            "description": "Unauthorized"
+          }
+        }
       }
     }
   }

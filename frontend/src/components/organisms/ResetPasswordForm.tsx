@@ -3,6 +3,7 @@ import Button from "../atoms/Button";
 import TextField from "../atoms/TextField";
 import Link from "next/link";
 import { useForm, SubmitHandler } from "react-hook-form";
+import { useUpdatePassword } from "react-firebase-hooks/auth";
 
 //commit message
 
@@ -13,6 +14,30 @@ type FormValues = {
 
 /** A ResetPassword page */
 const ResetPassword = () => {
+  const getParameterByName = (
+    name: string,
+    url: string = window.location.href
+  ): string | null => {
+    name = name.replace(/[[\]]/g, "\\$&");
+    const regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+      results = regex.exec(url);
+    if (!results) return null;
+    if (!results[2]) return "";
+    return decodeURIComponent(results[2].replace(/\+/g, " "));
+  };
+
+  const actionCode = getParameterByName("oobCode");
+  const mode = getParameterByName("mode");
+  const apiKey = getParameterByName("apiKey");
+  const continueUrl = getParameterByName("continueUrl");
+  const lang = getParameterByName("lang");
+
+  console.log(actionCode);
+  console.log(mode);
+  console.log(apiKey);
+  console.log(continueUrl);
+  console.log(lang);
+
   const {
     register,
     handleSubmit,
