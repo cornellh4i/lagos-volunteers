@@ -1,7 +1,13 @@
 import { Router, RequestHandler, Request, Response } from "express";
 import { Prisma, userRole, UserStatus } from "@prisma/client";
 import userController from "./controllers";
-import { auth, setVolunteerCustomClaims, NoAuth } from "../middleware/auth";
+import {
+  auth,
+  setVolunteerCustomClaims,
+  updateFirebaseUserToSupervisor,
+  updateFirebaseUserToAdmin,
+  NoAuth,
+} from "../middleware/auth";
 const userRouter = Router();
 import * as firebase from "firebase-admin";
 
@@ -242,7 +248,31 @@ userRouter.patch(
   async (req: Request, res: Response) => {
     // #swagger.tags = ['Users']
     const { role } = req.body;
-    attempt(res, 200, () => userController.editRole(req.params.userid, role));
+    const userid = req.params.userid;
+    const user = await userController.getUserByID(userid);
+
+    if (user) {
+      const email = user?.email;
+
+      try {
+        switch (JSON.stringify(role)) {
+          case "VOLUNTEER":
+            await setVolunteerCustomClaims(email);
+          case "SUPERVISOR":
+            await updateFirebaseUserToSupervisor(email);
+          case "ADMIN":
+            await updateFirebaseUserToAdmin(email);
+        }
+
+        attempt(res, 200, () =>
+          userController.editRole(req.params.userid, role)
+        );
+      } catch (error) {
+        console.log(error);
+      }
+    } else {
+      console.log("Failed to get user");
+    }
   }
 );
 

@@ -137,18 +137,18 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         const { claims } = idTokenResult;
         if (claims) {
           // Redirect based on user role
-          if (claims.Role === "Admin") {
+          if (claims.admin) {
             // Admin can access any path
             setIsAuthenticated(true);
-          } else if (claims.Role === "Supervisor") {
+          } else if (claims.supervisor) {
             // Supervisors only denied paths exclusively for admins
             if (!adminPaths.includes(path)) {
               setIsAuthenticated(true);
             } else {
               router.replace("/events/view");
             }
-          } else if (claims.Role === "Volunteer") {
-            // Volunteers cannot access adminPaths or supervisorPaths paths
+          } else if (claims.volunteer) {
+            // Volunteers cannot access adminPaths or supervisorPaths
             if (!adminPaths.includes(path) && !supervisorPaths.includes(path)) {
               setIsAuthenticated(true);
             } else {
