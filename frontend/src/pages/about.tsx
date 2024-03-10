@@ -7,7 +7,7 @@ import Button from "@/components/Button";
 const About = () => {
   return (
     <>
-      <Button />
+      <Button text="Hello" />
       Hello there
     </>
   );
