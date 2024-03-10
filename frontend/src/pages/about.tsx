@@ -7,8 +7,7 @@ import Button from "@/components/Button";
 const About = () => {
   return (
     <>
-      <Button text="Hello" />
-      Hello there
+      <div className="opacity-10 bg-yellow-300 tracking-tight w-1/2">Hello</div>
     </>
   );
 };
