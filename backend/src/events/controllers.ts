@@ -10,6 +10,7 @@ import { EventDTO } from "./views";
 import userController from "../users/controllers";
 import prisma from "../../client";
 import sgMail from "@sendgrid/mail";
+import { readFile } from "fs/promises";
 
 /**
  * Creates a new event and assign owner to it.
@@ -290,10 +291,12 @@ const addAttendee = async (eventID: string, userID: string) => {
   // grabs the user and their email for SendGrid fucntionality
   const user = await userController.getUserByID(userID);
   const userEmail = user?.email as string;
-  // sets the email message
-  const emailHtml = "<b>USER</b> WAS REGISTERED";
+
+  const subject = "Your email subject here";
+  const path = "./src/emails/test2.html";
+
   if (process.env.NODE_ENV !== "test") {
-    await sendEmail(userEmail, "Your email subject here", emailHtml);
+    await sendEmail(userEmail, subject, path);
   }
   return await prisma.eventEnrollment.create({
     data: {
@@ -314,26 +317,29 @@ const addAttendee = async (eventID: string, userID: string) => {
 /**
  * Sends an email to the specified address
  * @param email is the email address to send to
- * @param message is the email body
+ * @param subject is the email subject
+ * @param path is the path of the email template
  */
-const sendEmail = async (email: string, subject: string, html: string) => {
-  // Create an email message
-  const msg = {
-    to: email, // Recipient's email address
-    from: "lagosfoodbankdev@gmail.com", // Sender's email address
-    subject: subject, // Email subject
-    html: html, // HTML body content
-  };
+const sendEmail = async (email: string, subject: string, path: string) => {
+  try {
+    // Loads an email template
+    const html = await readFile(path, "utf-8");
+    console.log("File content:", html);
 
-  // Send the email
-  sgMail
-    .send(msg)
-    .then(() => {
-      console.log("Email sent successfully");
-    })
-    .catch((error) => {
-      console.error("Error sending email:", error);
-    });
+    // Create an email message
+    const msg = {
+      to: email, // Recipient's email address
+      from: "lagosfoodbankdev@gmail.com", // Sender's email address
+      subject: subject, // Email subject
+      html: html, // HTML body content
+    };
+
+    // Send the email
+    await sgMail.send(msg);
+    console.log("Email sent successfully!");
+  } catch (err) {
+    console.error("Error sending email:", err);
+  }
 };
 
 /**
