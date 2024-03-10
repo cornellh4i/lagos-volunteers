@@ -86,6 +86,13 @@
         }
       }
     },
+    "/user/userId": {
+      "delete": {
+        "description": "",
+        "parameters": [],
+        "responses": {}
+      }
+    },
     "/post/create": {
       "post": {
         "tags": [
