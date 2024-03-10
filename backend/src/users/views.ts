@@ -54,6 +54,8 @@ userRouter.post(
         });
         if (fbUser) {
           await firebase.auth().setCustomUserClaims(fbUser.uid, {
+            admin: false,
+            supervisor: false,
             volunteer: true,
           });
           return res.status(200).send({ success: true, user: user });
@@ -255,13 +257,16 @@ userRouter.patch(
       const email = user?.email;
 
       try {
-        switch (JSON.stringify(role)) {
+        switch (role) {
           case "VOLUNTEER":
             await setVolunteerCustomClaims(email);
+            break;
           case "SUPERVISOR":
             await updateFirebaseUserToSupervisor(email);
+            break;
           case "ADMIN":
             await updateFirebaseUserToAdmin(email);
+            break;
         }
 
         attempt(res, 200, () =>
