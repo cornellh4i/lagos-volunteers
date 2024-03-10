@@ -257,20 +257,21 @@ userRouter.patch(
       const email = user?.email;
 
       try {
-        switch (role) {
-          case "VOLUNTEER":
-            await setVolunteerCustomClaims(email);
-            break;
-          case "SUPERVISOR":
-            await updateFirebaseUserToSupervisor(email);
-            break;
-          case "ADMIN":
-            await updateFirebaseUserToAdmin(email);
-            break;
+        if (role === "VOLUNTEER") {
+          const response = await setVolunteerCustomClaims(email);
+        }
+        else if (role === "SUPERVISOR") {
+          const response = await updateFirebaseUserToSupervisor(email);
+        }
+        else if (role === "ADMIN") {
+          const response = await updateFirebaseUserToAdmin(email);
+        }
+        else {
+          throw Error("Invalid role type");
         }
 
         attempt(res, 200, () =>
-          userController.editRole(req.params.userid, role)
+          userController.editRole(userid, role)
         );
       } catch (error) {
         console.log(error);
