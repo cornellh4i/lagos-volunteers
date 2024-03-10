@@ -1,10 +1,8 @@
 import { PrismaClient } from "@prisma/client";
-import express, {Application} from "express";
+import express, { Application } from "express";
 import request from "supertest";
 import app from "../src/index";
 import prisma from "../client";
-
-
 
 beforeAll(async () => {
   await prisma.$connect();
@@ -12,7 +10,7 @@ beforeAll(async () => {
 
 afterAll(async () => {
   await prisma.$disconnect();
-  await app.set('connection', 'close')
+  await app.set("connection", "close");
 });
 
 describe("Testing user Endpoints", () => {
@@ -28,6 +26,10 @@ describe("Testing user Endpoints", () => {
     };
     const response = await request(app).post("/user/signup").send(user);
     expect(response.status).toBe(201);
+  });
+  test("Get All Users", async () => {
+    const response = await request(app).get("/users");
+    expect(response.status).toBe(200);
   });
 });
 
