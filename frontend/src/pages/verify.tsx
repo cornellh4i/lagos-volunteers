@@ -27,22 +27,33 @@ const Verify = () => {
   };
 
   // State for managing the snackbar
-  const [notifOpen, setNotifOpen] = useState(false);
+  const [notifOpenOnSuccess, setNotifOpenOnSuccess] = useState(false);
+  const [notifOpenOnError, setNotifOpenOnError] = useState(false);
 
   const handleResendEmail = async () => {
     // Implement logic to resend verification email
-    const emailSent = await sendEmailVerification(); // Send email verification
-    setNotifOpen(true); // Open the snackbar
+    try {
+      await sendEmailVerification();
+      setNotifOpenOnSuccess(true);
+    } catch (error) {
+      setNotifOpenOnError(true);
+    }
   };
 
   return (
     <WelcomeTemplate>
+      {/* Notifications */}
       <Snackbar
         variety="success"
-        open={notifOpen}
-        onClose={() => setNotifOpen(false)}
-      >
-        Resent Verficiation Email
+        open={notifOpenOnSuccess}
+        onClose={() => setNotifOpenOnSuccess(false)}>
+        Verification email sent successfully!
+      </Snackbar>
+      <Snackbar
+        variety="error"
+        open={notifOpenOnError}
+        onClose={() => setNotifOpenOnError(false)}>
+        Error sending verification email. Please try again later.
       </Snackbar>
       <div className="max-w-lg mx-auto border border-gray-300 rounded-lg p-6">
         <div className="text-center">
@@ -59,8 +70,7 @@ const Verify = () => {
           <Button
             onClick={handleResendEmail}
             variety="primary"
-            className="w-full mb-4"
-          >
+            className="w-full mb-4">
             Resend Verification Email
           </Button>
           <Button onClick={handleSignOut} variety="primary" className="w-full">
