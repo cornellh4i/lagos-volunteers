@@ -119,7 +119,7 @@ const Active = ({
     // Prevent page refresh
     event.preventDefault();
     // Actual function
-    // console.log(value);
+    //console.log(value);
   };
 
   return (
@@ -155,12 +155,16 @@ const ManageUsers = ({}: ManageUsersProps) => {
   let cursor = "";
 
   /** If a valid cursor is passed, fetch the next batch of users */
-  const fetchUsersBatch = async (cursor?: string) => {
+  const fetchUsersBatch = async (cursor?: string, value?: string) => {
     if (cursor !== "") {
       const { response, data } = await api.get(
         `/users?limit=${paginationModel.pageSize}&after=${cursor}`
       );
       return data;
+    } else if (value) {
+      const { response, data } = await api.get(
+        `/users?limit=${paginationModel.pageSize}&after=${value}`
+      );
     } else {
       const { response, data } = await api.get(
         `/users?limit=${paginationModel.pageSize}`
