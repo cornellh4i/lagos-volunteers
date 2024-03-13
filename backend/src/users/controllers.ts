@@ -589,6 +589,30 @@ const deleteUser = async (userID: string) => {
   });
 };
 
+/**
+ * Gets the contents of a specified about page's id
+ * @param pageid about page id
+ * @returns the contents of the specified about page
+ */
+const getAbout = async () => {
+  return prisma.aboutPage.findMany({});
+};
+
+/**
+ * Updates the about page's content
+ * @param pageid about page id
+ * @param pageContent: new content to be updated
+ * @returns promise with updated about page or error
+ */
+const editAbout = async (pageid: string, pageContent: string) => {
+  return prisma.aboutPage.update({
+    where: { id: pageid },
+    data: {
+      content: pageContent,
+    },
+  });
+};
+
 export default {
   createUser,
   deleteUser,
@@ -610,4 +634,6 @@ export default {
   editRole,
   editHours,
   getUsersSorted,
+  getAbout,
+  editAbout,
 };
