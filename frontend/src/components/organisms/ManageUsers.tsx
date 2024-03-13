@@ -20,6 +20,7 @@ type ActiveProps = {
   usersLength: number;
   paginationModel: GridPaginationModel;
   setPaginationModel: React.Dispatch<React.SetStateAction<GridPaginationModel>>;
+  setSearchQuery: React.Dispatch<React.SetStateAction<string>>;
 };
 
 type userInfo = {
@@ -36,6 +37,7 @@ const Active = ({
   usersLength,
   paginationModel,
   setPaginationModel,
+  setSearchQuery,
 }: ActiveProps) => {
   const eventColumns: GridColDef[] = [
     {
@@ -119,6 +121,9 @@ const Active = ({
     // Prevent page refresh
     event.preventDefault();
     // Actual function
+    setSearchQuery(value);
+    // const filteredData = await fetchUsersBatch(value);
+    // console.log(filteredData);
     //console.log(value);
   };
 
@@ -147,6 +152,9 @@ const Active = ({
 
 /** A ManageUsers component */
 const ManageUsers = ({}: ManageUsersProps) => {
+  /** New state variable for storing search query */
+  const [searchQuery, setSearchQuery] = useState("");
+
   /** Pagination model for the table */
   const [paginationModel, setPaginationModel] = useState<GridPaginationModel>({
     page: 0,
@@ -221,6 +229,7 @@ const ManageUsers = ({}: ManageUsersProps) => {
           usersLength={totalNumberofData}
           paginationModel={paginationModel}
           setPaginationModel={setPaginationModel}
+          setSearchQuery={setSearchQuery}
         />
       ),
     },
