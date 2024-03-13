@@ -308,6 +308,12 @@ async function main() {
   await createPoolOfRandomUsers(100);
   await createPoolOfRandomEvents(100);
 
+  const page = await prisma.aboutPage.create({
+    data: {
+      content: "Lorem Ipsum",
+    },
+  });
+
   console.log(`Seeded ${await prisma.user.count()} users.`);
   console.log(`Seeded ${await prisma.event.count()} events.`);
   console.log(`Seeding finished.`);
