@@ -21,7 +21,7 @@ const ModalBody = ({ handleModal, handleClose }: modalBodyProps) => {
       <p>Are you sure you want to publish changes to this page?</p>
       <Grid container spacing={2}>
         <Grid item md={6} xs={12}>
-          <Button onClick={handleModal}>Yes, publish</Button>
+          <Button onClick={handleModal}>Yes, publis</Button>
         </Grid>
         <Grid item md={6} xs={12}>
           <Button onClick={handleClose}>No, cancel</Button>
