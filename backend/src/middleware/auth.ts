@@ -162,19 +162,35 @@ export const setVolunteerCustomClaims = async (email: string) => {
  * @param email is the user's email
  */
 export const updateFirebaseUserToSupervisor = async (email: string) => {
-  const user = getAuth()
-    .getUserByEmail(email)
-    .then((userRecord: UserRecord) => {
-      const customClaims = {
-        admin: false,
-        supervisor: true,
-        volunteer: true,
-      };
-      getAuth().setCustomUserClaims(userRecord.uid, customClaims);
-    })
-    .catch((e: Error) => {
-      console.log("Error creating new user:", e);
-    });
+  // const user = getAuth()
+  try {
+    const user = await getAuth().getUserByEmail(email);
+    const customClaims = {
+      admin: false,
+      supervisor: true,
+      volunteer: true,
+    };
+    await getAuth().setCustomUserClaims(user.uid, customClaims);
+    const updatedUserRecord = await getAuth().getUserByEmail(email);
+    console.log(updatedUserRecord);
+  } catch (e) {
+    console.log("Error creating new user:", e);
+  }
+  //   .getUserByEmail(email)
+  //   .then((userRecord: UserRecord) => {
+  //     const customClaims = {
+  //       admin: false,
+  //       supervisor: true,
+  //       volunteer: true,
+  //     };
+  //     getAuth().setCustomUserClaims(userRecord.uid, customClaims);
+  //     const updatedUserRecord = getAuth().getUserByEmail(email);
+  //     console.log(updatedUserRecord);
+
+  //   })
+  //   .catch((e: Error) => {
+  //     console.log("Error creating new user:", e);
+  //   });
 };
 
 /**

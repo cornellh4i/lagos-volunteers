@@ -17,6 +17,7 @@ import { Box, Grid } from "@mui/material";
 import Modal from "../molecules/Modal";
 import Snackbar from "../atoms/Snackbar";
 import { formatRoleOrStatus } from "@/utils/helpers";
+import { useAuth } from "@/utils/AuthContext";
 
 type userProfileData = {
   name: string;
@@ -103,6 +104,7 @@ const ModalBody = ({ status, blacklistFunc, handleClose }: modalBodyProps) => {
 const ManageUserProfileNew = () => {
   const router = useRouter();
   const { userid } = router.query;
+  const {user} = useAuth();
 
   /** State variables for the notification popups */
   const [statusChangeNotifOnSuccess, setStatusChangeNotifOnSuccess] =
@@ -231,6 +233,8 @@ const ManageUserProfileNew = () => {
     retry: false,
     onSuccess: () => {
       setRoleChangeNotifOpenOnSuccess(true);
+      // refresh firebase tokens
+      user?.getIdToken(true);
       queryClient.invalidateQueries({ queryKey: ["user", userid] });
     },
     onError: () => {
