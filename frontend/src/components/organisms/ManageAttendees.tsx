@@ -37,6 +37,13 @@ interface attendeeTableProps {
   setPaginationModel: React.Dispatch<React.SetStateAction<GridPaginationModel>>;
 }
 
+type FormValues = {
+  startDate: string;
+  endDate: string;
+  startTime: string;
+  endTime: string;
+};
+
 interface ManageAttendeesProps {}
 
 const eventColumns: GridColDef[] = [
@@ -135,21 +142,16 @@ const AttendeesTable = ({
   );
 };
 
-interface modalProps {
+/** A duplicate event modal body */
+const ModalBody = ({
+  handleClose,
+  eventDetails,
+  eventid,
+}: {
   handleClose: () => void;
   eventDetails?: FormValues;
   eventid: string;
-}
-
-type FormValues = {
-  startDate: string;
-  endDate: string;
-  startTime: string;
-  endTime: string;
-};
-
-/** A duplicate event modal body */
-const ModalBody = ({ handleClose, eventDetails, eventid }: modalProps) => {
+}) => {
   const { user } = useAuth();
   const queryClient = useQueryClient();
 
@@ -271,10 +273,8 @@ const ModalBody = ({ handleClose, eventDetails, eventid }: modalProps) => {
         <div className="font-bold text-center text-2xl">Duplicate Event</div>
         <div className="mb-12">
           <div className="text-center">
-            Create a new event with the same information as this one.
-          </div>
-          <div className="text-center">
-            Everything except the volunteer list will be copied over.
+            Create a new event with the same information as this one. Everything
+            except the volunteer list will be copied over.
           </div>
         </div>
         <div className="font-bold">Date and Time for New Event</div>
@@ -342,18 +342,18 @@ const ModalBody = ({ handleClose, eventDetails, eventid }: modalProps) => {
             />
           </div>
         </div>
-        <Grid container spacing={2}>
-          <Grid item md={6} xs={12}>
-            <Button variety="secondary" onClick={handleClose}>
-              Cancel
-            </Button>
-          </Grid>
-          <Grid item md={6} xs={12}>
+        <div className="grid gird-cols-1 gap-4 sm:grid-cols-2">
+          <div className="order-1 sm:order-2">
             <Button type="submit" loading={isPending}>
               Duplicate
             </Button>
-          </Grid>
-        </Grid>
+          </div>
+          <div className="order-2 sm:order-1">
+            <Button variety="secondary" onClick={handleClose}>
+              Cancel
+            </Button>
+          </div>
+        </div>
       </form>
     </div>
   );
