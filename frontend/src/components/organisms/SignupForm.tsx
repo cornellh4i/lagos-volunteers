@@ -76,10 +76,9 @@ const SignupForm = () => {
         },
         password,
       };
-
       const { response } = await api.post("/users", post, false);
-      if (!(await response).ok) {
-        const errorData = await (await response).json();
+      if (!response.ok) {
+        const errorData = await response.json();
         throw new Error(errorData.error);
       }
       return response;
@@ -103,7 +102,7 @@ const SignupForm = () => {
       }
     } catch (error: any) {
       setNotifOpen(true);
-      setErrorMessage(error);
+      setErrorMessage(error.message);
     }
   };
 

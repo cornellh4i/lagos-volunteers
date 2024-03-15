@@ -30,7 +30,7 @@
     "setup": "yarn install && npx prisma migrate dev && yarn prisma db seed && yarn swagger",
     "test": "yarn run setup && NODE_ENV=test jest",
     "test:ci": "NODE_ENV=test prisma db seed && jest -i",
-    "start": "npx prisma studio & yarn run backend",
+    "start": "npx prisma studio --browser none & yarn run backend",
     "backend": "nodemon -r dotenv/config src/index.ts",
     "swagger": "ts-node -r dotenv/config src/swagger.ts",
     "build": "tsc",
