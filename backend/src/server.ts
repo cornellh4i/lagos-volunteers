@@ -8,6 +8,12 @@ import cors from "cors";
 
 const app: Application = express();
 
+// Scheduled cron jobs
+var cron = require("node-cron");
+cron.schedule("*/1 * * * *", () => {
+  console.log("running a task every minute");
+});
+
 // Middleware to parse json request bodies
 app.use(bodyParser.json());
 app.use("/api-docs", swaggerUI.serve, swaggerUI.setup(spec));
