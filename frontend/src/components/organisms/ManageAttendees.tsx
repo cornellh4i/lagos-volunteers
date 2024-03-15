@@ -21,6 +21,8 @@ import { useRouter } from "next/router";
 import Loading from "../molecules/Loading";
 import Card from "../molecules/Card";
 
+//Initial push
+
 type attendeeData = {
   id: number;
   status: "pending" | "checked in" | "checked out" | "removed" | "canceled";
@@ -44,7 +46,7 @@ type FormValues = {
   endTime: string;
 };
 
-interface ManageAttendeesProps {}
+interface ManageAttendeesProps { }
 
 const eventColumns: GridColDef[] = [
   {
@@ -175,13 +177,13 @@ const ModalBody = ({
   } = useForm<FormValues>(
     eventDetails
       ? {
-          defaultValues: {
-            startDate: eventDetails.startDate,
-            endDate: eventDetails.endDate,
-            startTime: eventDetails.startTime,
-            endTime: eventDetails.endTime,
-          },
-        }
+        defaultValues: {
+          startDate: eventDetails.startDate,
+          endDate: eventDetails.endDate,
+          startTime: eventDetails.startTime,
+          endTime: eventDetails.endTime,
+        },
+      }
       : {}
   );
 
@@ -346,7 +348,7 @@ const ModalBody = ({
 };
 
 /** A ManageAttendees component */
-const ManageAttendees = ({}: ManageAttendeesProps) => {
+const ManageAttendees = ({ }: ManageAttendeesProps) => {
   const router = useRouter();
   const eventid = router.query.eventid as string;
 
