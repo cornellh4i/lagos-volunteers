@@ -35,7 +35,6 @@
     "/": {
       "get": {
         "description": "",
-        "parameters": [],
         "responses": {
           "200": {
             "description": "OK"
@@ -140,7 +139,11 @@
             "type": "string"
           }
         ],
-        "responses": {}
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
       }
     },
     "/users/{userid}": {
@@ -157,7 +160,11 @@
             "type": "string"
           }
         ],
-        "responses": {}
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
       },
       "put": {
         "tags": [
@@ -172,7 +179,11 @@
             "type": "string"
           }
         ],
-        "responses": {}
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
       },
       "get": {
         "tags": [
@@ -187,7 +198,11 @@
             "type": "string"
           }
         ],
-        "responses": {}
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
       }
     },
     "/users/count": {
@@ -196,8 +211,11 @@
           "Users"
         ],
         "description": "",
-        "parameters": [],
-        "responses": {}
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
       }
     },
     "/users/pagination": {
@@ -218,7 +236,11 @@
             "type": "string"
           }
         ],
-        "responses": {}
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
       }
     },
     "/users/search": {
@@ -227,8 +249,11 @@
           "Users"
         ],
         "description": "",
-        "parameters": [],
-        "responses": {}
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
       }
     },
     "/users/sorting": {
@@ -244,7 +269,11 @@
             "type": "string"
           }
         ],
-        "responses": {}
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
       }
     },
     "/users/{userid}/profile": {
@@ -261,7 +290,11 @@
             "type": "string"
           }
         ],
-        "responses": {}
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
       },
       "put": {
         "tags": [
@@ -276,7 +309,11 @@
             "type": "string"
           }
         ],
-        "responses": {}
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
       }
     },
     "/users/{userid}/role": {
@@ -293,7 +330,11 @@
             "type": "string"
           }
         ],
-        "responses": {}
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
       },
       "patch": {
         "tags": [
@@ -320,7 +361,11 @@
             }
           }
         ],
-        "responses": {}
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
       }
     },
     "/users/{userid}/preferences": {
@@ -337,7 +382,11 @@
             "type": "string"
           }
         ],
-        "responses": {}
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
       },
       "put": {
         "tags": [
@@ -352,7 +401,11 @@
             "type": "string"
           }
         ],
-        "responses": {}
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
       }
     },
     "/users/{userid}/created": {
@@ -369,7 +422,11 @@
             "type": "string"
           }
         ],
-        "responses": {}
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
       }
     },
     "/users/{userid}/registered": {
@@ -391,7 +448,11 @@
             "type": "string"
           }
         ],
-        "responses": {}
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
       }
     },
     "/users/{userid}/hours": {
@@ -408,7 +469,11 @@
             "type": "string"
           }
         ],
-        "responses": {}
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
       },
       "patch": {
         "tags": [
@@ -435,7 +500,11 @@
             }
           }
         ],
-        "responses": {}
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
       }
     },
     "/users/{userid}/status": {
@@ -464,7 +533,11 @@
             }
           }
         ],
-        "responses": {}
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
       }
     },
     "/events/": {
@@ -473,8 +546,11 @@
           "Events"
         ],
         "description": "",
-        "parameters": [],
-        "responses": {}
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
       },
       "get": {
         "tags": [
@@ -513,7 +589,11 @@
             "type": "string"
           }
         ],
-        "responses": {}
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
       }
     },
     "/events/{eventid}": {
@@ -530,7 +610,11 @@
             "type": "string"
           }
         ],
-        "responses": {}
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
       },
       "delete": {
         "tags": [
@@ -545,7 +629,11 @@
             "type": "string"
           }
         ],
-        "responses": {}
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
       },
       "get": {
         "description": "",
@@ -557,7 +645,11 @@
             "type": "string"
           }
         ],
-        "responses": {}
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
       }
     },
     "/events/upcoming": {
@@ -566,8 +658,11 @@
           "Events"
         ],
         "description": "",
-        "parameters": [],
-        "responses": {}
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
       }
     },
     "/events/current": {
@@ -576,8 +671,11 @@
           "Events"
         ],
         "description": "",
-        "parameters": [],
-        "responses": {}
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
       }
     },
     "/events/past": {
@@ -586,8 +684,11 @@
           "Events"
         ],
         "description": "",
-        "parameters": [],
-        "responses": {}
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
       }
     },
     "/events/{eventid}/attendees": {
@@ -609,7 +710,11 @@
             "type": "string"
           }
         ],
-        "responses": {}
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
       },
       "post": {
         "tags": [
@@ -636,7 +741,11 @@
             }
           }
         ],
-        "responses": {}
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
       },
       "put": {
         "tags": [
@@ -666,7 +775,11 @@
             }
           }
         ],
-        "responses": {}
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
       }
     },
     "/events/{eventid}/status": {
@@ -695,7 +808,11 @@
             }
           }
         ],
-        "responses": {}
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
       }
     },
     "/events/{eventid}/owner": {
@@ -724,7 +841,11 @@
             }
           }
         ],
-        "responses": {}
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
       }
     },
     "/events/{eventid}/attendees/{attendeeid}/confirm": {
@@ -747,7 +868,11 @@
             "type": "string"
           }
         ],
-        "responses": {}
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
       }
     }
   }
