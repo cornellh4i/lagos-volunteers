@@ -147,17 +147,21 @@ const ModalBody = ({
   handleClose,
   eventDetails,
   eventid,
+  setErrorMessage,
+  setSuccessMessage,
+  setErrorNotificationOpen,
+  setSuccessNotificationOpen,
 }: {
   handleClose: () => void;
   eventDetails?: FormValues;
   eventid: string;
+  setErrorMessage: React.Dispatch<React.SetStateAction<string>>;
+  setSuccessMessage: React.Dispatch<React.SetStateAction<string>>;
+  setErrorNotificationOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  setSuccessNotificationOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }) => {
   const { user } = useAuth();
   const queryClient = useQueryClient();
-
-  /** State variables for the notification popups */
-  const [successNotificationOpen, setSuccessNotificationOpen] = useState(false);
-  const [errorNotificationOpen, setErrorNotificationOpen] = useState(false);
 
   /** React hook form */
   const {
@@ -182,8 +186,6 @@ const ModalBody = ({
   );
 
   /** Handles form errors for time and date validation */
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const timeAndDateValidation = () => {
     const { startTime, startDate, endTime, endDate } = getValues();
     const startDateTime = convertToISO(startTime, startDate);
@@ -195,7 +197,7 @@ const ModalBody = ({
       );
       return false;
     } else {
-      setErrorMessage(null);
+      setErrorMessage("");
     }
     return true;
   };
@@ -253,22 +255,6 @@ const ModalBody = ({
 
   return (
     <div>
-      <Snackbar
-        variety="error"
-        open={errorNotificationOpen}
-        onClose={() => setErrorNotificationOpen(false)}
-      >
-        Error: {errorMessage}
-      </Snackbar>
-
-      <Snackbar
-        variety="success"
-        open={successNotificationOpen}
-        onClose={() => setSuccessNotificationOpen(false)}
-      >
-        {successMessage}
-      </Snackbar>
-
       <form onSubmit={handleSubmit(handleDuplicateEvent)} className="space-y-4">
         <div className="font-bold text-center text-2xl">Duplicate Event</div>
         <div className="mb-12">
@@ -491,17 +477,53 @@ const ManageAttendees = ({}: ManageAttendeesProps) => {
     setOpen(!open);
   };
 
+  /** State variables for the notification popups */
+  const [successNotificationOpen, setSuccessNotificationOpen] = useState(false);
+  const [errorNotificationOpen, setErrorNotificationOpen] = useState(false);
+
+  /** Handles form errors for time and date validation */
+  const [errorMessage, setErrorMessage] = useState<string>("");
+  const [successMessage, setSuccessMessage] = useState<string>("");
+
   /** Loading screen */
   if (isPending) return <Loading />;
 
   return (
     <>
+      {/* Notifications */}
+      <Snackbar
+        variety="error"
+        open={errorNotificationOpen}
+        onClose={() => setErrorNotificationOpen(false)}
+      >
+        Error: {errorMessage}
+      </Snackbar>
+
+      <Snackbar
+        variety="success"
+        open={successNotificationOpen}
+        onClose={() => setSuccessNotificationOpen(false)}
+      >
+        {successMessage}
+      </Snackbar>
+
+      {/* Duplicate event modal */}
       <Modal
         open={open}
         handleClose={handleClose}
-        children={<ModalBody eventid={eventid} handleClose={handleClose} />}
+        children={
+          <ModalBody
+            eventid={eventid}
+            handleClose={handleClose}
+            setErrorMessage={setErrorMessage}
+            setSuccessMessage={setSuccessMessage}
+            setErrorNotificationOpen={setErrorNotificationOpen}
+            setSuccessNotificationOpen={setSuccessNotificationOpen}
+          />
+        }
       />
 
+      {/* Manage event */}
       <div className="flex justify-between">
         <div className="font-semibold text-3xl mb-6">Malta Outreach</div>
         <div>
