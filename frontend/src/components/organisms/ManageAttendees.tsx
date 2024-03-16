@@ -1,4 +1,4 @@
-import React, { ChangeEvent, FormEvent, useEffect } from "react";
+import React, { ChangeEvent, FormEvent, useEffect, useState } from "react";
 import TabContainer from "@/components/molecules/TabContainer";
 import { GridColDef, GridPaginationModel } from "@mui/x-data-grid";
 import Table from "@/components/molecules/Table";
@@ -25,6 +25,7 @@ interface attendeeTableProps {
   totalNumberofData: number;
   paginationModel: GridPaginationModel;
   setPaginationModel: React.Dispatch<React.SetStateAction<GridPaginationModel>>;
+  setSearchQuery: React.Dispatch<React.SetStateAction<string>>;
 }
 
 interface ManageAttendeesProps {}
@@ -88,6 +89,7 @@ const AttendeesTable = ({
   paginationModel,
   rows,
   totalNumberofData,
+  setSearchQuery,
 }: attendeeTableProps) => {
   /** Search bar */
   const [value, setValue] = React.useState("");
@@ -97,9 +99,10 @@ const AttendeesTable = ({
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     // Prevent page refresh
     event.preventDefault();
-
-    // Actual function
     console.log(value);
+    setSearchQuery(value);
+    // Actual function
+    //console.log(value);
   };
 
   return (
@@ -109,7 +112,7 @@ const AttendeesTable = ({
           placeholder="Search member by name, email"
           value={value}
           onChange={handleChange}
-          onClick={handleSubmit}
+          onSubmit={handleSubmit}
         />
       </div>
       <Card size="table">
@@ -129,31 +132,56 @@ const AttendeesTable = ({
 const ManageAttendees = ({}: ManageAttendeesProps) => {
   const router = useRouter();
   const eventid = router.query.eventid as string;
+  const [searchQuery, setSearchQuery] = useState("");
 
   // TODO: For now -> we use the same state for all four tables
-  const [paginationModel, setPaginationModel] =
-    React.useState<GridPaginationModel>({
-      page: 0,
-      pageSize: 10,
-    });
+  const [paginationModel, setPaginationModel] = useState<GridPaginationModel>({
+    page: 0,
+    pageSize: 10,
+  });
+  let cursor = "";
+
+  /** If a valid cursor is passed, fetch the next batch of users */
+  const fetchUsersBatch = async (cursor?: string, searchQuery?: string) => {
+    console.log("starting fetch Users batch");
+    console.log(searchQuery);
+    console.log(cursor);
+    if (cursor !== "") {
+      if (searchQuery) {
+        console.log("search success");
+        const { response, data } = await api.get(
+          `/users?firstName=${searchQuery}`
+        );
+        console.log(data);
+        return data;
+      } else {
+        console.log("no search query");
+        const { response, data } = await api.get(
+          `/users?limit=${paginationModel.pageSize}&after=${cursor}`
+        );
+        console.log(data);
+        return data;
+      }
+    } else {
+      const { response, data } = await api.get(
+        `/users?limit=${paginationModel.pageSize}`
+      );
+      return data;
+    }
+  };
 
   /** Tanstack query to fetch attendees data */
-  const { data, isPending, isError, isPlaceholderData } = useQuery({
+  const { data, isPending, isError, isPlaceholderData, refetch } = useQuery({
     queryKey: ["event", eventid, paginationModel.page],
     queryFn: async () => {
-      // TODO: Double check endpoint
-      // It currently returns list of ALL users, not just attendees for a specific event
-      const { data } = await api.get(
-        `/users?eventid=${eventid}&limit=${paginationModel.pageSize}`
-      );
-      return data["data"];
+      return await fetchUsersBatch(cursor, searchQuery);
     },
     staleTime: Infinity,
   });
 
   // Set attendees list, total entries, and total pages
   let attendeeList: attendeeData[] = [];
-  data?.result.map((attendee: any) => {
+  data?.data.result.map((attendee: any) => {
     attendeeList.push({
       id: attendee.id,
       status: attendee.status,
@@ -163,10 +191,18 @@ const ManageAttendees = ({}: ManageAttendeesProps) => {
     });
   });
   const totalNumberofData = data?.totalItems;
-  let cursor = data?.cursor ? data?.cursor : "";
+  if (data?.data.cursor) {
+    cursor = data.data.cursor;
+  }
   const totalNumberOfPages = Math.ceil(
     totalNumberofData / paginationModel.pageSize
   );
+
+  // Update row data when search query changes
+  useEffect(() => {
+    console.log("refetching");
+    refetch();
+  }, [searchQuery]);
 
   // Prefetch the next page
   const queryClient = useQueryClient();
@@ -174,6 +210,7 @@ const ManageAttendees = ({}: ManageAttendeesProps) => {
     if (!isPlaceholderData && paginationModel.page < totalNumberOfPages) {
       queryClient.prefetchQuery({
         queryKey: ["event", eventid, paginationModel.page + 1],
+        // queryFn: async () => fetchUsersBatch(cursor, searchQuery),
         queryFn: async () => {
           const { data } = await api.get(
             `/users?eventid=${eventid}&limit=${paginationModel.pageSize}&after=${cursor}`
@@ -196,6 +233,7 @@ const ManageAttendees = ({}: ManageAttendeesProps) => {
           setPaginationModel={setPaginationModel}
           rows={attendeeList}
           totalNumberofData={totalNumberofData}
+          setSearchQuery={setSearchQuery}
         />
       ),
     },
@@ -208,6 +246,7 @@ const ManageAttendees = ({}: ManageAttendeesProps) => {
           setPaginationModel={setPaginationModel}
           rows={attendeeList}
           totalNumberofData={totalNumberofData}
+          setSearchQuery={setSearchQuery}
         />
       ),
     },
@@ -220,6 +259,7 @@ const ManageAttendees = ({}: ManageAttendeesProps) => {
           setPaginationModel={setPaginationModel}
           rows={attendeeList}
           totalNumberofData={totalNumberofData}
+          setSearchQuery={setSearchQuery}
         />
       ),
     },
@@ -232,6 +272,7 @@ const ManageAttendees = ({}: ManageAttendeesProps) => {
           setPaginationModel={setPaginationModel}
           rows={attendeeList}
           totalNumberofData={totalNumberofData}
+          setSearchQuery={setSearchQuery}
         />
       ),
     },
@@ -244,6 +285,7 @@ const ManageAttendees = ({}: ManageAttendeesProps) => {
           setPaginationModel={setPaginationModel}
           rows={attendeeList}
           totalNumberofData={totalNumberofData}
+          setSearchQuery={setSearchQuery}
         />
       ),
     },
