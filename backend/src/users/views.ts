@@ -270,9 +270,9 @@ userRouter.patch(
           throw Error("Invalid role type");
         }
 
-        attempt(res, 200, () =>
-          userController.editRole(userid, role)
-        );
+        const editRoleResponse = await userController.editRole(userid, role);
+        res.status(200).json(editRoleResponse);
+        
       } catch (error) {
         console.log(error);
       }

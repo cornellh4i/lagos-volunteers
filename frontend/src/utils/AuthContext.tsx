@@ -140,31 +140,26 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         // Check if user has custom claims
         const idTokenResult = await user.getIdTokenResult();
         const { claims } = idTokenResult;
-        console.log(claims);
 
         if (claims) {
           // Redirect based on user role
           if (claims.admin) {
-            setRole("Admin");
             // Admin can access any path
+            setRole("Admin");
             setIsAuthenticated(true);
-          } else if (claims.supervisor) {
-            setRole("Supervisor");
+          } else if (claims.supervisor && !adminPaths.includes(path)) {
             // Supervisors only denied paths exclusively for admins
-            if (!adminPaths.includes(path)) {
-              setIsAuthenticated(true);
-            } else {
-              router.replace("/events/view");
-            }
-          } else if (claims.volunteer) {
-            setRole("Volunteer");
+            setRole("Supervisor");
+            setIsAuthenticated(true);
+          } else if (claims.volunteer && !adminPaths.includes(path) && !supervisorPaths.includes(path)) {
             // Volunteers cannot access adminPaths or supervisorPaths
-            if (!adminPaths.includes(path) && !supervisorPaths.includes(path)) {
-              setIsAuthenticated(true);
-            } else {
-              router.replace("/events/view");
-            }
+            setRole("Volunteer");
+            setIsAuthenticated(true);
+          } else if (claims.volunteer || claims.supervisor) {
+            // Volunteer or supervisor, but attempting to access a restricted path
+            router.replace("/events/view");
           } else {
+            // All claims are false (should never happen in theory)
             router.replace("/login");
             setIsAuthenticated(false);
           }
