@@ -121,6 +121,8 @@ const Active = ({
     // Prevent page refresh
     event.preventDefault();
     // Actual function
+    console.log("submitted!");
+
     setSearchQuery(value);
     // const filteredData = await fetchUsersBatch(value);
     // console.log(filteredData);
@@ -134,7 +136,7 @@ const Active = ({
           placeholder="Search member by name, email"
           value={value}
           onChange={handleChange}
-          onClick={handleSubmit}
+          onSubmit={handleSubmit}
         />
       </div>
       <Card size="table">
@@ -163,16 +165,24 @@ const ManageUsers = ({}: ManageUsersProps) => {
   let cursor = "";
 
   /** If a valid cursor is passed, fetch the next batch of users */
-  const fetchUsersBatch = async (cursor?: string, value?: string) => {
+  const fetchUsersBatch = async (cursor?: string, searchQuery?: string) => {
+    console.log("starting fetch Users batch");
+    console.log(searchQuery);
+    console.log(cursor);
     if (cursor !== "") {
-      const { response, data } = await api.get(
-        `/users?limit=${paginationModel.pageSize}&after=${cursor}`
-      );
-      return data;
-    } else if (value) {
-      const { response, data } = await api.get(
-        `/users?limit=${paginationModel.pageSize}&after=${value}`
-      );
+      if (searchQuery) {
+        console.log("search success");
+        const { response, data } = await api.get(
+          `/users?firstName=${searchQuery}`
+        );
+        return data;
+      } else {
+        console.log("no search query");
+        const { response, data } = await api.get(
+          `/users?limit=${paginationModel.pageSize}&after=${cursor}`
+        );
+        return data;
+      }
     } else {
       const { response, data } = await api.get(
         `/users?limit=${paginationModel.pageSize}`
@@ -181,11 +191,11 @@ const ManageUsers = ({}: ManageUsersProps) => {
     }
   };
 
-  /** Tanstack query for fetching users */
-  const { data, isPending, error, isPlaceholderData } = useQuery({
+  /** Tanstack query for fetching users  */
+  const { data, isPending, error, isPlaceholderData, refetch } = useQuery({
     queryKey: ["users", paginationModel.page],
     queryFn: async () => {
-      return await fetchUsersBatch(cursor);
+      return await fetchUsersBatch(cursor, searchQuery);
     },
     staleTime: Infinity,
   });
@@ -208,13 +218,19 @@ const ManageUsers = ({}: ManageUsersProps) => {
     totalNumberofData / paginationModel.pageSize
   );
 
+  // Update row data when search query changes
+  useEffect(() => {
+    console.log("refetching");
+    refetch();
+  }, [searchQuery]);
+
   // Prefetch the next page
   const queryClient = useQueryClient();
   useEffect(() => {
     if (!isPlaceholderData && paginationModel.page < totalNumberOfPages) {
       queryClient.prefetchQuery({
         queryKey: ["users", paginationModel.page + 1],
-        queryFn: async () => fetchUsersBatch(cursor),
+        queryFn: async () => fetchUsersBatch(cursor, searchQuery),
         staleTime: Infinity,
       });
     }
@@ -243,6 +259,7 @@ const ManageUsers = ({}: ManageUsersProps) => {
           usersLength={totalNumberofData}
           paginationModel={paginationModel}
           setPaginationModel={setPaginationModel}
+          setSearchQuery={setSearchQuery}
         />
       ),
     },
