@@ -99,10 +99,8 @@ const AttendeesTable = ({
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     // Prevent page refresh
     event.preventDefault();
-    console.log(value);
     setSearchQuery(value);
     // Actual function
-    //console.log(value);
   };
 
   return (
@@ -143,23 +141,16 @@ const ManageAttendees = ({}: ManageAttendeesProps) => {
 
   /** If a valid cursor is passed, fetch the next batch of users */
   const fetchUsersBatch = async (cursor?: string, searchQuery?: string) => {
-    console.log("starting fetch Users batch");
-    console.log(searchQuery);
-    console.log(cursor);
     if (cursor !== "") {
       if (searchQuery) {
-        console.log("search success");
         const { response, data } = await api.get(
           `/users?firstName=${searchQuery}`
         );
-        console.log(data);
         return data;
       } else {
-        console.log("no search query");
         const { response, data } = await api.get(
           `/users?limit=${paginationModel.pageSize}&after=${cursor}`
         );
-        console.log(data);
         return data;
       }
     } else {
@@ -200,7 +191,6 @@ const ManageAttendees = ({}: ManageAttendeesProps) => {
 
   // Update row data when search query changes
   useEffect(() => {
-    console.log("refetching");
     refetch();
   }, [searchQuery]);
 

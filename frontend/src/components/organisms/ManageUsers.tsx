@@ -121,12 +121,7 @@ const Active = ({
     // Prevent page refresh
     event.preventDefault();
     // Actual function
-    console.log("submitted!");
-
     setSearchQuery(value);
-    // const filteredData = await fetchUsersBatch(value);
-    // console.log(filteredData);
-    //console.log(value);
   };
 
   return (
@@ -166,18 +161,13 @@ const ManageUsers = ({}: ManageUsersProps) => {
 
   /** If a valid cursor is passed, fetch the next batch of users */
   const fetchUsersBatch = async (cursor?: string, searchQuery?: string) => {
-    console.log("starting fetch Users batch");
-    console.log(searchQuery);
-    console.log(cursor);
     if (cursor !== "") {
       if (searchQuery) {
-        console.log("search success");
         const { response, data } = await api.get(
           `/users?firstName=${searchQuery}`
         );
         return data;
       } else {
-        console.log("no search query");
         const { response, data } = await api.get(
           `/users?limit=${paginationModel.pageSize}&after=${cursor}`
         );
@@ -220,7 +210,6 @@ const ManageUsers = ({}: ManageUsersProps) => {
 
   // Update row data when search query changes
   useEffect(() => {
-    console.log("refetching");
     refetch();
   }, [searchQuery]);
 
