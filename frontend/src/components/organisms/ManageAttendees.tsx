@@ -121,6 +121,8 @@ const AttendeesTable = ({
     console.log(value);
   };
 
+  const filteredRows = rows.filter((attendee: attendeeData) => attendee.status === status);
+
   return (
     <>
       <div className="pb-5 w-full sm:w-[600px]">
@@ -134,7 +136,7 @@ const AttendeesTable = ({
       <Card size="table">
         <Table
           columns={eventColumns}
-          rows={rows}
+          rows={filteredRows}
           setPaginationModel={setPaginationModel}
           dataSetLength={totalNumberofData}
           paginationModel={paginationModel}
