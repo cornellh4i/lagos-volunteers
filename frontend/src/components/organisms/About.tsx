@@ -1,10 +1,16 @@
 import { Grid } from "@mui/material";
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import Button from "../atoms/Button";
 import Modal from "../molecules/Modal";
 import ReactHtmlParser from "react-html-parser";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { api } from "@/utils/api";
+import Loading from "../molecules/Loading";
+
+import UploadIcon from "@mui/icons-material/Upload";
+import EditIcon from "@mui/icons-material/Edit";
 
 interface AboutProps {
   edit: boolean;
@@ -12,97 +18,160 @@ interface AboutProps {
 
 type modalBodyProps = {
   handleModal: () => void;
-  handleClose: () => void;
+  handleConfirmClose: () => void;
 };
 
-const ModalBody = ({ handleModal, handleClose }: modalBodyProps) => {
+const ModalBody = ({ handleModal, handleConfirmClose }: modalBodyProps) => {
   return (
     <div>
-      <p>Are you sure you want to publish changes to this page?</p>
+      <p className="text-center text-2xl font-bold">Publish text changes?</p>
       <Grid container spacing={2}>
         <Grid item md={6} xs={12}>
-          <Button onClick={handleModal}>Yes, publish</Button>
+          <Button
+            className="border-solid border-2 border-black font-semibold"
+            variety="secondary"
+            onClick={handleConfirmClose}
+          >
+            Cancel
+          </Button>
         </Grid>
         <Grid item md={6} xs={12}>
-          <Button onClick={handleClose}>No, cancel</Button>
+          <Button className="font-semibold" onClick={handleModal}>
+            Yes, publish
+          </Button>
         </Grid>
       </Grid>
     </div>
   );
 };
 
+type aboutPageData = {
+  pageid: string;
+  content: string
+};
+
 /**
  * An About component
  */
 const About = ({ edit }: AboutProps) => {
-  var default_text = `
-  <h2>About Lagos Food Bank</h2>
-  <h3>Mission</h3>
-  <p>
-    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-    eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim
-    ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut
-    aliquip ex ea commodo consequat. Duis aute irure dolor in
-    reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla
-    pariatur. Excepteur sint occaecat cupidatat non proident, sunt in
-    culpa qui officia deserunt mollit anim id est laborum.
-  </p>
-  <h3>Why Volunteer?</h3>
-  <p>
-    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-    eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim
-    ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut
-    aliquip ex ea commodo consequat. Duis aute irure dolor in
-    reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla
-    pariatur. Excepteur sint occaecat cupidatat non proident, sunt in
-    culpa qui officia deserunt mollit anim id est laborum.
-  </p>
-  <h2>Sign Up Process</h2>
-  <p>
-    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-    eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim
-    ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut
-    aliquip ex ea commodo consequat. Duis aute irure dolor in
-    reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla
-    pariatur. Excepteur sint occaecat cupidatat non proident, sunt in
-    culpa qui officia deserunt mollit anim id est laborum.
-  </p>
-  <h2>Programs</h2>
-  <h2>Certificate Request Process</h2>
-  <p>
-    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-    eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim
-    ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut
-    aliquip ex ea commodo consequat. Duis aute irure dolor in
-    reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla
-    pariatur. Excepteur sint occaecat cupidatat non proident, sunt in
-    culpa qui officia deserunt mollit anim id est laborum.
-  </p>
-  <h2>Request Certificate</h2>
-  <p>Fill out this form. Login first</p>
-  `;
-  const [value, setValue] = useState(`${default_text}`);
-  const [open, setOpen] = React.useState(false);
+
+  /** Tanstack query for fetching the about page data */
+  const {
+    data: aboutPageDetailsQuery,
+    isPending: aboutPageFetchPending,
+    isError,
+  } = useQuery({
+    queryKey: ["about"],
+    queryFn: async () => {
+      const { response, data } = await api.get("/about");
+      // console.log(data);
+      setValue(data.content);
+      return data;
+    },
+  });
+
+  let {
+    pageid,
+    content,
+  }: aboutPageData = {
+    pageid: aboutPageDetailsQuery?.id,
+    content: aboutPageDetailsQuery?.content,
+  };
+
+  const queryClient = useQueryClient();
+
+  /** Tanstack query mutation for changing the about page content */
+  const { mutateAsync: changeAboutContent } = useMutation({
+    mutationFn: async (variables: { newContent: string }) => {
+      const { newContent } = variables;
+      const { data } = await api.patch(`/${pageid}/about`, {
+        newContent: newContent,
+      });
+      return data;
+    },
+    retry: false,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["about"] });
+    },
+    onError: (e: Error) => {
+      console.log(e.message);
+    },
+  });
+
+  const [value, setValue] = useState(content);
+  // console.log(`value: ${value}`);
+  const [openConfirm, setOpenConfirm] = React.useState(false);
   const [editMode, setEditMode] = React.useState(false);
-  const handleOpen = () => setOpen(true);
-  const handleClose = () => setOpen(false);
-  const handleClick = () => setEditMode(true);
+  const lastValueRef = useRef(value);
+  const handleConfirmOpen = () => setOpenConfirm(true);
+  const handleConfirmClose = () => setOpenConfirm(false);
+  const handleEditOpen = () => setEditMode(true);
+  const handleEditClose = () => {
+    setEditMode(false);
+    setValue(lastValueRef.current);
+  };
   const handleModalClick = () => {
     setEditMode(false);
-    handleClose();
+    handleConfirmClose();
+    lastValueRef.current = value;
+    changeAboutContent({ newContent: value });
   };
+
+  if (aboutPageFetchPending) {
+    return <Loading />;
+  }
 
   if (editMode == true) {
     return (
       <>
+        <div className="grid grid-cols-1 sm:grid-cols-6 gap-4">
+          <div className="col-start-1 col-span-1 sm:col-start-1 sm:col-span-1">
+            <Button
+              className="bg-white font-semibold"
+              variety="secondary"
+              icon={<UploadIcon />}
+            >
+              Upload Image
+            </Button>
+          </div>
+          <div className="col-start-1 col-span-1 sm:col-start-2 sm:col-span-1">
+            <Button
+              className="bg-white font-semibold"
+              variety="secondary"
+              onClick={handleEditClose}
+              icon={<EditIcon />}
+            >
+              Edit Text
+            </Button>
+          </div>
+          <div className="col-start-1 col-span-1 sm:col-start-5 sm:col-span-1">
+            <Button
+              className="border-solid border-2 border-[#CB2F2F] font-semibold text-[#CB2F2F]"
+              variety="secondary"
+              onClick={handleEditClose}
+            >
+              Cancel
+            </Button>
+          </div>
+          <div className="col-start-1 col-span-1 sm:col-start-6 sm:col-span-1">
+            <Button
+              className="font-semibold"
+              variety="primary"
+              onClick={handleConfirmOpen}
+            >
+              Publish Changes
+            </Button>
+          </div>
+        </div>
+        <h2></h2>
         <div className="space-y-2">
           <Modal
-            open={open}
-            handleClose={handleClose}
+            open={openConfirm}
+            handleClose={handleConfirmClose}
             children={
               <ModalBody
                 handleModal={handleModalClick}
-                handleClose={handleClose}
+                handleConfirmClose={handleConfirmClose}
               />
             }
           />
@@ -114,27 +183,34 @@ const About = ({ edit }: AboutProps) => {
           readOnly={false}
         />
         <br></br>
-
-        <div className="text-right">
-          <Grid item container>
-            <Grid xs={10}></Grid>
-            <Grid xs={2}>
-              <Button onClick={handleOpen}>Publish Changes</Button>
-            </Grid>
-          </Grid>
-        </div>
       </>
     );
   } else {
     return (
       <div>
+        <div className="grid grid-cols-1 sm:grid-cols-6 gap-4">
+          <div className="col-start-1 col-span-1 sm:col-start-1 sm:col-span-1">
+            <Button
+              className="bg-white font-semibold"
+              variety="secondary"
+              icon={<UploadIcon />}
+            >
+              Upload Image
+            </Button>
+          </div>
+          <div className="col-start-1 col-span-1 sm:col-start-2 sm:col-span-1">
+            <Button
+              className="bg-white font-semibold"
+              variety="secondary"
+              onClick={handleEditOpen}
+              icon={<EditIcon />}
+            >
+              Edit Text
+            </Button>
+          </div>
+        </div>
+
         <div>{ReactHtmlParser(value)}</div>
-        <Grid item container>
-          <Grid xs={11}></Grid>
-          <Grid xs={1}>
-            <Button onClick={handleClick}>Edit</Button>
-          </Grid>
-        </Grid>
       </div>
     );
   }
