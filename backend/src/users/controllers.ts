@@ -305,6 +305,9 @@ const getUserByID = async (userID: string) => {
     where: {
       id: userID,
     },
+    include: {
+      profile: true,
+    }
   });
 };
 

@@ -242,6 +242,7 @@ const getEvent = async (eventID: string) => {
         },
       },
       tags: true,
+      attendees: true,
     },
   });
 };

@@ -20,6 +20,8 @@ import { api } from "@/utils/api";
 import { useRouter } from "next/router";
 import Loading from "../molecules/Loading";
 import Card from "../molecules/Card";
+import { User } from "firebase/auth";
+import { userAgentFromString } from "next/server";
 
 //Initial push
 
@@ -136,7 +138,7 @@ const AttendeesTable = ({
       <Card size="table">
         <Table
           columns={eventColumns}
-          rows={filteredRows}
+          rows={rows}
           setPaginationModel={setPaginationModel}
           dataSetLength={totalNumberofData}
           paginationModel={paginationModel}
@@ -368,26 +370,34 @@ const ManageAttendees = ({ }: ManageAttendeesProps) => {
       // TODO: Double check endpoint
       // It currently returns list of ALL users, not just attendees for a specific event
       const { data } = await api.get(
-        `/users?eventid=${eventid}&limit=${paginationModel.pageSize}`
+        `/events/${eventid}`
       );
       return data["data"];
     },
     staleTime: Infinity,
   });
 
+
+
   // Set attendees list, total entries, and total pages
+  const attendees = data?.attendees
+  console.log(attendees)
+
   let attendeeList: attendeeData[] = [];
-  data?.result.map((attendee: any) => {
+  attendees?.map(async (attendee: any) => {
+    const userData = await api.get(`/users/${attendee.userId}`)
+    const user = userData.data.data
+    console.log(user)
     attendeeList.push({
-      id: attendee.id,
-      status: attendee.status,
-      name: `${attendee.profile?.firstName} ${attendee.profile?.lastName}`,
-      email: attendee.email,
-      phone: attendee.profile?.phoneNumber || "123-456-7890", // TODO: Change to actual phone number
+      id: attendee.userId,
+      status: attendee.attendeeStatus,
+      name: `${user.profile?.firstName} ${user.profile?.lastName}`,
+      email: user.email,
+      phone: user.profile?.phoneNumber || "123-456-7890", // TODO: Change to actual phone number
     });
   });
-  const totalNumberofData = data?.totalItems;
-  let cursor = data?.cursor ? data?.cursor : "";
+  const totalNumberofData = attendees?.totalItems;
+  let cursor = attendees?.cursor ? attendees?.cursor : "";
   const totalNumberOfPages = Math.ceil(
     totalNumberofData / paginationModel.pageSize
   );
