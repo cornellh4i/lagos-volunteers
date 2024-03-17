@@ -27,14 +27,14 @@ import { userAgentFromString } from "next/server";
 
 type attendeeData = {
   id: number;
-  status: "pending" | "checked in" | "checked out" | "removed" | "canceled";
+  status: "PENDING" | "CHECKED_IN" | "CHECKED_OUT" | "REMOVED" | "CANCELED";
   name: string;
   email: string;
   phone: string;
 };
 
 interface attendeeTableProps {
-  status: "pending" | "checked in" | "checked out" | "removed" | "canceled";
+  status: "PENDING" | "CHECKED_IN" | "CHECKED_OUT" | "REMOVED" | "CANCELED";
   rows: attendeeData[];
   totalNumberofData: number;
   paginationModel: GridPaginationModel;
@@ -138,7 +138,7 @@ const AttendeesTable = ({
       <Card size="table">
         <Table
           columns={eventColumns}
-          rows={rows}
+          rows={filteredRows}
           setPaginationModel={setPaginationModel}
           dataSetLength={totalNumberofData}
           paginationModel={paginationModel}
@@ -425,7 +425,7 @@ const ManageAttendees = ({ }: ManageAttendeesProps) => {
       label: "Pending",
       panel: (
         <AttendeesTable
-          status="pending"
+          status="PENDING"
           paginationModel={paginationModel}
           setPaginationModel={setPaginationModel}
           rows={attendeeList}
@@ -437,7 +437,7 @@ const ManageAttendees = ({ }: ManageAttendeesProps) => {
       label: "Checked in",
       panel: (
         <AttendeesTable
-          status="checked in"
+          status="CHECKED_IN"
           paginationModel={paginationModel}
           setPaginationModel={setPaginationModel}
           rows={attendeeList}
@@ -449,7 +449,7 @@ const ManageAttendees = ({ }: ManageAttendeesProps) => {
       label: "Checked out",
       panel: (
         <AttendeesTable
-          status="checked out"
+          status="CHECKED_OUT"
           paginationModel={paginationModel}
           setPaginationModel={setPaginationModel}
           rows={attendeeList}
@@ -461,7 +461,7 @@ const ManageAttendees = ({ }: ManageAttendeesProps) => {
       label: "Registration removed",
       panel: (
         <AttendeesTable
-          status="removed"
+          status="REMOVED"
           paginationModel={paginationModel}
           setPaginationModel={setPaginationModel}
           rows={attendeeList}
@@ -473,7 +473,7 @@ const ManageAttendees = ({ }: ManageAttendeesProps) => {
       label: "Canceled registration",
       panel: (
         <AttendeesTable
-          status="canceled"
+          status="CANCELED"
           paginationModel={paginationModel}
           setPaginationModel={setPaginationModel}
           rows={attendeeList}
