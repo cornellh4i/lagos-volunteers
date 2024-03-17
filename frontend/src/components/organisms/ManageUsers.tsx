@@ -2,7 +2,11 @@ import React, { ChangeEvent, FormEvent, useEffect, useState } from "react";
 import Table from "@/components/molecules/Table";
 import TabContainer from "@/components/molecules/TabContainer";
 import Button from "../atoms/Button";
-import { GridColDef, GridPaginationModel } from "@mui/x-data-grid";
+import {
+  GridColDef,
+  GridPaginationModel,
+  GridSortModel,
+} from "@mui/x-data-grid";
 import AccountBoxIcon from "@mui/icons-material/AccountBox";
 import SearchBar from "@/components/atoms/SearchBar";
 import Link from "next/link";
@@ -20,6 +24,8 @@ type ActiveProps = {
   usersLength: number;
   paginationModel: GridPaginationModel;
   setPaginationModel: React.Dispatch<React.SetStateAction<GridPaginationModel>>;
+  sortModel: GridSortModel;
+  setSortModel: React.Dispatch<React.SetStateAction<GridSortModel>>;
 };
 
 type userInfo = {
@@ -36,6 +42,8 @@ const Active = ({
   usersLength,
   paginationModel,
   setPaginationModel,
+  sortModel,
+  setSortModel,
 }: ActiveProps) => {
   const eventColumns: GridColDef[] = [
     {
@@ -139,6 +147,9 @@ const Active = ({
           dataSetLength={usersLength}
           paginationModel={paginationModel}
           setPaginationModel={setPaginationModel}
+          sortModel={sortModel}
+          setSortModel={setSortModel}
+          // loading={loading}
         />
       </Card>
     </div>
@@ -152,25 +163,33 @@ const ManageUsers = ({}: ManageUsersProps) => {
     page: 0,
     pageSize: 20,
   });
+
+  //Create a serverside sorting model for table using useState (LOOK AT THISSS)
+  const [sortModel, setSortModel] = React.useState<GridSortModel>([
+    { field: "firstName", sort: "asc" },
+  ]);
+
   let cursor = "";
 
   /** If a valid cursor is passed, fetch the next batch of users */
   const fetchUsersBatch = async (cursor?: string) => {
     if (cursor !== "") {
       const { response, data } = await api.get(
-        `/users?limit=${paginationModel.pageSize}&after=${cursor}`
+        //look at response
+        `/users?limit=${paginationModel.pageSize}&after=${cursor}&sort=${sortModel[0].field}:${sortModel[0].sort}`
       );
+      console.log(data);
       return data;
     } else {
       const { response, data } = await api.get(
-        `/users?limit=${paginationModel.pageSize}`
+        `/users?limit=${paginationModel.pageSize}&sort=${sortModel[0].field}:${sortModel[0].sort}`
       );
       return data;
     }
   };
 
   /** Tanstack query for fetching users */
-  const { data, isPending, error, isPlaceholderData } = useQuery({
+  const { data, isPending, error, isPlaceholderData, refetch } = useQuery({
     queryKey: ["users", paginationModel.page],
     queryFn: async () => {
       return await fetchUsersBatch(cursor);
@@ -196,17 +215,34 @@ const ManageUsers = ({}: ManageUsersProps) => {
     totalNumberofData / paginationModel.pageSize
   );
 
+  // Refetch table data when sort model changes
+  useEffect(() => {
+    refetch();
+    // refetch calls the fetchUsers batch function with the cursor already given, but when
+    // a user tries to sort, you want to "refresh the page with new data" which could look something like this:
+    // - call the fetchUsersBatch without the cursor
+  }, [sortModel]);
+
   // Prefetch the next page
   const queryClient = useQueryClient();
   useEffect(() => {
     if (!isPlaceholderData && paginationModel.page < totalNumberOfPages) {
       queryClient.prefetchQuery({
         queryKey: ["users", paginationModel.page + 1],
-        queryFn: async () => fetchUsersBatch(cursor),
+        queryFn: async () => await fetchUsersBatch(cursor),
         staleTime: Infinity,
       });
     }
-  }, [data, queryClient, cursor, totalNumberofData, paginationModel.page]);
+    console.log(sortModel);
+    console.log(paginationModel);
+  }, [
+    data,
+    queryClient,
+    cursor,
+    totalNumberofData,
+    paginationModel.page,
+    sortModel[0],
+  ]); //whatever changes you make also consider useEffect
 
   const tabs = [
     {
@@ -217,6 +253,8 @@ const ManageUsers = ({}: ManageUsersProps) => {
           usersLength={totalNumberofData}
           paginationModel={paginationModel}
           setPaginationModel={setPaginationModel}
+          sortModel={sortModel}
+          setSortModel={setSortModel}
         />
       ),
     },
@@ -230,6 +268,8 @@ const ManageUsers = ({}: ManageUsersProps) => {
           usersLength={totalNumberofData}
           paginationModel={paginationModel}
           setPaginationModel={setPaginationModel}
+          sortModel={sortModel}
+          setSortModel={setSortModel}
         />
       ),
     },

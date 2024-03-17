@@ -1,5 +1,10 @@
 import React, { useState } from "react";
-import { DataGrid, GridColDef, GridPaginationModel } from "@mui/x-data-grid";
+import {
+  DataGrid,
+  GridColDef,
+  GridPaginationModel,
+  GridSortModel,
+} from "@mui/x-data-grid";
 
 interface TableProps {
   /** The columns of the table, following the MUI Data Grid spec */
@@ -11,6 +16,8 @@ interface TableProps {
   /** The pagination model should come from the data layer, the parent component */
   paginationModel: GridPaginationModel;
   setPaginationModel: React.Dispatch<React.SetStateAction<GridPaginationModel>>;
+  sortModel?: GridSortModel;
+  setSortModel: React.Dispatch<React.SetStateAction<GridSortModel>>;
 }
 /** A Table component */
 const Table = ({
@@ -19,7 +26,15 @@ const Table = ({
   dataSetLength,
   paginationModel,
   setPaginationModel,
-}: TableProps) => {
+  sortModel,
+  setSortModel,
+}: // sortModel,
+// handleSortModelChange,
+// loading,
+TableProps) => {
+  const handleSortModelChange = (newModel: GridSortModel) => {
+    setSortModel(newModel);
+  };
   return (
     <div>
       {rows.length > 0 && (
@@ -34,6 +49,9 @@ const Table = ({
           pageSizeOptions={[]}
           paginationMode="server"
           disableColumnMenu
+          sortingMode="server"
+          sortModel={sortModel}
+          onSortModelChange={handleSortModelChange}
         />
       )}
     </div>
