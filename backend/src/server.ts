@@ -5,11 +5,11 @@ import eventRouter from "./events/views";
 import swaggerUI from "swagger-ui-express";
 import spec from "../api-spec.json";
 import cors from "cors";
+import cron from "node-cron";
 
 const app: Application = express();
 
 // Scheduled cron jobs
-var cron = require("node-cron");
 cron.schedule("*/1 * * * *", () => {
   console.log("running a task every minute");
 });
