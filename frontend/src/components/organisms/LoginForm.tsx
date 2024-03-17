@@ -94,9 +94,12 @@ const LoginForm = () => {
   const handleLogin: SubmitHandler<FormValues> = async (data) => {
     const { email, password } = data;
     try {
-      await signInWithEmailAndPassword(email, password);
-      if (signedInUser) {
+      const userCred = await signInWithEmailAndPassword(email, password);
+      const user = userCred?.user;
+      if (user) {
         router.push("/events/view");
+      } else {
+        throw signInErrors;
       }
     } catch (err) {
       setNotifOpen(true);
