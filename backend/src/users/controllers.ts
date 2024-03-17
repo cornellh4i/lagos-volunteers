@@ -589,28 +589,28 @@ const deleteUser = async (userID: string) => {
   });
 };
 
-/**
- * Gets all about pages
- * @returns the contents of every about page
- */
-const getAbout = async () => {
-  return prisma.about.findMany();
-};
+// /**
+//  * Gets all about pages
+//  * @returns the contents of every about page
+//  */
+// const getAbout = async () => {
+//   return prisma.about.findMany({});
+// };
 
-/**
- * Updates the about page's content
- * @param pageid about page id
- * @param pageContent: new content to be updated
- * @returns promise with updated about page or error
- */
-const editAbout = async (pageid: string, pageContent: string) => {
-  return prisma.about.update({
-    where: { id: pageid },
-    data: {
-      content: pageContent,
-    },
-  });
-};
+// /**
+//  * Updates the about page's content
+//  * @param pageid about page id
+//  * @param pageContent: new content to be updated
+//  * @returns promise with updated about page or error
+//  */
+// const editAbout = async (pageid: string, pageContent: string) => {
+//   return prisma.about.update({
+//     where: { id: pageid },
+//     data: {
+//       content: pageContent,
+//     },
+//   });
+// };
 
 export default {
   createUser,
@@ -633,6 +633,6 @@ export default {
   editRole,
   editHours,
   getUsersSorted,
-  getAbout,
-  editAbout,
+  // getAbout,
+  // editAbout,
 };
