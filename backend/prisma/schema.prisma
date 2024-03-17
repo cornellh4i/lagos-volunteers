@@ -113,7 +113,7 @@ model EventEnrollment {
   @@id([userId, eventId])
 }
 
-model AboutPage {
+model About {
   //Metadata
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

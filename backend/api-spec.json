@@ -467,6 +467,39 @@
         "responses": {}
       }
     },
+    "/users/about": {
+      "get": {
+        "description": "",
+        "parameters": [],
+        "responses": {}
+      }
+    },
+    "/users/{pageid}/about": {
+      "put": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "pageid",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "newContent": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {}
+      }
+    },
     "/events/": {
       "post": {
         "tags": [

@@ -5,6 +5,9 @@ import "react-quill/dist/quill.snow.css";
 import Button from "../atoms/Button";
 import Modal from "../molecules/Modal";
 import ReactHtmlParser from "react-html-parser";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { api } from "@/utils/api";
+import Loading from "../molecules/Loading";
 
 interface AboutProps {
   edit: boolean;
@@ -31,57 +34,87 @@ const ModalBody = ({ handleModal, handleClose }: modalBodyProps) => {
   );
 };
 
+type aboutPageData = {
+  pageid: string;
+  content: string
+};
+
 /**
  * An About component
  */
 const About = ({ edit }: AboutProps) => {
-  var default_text = `
-  <h2>About Lagos Food Bank</h2>
-  <h3>Mission</h3>
-  <p>
-    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-    eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim
-    ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut
-    aliquip ex ea commodo consequat. Duis aute irure dolor in
-    reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla
-    pariatur. Excepteur sint occaecat cupidatat non proident, sunt in
-    culpa qui officia deserunt mollit anim id est laborum.
-  </p>
-  <h3>Why Volunteer?</h3>
-  <p>
-    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-    eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim
-    ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut
-    aliquip ex ea commodo consequat. Duis aute irure dolor in
-    reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla
-    pariatur. Excepteur sint occaecat cupidatat non proident, sunt in
-    culpa qui officia deserunt mollit anim id est laborum.
-  </p>
-  <h2>Sign Up Process</h2>
-  <p>
-    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-    eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim
-    ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut
-    aliquip ex ea commodo consequat. Duis aute irure dolor in
-    reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla
-    pariatur. Excepteur sint occaecat cupidatat non proident, sunt in
-    culpa qui officia deserunt mollit anim id est laborum.
-  </p>
-  <h2>Programs</h2>
-  <h2>Certificate Request Process</h2>
-  <p>
-    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-    eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim
-    ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut
-    aliquip ex ea commodo consequat. Duis aute irure dolor in
-    reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla
-    pariatur. Excepteur sint occaecat cupidatat non proident, sunt in
-    culpa qui officia deserunt mollit anim id est laborum.
-  </p>
-  <h2>Request Certificate</h2>
-  <p>Fill out this form. Login first</p>
-  `;
-  const [value, setValue] = useState(`${default_text}`);
+
+  /** Tanstack query for fetching the about page data */
+  const {
+    data: aboutPageDetailsQuery,
+    isPending: aboutPageFetchPending,
+    isError,
+  } = useQuery({
+    queryKey: ["about"],
+    queryFn: async () => {
+      const response = await api.get("/users/about");
+      // TODO: parse response correctly
+      console.log(response);
+      return response["data"];
+    },
+  });
+
+  let {
+    pageid,
+    content,
+  }: aboutPageData = {
+    pageid: aboutPageDetailsQuery?.id,
+    content: aboutPageDetailsQuery?.content,
+  };
+
+  // var default_text = `
+  // <h2>About Lagos Food Bank</h2>
+  // <h3>Mission</h3>
+  // <p>
+  //   Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+  //   eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim
+  //   ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut
+  //   aliquip ex ea commodo consequat. Duis aute irure dolor in
+  //   reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla
+  //   pariatur. Excepteur sint occaecat cupidatat non proident, sunt in
+  //   culpa qui officia deserunt mollit anim id est laborum.
+  // </p>
+  // <h3>Why Volunteer?</h3>
+  // <p>
+  //   Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+  //   eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim
+  //   ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut
+  //   aliquip ex ea commodo consequat. Duis aute irure dolor in
+  //   reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla
+  //   pariatur. Excepteur sint occaecat cupidatat non proident, sunt in
+  //   culpa qui officia deserunt mollit anim id est laborum.
+  // </p>
+  // <h2>Sign Up Process</h2>
+  // <p>
+  //   Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+  //   eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim
+  //   ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut
+  //   aliquip ex ea commodo consequat. Duis aute irure dolor in
+  //   reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla
+  //   pariatur. Excepteur sint occaecat cupidatat non proident, sunt in
+  //   culpa qui officia deserunt mollit anim id est laborum.
+  // </p>
+  // <h2>Programs</h2>
+  // <h2>Certificate Request Process</h2>
+  // <p>
+  //   Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+  //   eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim
+  //   ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut
+  //   aliquip ex ea commodo consequat. Duis aute irure dolor in
+  //   reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla
+  //   pariatur. Excepteur sint occaecat cupidatat non proident, sunt in
+  //   culpa qui officia deserunt mollit anim id est laborum.
+  // </p>
+  // <h2>Request Certificate</h2>
+  // <p>Fill out this form. Login first</p>
+  // `;
+
+  const [value, setValue] = useState(`${content}`);
   const [open, setOpen] = React.useState(false);
   const [editMode, setEditMode] = React.useState(false);
   const handleOpen = () => setOpen(true);
@@ -91,6 +124,10 @@ const About = ({ edit }: AboutProps) => {
     setEditMode(false);
     handleClose();
   };
+
+  if (aboutPageFetchPending) {
+    return <Loading />;
+  }
 
   if (editMode == true) {
     return (
@@ -128,7 +165,7 @@ const About = ({ edit }: AboutProps) => {
   } else {
     return (
       <div>
-        <div>{ReactHtmlParser(value)}</div>
+        <div>{ReactHtmlParser(content)}</div>
         <Grid item container>
           <Grid xs={11}></Grid>
           <Grid xs={1}>

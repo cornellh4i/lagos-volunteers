@@ -271,6 +271,7 @@ async function main() {
   // This is for seeding purposes only. Everytime seed, we will get constraint errors becuause we are creating the same data again.
   await prisma.event.deleteMany({});
   await prisma.user.deleteMany({});
+  await prisma.about.deleteMany({});
 
   for (const u of userData) {
     const user = await prisma.user.create({
@@ -308,9 +309,9 @@ async function main() {
   await createPoolOfRandomUsers(100);
   await createPoolOfRandomEvents(100);
 
-  const page = await prisma.aboutPage.create({
+  const page = await prisma.about.create({
     data: {
-      content: "Lorem Ipsum",
+      content: "<p>Lorem Ipsum</p>",
     },
   });
 

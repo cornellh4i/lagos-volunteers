@@ -590,12 +590,11 @@ const deleteUser = async (userID: string) => {
 };
 
 /**
- * Gets the contents of a specified about page's id
- * @param pageid about page id
- * @returns the contents of the specified about page
+ * Gets all about pages
+ * @returns the contents of every about page
  */
 const getAbout = async () => {
-  return prisma.aboutPage.findMany({});
+  return prisma.about.findMany();
 };
 
 /**
@@ -605,7 +604,7 @@ const getAbout = async () => {
  * @returns promise with updated about page or error
  */
 const editAbout = async (pageid: string, pageContent: string) => {
-  return prisma.aboutPage.update({
+  return prisma.about.update({
     where: { id: pageid },
     data: {
       content: pageContent,
