@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import Button from "../atoms/Button";
 import TextField from "../atoms/TextField";
 import Link from "next/link";
@@ -7,6 +7,7 @@ import { useUpdatePassword } from "react-firebase-hooks/auth";
 import { verifyPasswordResetCode, confirmPasswordReset } from "firebase/auth";
 import { auth } from "@/utils/firebase";
 import { Router, useRouter } from "next/router";
+import Snackbar from "../atoms/Snackbar";
 
 //commit message
 type FormValues = {
@@ -15,7 +16,10 @@ type FormValues = {
 };
 /** A ResetPassword page */
 const ResetPassword = () => {
+  const [submitting, setSubmitting] = useState(false);
+  const [openSnackbar, setOpenSnackbar] = useState(false); // State to control Snackbar visibility
   const router = useRouter();
+  
   const getParameterByName = (
     name: string,
     url: string = window.location.href
@@ -34,29 +38,29 @@ const ResetPassword = () => {
     watch,
     formState: { errors },
   } = useForm<FormValues>();
+
+  const handleCloseSnackbar = () => {
+    setOpenSnackbar(false);
+  };
+
   const handleSubmitForm: SubmitHandler<FormValues> = async (data) => {
+    setSubmitting(true);
     const { password, confirmPassword } = data;
-    if (password != confirmPassword) {
+    if (password !== confirmPassword) {
+      setSubmitting(false);
       return;
     }
-    verifyPasswordResetCode(auth, actionCode)
-      .then(() => {
-        const newPassword = password;
-        // Save the new password.
-        confirmPasswordReset(auth, actionCode, newPassword)
-          .then((resp) => {
-            // Password reset has been confirmed and new password updated.
-            router.push("/login");
-          })
-          .catch((error) => {
-            // Error occurred during confirmation. The code might have expired or the
-            // password is too weak.
-          });
-      })
-      .catch((error) => {
-        // Invalid or expired action code. Ask user to try to reset the password
-        // again.
-      });
+
+    try {
+      await verifyPasswordResetCode(auth, actionCode);
+      const newPassword = password;
+      await confirmPasswordReset(auth, actionCode, newPassword);
+      router.push("/login");
+    } catch (error) {
+      setOpenSnackbar(true); // Open Snackbar to display error
+    } finally {
+      setSubmitting(false);
+    }
   };
   return (
     <form onSubmit={handleSubmit(handleSubmitForm)} className="space-y-4">
@@ -90,7 +94,9 @@ const ResetPassword = () => {
         />
       </div>
       <div>
-        <Button type="submit">Reset Password</Button>
+      <Button type="submit" disabled={submitting}>
+          {submitting ? 'Loading...' : 'Reset Password'}
+        </Button>
       </div>
       <div className="justify-center flex flex-row text-sm">
         <Link href="/" className="text-black">
@@ -98,6 +104,14 @@ const ResetPassword = () => {
           Didn't request to reset password?
         </Link>
       </div>
+      <Snackbar
+        variety="error"
+        open={openSnackbar}
+        onClose={handleCloseSnackbar}
+      >
+        Error
+      </Snackbar>
+      
     </form>
   );
 };
