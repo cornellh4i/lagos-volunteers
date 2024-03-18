@@ -106,6 +106,22 @@ eventRouter.post("/:eventid/attendees", async (req: Request, res: Response) => {
   );
 });
 
+eventRouter.put("/:eventid/users/:userid", async (req: Request, res: Response) => {
+  // #swagger.tags = ['Events']
+  const { status } = req.body;
+  attempt(res, 200, () =>
+    eventController.updateEnrollmentStatus(req.params.eventid, req.params.userid, status)
+  );
+});
+
+eventRouter.get("/:eventid/users/:userid", async (req: Request, res: Response) => {
+  // #swagger.tags = ['Events']
+  attempt(res, 200, () =>
+    eventController.getEnrollmentStatus(req.params.eventid, req.params.userid)
+  );
+});
+
+
 eventRouter.put("/:eventid/attendees", async (req: Request, res: Response) => {
   // #swagger.tags = ['Events']
   const { attendeeid, cancelationMessage } = req.body;

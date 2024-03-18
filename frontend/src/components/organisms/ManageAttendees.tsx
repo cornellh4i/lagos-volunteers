@@ -50,6 +50,33 @@ type FormValues = {
 
 interface ManageAttendeesProps { }
 
+
+const getEventIdFromUrl = (url: string = window.location.href): string | null => {
+  const regex = /\/events\/([^\/]+)/;
+  const match = url.match(regex);
+  return match ? match[1] : null;
+};
+
+const handleStatusChange = async (userId: string, newValue: string) => {
+  const eventId = getEventIdFromUrl(); // Retrieve event ID from URL
+  if (!eventId) {
+    console.error("Event ID not found in URL");
+    return;
+  }
+
+  try {
+    // Make a PUT request to update the user
+    const response = await api.put(`/events/${eventId}/users/${userId}`, {
+      status: newValue // Only update the status field
+    }); console.log("success")
+  } catch (error) {
+    console.error("Error updating user status:", error);
+  }
+};
+
+
+
+
 const eventColumns: GridColDef[] = [
   {
     field: "name",
@@ -86,17 +113,18 @@ const eventColumns: GridColDef[] = [
     renderHeader: (params) => (
       <div style={{ fontWeight: "bold" }}>{params.colDef.headerName}</div>
     ),
-    renderCell: () => (
+    renderCell: (params) => (
       <div className="w-full">
         <Select
           size="small"
-          value="PENDING"
-          onChange={(event: any) => console.log(event.target.value)}
+          value= {params.row.attendeeStatus}
+          onChange={(event: any) => handleStatusChange(params.row.id, event.target.value)}
         >
-          <MenuItem value="CHECKED IN">Checked in</MenuItem>
-          <MenuItem value="CHECKED OUT">Checked out</MenuItem>
+          <MenuItem value="CHECKED_IN">Checked in</MenuItem>
+          <MenuItem value="CHECKED_OUT">Checked out</MenuItem>
           <MenuItem value="PENDING">Pending</MenuItem>
           <MenuItem value="REMOVED">Removed</MenuItem>
+          <MenuItem value="CANCELED">Canceled</MenuItem>
         </Select>
       </div>
     ),
