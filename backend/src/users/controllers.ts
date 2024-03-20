@@ -589,6 +589,18 @@ const deleteUser = async (userID: string) => {
   });
 };
 
+const sendEmailNotification = async (
+  userID: string,
+  subject: string,
+  content: string
+) => {
+  return prisma.user.post({
+    where: {
+      id: userID,
+    },
+  });
+};
+
 export default {
   createUser,
   deleteUser,
@@ -610,4 +622,5 @@ export default {
   editRole,
   editHours,
   getUsersSorted,
+  sendEmailNotification,
 };

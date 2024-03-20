@@ -256,4 +256,31 @@ userRouter.patch(
   }
 );
 
+userRouter.post("/:userid/email", async (req, res) => {
+  const userId = req.params.userid;
+  const { subject, content } = req.body;
+  await userController.sendEmailNotification(userId, subject, content);
+  res.status(200).json({ message: "Email sent successfully" });
+});
+
 export default userRouter;
+
+// userRouter.emailUser(
+//   "/:userid/firstName",
+//   useAuth,
+//   async (req: Request, res: Response) => {
+//     attempt(res, 200, async () => {
+//       const userId = req.params.userid;
+//       const user = await userController.getUserByID(userId);
+//       if (!user) {
+//         return res
+//           .status(404)
+//           .send({ success: false, error: "User not found" });
+//       }
+//       const firstName = user;
+//       return res.status(200).send({ success: true, firstName: firstName });
+//     });
+//   }
+// );
+
+// export default userRouter;
