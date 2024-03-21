@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { useRouter } from "next/router";
 import CenteredTemplate from "@/components/templates/CenteredTemplate";
 import EventRegisterForm from "@/components/organisms/EventRegisterForm";
@@ -8,74 +8,73 @@ import { fetchUserIdFromDatabase, formatDateTimeRange } from "@/utils/helpers";
 import Loading from "@/components/molecules/Loading";
 import { EventData } from "@/utils/types";
 import { api } from "@/utils/api";
+import { useQuery } from "@tanstack/react-query";
+import Error from "@/components/organisms/Error";
+import ViewEventDetails from "@/components/organisms/ViewEventDetails";
 
 /** An EventRegistration page */
 const EventRegistration = () => {
   const router = useRouter();
   const eventid = router.query.eventid as string;
-  const [eventDetails, setEventDetails] = useState<EventData | null>(null);
-  const [isRegistered, setIsRegistered] = useState<boolean>(false);
   const { user } = useAuth();
 
-  /**
-   * Fetches and updates the event details
-   */
-  const updateEventDetails = async () => {
-    try {
-      // Make API call
+  /** Tanstack query to fetch and update the event details */
+  const { data, isLoading, isError } = useQuery({
+    queryKey: ["event", eventid],
+    queryFn: async () => {
       const userid = await fetchUserIdFromDatabase(user?.email as string);
       const { data } = await api.get(
         `/users/${userid}/registered?eventid=${eventid}`
       );
+      return data["data"];
+    },
+  });
+  let eventData = data?.eventDetails || {};
+  let eventAttendance = data?.attendance;
 
-      // Set data
-      const event = data["data"]["eventDetails"];
-      setEventDetails({
-        eventid: event["id"],
-        location: event["location"],
-        datetime: formatDateTimeRange(event["startDate"], event["endDate"]),
-        capacity: event["capacity"],
-        image_src: event["imageURL"],
-        tags: event["tags"],
-        supervisors: [
-          event["owner"]["profile"]["firstName"] +
-            " " +
-            event["owner"]["profile"]["lastName"],
-        ],
-        description: event["description"],
-        name: event["name"],
-      });
+  /** If the user canceled their event registration */
+  const userHasCanceledAttendance =
+    eventAttendance && eventAttendance["canceled"];
 
-      if (
-        data["data"]["attendance"] &&
-        data["data"]["attendance"]["canceled"]
-      ) {
-        router.push(`/events/${eventid}/cancel`);
-      } else if (data["data"]["attendance"]) {
-        setIsRegistered(true);
-      } else {
-        setIsRegistered(false);
-      }
-    } catch (error) {}
+  /** Throw error if fetching error */
+
+  /** Set event details */
+  const eventDetails: EventData = {
+    eventid: eventData.id,
+    location: eventData.location,
+    datetime: formatDateTimeRange(eventData.startDate, eventData.endDate),
+    capacity: eventData.capacity,
+    image_src: eventData.imageURL,
+    tags: eventData.tags,
+    supervisors: [
+      `${eventData.owner?.profile?.firstName} ${eventData.owner?.profile?.lastName}`,
+    ],
+    description: eventData.description,
+    name: eventData.name,
   };
 
-  // This can be fetched from the server to prevent flashing of unregister form
-  useEffect(() => {
-    updateEventDetails();
-  }, []);
+  // TODO: remove
+  // if (userHasCanceledAttendance) {
+  //   router.push(`/events/${eventid}/cancel`);
+  // }
+
+  /** Loading screen */
+  if (isLoading) return <Loading />;
+
+  // TODO: Add Error Page
+  if (isError) {
+    return <Error />;
+  }
 
   return (
-    <CenteredTemplate>
-      {eventDetails ? (
-        !isRegistered ? (
-          <EventRegisterForm event={eventDetails} />
-        ) : (
-          <EventConfirmation event={eventDetails} confirmation="register" />
-        )
-      ) : (
-        <Loading />
-      )}
-    </CenteredTemplate>
+    <ViewEventDetails />
+    // <CenteredTemplate>
+    //   {eventAttendance ? (
+    //     <EventConfirmation event={eventDetails} confirmation="register" />
+    //   ) : (
+    //     <EventRegisterForm event={eventDetails} />
+    //   )}
+    // </CenteredTemplate>
   );
 };
 

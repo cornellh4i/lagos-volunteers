@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { useRouter } from "next/router";
 import CenteredTemplate from "@/components/templates/CenteredTemplate";
 import EventCancelForm from "@/components/organisms/EventCancelForm";
@@ -8,70 +8,69 @@ import { fetchUserIdFromDatabase, formatDateTimeRange } from "@/utils/helpers";
 import Loading from "@/components/molecules/Loading";
 import { EventData } from "@/utils/types";
 import { api } from "@/utils/api";
+import { useQuery } from "@tanstack/react-query";
+import Error from "@/components/organisms/Error";
 
 /** An EventCancellation page */
 const EventCancellation = () => {
   const router = useRouter();
   const eventid = router.query.eventid as string;
-  const [eventDetails, setEventDetails] = useState<
-    EventData | null | undefined
-  >(null);
-  const [attendeeCanceled, setAttendeeCanceled] = useState<boolean>(false);
   const { user } = useAuth();
 
-  /**
-   * Fetches and updates the event details
-   */
-  const updateEventDetails = async () => {
-    try {
-      // Make API call
+  /** Tanstack query for fetching data */
+  const { data, isLoading, isError } = useQuery({
+    queryKey: ["event", eventid],
+    queryFn: async () => {
       const userid = await fetchUserIdFromDatabase(user?.email as string);
       const { data } = await api.get(
         `/users/${userid}/registered?eventid=${eventid}`
       );
+      return data["data"];
+    },
+  });
+  let eventData = data?.eventDetails || {};
+  let eventAttendance = data?.attendance;
 
-      // Set data
-      const event = data["data"]["eventDetails"];
-      setEventDetails({
-        eventid: event["id"],
-        location: event["location"],
-        datetime: formatDateTimeRange(event["startDate"], event["endDate"]),
-        supervisors: [
-          event["owner"]["profile"]["firstName"] +
-            " " +
-            event["owner"]["profile"]["lastName"],
-        ],
-        capacity: event["capacity"],
-        image_src: event["imageURL"],
-        tags: event["tags"],
-        description: event["description"],
-        name: event["name"],
-      });
+  /** If the user canceled their event registration */
+  const userHasCanceledAttendance =
+    eventAttendance && eventAttendance["canceled"];
 
-      if (data["data"]["attendance"]) {
-        setAttendeeCanceled(data["data"]["attendance"]["canceled"]);
-      }
+  /** Throw error if fetching error */
 
-      if (attendeeCanceled || !data["data"]["attendance"]) {
-        router.replace(`/events/${eventid}/register`);
-      }
-    } catch (error) {}
+  // TODO: make better
+  if (isError) {
+    return <Error />;
+  }
+
+  /** Set event details */
+  const eventDetails: EventData = {
+    eventid: eventData.id,
+    location: eventData.location,
+    datetime: formatDateTimeRange(eventData.startDate, eventData.endDate),
+    capacity: eventData.capacity,
+    image_src: eventData.imageURL,
+    tags: eventData.tags,
+    supervisors: [
+      `${eventData.owner?.profile?.firstName} ${eventData.owner?.profile?.lastName}`,
+    ],
+    description: eventData.description,
+    name: eventData.name,
   };
 
-  useEffect(() => {
-    updateEventDetails();
-  }, []);
+  // TODO: remove
+  if (!eventAttendance) {
+    router.push(`/events/${eventid}/register`);
+  }
+
+  /** Loading screen */
+  if (isLoading) return <Loading />;
 
   return (
     <CenteredTemplate>
-      {eventDetails ? (
-        attendeeCanceled ? (
-          <EventConfirmation event={eventDetails} confirmation="cancel" />
-        ) : (
-          <EventCancelForm event={eventDetails} />
-        )
+      {userHasCanceledAttendance ? (
+        <EventConfirmation event={eventDetails} confirmation="cancel" />
       ) : (
-        <Loading />
+        <EventCancelForm event={eventDetails} />
       )}
     </CenteredTemplate>
   );

@@ -1,6 +1,9 @@
 import React, { ReactNode } from "react";
 import MuiSnackbar from "@mui/material/Snackbar";
 import Alert from "./Alert";
+import Slide, { SlideProps } from "@mui/material/Slide";
+
+type TransitionProps = Omit<SlideProps, "direction">;
 
 interface SnackbarProps {
   children: ReactNode;
@@ -9,6 +12,10 @@ interface SnackbarProps {
   onClose: () => void;
   [key: string]: any;
 }
+
+const TransitionDown = (props: TransitionProps) => {
+  return <Slide {...props} direction="down" />;
+};
 
 /** A Snackbar floats alerts on top of the screen */
 const Snackbar = ({
@@ -24,6 +31,8 @@ const Snackbar = ({
       autoHideDuration={6000}
       open={open}
       onClose={onClose}
+      TransitionComponent={TransitionDown}
+      ClickAwayListenerProps={{ onClickAway: () => null }}
       {...props}
     >
       <Alert onClose={onClose} variety={variety} elevation={4}>

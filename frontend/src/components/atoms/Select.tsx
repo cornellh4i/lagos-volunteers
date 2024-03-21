@@ -5,18 +5,37 @@ interface SelectProps {
   children: ReactNode;
   label?: string;
   error?: string;
+  size?: "small" | "medium";
   [key: string]: any;
 }
 
 /** A simple Select component */
-const Select = ({ children, label, error, ...props }: SelectProps) => {
+const Select = ({
+  children,
+  label,
+  error,
+  size = "medium",
+  ...props
+}: SelectProps) => {
+  // Set size
+  let height = "";
+  switch (size) {
+    case "small":
+      height = "35px";
+      break;
+    case "medium":
+      height = "45px";
+      break;
+  }
+
   return (
     <div>
       <div className="mb-1">{label}</div>
       <MuiSelect
+        size="small"
         sx={{
           borderRadius: "8px",
-          height: "45px",
+          height: height,
         }}
         MenuProps={{
           MenuListProps: {

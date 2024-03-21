@@ -10,6 +10,7 @@ import { EventDTO } from "./views";
 import userController from "../users/controllers";
 import prisma from "../../client";
 import sgMail from "@sendgrid/mail";
+import { readFile } from "fs/promises";
 
 /**
  * Creates a new event and assign owner to it.
@@ -53,7 +54,7 @@ const deleteEvent = async (eventID: string) => {
  */
 const getEvents = async (
   filter: {
-    upcoming?: string;
+    date?: string;
     ownerId?: string;
     userId?: string;
   },
@@ -74,6 +75,7 @@ const getEvents = async (
     default: { id: sort.order },
     name: [{ name: sort.order }, defaultCursor],
     location: [{ location: sort.order }, defaultCursor],
+    startDate: [{ startDate: sort.order }, defaultCursor],
   };
 
   /* PAGINATION */
@@ -100,12 +102,22 @@ const getEvents = async (
   let whereDict: { [key: string]: any } = {};
   let includeDict: { [key: string]: any } = {};
 
-  // Handles GET /events?upcoming=true
-  if (filter.upcoming === "true") {
-    const dateTime = new Date();
-    whereDict["startDate"] = {
-      gt: dateTime,
-    };
+  // Handles GET /events?date=upcoming and GET /events?date=past
+  // TODO: Investigate creating events that occur in a few minutes into the future
+  const dateTime = new Date();
+  switch (filter.date) {
+    case "upcoming":
+      // An event that has started but not ended is still considered upcoming
+      whereDict["endDate"] = {
+        gte: dateTime,
+      };
+      break;
+    case "past":
+      // An event is considered past if it has ended
+      whereDict["endDate"] = {
+        lt: dateTime,
+      };
+      break;
   }
 
   // Handles GET /events?ownerId=asdf
@@ -121,6 +133,13 @@ const getEvents = async (
       },
     };
   }
+
+  // Find the total number of records before pagination is applied
+  const totalRecords = await prisma.event.count({
+    where: {
+      AND: [whereDict],
+    },
+  });
 
   /* RESULT */
 
@@ -138,7 +157,7 @@ const getEvents = async (
     ? queryResult[take - 1]
     : queryResult[queryResult.length - 1];
   const myCursor = lastPostInResults ? lastPostInResults.id : undefined;
-  return { result: queryResult, cursor: myCursor };
+  return { result: queryResult, cursor: myCursor, totalItems: totalRecords };
 };
 
 /**
@@ -271,11 +290,13 @@ const getAttendees = async (eventID: string, userID: string) => {
 const addAttendee = async (eventID: string, userID: string) => {
   // grabs the user and their email for SendGrid fucntionality
   const user = await userController.getUserByID(userID);
-  const userEmail = user?.email;
-  // sets the email message
-  const emailMsg = "USER WAS REGISTERED";
+  const userEmail = user?.email as string;
+
+  const subject = "Your email subject here";
+  const path = "./src/emails/test2.html";
+
   if (process.env.NODE_ENV !== "test") {
-    await sendEmail(userEmail, emailMsg);
+    await sendEmail(userEmail, subject, path);
   }
   return await prisma.eventEnrollment.create({
     data: {
@@ -296,26 +317,29 @@ const addAttendee = async (eventID: string, userID: string) => {
 /**
  * Sends an email to the specified address
  * @param email is the email address to send to
- * @param message is the email body
+ * @param subject is the email subject
+ * @param path is the path of the email template
  */
-const sendEmail = async (email: string | undefined, message: string) => {
-  // Create an email message
-  const msg = {
-    to: email, // Recipient's email address
-    from: "lagosfoodbankdev@gmail.com", // Sender's email address
-    subject: "Your Email Subject",
-    text: message, // You can use HTML content as well
-  };
+const sendEmail = async (email: string, subject: string, path: string) => {
+  try {
+    // Loads an email template
+    const html = await readFile(path, "utf-8");
+    console.log("File content:", html);
 
-  // Send the email
-  sgMail
-    .send(msg)
-    .then(() => {
-      console.log("Email sent successfully");
-    })
-    .catch((error) => {
-      console.error("Error sending email:", error);
-    });
+    // Create an email message
+    const msg = {
+      to: email, // Recipient's email address
+      from: "lagosfoodbankdev@gmail.com", // Sender's email address
+      subject: subject, // Email subject
+      html: html, // HTML body content
+    };
+
+    // Send the email
+    await sgMail.send(msg);
+    console.log("Email sent successfully!");
+  } catch (err) {
+    console.error("Error sending email:", err);
+  }
 };
 
 /**
@@ -331,12 +355,12 @@ const deleteAttendee = async (
 ) => {
   // grabs the user and their email for SendGrid fucntionality
   const user = await userController.getUserByID(userID);
-  var userEmail = user?.email;
+  var userEmail = user?.email as string;
 
   // sets the email message
-  const emailMsg = "USER REMOVED FROM THIS EVENT";
+  const emailHtml = "USER REMOVED FROM THIS EVENT";
   if (process.env.NODE_ENV != "test") {
-    await sendEmail(userEmail, emailMsg);
+    await sendEmail(userEmail, "Your email subject", emailHtml);
   }
 
   // update db

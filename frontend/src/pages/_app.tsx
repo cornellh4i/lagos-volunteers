@@ -4,6 +4,9 @@ import { ThemeProvider, CssBaseline } from "@mui/material";
 import { createTheme, StyledEngineProvider } from "@mui/material/styles";
 import Layout from "@/components/Layout";
 import { AuthProvider } from "@/utils/AuthContext";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+
+const rootElement = () => document.getElementById("__next");
 
 export const theme = createTheme({
   typography: {
@@ -30,19 +33,52 @@ export const theme = createTheme({
       default: "#FFFFFF",
     },
   },
+  components: {
+    MuiPopover: {
+      defaultProps: {
+        container: rootElement,
+      },
+    },
+    MuiPopper: {
+      defaultProps: {
+        container: rootElement,
+      },
+    },
+    MuiDialog: {
+      defaultProps: {
+        container: rootElement,
+      },
+    },
+    MuiModal: {
+      defaultProps: {
+        container: rootElement,
+      },
+    },
+  },
+});
+
+// Note: default retry is 3 times.
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      refetchOnWindowFocus: false,
+    },
+  },
 });
 
 const App = ({ Component, pageProps }: AppProps) => {
   return (
-    <AuthProvider>
-      <StyledEngineProvider injectFirst>
-        <ThemeProvider theme={theme}>
-          <Layout>
-            <Component {...pageProps} />
-          </Layout>
-        </ThemeProvider>
-      </StyledEngineProvider>
-    </AuthProvider>
+    <QueryClientProvider client={queryClient}>
+      <AuthProvider>
+        <StyledEngineProvider injectFirst>
+          <ThemeProvider theme={theme}>
+            <Layout>
+              <Component {...pageProps} />
+            </Layout>
+          </ThemeProvider>
+        </StyledEngineProvider>
+      </AuthProvider>
+    </QueryClientProvider>
   );
 };
 

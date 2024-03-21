@@ -10,7 +10,8 @@ const EventConfirmationPage = () => {
 
   return (
     <CenteredTemplate>
-      <EventConfirmation
+      Lorem
+      {/* <EventConfirmation
         eventid={eventid as string}
         confirmation="cancel"
         location="Address, Building Name"
@@ -19,7 +20,7 @@ const EventConfirmationPage = () => {
         capacity={20}
         image_src="https://i0.wp.com/roadmap-tech.com/wp-content/uploads/2019/04/placeholder-image.jpg?resize=800%2C800&ssl=1"
         tags={["In-person", "EDUFOOD"]}
-      />
+      /> */}
     </CenteredTemplate>
   );
 };

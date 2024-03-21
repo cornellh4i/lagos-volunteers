@@ -50,8 +50,7 @@ jobs:
         env:
           DATABASE_URL: postgres://postgres:postgres@localhost:5433/mydb
         run: |
-          npx prisma generate
-          npx prisma db push --accept-data-loss
+          npx prisma migrate deploy
 
       - name: Run Jest Tests
         working-directory: ./backend/

@@ -13,11 +13,11 @@ import { Action } from "@/utils/types";
 import { formatDateTimeRange } from "@/utils/helpers";
 
 interface EventCardProps {
-  eventid: string;
+  eventid?: string;
   mainAction: Action;
   dropdownActions?: Action[];
-  title: string;
-  location: string;
+  title?: string;
+  location?: string;
   startDate: Date;
   endDate: Date;
 }
@@ -75,8 +75,8 @@ const EventCard = ({
         );
       case "manage attendees":
         return (
-          <Button variety={variety} href={`/events/${eventid}/cancel`}>
-            RSVP
+          <Button variety={variety} href={`/events/${eventid}/attendees`}>
+            Manage Event
           </Button>
         );
       default:
@@ -90,12 +90,12 @@ const EventCard = ({
         {/* Main card body */}
         <div className="pb-2">
           <IconText icon={<EmojiFoodBeverageIcon />}>
-            <b className="text-2xl">{title.toLocaleUpperCase()}</b>
+            <b className="text-2xl">{title?.toLocaleUpperCase()}</b>
           </IconText>
         </div>
         <div className="pb-2">
           <IconText icon={<LocationOnIcon />}>
-            {location.toLocaleUpperCase()}
+            {location?.toLocaleUpperCase()}
           </IconText>
         </div>
         <IconText icon={<WatchLaterIcon />}>
