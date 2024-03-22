@@ -16,10 +16,11 @@ import { UserCredential, onAuthStateChanged } from "firebase/auth";
 import { useRouter } from "next/router";
 import Loading from "@/components/molecules/Loading";
 
+type Role = "Volunteer" | "Supervisor" | "Admin";
 // Define types for authentication context value
 type AuthContextValue = {
   user: User | null | undefined;
-  role: string;
+  role: Role;
   loading: boolean;
   error: AuthError | Error | null | undefined;
   signOutUser: () => Promise<void>;
@@ -51,7 +52,7 @@ type AuthProviderProps = {
 
 export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [user, loading, error] = useAuthState(auth);
-  const [role, setRole] = useState<string>("Volunteers");
+  const [role, setRole] = useState<Role>("Volunteer");
   const [createUserWithEmailAndPassword] =
     useCreateUserWithEmailAndPassword(auth);
   const [signOut] = useSignOut(auth);
@@ -125,58 +126,64 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   ];
 
   // Paths that can be accessed only by admins
-  // TODO: /manage is not an actual path yet; replace this with whatever is the 
+  // TODO: /manage is not an actual path yet; replace this with whatever is the
   // eventual path for the manage website page
-  const adminPaths = ["/manage", "/users/view"];
+  const adminPaths = ["/manage", "/users/view", "/about"];
+
+  const setUserRoleBasedOnClaims = (claims: any) => {
+    if (claims.admin) {
+      setRole("Admin");
+      return "Admin";
+    } else if (claims.supervisor) {
+      setRole("Supervisor");
+      return "Supervisor";
+    } else if (claims.volunteer) {
+      setRole("Volunteer");
+      return "Volunteer";
+    }
+  };
 
   const router = useRouter();
   useEffect(() => {
     const path = router.asPath;
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
-      if (user && authPaths.includes(path)) {
-        router.replace("/events/view");
-      } else if (user) {
-        // User is authenticated
-        // Check if user has custom claims
-        const idTokenResult = await user.getIdTokenResult();
-        const { claims } = idTokenResult;
+      let userRole;
+      const regexMatcherforSupervisorPaths =
+        /^\/events\/[a-zA-Z0-9_-]+\/(attendees|edit)|\/events\/create$/;
 
+      // check auth state
+      if (user) {
+        const { claims } = await user.getIdTokenResult();
         if (claims) {
-          // Redirect based on user role
-          if (claims.admin) {
-            // Admin can access any path
-            setRole("Admin");
-            setIsAuthenticated(true);
-          } else if (claims.supervisor && !adminPaths.includes(path)) {
-            // Supervisors only denied paths exclusively for admins
-            setRole("Supervisor");
-            setIsAuthenticated(true);
-          } else if (claims.volunteer && !adminPaths.includes(path) && !supervisorPaths.includes(path)) {
-            // Volunteers cannot access adminPaths or supervisorPaths
-            setRole("Volunteer");
-            setIsAuthenticated(true);
-          } else if (claims.volunteer || claims.supervisor) {
-            // Volunteer or supervisor, but attempting to access a restricted path
-            router.replace("/events/view");
-          } else {
-            // All claims are false (should never happen in theory)
-            router.replace("/login");
-            setIsAuthenticated(false);
-          }
-        } else {
-          // No custom claims found, redirect to login
-          router.replace("/login");
-          setIsAuthenticated(false);
-        }
-      } else {
-        // User is not authenticated
-        if (!publicPaths.includes(path)) {
-          router.replace("/login");
-          setIsAuthenticated(false);
-        } else {
+          userRole = setUserRoleBasedOnClaims(claims);
           setIsAuthenticated(true);
         }
+      } else {
+        setIsAuthenticated(false);
       }
+
+      if (!user && !publicPaths.includes(path)) {
+        router.replace("/login");
+      } else if (user && authPaths.includes(path)) {
+        router.replace("/events/view");
+      } else if (user && adminPaths.includes(path) && userRole !== "Admin") {
+        router.replace("/events/view");
+      } else if (
+        user &&
+        regexMatcherforSupervisorPaths.test(path) &&
+        userRole === "Volunteer"
+      ) {
+        router.replace("/events/view");
+      } else {
+        setIsAuthenticated(true);
+      }
+
+      const hideContent = () => setIsAuthenticated(false);
+      router.events.on("routeChangeStart", hideContent);
+
+      return () => {
+        router.events.off("routeChangeStart", hideContent);
+      };
     });
     return unsubscribe;
   }, [user, router, loading]);

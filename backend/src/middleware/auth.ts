@@ -170,25 +170,9 @@ export const updateFirebaseUserToSupervisor = async (email: string) => {
     };
     await getAuth().setCustomUserClaims(user.uid, customClaims);
     const updatedUserRecord = await getAuth().getUserByEmail(email);
-    console.log(updatedUserRecord);
   } catch (e) {
     console.log("Error creating new user:", e);
   }
-  //   .getUserByEmail(email)
-  //   .then((userRecord: UserRecord) => {
-  //     const customClaims = {
-  //       admin: false,
-  //       supervisor: true,
-  //       volunteer: true,
-  //     };
-  //     getAuth().setCustomUserClaims(userRecord.uid, customClaims);
-  //     const updatedUserRecord = getAuth().getUserByEmail(email);
-  //     console.log(updatedUserRecord);
-
-  //   })
-  //   .catch((e: Error) => {
-  //     console.log("Error creating new user:", e);
-  //   });
 };
 
 /**

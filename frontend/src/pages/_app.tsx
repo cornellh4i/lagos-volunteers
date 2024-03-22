@@ -68,8 +68,8 @@ const queryClient = new QueryClient({
 
 const App = ({ Component, pageProps }: AppProps) => {
   return (
-    <QueryClientProvider client={queryClient}>
-      <AuthProvider>
+    <AuthProvider>
+      <QueryClientProvider client={queryClient}>
         <StyledEngineProvider injectFirst>
           <ThemeProvider theme={theme}>
             <Layout>
@@ -77,8 +77,8 @@ const App = ({ Component, pageProps }: AppProps) => {
             </Layout>
           </ThemeProvider>
         </StyledEngineProvider>
-      </AuthProvider>
-    </QueryClientProvider>
+      </QueryClientProvider>
+    </AuthProvider>
   );
 };
 

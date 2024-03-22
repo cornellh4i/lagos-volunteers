@@ -253,31 +253,26 @@ userRouter.patch(
     const userid = req.params.userid;
     const user = await userController.getUserByID(userid);
 
-    if (user) {
-      const email = user?.email;
-
-      try {
+    try {
+      if (user) {
+        const email = user?.email;
         if (role === "VOLUNTEER") {
           const response = await setVolunteerCustomClaims(email);
-        }
-        else if (role === "SUPERVISOR") {
+        } else if (role === "SUPERVISOR") {
           const response = await updateFirebaseUserToSupervisor(email);
-        }
-        else if (role === "ADMIN") {
+        } else if (role === "ADMIN") {
           const response = await updateFirebaseUserToAdmin(email);
-        }
-        else {
-          throw Error("Invalid role type");
+        } else {
+          throw new Error("Invalid role type");
         }
 
         const editRoleResponse = await userController.editRole(userid, role);
         res.status(200).json(editRoleResponse);
-        
-      } catch (error) {
-        console.log(error);
+      } else {
+        throw new Error("User not found");
       }
-    } else {
-      console.log("Failed to get user");
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
     }
   }
 );
