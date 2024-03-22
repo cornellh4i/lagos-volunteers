@@ -30,10 +30,10 @@ type ActiveProps = {
 
 type userInfo = {
   id: string;
-  name: string;
+  firstName: string;
   email: string;
   role: string;
-  date: Date;
+  createdAt: Date;
   hours: number;
 };
 
@@ -47,7 +47,7 @@ const Active = ({
 }: ActiveProps) => {
   const eventColumns: GridColDef[] = [
     {
-      field: "name",
+      field: "firstName",
       headerName: "Name",
       flex: 2,
       minWidth: 200,
@@ -74,7 +74,7 @@ const Active = ({
       ),
     },
     {
-      field: "date",
+      field: "createdAt",
       headerName: "Joined on",
       flex: 0.5,
       minWidth: 100,
@@ -176,9 +176,8 @@ const ManageUsers = ({}: ManageUsersProps) => {
     if (cursor !== "") {
       const { response, data } = await api.get(
         //look at response
-        `/users?limit=${paginationModel.pageSize}&after=${cursor}&sort=${sortModel[0].field}:${sortModel[0].sort}`
+        `/users?limit=${paginationModel.pageSize}&after=${cursor}`
       );
-      console.log(data);
       return data;
     } else {
       const { response, data } = await api.get(
@@ -204,10 +203,10 @@ const ManageUsers = ({}: ManageUsersProps) => {
   data?.data.result.map((user: any) => {
     rows.push({
       id: user.id,
-      name: user.profile?.firstName + " " + user.profile?.lastName,
+      firstName: user.profile?.firstName + " " + user.profile?.lastName,
       email: user.email,
       role: formatRoleOrStatus(user.role),
-      date: new Date(user.createdAt),
+      createdAt: new Date(user.createdAt),
       hours: user.hours, // TODO: properly calculate hours
     });
   });
@@ -217,11 +216,19 @@ const ManageUsers = ({}: ManageUsersProps) => {
 
   // Refetch table data when sort model changes
   useEffect(() => {
-    refetch();
-    // refetch calls the fetchUsers batch function with the cursor already given, but when
-    // a user tries to sort, you want to "refresh the page with new data" which could look something like this:
-    // - call the fetchUsersBatch without the cursor
-  }, [sortModel]);
+    // invalidate the cache query to refetch the data
+    // queryClient.invalidateQueries({ queryKey: ["users", paginationModel.page]});
+    // reset the cursor to the default value
+    cursor = "";
+    // reset the page to 0
+    setPaginationModel((prev) => ({ ...prev, page: 0 }));
+    // refetch the data
+
+    const refetchData = async () => {
+      await refetch();
+    };
+    refetchData();
+  }, [sortModel[0]]);
 
   // Prefetch the next page
   const queryClient = useQueryClient();
@@ -241,7 +248,7 @@ const ManageUsers = ({}: ManageUsersProps) => {
     cursor,
     totalNumberofData,
     paginationModel.page,
-    sortModel[0],
+    // sortModel[0],
   ]); //whatever changes you make also consider useEffect
 
   const tabs = [
