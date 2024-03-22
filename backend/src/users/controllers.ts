@@ -144,12 +144,13 @@ const getUsers = async (
 
   // Handles GET /events?eventid=asdf
   const eventId = filter.eventId;
+  console.log(eventId);
   let events: { [key: string]: any } = {};
   if (eventId) {
     events = {
-      some: {
-        eventId: eventId,
-      },
+        some:{
+          eventId: eventId,
+        }
     };
   }
 
@@ -192,7 +193,12 @@ const getUsers = async (
     },
     include: {
       profile: true,
-      events: eventId ? true : false,
+      events: eventId ? {
+        where: {
+          eventId: eventId,
+        }
+      } : {
+      }
     },
     orderBy: sortDict[sort.key],
     take: take,

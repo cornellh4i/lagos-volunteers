@@ -117,7 +117,7 @@ const eventColumns: GridColDef[] = [
       <div className="w-full">
         <Select
           size="small"
-          value= {params.row.attendeeStatus}
+          value= {params.row.status}
           onChange={(event: any) => handleStatusChange(params.row.id, event.target.value)}
         >
           <MenuItem value="CHECKED_IN">Checked in</MenuItem>
@@ -151,7 +151,7 @@ const AttendeesTable = ({
     console.log(value);
   };
 
-  const filteredRows = rows.filter((attendee: attendeeData) => attendee.status === status);
+  // const filteredRows = rows.filter((attendee: attendeeData) => attendee.status === status);
 
   return (
     <>
@@ -166,7 +166,7 @@ const AttendeesTable = ({
       <Card size="table">
         <Table
           columns={eventColumns}
-          rows={filteredRows}
+          rows={rows}
           setPaginationModel={setPaginationModel}
           dataSetLength={totalNumberofData}
           paginationModel={paginationModel}
@@ -397,9 +397,12 @@ const ManageAttendees = ({ }: ManageAttendeesProps) => {
     queryFn: async () => {
       // TODO: Double check endpoint
       // It currently returns list of ALL users, not just attendees for a specific event
-      const { data } = await api.get(
-        `/events/${eventid}`
-      );
+      // const { data } = await api.get(
+      //   `/events/${eventid}`
+      // );
+      const {
+        data,
+      } = await api.get(`/users?eventId=${eventid}&limit=${paginationModel.pageSize}`);
       return data["data"];
     },
     staleTime: Infinity,
@@ -408,24 +411,19 @@ const ManageAttendees = ({ }: ManageAttendeesProps) => {
 
 
   // Set attendees list, total entries, and total pages
-  const attendees = data?.attendees
-  console.log(attendees)
-
+  let attendees = data?.result;
   let attendeeList: attendeeData[] = [];
   attendees?.map(async (attendee: any) => {
-    const userData = await api.get(`/users/${attendee.userId}`)
-    const user = userData.data.data
-    console.log(user)
     attendeeList.push({
-      id: attendee.userId,
-      status: attendee.attendeeStatus,
-      name: `${user.profile?.firstName} ${user.profile?.lastName}`,
-      email: user.email,
-      phone: user.profile?.phoneNumber || "123-456-7890", // TODO: Change to actual phone number
+      id: attendee.id,
+      status: attendee.events[0].attendeeStatus,
+      name: `${attendee.profile?.firstName} ${attendee.profile?.lastName}`,
+      email: attendee.email,
+      phone: attendee.profile?.phoneNumber || "123-456-7890", // TODO: Change to actual phone number
     });
   });
-  const totalNumberofData = attendees?.totalItems;
-  let cursor = attendees?.cursor ? attendees?.cursor : "";
+  const totalNumberofData = data?.totalItems;
+  let cursor = data?.cursor ? data?.cursor : "";
   const totalNumberOfPages = Math.ceil(
     totalNumberofData / paginationModel.pageSize
   );
@@ -456,7 +454,7 @@ const ManageAttendees = ({ }: ManageAttendeesProps) => {
           status="PENDING"
           paginationModel={paginationModel}
           setPaginationModel={setPaginationModel}
-          rows={attendeeList}
+          rows={attendeeList.filter((attendee) => attendee.status === "PENDING")}
           totalNumberofData={totalNumberofData}
         />
       ),
@@ -468,7 +466,7 @@ const ManageAttendees = ({ }: ManageAttendeesProps) => {
           status="CHECKED_IN"
           paginationModel={paginationModel}
           setPaginationModel={setPaginationModel}
-          rows={attendeeList}
+          rows={attendeeList.filter((attendee) => attendee.status === "CHECKED_IN")} 
           totalNumberofData={totalNumberofData}
         />
       ),
@@ -480,7 +478,7 @@ const ManageAttendees = ({ }: ManageAttendeesProps) => {
           status="CHECKED_OUT"
           paginationModel={paginationModel}
           setPaginationModel={setPaginationModel}
-          rows={attendeeList}
+          rows={attendeeList.filter((attendee) => attendee.status === "CHECKED_OUT")}
           totalNumberofData={totalNumberofData}
         />
       ),
@@ -492,7 +490,7 @@ const ManageAttendees = ({ }: ManageAttendeesProps) => {
           status="REMOVED"
           paginationModel={paginationModel}
           setPaginationModel={setPaginationModel}
-          rows={attendeeList}
+          rows={attendeeList.filter((attendee) => attendee.status === "REMOVED")}
           totalNumberofData={totalNumberofData}
         />
       ),
@@ -504,7 +502,7 @@ const ManageAttendees = ({ }: ManageAttendeesProps) => {
           status="CANCELED"
           paginationModel={paginationModel}
           setPaginationModel={setPaginationModel}
-          rows={attendeeList}
+          rows={attendeeList.filter((attendee) => attendee.status === "CANCELED")}
           totalNumberofData={totalNumberofData}
         />
       ),
