@@ -5,23 +5,6 @@ import { User } from "@prisma/client";
 import deleteUser from "../users/controllers";
 import prisma from "../../client";
 
-// const serviceAccount = {
-//   type: process.env.TYPE,
-//   project_id: process.env.PROJECT_ID,
-//   private_key_id: process.env.PRIVATE_KEY_ID,
-//   private_key: process.env.PRIVATE_KEY?.replace(/\\n/g, "\n"),
-//   client_email: process.env.CLIENT_EMAIL,
-//   client_id: process.env.CLIENT_ID,
-//   auth_uri: process.env.AUTH_URI,
-//   token_uri: process.env.TOKEN_URI,
-//   auth_provider_x509_cert_url: process.env.AUTH_PROVIDER_x509_CERT_URL,
-//   client_x509_cert_url: process.env.CLIENT_x509_CERT_URL,
-// };
-
-// admin.initializeApp({
-//   credential: admin.credential.cert(serviceAccount as admin.ServiceAccount),
-// });
-
 /**
  * Attempts the given controller and sends a success code or error code as necessary
  * @param successCode is the success code
@@ -74,7 +57,9 @@ export const deleteUnverifiedUsers = async () => {
         //   },
         // });
         
-        console.log(`Deleted unverified user: ${userData.uid}`);
+        console.log(`Deleted unverified user: ${userData.uid}, ${userData.email}`);
+      } else if (userData.emailVerified) {
+        console.log(`User is verified: ${userData.uid}, ${userData.email}`)
       }
     }
     
