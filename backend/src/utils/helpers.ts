@@ -46,7 +46,7 @@ export const deleteUnverifiedUsers = async () => {
 
       const creationTime = new Date(userRecord.metadata.creationTime!).getTime();
       const timeDifference = currentTime - creationTime;
-      
+
       if (!userData.emailVerified && timeDifference > twentyFourHours) {
         
         // await admin.auth().deleteUser(userData.uid);

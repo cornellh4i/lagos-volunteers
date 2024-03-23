@@ -11,9 +11,9 @@ import { deleteUnverifiedUsers } from "./utils/helpers";
 const app: Application = express();
 
 // Scheduled cron jobs
-cron.schedule("* * * * *", () => {
+cron.schedule("0 0 * * *", () => {
   console.log("running a task every 24 hours");
-  deleteUnverifiedUsers();
+  // deleteUnverifiedUsers();
 });
 
 // Middleware to parse json request bodies
