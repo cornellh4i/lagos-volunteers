@@ -142,19 +142,17 @@ export const authIfAdmin = (
  * @param email is the user's email
  */
 export const setVolunteerCustomClaims = async (email: string) => {
-  const user = getAuth()
-    .getUserByEmail(email)
-    .then((userRecord: UserRecord) => {
-      const customClaims = {
-        admin: false,
-        supervisor: false,
-        volunteer: true,
-      };
-      getAuth().setCustomUserClaims(email, customClaims);
-    })
-    .catch((e: Error) => {
-      console.log("Error creating new user:", e);
-    });
+  try {
+    const user = await getAuth().getUserByEmail(email);
+    const customClaims = {
+      admin: false,
+      supervisor: false,
+      volunteer: true,
+    };
+    await getAuth().setCustomUserClaims(user.uid, customClaims);
+  } catch (e) {
+    console.log("Error creating new user:", e);
+  }
 };
 
 /**
@@ -162,19 +160,19 @@ export const setVolunteerCustomClaims = async (email: string) => {
  * @param email is the user's email
  */
 export const updateFirebaseUserToSupervisor = async (email: string) => {
-  const user = getAuth()
-    .getUserByEmail(email)
-    .then((userRecord: UserRecord) => {
-      const customClaims = {
-        admin: false,
-        supervisor: true,
-        volunteer: true,
-      };
-      getAuth().setCustomUserClaims(userRecord.uid, customClaims);
-    })
-    .catch((e: Error) => {
-      console.log("Error creating new user:", e);
-    });
+  // const user = getAuth()
+  try {
+    const user = await getAuth().getUserByEmail(email);
+    const customClaims = {
+      admin: false,
+      supervisor: true,
+      volunteer: true,
+    };
+    await getAuth().setCustomUserClaims(user.uid, customClaims);
+    const updatedUserRecord = await getAuth().getUserByEmail(email);
+  } catch (e) {
+    console.log("Error creating new user:", e);
+  }
 };
 
 /**
@@ -182,19 +180,17 @@ export const updateFirebaseUserToSupervisor = async (email: string) => {
  * @param email is the user's email
  */
 export const updateFirebaseUserToAdmin = async (email: string) => {
-  const user = getAuth()
-    .getUserByEmail(email)
-    .then((userRecord: UserRecord) => {
-      const customClaims = {
-        admin: true,
-        supervisor: true,
-        volunteer: true,
-      };
-      getAuth().setCustomUserClaims(userRecord.uid, customClaims);
-    })
-    .catch((e: Error) => {
-      console.log("Error creating new user:", e);
-    });
+  try {
+    const user = await getAuth().getUserByEmail(email);
+    const customClaims = {
+      admin: true,
+      supervisor: true,
+      volunteer: true,
+    };
+    await getAuth().setCustomUserClaims(user.uid, customClaims);
+  } catch (e) {
+    console.log("Error creating new user:", e);
+  }
 };
 
 export default {
