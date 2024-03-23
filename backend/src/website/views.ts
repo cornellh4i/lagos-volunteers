@@ -14,7 +14,11 @@ process.env.NODE_ENV === "test"
   : (useAuth = auth as RequestHandler);
 
 userRouter.get("/export/event", useAuth, async (req: Request, res: Response) => {
-  attempt(res, 200, websiteController.getAllEvents());
+  attempt(res, 200, () => {
+    const events = websiteController.getAllEvents();
+    console.log(events)
+    return events
+  });
 });
 
 export default userRouter;
