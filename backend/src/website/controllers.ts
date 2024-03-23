@@ -7,12 +7,14 @@ import prisma from "../../client";
 import { setVolunteerCustomClaims } from "../middleware/auth";
 
 const getAllEvents = async () => {
-  return prisma.event.findMany({
+  const events = await prisma.event.findMany({
     include: {
       attendees: true,
       tags: true
     }
-})
+  })
+  return events
 }
 
-export default {getAllEvents};
+
+export default { getAllEvents };
