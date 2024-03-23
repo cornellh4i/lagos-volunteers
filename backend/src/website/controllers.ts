@@ -6,15 +6,9 @@ import admin from "firebase-admin";
 import prisma from "../../client";
 import { setVolunteerCustomClaims } from "../middleware/auth";
 
-const getAllEvents = async () => {
-  const events = await prisma.event.findMany({
-    include: {
-      attendees: true,
-      tags: true
-    }
-  })
-  return events
+const getAllEnrollments = async () => {
+   return prisma.eventEnrollment.findMany()
 }
 
 
-export default { getAllEvents };
+export default { getAllEnrollments };

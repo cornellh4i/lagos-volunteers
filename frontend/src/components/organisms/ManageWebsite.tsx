@@ -6,9 +6,11 @@ import Card from "../molecules/Card";
 const ManageWebsite = () => {
 
   const handleDownloadDatabase = async () => {
-    await api.get("/website/export/event")
-    // await api.get("website/export/eventenrollment")
-    // await api.get("website/export/eventtags")
+    console.log("button pressed")
+    const events = await api.get("/events/")
+    const enrollments = await api.get("/website/enrollments")
+    console.log(events)
+    console.log(enrollments)
     // await api.get("website/export/permission")
     // await api.get("website/export/profile")
     // await api.get("website/export/user")
