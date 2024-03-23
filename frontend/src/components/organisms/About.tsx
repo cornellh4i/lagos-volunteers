@@ -8,6 +8,7 @@ import ReactHtmlParser from "react-html-parser";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { api } from "@/utils/api";
 import Loading from "../molecules/Loading";
+import Snackbar from "../atoms/Snackbar";
 
 import UploadIcon from "@mui/icons-material/Upload";
 import EditIcon from "@mui/icons-material/Edit";
@@ -55,6 +56,14 @@ type aboutPageData = {
  */
 const About = ({ edit }: AboutProps) => {
 
+  /** State variables for the notification popups */
+  const [successNotificationOpen, setSuccessNotificationOpen] = useState(false);
+  const [errorNotificationOpen, setErrorNotificationOpen] = useState(false);
+
+  /** Handles form errors for time and date validation */
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
+
   /** Tanstack query for fetching the about page data */
   const {
     data: aboutPageDetailsQuery,
@@ -64,7 +73,6 @@ const About = ({ edit }: AboutProps) => {
     queryKey: ["about"],
     queryFn: async () => {
       const { response, data } = await api.get("/about");
-      // console.log(data);
       setValue(data.content);
       return data;
     },
@@ -81,7 +89,7 @@ const About = ({ edit }: AboutProps) => {
   const queryClient = useQueryClient();
 
   /** Tanstack query mutation for changing the about page content */
-  const { mutateAsync: changeAboutContent } = useMutation({
+  const { mutateAsync: updateAboutPage } = useMutation({
     mutationFn: async (variables: { newContent: string }) => {
       const { newContent } = variables;
       const { data } = await api.patch(`/${pageid}/about`, {
@@ -92,14 +100,17 @@ const About = ({ edit }: AboutProps) => {
     retry: false,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["about"] });
+      setSuccessNotificationOpen(true);
+      setSuccessMessage("Successfully Updated Page Content!");
     },
     onError: (e: Error) => {
       console.log(e.message);
+      setErrorNotificationOpen(true);
+      setErrorMessage("Couldn't Update Page Content");
     },
   });
 
   const [value, setValue] = useState(content);
-  // console.log(`value: ${value}`);
   const [openConfirm, setOpenConfirm] = React.useState(false);
   const [editMode, setEditMode] = React.useState(false);
   const lastValueRef = useRef(value);
@@ -110,11 +121,11 @@ const About = ({ edit }: AboutProps) => {
     setEditMode(false);
     setValue(lastValueRef.current);
   };
-  const handleModalClick = () => {
+  const handleModalClick = async () => {
     setEditMode(false);
     handleConfirmClose();
     lastValueRef.current = value;
-    changeAboutContent({ newContent: value });
+    await updateAboutPage({ newContent: value });
   };
 
   if (aboutPageFetchPending) {
@@ -188,6 +199,24 @@ const About = ({ edit }: AboutProps) => {
   } else {
     return (
       <div>
+        {/* Error component */}
+        <Snackbar
+          variety="error"
+          open={errorNotificationOpen}
+          onClose={() => setErrorNotificationOpen(false)}
+        >
+          Error: {errorMessage}
+        </Snackbar>
+
+        {/* Success component */}
+        <Snackbar
+          variety="success"
+          open={successNotificationOpen}
+          onClose={() => setSuccessNotificationOpen(false)}
+        >
+          {successMessage}
+        </Snackbar>
+
         <div className="grid grid-cols-1 sm:grid-cols-6 gap-4">
           <div className="col-start-1 col-span-1 sm:col-start-1 sm:col-span-1">
             <Button
