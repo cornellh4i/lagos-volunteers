@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import EventTemplate from "../templates/EventTemplate";
 import EventCardRegister from "./EventCardRegister";
 import Divider from "@mui/material/Divider";
@@ -19,6 +19,12 @@ import Loading from "@/components/molecules/Loading";
 import { formatDateTimeToUI } from "@/utils/helpers";
 import EventCardCancelConfirmation from "./EventCardCancelConfirmation";
 import EventCardCancel from "./EventCardCancel";
+import {
+  GoogleMap,
+  useLoadScript,
+  MarkerF,
+  InfoWindow,
+} from "@react-google-maps/api";
 
 interface ViewEventDetailsProps {}
 
@@ -194,6 +200,9 @@ const ViewEventDetails = () => {
 
           <div className="font-semibold">{location}</div>
           <div className="bg-red-300 mt-5">Future location widget here</div>
+
+          {/* MAP CODE HERE */}
+          <div id="map" style={{ height: "400px", width: "400px" }}></div>
         </div>
       }
       img={<img className="w-full rounded-2xl" src={image_src} />}

@@ -176,7 +176,7 @@ const ManageUsers = ({}: ManageUsersProps) => {
     if (cursor !== "") {
       const { response, data } = await api.get(
         //look at response
-        `/users?limit=${paginationModel.pageSize}&after=${cursor}`
+        `/users?limit=${paginationModel.pageSize}&after=${cursor}&sort=${sortModel[0].field}:${sortModel[0].sort}`
       );
       return data;
     } else {
@@ -217,7 +217,9 @@ const ManageUsers = ({}: ManageUsersProps) => {
   // Refetch table data when sort model changes
   useEffect(() => {
     // invalidate the cache query to refetch the data
-    // queryClient.invalidateQueries({ queryKey: ["users", paginationModel.page]});
+    queryClient.invalidateQueries({
+      queryKey: ["users", paginationModel.page],
+    });
     // reset the cursor to the default value
     cursor = "";
     // reset the page to 0
