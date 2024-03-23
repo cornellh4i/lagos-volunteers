@@ -6,12 +6,14 @@ import swaggerUI from "swagger-ui-express";
 import spec from "../api-spec.json";
 import cors from "cors";
 import cron from "node-cron";
+import { deleteUnverifiedUsers } from "./utils/helpers";
 
 const app: Application = express();
 
 // Scheduled cron jobs
-cron.schedule("*/1 * * * *", () => {
-  console.log("running a task every minute");
+cron.schedule("0 0 * * *", () => {
+  console.log("running a task every 24 hours");
+  // deleteUnverifiedUsers();
 });
 
 // Middleware to parse json request bodies
