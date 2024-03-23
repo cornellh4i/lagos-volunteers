@@ -37,6 +37,7 @@
     "react-hook-form": "^7.50.1",
     "react-html-parser": "^2.0.2",
     "react-quill": "^2.0.0",
+    "react-use-websocket": "^4.8.1",
     "typescript": "^5.3.3"
   },
   "devDependencies": {
