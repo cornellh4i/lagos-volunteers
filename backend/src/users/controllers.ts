@@ -6,6 +6,20 @@ import admin from "firebase-admin";
 import prisma from "../../client";
 import { setVolunteerCustomClaims } from "../middleware/auth";
 
+import fs from 'fs'; // importing built-in file system
+
+/**
+ * Creates an object utf8 that can encode the buffer and convert to string.
+ * Creates an object for each html file to return a string.
+ */
+const utf8: BufferEncoding = 'utf8';
+const htmlRegCancel: string = fs.readFileSync('Registration_Cancellation.html', utf8);
+const htmlRegSuccess: string = fs.readFileSync('Registration_Successful.html', utf8);
+const htmlCertApprove: string = fs.readFileSync('Certificate_Approval.html', utf8);
+const htmlBlacklist: string = fs.readFileSync('Blacklisted.html', utf8);
+const htmlVolunSuper: string = fs.readFileSync('Volunteer_Supervisor.html', utf8);
+const htmlSuperAdmin: string = fs.readFileSync('Supervisor_Admin.html', utf8);
+
 /**
  * Creates a new user
  * Parameters include - all types are of prisma types declared in the schema:
