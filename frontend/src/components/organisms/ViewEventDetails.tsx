@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import EventTemplate from "../templates/EventTemplate";
 import EventCardRegister from "./EventCardRegister";
 import Divider from "@mui/material/Divider";
@@ -19,6 +19,8 @@ import Loading from "@/components/molecules/Loading";
 import { formatDateTimeToUI } from "@/utils/helpers";
 import EventCardCancelConfirmation from "./EventCardCancelConfirmation";
 import EventCardCancel from "./EventCardCancel";
+import { GoogleMap, useJsApiLoader, Marker } from "@react-google-maps/api";
+import { setKey, setLanguage, setRegion, fromAddress } from "react-geocode";
 
 interface ViewEventDetailsProps {}
 
@@ -76,6 +78,44 @@ const ViewEventDetails = () => {
   if (isLoading) return <Loading />;
 
   const dateHeader = formatDateTimeToUI(datetime);
+
+  setKey(process.env.NEXT_PUBLIC_GOOGLE_API_KEY!);
+  setLanguage("en");
+  setRegion("es");
+
+  const { isLoaded } = useJsApiLoader({
+    id: "google-map-script",
+    googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_API_KEY!,
+  });
+
+  const containerStyle = {
+    width: "100%",
+    height: "400px",
+    margin: "auto",
+  };
+
+  const [map, setMap] = React.useState<google.maps.Map | null>(null);
+  const [center, setCenter] = useState<{ lat: number; lng: number }>({
+    lat: 0,
+    lng: 0,
+  });
+
+  fromAddress(eventData.location)
+    .then(({ results }) => {
+      const { lat, lng } = results[0].geometry.location;
+      setCenter({ lat, lng });
+    })
+    .catch(console.error);
+
+  const onLoad = (map: google.maps.Map): void => {
+    setMap(map);
+  };
+
+  const onUnmount = (): void => {
+    setMap(null);
+  };
+
+  if (!isLoaded) return <div>Map Loading</div>;
 
   return (
     <EventTemplate
@@ -193,7 +233,16 @@ const ViewEventDetails = () => {
           <div className="mt-5"></div>
 
           <div className="font-semibold">{location}</div>
-          <div className="bg-red-300 mt-5">Future location widget here</div>
+
+          <GoogleMap
+            mapContainerStyle={containerStyle}
+            center={center}
+            zoom={12}
+            onLoad={onLoad}
+            onUnmount={onUnmount}
+          >
+            <Marker position={center} />
+          </GoogleMap>
         </div>
       }
       img={<img className="w-full rounded-2xl" src={image_src} />}
