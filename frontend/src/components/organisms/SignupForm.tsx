@@ -8,7 +8,10 @@ import { BASE_URL } from "@/utils/constants";
 import { useForm, SubmitHandler } from "react-hook-form";
 import Alert from "../atoms/Alert";
 import { useRouter } from "next/router";
-import { useSignInWithEmailAndPassword } from "react-firebase-hooks/auth";
+import {
+  useSignInWithEmailAndPassword,
+  useSendEmailVerification,
+} from "react-firebase-hooks/auth";
 import Snackbar from "../atoms/Snackbar";
 import { api } from "@/utils/api";
 import { useMutation } from "@tanstack/react-query";
@@ -26,6 +29,8 @@ const SignupForm = () => {
 
   /** Firebase hooks */
   const [signInWithEmailAndPassword] = useSignInWithEmailAndPassword(auth);
+  const [sendEmailVerification, sending, emailError] =
+    useSendEmailVerification(auth);
 
   /** React hook form */
   const {
@@ -94,11 +99,13 @@ const SignupForm = () => {
 
       // Log in
       const { email, password } = data;
+      const emailSent = await sendEmailVerification();
       const signedInUser = await signInWithEmailAndPassword(email, password);
+       // Send email verification
 
       // Change URL
       if (signedInUser?.user) {
-        router.push("/events/view");
+        router.push("/verify");
       }
     } catch (error: any) {
       setNotifOpen(true);
