@@ -11,6 +11,19 @@ import userController from "../users/controllers";
 import prisma from "../../client";
 import sgMail from "@sendgrid/mail";
 import { readFile } from "fs/promises";
+import fs from 'fs'; // importing built-in file system
+
+/**
+ * Creates an object utf8 that can encode the buffer and convert to string.
+ * Creates an object for each html file to return a string.
+ */
+const utf8: BufferEncoding = 'utf8';
+const htmlRegCancel: string = fs.readFileSync('Registration_Cancellation.html', utf8);
+const htmlRegSuccess: string = fs.readFileSync('Registration_Successful.html', utf8);
+const htmlCertApprove: string = fs.readFileSync('Certificate_Approval.html', utf8);
+const htmlBlacklist: string = fs.readFileSync('Blacklisted.html', utf8);
+const htmlVolunSuper: string = fs.readFileSync('Volunteer_Supervisor.html', utf8);
+const htmlSuperAdmin: string = fs.readFileSync('Supervisor_Admin.html', utf8);
 
 /**
  * Creates a new event and assign owner to it.
@@ -358,7 +371,7 @@ const deleteAttendee = async (
   var userEmail = user?.email as string;
 
   // sets the email message
-  const emailHtml = "USER REMOVED FROM THIS EVENT";
+  const emailHtml = "<b>USER</b> REMOVED FROM THIS EVENT";
   if (process.env.NODE_ENV != "test") {
     await sendEmail(userEmail, "Your email subject", emailHtml);
   }
