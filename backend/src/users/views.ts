@@ -152,6 +152,33 @@ userRouter.get(
 );
 
 userRouter.get(
+  "/profiles",
+  useAuth,
+  async (req: Request, res: Response) => {
+    // #swagger.tags = ['Users']
+    attempt(res, 200, () => userController.getAllUserProfiles());
+  }
+);
+
+userRouter.get(
+  "/permissions",
+  useAuth,
+  async (req: Request, res: Response) => {
+    // #swagger.tags = ['Users']
+    attempt(res, 200, () => userController.getAllUserPermissions());
+  }
+);
+
+userRouter.get(
+  "/preferences",
+  useAuth,
+  async (req: Request, res: Response) => {
+    // #swagger.tags = ['Users']
+    attempt(res, 200, () => userController.getAllUserPreferences());
+  }
+);
+
+userRouter.get(
   "/:userid/role",
   useAuth,
   async (req: Request, res: Response) => {

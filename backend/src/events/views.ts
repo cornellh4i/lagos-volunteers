@@ -144,4 +144,8 @@ eventRouter.patch(
   }
 );
 
+eventRouter.get("/enrollments", async (req: Request, res: Response) => {
+  attempt(res, 200, () => eventController.getAllEnrollments());
+});
+
 export default eventRouter;
