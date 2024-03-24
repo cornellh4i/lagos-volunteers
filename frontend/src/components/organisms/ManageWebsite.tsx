@@ -43,7 +43,8 @@ const ManageWebsite = () => {
     const eventsData = await api.get("/events/")
     const events = eventsData.data.data.result
 
-    const enrollmentsData = await api.get("/events/enrollments") // blob
+    const enrollmentsData = await api.get("/events/enrollments") // new endpoint
+    const enrollments = enrollmentsData.data.data
 
     const profilesData = await api.get("/users/profiles") // new endpoint
     const profiles = profilesData.data.data
@@ -58,7 +59,7 @@ const ManageWebsite = () => {
     const preferences = preferencesData.data.data
 
     // Combine all data arrays
-    const allData = [events, users, preferences];
+    const allData = [events, enrollments, users, preferences];
     const allCSVs = []
 
     // Download data for each array
@@ -67,7 +68,7 @@ const ManageWebsite = () => {
       allCSVs.push(csv)
     }
 
-    const bigCSV = createCSVFromArray(allCSVs);
+    createCSVFromArray(allCSVs);
   };
 
   return (

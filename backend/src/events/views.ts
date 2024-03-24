@@ -87,6 +87,10 @@ eventRouter.get("/past", async (req: Request, res: Response) => {
   attempt(res, 200, eventController.getPastEvents);
 });
 
+eventRouter.get("/enrollments", async (req: Request, res: Response) => {
+  attempt(res, 200, () => eventController.getAllEnrollments());
+});
+
 eventRouter.get("/:eventid", async (req: Request, res: Response) => {
   attempt(res, 200, () => eventController.getEvent(req.params.eventid));
 });
@@ -143,9 +147,5 @@ eventRouter.patch(
     );
   }
 );
-
-eventRouter.get("/enrollments", async (req: Request, res: Response) => {
-  attempt(res, 200, () => eventController.getAllEnrollments());
-});
 
 export default eventRouter;
