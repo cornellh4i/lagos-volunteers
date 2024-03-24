@@ -6,5 +6,8 @@
     "setup": "(cd backend && yarn run setup) && (cd frontend && yarn run setup)",
     "test": "cd backend && yarn run test",
     "start": "(cd backend && yarn run start) & (cd frontend && yarn run start)"
+  },
+  "dependencies": {
+    "react-json-csv-convert": "^1.1.1"
   }
 }

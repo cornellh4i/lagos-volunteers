@@ -432,6 +432,10 @@ const confirmUser = async (eventID: string, userID: string) => {
   });
 };
 
+const getAllEnrollments = async () => {
+  return prisma.eventEnrollment.findMany()
+};
+
 export default {
   createEvent,
   deleteEvent,
@@ -447,4 +451,5 @@ export default {
   updateEventStatus,
   updateEventOwner,
   confirmUser,
+  getAllEnrollments
 };
