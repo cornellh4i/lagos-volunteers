@@ -301,7 +301,7 @@ const getAttendees = async (eventID: string, userID: string) => {
  * @returns promise with user or error
  */
 const addAttendee = async (eventID: string, userID: string) => {
-  // grabs the user and their email for SendGrid fucntionality
+  // grabs the user and their email for SendGrid functionality
   const user = await userController.getUserByID(userID);
   const userEmail = user?.email as string;
 
@@ -366,12 +366,12 @@ const deleteAttendee = async (
   userID: string,
   cancelationMessage: string
 ) => {
-  // grabs the user and their email for SendGrid fucntionality
+  // grabs the user and their email for SendGrid functionality
   const user = await userController.getUserByID(userID);
   var userEmail = user?.email as string;
 
   // sets the email message
-  const emailHtml = "<b>USER</b> REMOVED FROM THIS EVENT";
+  const emailHtml = "<b>htmlRegCancel</b>";
   if (process.env.NODE_ENV != "test") {
     await sendEmail(userEmail, "Your email subject", emailHtml);
   }
