@@ -4,15 +4,18 @@ import sgMail from "@sendgrid/mail";
 import { WebSocketServer } from "ws";
 
 // WebSocket server
-const wss = new WebSocketServer({ port: 8080 });
-wss.on("connection", function connection(ws) {
+export const wss = new WebSocketServer({ port: 8080 });
+wss.on("connection", (ws) => {
+  // Error handling
   ws.on("error", console.error);
 
-  ws.on("message", function message(data) {
+  // What happens when the server receives data
+  ws.on("message", (data) => {
     console.log("received: %s", data);
     ws.send("server received your message!");
   });
 
+  // Default message to send when connected
   ws.send("something");
 });
 
