@@ -100,7 +100,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     "/login",
     "/signup",
     "/password/forgot",
-    "/password/reset/*",
+    "/password/reset/",
   ];
 
   // Paths that can be accessed freely when not logged in
@@ -108,16 +108,21 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     "/login",
     "/signup",
     "/password/forgot",
-    "/password/reset/*",
+    "/password/reset",
     "/_404",
     "/_error",
   ];
 
+  const isResetPage = (path: string) => {
+    return path.startsWith("/password");
+  };
+
   const router = useRouter();
   useEffect(() => {
     const path = router.asPath;
+    
     const unsubscribe = onAuthStateChanged(auth, (user) => {
-      if (!user && !publicPaths.includes(path)) {
+      if (!user && !publicPaths.includes(path) && !isResetPage(path)) {
         router.replace("/login");
         setIsAuthenticated(false);
       } else if (user && authPaths.includes(path)) {
