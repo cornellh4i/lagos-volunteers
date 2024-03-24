@@ -16,6 +16,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import Loading from "@/components/molecules/Loading";
 import Card from "../molecules/Card";
 import { formatRoleOrStatus } from "@/utils/helpers";
+import { Console } from "console";
 
 interface ManageUsersProps {}
 
@@ -173,6 +174,20 @@ const ManageUsers = ({}: ManageUsersProps) => {
 
   /** If a valid cursor is passed, fetch the next batch of users */
   const fetchUsersBatch = async (cursor?: string) => {
+    // //(I TESTED THIS OUT DID NOT WORK - David)
+    // let url = "/users?limit=${paginationModel.pageSize}";
+    // if (cursor === "") {
+    //   url += "&after=${cursor}";
+    // } else {
+    //   console.log("ERROR");
+    // }
+    // if (sortModel[0]) {
+    //   url += "&sort=${sortModel[0].field}:${sortModel[0].sort}";
+    // }
+    // const { response, data } = await api.get(url);
+    // return data;
+
+    //UNCOMMENT GPT REPLACEMENT
     if (cursor !== "") {
       const { response, data } = await api.get(
         //look at response
@@ -244,14 +259,15 @@ const ManageUsers = ({}: ManageUsersProps) => {
     }
     console.log(sortModel);
     console.log(paginationModel);
+    console.log(cursor);
   }, [
     data,
     queryClient,
     cursor,
     totalNumberofData,
     paginationModel.page,
-    // sortModel[0],
-  ]); //whatever changes you make also consider useEffect
+    //sortModel[0],
+  ]);
 
   const tabs = [
     {

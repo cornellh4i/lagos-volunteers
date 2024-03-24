@@ -28,10 +28,7 @@ const Table = ({
   setPaginationModel,
   sortModel,
   setSortModel,
-}: // sortModel,
-// handleSortModelChange,
-// loading,
-TableProps) => {
+}: TableProps) => {
   const handleSortModelChange = (newModel: GridSortModel) => {
     setSortModel(newModel);
   };
