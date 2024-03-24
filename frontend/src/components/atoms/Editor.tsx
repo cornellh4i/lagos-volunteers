@@ -1,7 +1,27 @@
 "use client";
-
-import { MDXEditor, MDXEditorMethods, headingsPlugin } from "@mdxeditor/editor";
+import "@mdxeditor/editor/style.css";
 import { FC } from "react";
+
+// Basic editor
+import {
+  MDXEditor,
+  MDXEditorMethods,
+  headingsPlugin,
+  listsPlugin,
+  linkPlugin,
+  markdownShortcutPlugin,
+} from "@mdxeditor/editor";
+
+// Toolbar
+import {
+  Separator,
+  UndoRedo,
+  BoldItalicUnderlineToggles,
+  ListsToggle,
+  BlockTypeSelect,
+  CreateLink,
+  toolbarPlugin,
+} from "@mdxeditor/editor";
 
 interface EditorProps {
   markdown: string;
@@ -17,7 +37,27 @@ const Editor: FC<EditorProps> = ({ markdown, editorRef }) => {
     <MDXEditor
       ref={editorRef}
       markdown={markdown}
-      plugins={[headingsPlugin()]}
+      plugins={[
+        headingsPlugin(),
+        listsPlugin(),
+        markdownShortcutPlugin(),
+        toolbarPlugin({
+          toolbarContents: () => (
+            <>
+              {" "}
+              <UndoRedo />
+              <Separator />
+              <BoldItalicUnderlineToggles />
+              <Separator />
+              <ListsToggle />
+              <Separator />
+              <BlockTypeSelect />
+              <Separator />
+              <CreateLink />
+            </>
+          ),
+        }),
+      ]}
     />
   );
 };
