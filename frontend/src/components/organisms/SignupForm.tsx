@@ -86,7 +86,7 @@ const SignupForm = () => {
         const errorData = await response.json();
         throw new Error(errorData.error);
       }
-      await sendEmailVerification();
+
       return response;
     },
     retry: false,
@@ -96,15 +96,22 @@ const SignupForm = () => {
   const handleSubmitUser: SubmitHandler<FormValues> = async (data, event) => {
     try {
       // Create a new user
-      await mutateAsync(data);
+      const res = await mutateAsync(data);
 
       // Log in
       const { email, password } = data;
-      const signedInUser = await signInWithEmailAndPassword(email, password);
-
-      // Change URL
-      if (signedInUser?.user) {
-        router.push("/verify");
+      if (res.ok) {
+        const signedInUser = await signInWithEmailAndPassword(email, password);
+        if (signedInUser?.user) {
+          await sendEmailVerification();
+          router.push("/verify");
+        }
+      } else {
+        // Handle the case when the response is not ok
+        setNotifOpen(true);
+        setErrorMessage(
+          "Something went wrong trying to create your account. Please try again."
+        );
       }
     } catch (error: any) {
       setNotifOpen(true);
@@ -118,8 +125,7 @@ const SignupForm = () => {
       <Snackbar
         variety="error"
         open={notifOpen}
-        onClose={() => setNotifOpen(false)}
-      >
+        onClose={() => setNotifOpen(false)}>
         Error: {handleErrors(errorMessage)}
       </Snackbar>
 
@@ -182,8 +188,7 @@ const SignupForm = () => {
           <div>Have an account?&nbsp;</div>
           <Link
             href="/login"
-            className="text-primary-200 hover:underline no-underline"
-          >
+            className="text-primary-200 hover:underline no-underline">
             Log in
           </Link>
         </div>

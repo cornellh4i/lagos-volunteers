@@ -143,7 +143,6 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     return unsubscribe;
   }, [user, router, loading]);
 
-  console.log(user);
   if (loading || !isAuthenticated) {
     return (
       <div>
