@@ -256,19 +256,4 @@ userRouter.patch(
   }
 );
 
-// userRouter.get("/about", useAuth, async (req: Request, res: Response) => {
-//   attempt(res, 200, userController.getAbout);
-// });
-
-// userRouter.put(
-//   "/:pageid/about",
-//   useAuth,
-//   async (req: Request, res: Response) => {
-//     attempt(res, 200, async () => {
-//       const { newContent } = req.body;
-//       userController.editAbout(req.params.pageid, newContent);
-//     });
-//   }
-// );
-
 export default userRouter;
