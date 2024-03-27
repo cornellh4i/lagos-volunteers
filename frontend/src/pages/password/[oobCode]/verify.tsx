@@ -16,7 +16,6 @@ const Verify = () => {
   const [success, setSuccess] = useState(false);
 
   const { oobCode } = router.query as { oobCode: string };
-  console.log(oobCode);
 
   const {
     isLoading,
