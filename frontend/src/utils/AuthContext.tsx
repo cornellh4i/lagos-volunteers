@@ -128,7 +128,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   // Paths that can be accessed only by admins
   // TODO: /manage is not an actual path yet; replace this with whatever is the
   // eventual path for the manage website page
-  const adminPaths = ["/manage", "/users/view", "/about"];
+  const adminPaths = ["/manage", "/users/view"];
 
   const setUserRoleBasedOnClaims = (claims: any) => {
     if (claims.admin) {
