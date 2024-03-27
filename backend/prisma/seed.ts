@@ -47,6 +47,72 @@ async function createPoolOfRandomUsers(pool: number) {
     });
     userDataSeed.push(createdUser);
   }
+
+  // Create users with a an email that can be verified:
+
+  // Admin
+  const admin = await prisma.user.create({
+    data: {
+      email: "lagosfoodbankdev@gmail.com",
+      role: "ADMIN",
+      profile: {
+        create: {
+          firstName: "Lagos",
+          lastName: "Food Bank",
+          nickname: "LFB",
+          phoneNumber: "08012345678",
+        },
+      },
+      preferences: {
+        create: {
+          sendPromotions: true,
+        },
+      },
+    },
+  });
+
+  // Supervisor 
+  const supervisor = await prisma.user.create({
+    data: {
+      email: "olumidetest@gmail.com",
+      role: "SUPERVISOR",
+      profile: {
+        create: {
+          firstName: "Olumide",
+          lastName: "Ade",
+          nickname: "Olu",
+          phoneNumber: "08012345678",
+        },
+      },
+      preferences: {
+        create: {
+          sendPromotions: true,
+        },
+      },
+    },
+  });
+
+  // Volunteer
+  const volunteer = await prisma.user.create({
+    data: {
+      email: "lagosfoodbankvolunteer@gmail.com",
+      role: "VOLUNTEER",
+      profile: {
+        create: {
+          firstName: "LFB",
+          lastName: "Volunteer",
+          nickname: "Volunteer",
+          phoneNumber: "08012345678",
+        },
+      },
+      preferences: {
+        create: {
+          sendPromotions: true,
+        },
+      },
+    },
+  });
+  userDataSeed.push(admin, supervisor, volunteer);
   console.log("Done creating pool of random users");
 }
 
