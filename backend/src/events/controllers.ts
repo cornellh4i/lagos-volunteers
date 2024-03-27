@@ -12,6 +12,22 @@ import prisma from "../../client";
 import sgMail from "@sendgrid/mail";
 import { readFile } from "fs/promises";
 
+
+/**
+ * Creates an object utf8 that can encode the buffer and convert to string.
+ * Creates an object for each html file to return a string.
+ */
+
+const htmlRegCancel = "./src/emails/Registration_Cancellation.html"
+const htmlRegSuccess = "./src/emails/Registration_Successful.html"
+const htmlCertApprove = "./src/emails/Certificate_Approval.html"
+const htmlBlacklist = "./src/emails/Blacklisted.html"
+const htmlVolunSuper = "./src/emails/Volunteer_Supervisor.html"
+const htmlSuperAdmin = "./src/emails/Supervisor_Admin.html"
+const htmlAttendConfirm = "./src/emails/Attendance_Confirmation.html"
+
+
+
 /**
  * Creates a new event and assign owner to it.
  * @param eventDTO contains the ownerID and the event body
@@ -288,15 +304,15 @@ const getAttendees = async (eventID: string, userID: string) => {
  * @returns promise with user or error
  */
 const addAttendee = async (eventID: string, userID: string) => {
-  // grabs the user and their email for SendGrid fucntionality
+  // grabs the user and their email for SendGrid functionality
   const user = await userController.getUserByID(userID);
   const userEmail = user?.email as string;
 
   const subject = "Your email subject here";
-  const path = "./src/emails/test2.html";
+  // const path = "./src/emails/test2.html";
 
   if (process.env.NODE_ENV !== "test") {
-    await sendEmail(userEmail, subject, path);
+    await sendEmail(userEmail, subject, htmlRegSuccess);
   }
   return await prisma.eventEnrollment.create({
     data: {
@@ -353,14 +369,14 @@ const deleteAttendee = async (
   userID: string,
   cancelationMessage: string
 ) => {
-  // grabs the user and their email for SendGrid fucntionality
+  // grabs the user and their email for SendGrid functionality
   const user = await userController.getUserByID(userID);
   var userEmail = user?.email as string;
 
   // sets the email message
-  const emailHtml = "USER REMOVED FROM THIS EVENT";
+  // const emailHtml = "<b>htmlRegCancel</b>";
   if (process.env.NODE_ENV != "test") {
-    await sendEmail(userEmail, "Your email subject", emailHtml);
+    await sendEmail(userEmail, "Your email subject", htmlRegCancel);
   }
 
   // update db
@@ -419,6 +435,12 @@ const updateEventOwner = async (eventID: string, ownerID: string) => {
  * @returns promise with event or error
  */
 const confirmUser = async (eventID: string, userID: string) => {
+  const user = await userController.getUserByID(userID);
+  var userEmail = user?.email as string;
+  if (process.env.NODE_ENV != "test") {
+    await sendEmail(userEmail, "Your email subject", htmlAttendConfirm);
+  }
+
   return await prisma.eventEnrollment.update({
     where: {
       userId_eventId: {

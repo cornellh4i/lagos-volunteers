@@ -6,6 +6,15 @@ import admin from "firebase-admin";
 import prisma from "../../client";
 import { setVolunteerCustomClaims } from "../middleware/auth";
 
+const htmlRegCancel = "./src/emails/Registration_Cancellation.html"
+const htmlRegSuccess = "./src/emails/Registration_Successful.html"
+const htmlCertApprove = "./src/emails/Certificate_Approval.html"
+const htmlBlacklist = "./src/emails/Blacklisted.html"
+const htmlVolunSuper = "./src/emails/Volunteer_Supervisor.html"
+const htmlSuperAdmin = "./src/emails/Supervisor_Admin.html"
+const htmlAttendConfirm = "./src/emails/Attendance_Confirmation.html"
+
+
 /**
  * Creates a new user
  * Parameters include - all types are of prisma types declared in the schema:
@@ -504,6 +513,16 @@ const editStatus = async (userId: string, status: string) => {
  * @returns promise with user or error
  */
 const editRole = async (userId: string, role: string) => {
+  const user = await prisma.user.findUnique({
+    where: {
+      id: userId,
+    },
+    select: {
+      role: true,
+    },
+  });
+  const prevUserRole = user?.role;
+  console.log(user?.role)
   return prisma.user.update({
     where: {
       id: userId,
