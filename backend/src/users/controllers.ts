@@ -6,19 +6,14 @@ import admin from "firebase-admin";
 import prisma from "../../client";
 import { setVolunteerCustomClaims } from "../middleware/auth";
 
-import fs from 'fs'; // importing built-in file system
+const htmlRegCancel = "./src/emails/Registration_Cancellation.html"
+const htmlRegSuccess = "./src/emails/Registration_Successful.html"
+const htmlCertApprove = "./src/emails/Certificate_Approval.html"
+const htmlBlacklist = "./src/emails/Blacklisted.html"
+const htmlVolunSuper = "./src/emails/Volunteer_Supervisor.html"
+const htmlSuperAdmin = "./src/emails/Supervisor_Admin.html"
+const htmlAttendConfirm = "./src/emails/Attendance_Confirmation.html"
 
-/**
- * Creates an object utf8 that can encode the buffer and convert to string.
- * Creates an object for each html file to return a string.
- */
-const utf8: BufferEncoding = 'utf8';
-const htmlRegCancel: string = fs.readFileSync('Registration_Cancellation.html', utf8);
-const htmlRegSuccess: string = fs.readFileSync('Registration_Successful.html', utf8);
-const htmlCertApprove: string = fs.readFileSync('Certificate_Approval.html', utf8);
-const htmlBlacklist: string = fs.readFileSync('Blacklisted.html', utf8);
-const htmlVolunSuper: string = fs.readFileSync('Volunteer_Supervisor.html', utf8);
-const htmlSuperAdmin: string = fs.readFileSync('Supervisor_Admin.html', utf8);
 
 /**
  * Creates a new user
@@ -518,6 +513,16 @@ const editStatus = async (userId: string, status: string) => {
  * @returns promise with user or error
  */
 const editRole = async (userId: string, role: string) => {
+  const user = await prisma.user.findUnique({
+    where: {
+      id: userId,
+    },
+    select: {
+      role: true,
+    },
+  });
+  const prevUserRole = user?.role;
+  console.log(user?.role)
   return prisma.user.update({
     where: {
       id: userId,
