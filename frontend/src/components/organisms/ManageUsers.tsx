@@ -174,20 +174,6 @@ const ManageUsers = ({}: ManageUsersProps) => {
 
   /** If a valid cursor is passed, fetch the next batch of users */
   const fetchUsersBatch = async (cursor?: string) => {
-    // //(I TESTED THIS OUT DID NOT WORK - David)
-    // let url = "/users?limit=${paginationModel.pageSize}";
-    // if (cursor === "") {
-    //   url += "&after=${cursor}";
-    // } else {
-    //   console.log("ERROR");
-    // }
-    // if (sortModel[0]) {
-    //   url += "&sort=${sortModel[0].field}:${sortModel[0].sort}";
-    // }
-    // const { response, data } = await api.get(url);
-    // return data;
-
-    //UNCOMMENT GPT REPLACEMENT
     if (cursor !== "") {
       const { response, data } = await api.get(
         //look at response
@@ -233,19 +219,25 @@ const ManageUsers = ({}: ManageUsersProps) => {
   useEffect(() => {
     // invalidate the cache query to refetch the data
     queryClient.invalidateQueries({
-      queryKey: ["users", paginationModel.page],
+      queryKey: ["users", paginationModel],
     });
     // reset the cursor to the default value
     cursor = "";
     // reset the page to 0
     setPaginationModel((prev) => ({ ...prev, page: 0 }));
-    // refetch the data
 
+    console.log(sortModel);
+    console.log(paginationModel);
+    console.log(cursor);
+
+    // refetch the data
     const refetchData = async () => {
       await refetch();
     };
     refetchData();
-  }, [sortModel[0]]);
+  }, [sortModel[0]["sort"]]);
+
+  console.log(rows);
 
   // Prefetch the next page
   const queryClient = useQueryClient();
@@ -257,17 +249,7 @@ const ManageUsers = ({}: ManageUsersProps) => {
         staleTime: Infinity,
       });
     }
-    console.log(sortModel);
-    console.log(paginationModel);
-    console.log(cursor);
-  }, [
-    data,
-    queryClient,
-    cursor,
-    totalNumberofData,
-    paginationModel.page,
-    //sortModel[0],
-  ]);
+  }, [data, queryClient, cursor, totalNumberofData, paginationModel.page]);
 
   const tabs = [
     {

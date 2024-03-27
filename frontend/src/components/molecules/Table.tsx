@@ -49,6 +49,7 @@ const Table = ({
           sortingMode="server"
           sortModel={sortModel}
           onSortModelChange={handleSortModelChange}
+          sortingOrder={["desc", "asc"]}
         />
       )}
     </div>
