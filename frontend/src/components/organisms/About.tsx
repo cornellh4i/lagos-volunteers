@@ -72,9 +72,9 @@ const About = ({ edit }: AboutProps) => {
   } = useQuery({
     queryKey: ["about"],
     queryFn: async () => {
-      const { response, data } = await api.get("/about");
-      setValue(data.content);
-      return data;
+      const { data } = await api.get("/about");
+      setValue(data["data"].content);
+      return data["data"];
     },
   });
 
@@ -92,7 +92,7 @@ const About = ({ edit }: AboutProps) => {
   const { mutateAsync: updateAboutPage } = useMutation({
     mutationFn: async (variables: { newContent: string }) => {
       const { newContent } = variables;
-      const { data } = await api.patch(`/${pageid}/about`, {
+      const { data } = await api.patch(`/about/${pageid}`, {
         newContent: newContent,
       });
       return data;
