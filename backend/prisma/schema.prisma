@@ -109,6 +109,7 @@ model EventEnrollment {
   workedHours        Int?     @default(0)
   canceled           Boolean? @default(false)
   cancelationMessage String?
+  attendeeStatus     EnrollmentStatus @default(PENDING)
 
   @@id([userId, eventId])
 }
@@ -135,4 +136,12 @@ enum EventStatus {
 enum EventMode {
   VIRTUAL
   IN_PERSON
+}
+
+enum EnrollmentStatus {
+  PENDING
+  CHECKED_IN
+  CHECKED_OUT
+  REMOVED
+  CANCELED
 }

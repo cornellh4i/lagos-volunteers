@@ -12,7 +12,7 @@ import Select from "../atoms/Select";
 import DatePicker from "../atoms/DatePicker";
 import TimePicker from "../atoms/TimePicker";
 import Snackbar from "../atoms/Snackbar";
-import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
+import { useQuery, useQueryClient, useMutation, QueryClient } from "@tanstack/react-query";
 import { convertToISO, fetchUserIdFromDatabase } from "@/utils/helpers";
 import { useAuth } from "@/utils/AuthContext";
 import router from "next/router";
@@ -21,20 +21,23 @@ import { useRouter } from "next/router";
 import Loading from "../molecules/Loading";
 import Card from "../molecules/Card";
 
+//Initial push
+
 type attendeeData = {
   id: number;
-  status: "pending" | "checked in" | "checked out" | "removed" | "canceled";
+  status: "PENDING" | "CHECKED_IN" | "CHECKED_OUT" | "REMOVED" | "CANCELED";
   name: string;
   email: string;
   phone: string;
 };
 
 interface attendeeTableProps {
-  status: "pending" | "checked in" | "checked out" | "removed" | "canceled";
+  status: "PENDING" | "CHECKED_IN" | "CHECKED_OUT" | "REMOVED" | "CANCELED";
   rows: attendeeData[];
   totalNumberofData: number;
   paginationModel: GridPaginationModel;
   setPaginationModel: React.Dispatch<React.SetStateAction<GridPaginationModel>>;
+  eventId: string;
 }
 
 type FormValues = {
@@ -44,7 +47,49 @@ type FormValues = {
   endTime: string;
 };
 
-interface ManageAttendeesProps {}
+interface ManageAttendeesProps { }
+
+
+const AttendeesTable = ({
+  status,
+  setPaginationModel,
+  paginationModel,
+  rows,
+  totalNumberofData,
+  eventId,
+}: attendeeTableProps) => {
+  const queryClient = useQueryClient();
+
+  const { mutateAsync, isPending, isError, isSuccess } = useMutation({
+    mutationFn: async (variables: {userId: string, newValue: string}) => {
+      const {userId, newValue} = variables;
+      const { response } = await api.put(`/events/${eventId}/users/${userId}`, {
+        status: newValue // Only update the status field
+      });
+      return response;
+    },
+    retry: false,
+    onSuccess: () => {
+      console.log("success");
+      queryClient.invalidateQueries({ queryKey: ["event", eventId]});
+    },
+  });
+
+const handleStatusChange = async (userId: string, newValue: string) => {
+  if (!eventId) {
+    console.error("Event ID not found in URL");
+    return;
+  }
+
+  try {
+    await mutateAsync({userId, newValue})
+  } catch (error) {
+    console.error("Error updating user status:", error);
+  }
+};
+
+
+
 
 const eventColumns: GridColDef[] = [
   {
@@ -82,30 +127,24 @@ const eventColumns: GridColDef[] = [
     renderHeader: (params) => (
       <div style={{ fontWeight: "bold" }}>{params.colDef.headerName}</div>
     ),
-    renderCell: () => (
+    renderCell: (params) => (
       <div className="w-full">
         <Select
           size="small"
-          value="PENDING"
-          onChange={(event: any) => console.log(event.target.value)}
+          value= {params.row.status}
+          onChange={(event: any) => handleStatusChange(params.row.id, event.target.value)}
         >
-          <MenuItem value="CHECKED IN">Checked in</MenuItem>
-          <MenuItem value="CHECKED OUT">Checked out</MenuItem>
+          <MenuItem value="CHECKED_IN">Checked in</MenuItem>
+          <MenuItem value="CHECKED_OUT">Checked out</MenuItem>
           <MenuItem value="PENDING">Pending</MenuItem>
           <MenuItem value="REMOVED">Removed</MenuItem>
+          <MenuItem value="CANCELED">Canceled</MenuItem>
         </Select>
       </div>
     ),
   },
 ];
 
-const AttendeesTable = ({
-  status,
-  setPaginationModel,
-  paginationModel,
-  rows,
-  totalNumberofData,
-}: attendeeTableProps) => {
   /** Search bar */
   const [value, setValue] = React.useState("");
   const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -118,6 +157,8 @@ const AttendeesTable = ({
     // Actual function
     console.log(value);
   };
+
+  // const filteredRows = rows.filter((attendee: attendeeData) => attendee.status === status);
 
   return (
     <>
@@ -175,13 +216,13 @@ const ModalBody = ({
   } = useForm<FormValues>(
     eventDetails
       ? {
-          defaultValues: {
-            startDate: eventDetails.startDate,
-            endDate: eventDetails.endDate,
-            startTime: eventDetails.startTime,
-            endTime: eventDetails.endTime,
-          },
-        }
+        defaultValues: {
+          startDate: eventDetails.startDate,
+          endDate: eventDetails.endDate,
+          startTime: eventDetails.startTime,
+          endTime: eventDetails.endTime,
+        },
+      }
       : {}
   );
 
@@ -346,7 +387,7 @@ const ModalBody = ({
 };
 
 /** A ManageAttendees component */
-const ManageAttendees = ({}: ManageAttendeesProps) => {
+const ManageAttendees = ({ }: ManageAttendeesProps) => {
   const router = useRouter();
   const eventid = router.query.eventid as string;
 
@@ -363,20 +404,26 @@ const ManageAttendees = ({}: ManageAttendeesProps) => {
     queryFn: async () => {
       // TODO: Double check endpoint
       // It currently returns list of ALL users, not just attendees for a specific event
-      const { data } = await api.get(
-        `/users?eventid=${eventid}&limit=${paginationModel.pageSize}`
-      );
+      // const { data } = await api.get(
+      //   `/events/${eventid}`
+      // );
+      const {
+        data,
+      } = await api.get(`/users?eventId=${eventid}&limit=${paginationModel.pageSize}`);
       return data["data"];
     },
     staleTime: Infinity,
   });
 
+
+
   // Set attendees list, total entries, and total pages
+  let attendees = data?.result;
   let attendeeList: attendeeData[] = [];
-  data?.result.map((attendee: any) => {
+  attendees?.map(async (attendee: any) => {
     attendeeList.push({
       id: attendee.id,
-      status: attendee.status,
+      status: attendee.events[0].attendeeStatus,
       name: `${attendee.profile?.firstName} ${attendee.profile?.lastName}`,
       email: attendee.email,
       phone: attendee.profile?.phoneNumber || "123-456-7890", // TODO: Change to actual phone number
@@ -411,11 +458,12 @@ const ManageAttendees = ({}: ManageAttendeesProps) => {
       label: "Pending",
       panel: (
         <AttendeesTable
-          status="pending"
+          status="PENDING"
           paginationModel={paginationModel}
           setPaginationModel={setPaginationModel}
-          rows={attendeeList}
+          rows={attendeeList.filter((attendee) => attendee.status === "PENDING")}
           totalNumberofData={totalNumberofData}
+          eventId={eventid}
         />
       ),
     },
@@ -423,11 +471,12 @@ const ManageAttendees = ({}: ManageAttendeesProps) => {
       label: "Checked in",
       panel: (
         <AttendeesTable
-          status="checked in"
+          status="CHECKED_IN"
           paginationModel={paginationModel}
           setPaginationModel={setPaginationModel}
-          rows={attendeeList}
+          rows={attendeeList.filter((attendee) => attendee.status === "CHECKED_IN")} 
           totalNumberofData={totalNumberofData}
+          eventId={eventid}
         />
       ),
     },
@@ -435,11 +484,12 @@ const ManageAttendees = ({}: ManageAttendeesProps) => {
       label: "Checked out",
       panel: (
         <AttendeesTable
-          status="checked out"
+          status="CHECKED_OUT"
           paginationModel={paginationModel}
           setPaginationModel={setPaginationModel}
-          rows={attendeeList}
+          rows={attendeeList.filter((attendee) => attendee.status === "CHECKED_OUT")}
           totalNumberofData={totalNumberofData}
+          eventId={eventid}
         />
       ),
     },
@@ -447,11 +497,12 @@ const ManageAttendees = ({}: ManageAttendeesProps) => {
       label: "Registration removed",
       panel: (
         <AttendeesTable
-          status="removed"
+          status="REMOVED"
           paginationModel={paginationModel}
           setPaginationModel={setPaginationModel}
-          rows={attendeeList}
+          rows={attendeeList.filter((attendee) => attendee.status === "REMOVED")}
           totalNumberofData={totalNumberofData}
+          eventId={eventid}
         />
       ),
     },
@@ -459,11 +510,12 @@ const ManageAttendees = ({}: ManageAttendeesProps) => {
       label: "Canceled registration",
       panel: (
         <AttendeesTable
-          status="canceled"
+          status="CANCELED"
           paginationModel={paginationModel}
           setPaginationModel={setPaginationModel}
-          rows={attendeeList}
+          rows={attendeeList.filter((attendee) => attendee.status === "CANCELED")}
           totalNumberofData={totalNumberofData}
+          eventId={eventid}
         />
       ),
     },
@@ -487,6 +539,7 @@ const ManageAttendees = ({}: ManageAttendeesProps) => {
 
   /** Loading screen */
   if (isPending) return <Loading />;
+
 
   return (
     <>

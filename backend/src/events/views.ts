@@ -110,6 +110,16 @@ eventRouter.post("/:eventid/attendees", async (req: Request, res: Response) => {
   socketNotify(`/events/${req.params.eventid}`);
 });
 
+eventRouter.put("/:eventid/users/:userid", async (req: Request, res: Response) => {
+  // #swagger.tags = ['Events']
+  const { status } = req.body;
+  attempt(res, 200, () =>
+    eventController.updateEnrollmentStatus(req.params.eventid, req.params.userid, status)
+  );
+});
+
+
+
 eventRouter.put("/:eventid/attendees", async (req: Request, res: Response) => {
   // #swagger.tags = ['Events']
   const { attendeeid, cancelationMessage } = req.body;
