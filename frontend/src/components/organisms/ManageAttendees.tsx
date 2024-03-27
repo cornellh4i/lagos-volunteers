@@ -35,6 +35,7 @@ interface attendeeTableProps {
   totalNumberofData: number;
   paginationModel: GridPaginationModel;
   setPaginationModel: React.Dispatch<React.SetStateAction<GridPaginationModel>>;
+  setSearchQuery: React.Dispatch<React.SetStateAction<string>>;
 }
 
 type FormValues = {
@@ -105,6 +106,7 @@ const AttendeesTable = ({
   paginationModel,
   rows,
   totalNumberofData,
+  setSearchQuery,
 }: attendeeTableProps) => {
   /** Search bar */
   const [value, setValue] = React.useState("");
@@ -114,9 +116,8 @@ const AttendeesTable = ({
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     // Prevent page refresh
     event.preventDefault();
-
+    setSearchQuery(value);
     // Actual function
-    console.log(value);
   };
 
   return (
@@ -126,7 +127,7 @@ const AttendeesTable = ({
           placeholder="Search member by name, email"
           value={value}
           onChange={handleChange}
-          onClick={handleSubmit}
+          onSubmit={handleSubmit}
         />
       </div>
       <Card size="table">
@@ -349,31 +350,49 @@ const ModalBody = ({
 const ManageAttendees = ({}: ManageAttendeesProps) => {
   const router = useRouter();
   const eventid = router.query.eventid as string;
+  const [searchQuery, setSearchQuery] = useState("");
 
   // TODO: For now -> we use the same state for all four tables
-  const [paginationModel, setPaginationModel] =
-    React.useState<GridPaginationModel>({
-      page: 0,
-      pageSize: 10,
-    });
+  const [paginationModel, setPaginationModel] = useState<GridPaginationModel>({
+    page: 0,
+    pageSize: 10,
+  });
+  let cursor = "";
+
+  /** If a valid cursor is passed, fetch the next batch of users */
+  const fetchUsersBatch = async (cursor?: string, searchQuery?: string) => {
+    if (cursor !== "") {
+      if (searchQuery) {
+        const { response, data } = await api.get(
+          `/users?firstName=${searchQuery}`
+        );
+        return data;
+      } else {
+        const { response, data } = await api.get(
+          `/users?limit=${paginationModel.pageSize}&after=${cursor}`
+        );
+        return data;
+      }
+    } else {
+      const { response, data } = await api.get(
+        `/users?limit=${paginationModel.pageSize}`
+      );
+      return data;
+    }
+  };
 
   /** Tanstack query to fetch attendees data */
-  const { data, isPending, isError, isPlaceholderData } = useQuery({
+  const { data, isPending, isError, isPlaceholderData, refetch } = useQuery({
     queryKey: ["event", eventid, paginationModel.page],
     queryFn: async () => {
-      // TODO: Double check endpoint
-      // It currently returns list of ALL users, not just attendees for a specific event
-      const { data } = await api.get(
-        `/users?eventid=${eventid}&limit=${paginationModel.pageSize}`
-      );
-      return data["data"];
+      return await fetchUsersBatch(cursor, searchQuery);
     },
     staleTime: Infinity,
   });
 
   // Set attendees list, total entries, and total pages
   let attendeeList: attendeeData[] = [];
-  data?.result.map((attendee: any) => {
+  data?.data.result.map((attendee: any) => {
     attendeeList.push({
       id: attendee.id,
       status: attendee.status,
@@ -383,10 +402,17 @@ const ManageAttendees = ({}: ManageAttendeesProps) => {
     });
   });
   const totalNumberofData = data?.totalItems;
-  let cursor = data?.cursor ? data?.cursor : "";
+  if (data?.data.cursor) {
+    cursor = data.data.cursor;
+  }
   const totalNumberOfPages = Math.ceil(
     totalNumberofData / paginationModel.pageSize
   );
+
+  // Update row data when search query changes
+  useEffect(() => {
+    refetch();
+  }, [searchQuery]);
 
   // Prefetch the next page
   const queryClient = useQueryClient();
@@ -394,6 +420,7 @@ const ManageAttendees = ({}: ManageAttendeesProps) => {
     if (!isPlaceholderData && paginationModel.page < totalNumberOfPages) {
       queryClient.prefetchQuery({
         queryKey: ["event", eventid, paginationModel.page + 1],
+        // queryFn: async () => fetchUsersBatch(cursor, searchQuery),
         queryFn: async () => {
           const { data } = await api.get(
             `/users?eventid=${eventid}&limit=${paginationModel.pageSize}&after=${cursor}`
@@ -416,6 +443,7 @@ const ManageAttendees = ({}: ManageAttendeesProps) => {
           setPaginationModel={setPaginationModel}
           rows={attendeeList}
           totalNumberofData={totalNumberofData}
+          setSearchQuery={setSearchQuery}
         />
       ),
     },
@@ -428,6 +456,7 @@ const ManageAttendees = ({}: ManageAttendeesProps) => {
           setPaginationModel={setPaginationModel}
           rows={attendeeList}
           totalNumberofData={totalNumberofData}
+          setSearchQuery={setSearchQuery}
         />
       ),
     },
@@ -440,6 +469,7 @@ const ManageAttendees = ({}: ManageAttendeesProps) => {
           setPaginationModel={setPaginationModel}
           rows={attendeeList}
           totalNumberofData={totalNumberofData}
+          setSearchQuery={setSearchQuery}
         />
       ),
     },
@@ -452,6 +482,7 @@ const ManageAttendees = ({}: ManageAttendeesProps) => {
           setPaginationModel={setPaginationModel}
           rows={attendeeList}
           totalNumberofData={totalNumberofData}
+          setSearchQuery={setSearchQuery}
         />
       ),
     },
@@ -464,6 +495,7 @@ const ManageAttendees = ({}: ManageAttendeesProps) => {
           setPaginationModel={setPaginationModel}
           rows={attendeeList}
           totalNumberofData={totalNumberofData}
+          setSearchQuery={setSearchQuery}
         />
       ),
     },

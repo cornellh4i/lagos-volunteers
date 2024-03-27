@@ -20,6 +20,7 @@ type ActiveProps = {
   usersLength: number;
   paginationModel: GridPaginationModel;
   setPaginationModel: React.Dispatch<React.SetStateAction<GridPaginationModel>>;
+  setSearchQuery: React.Dispatch<React.SetStateAction<string>>;
 };
 
 type userInfo = {
@@ -36,6 +37,7 @@ const Active = ({
   usersLength,
   paginationModel,
   setPaginationModel,
+  setSearchQuery,
 }: ActiveProps) => {
   const eventColumns: GridColDef[] = [
     {
@@ -119,7 +121,7 @@ const Active = ({
     // Prevent page refresh
     event.preventDefault();
     // Actual function
-    // console.log(value);
+    setSearchQuery(value);
   };
 
   return (
@@ -129,7 +131,7 @@ const Active = ({
           placeholder="Search member by name, email"
           value={value}
           onChange={handleChange}
-          onClick={handleSubmit}
+          onSubmit={handleSubmit}
         />
       </div>
       <Card size="table">
@@ -147,6 +149,9 @@ const Active = ({
 
 /** A ManageUsers component */
 const ManageUsers = ({}: ManageUsersProps) => {
+  /** New state variable for storing search query */
+  const [searchQuery, setSearchQuery] = useState("");
+
   /** Pagination model for the table */
   const [paginationModel, setPaginationModel] = useState<GridPaginationModel>({
     page: 0,
@@ -155,12 +160,19 @@ const ManageUsers = ({}: ManageUsersProps) => {
   let cursor = "";
 
   /** If a valid cursor is passed, fetch the next batch of users */
-  const fetchUsersBatch = async (cursor?: string) => {
+  const fetchUsersBatch = async (cursor?: string, searchQuery?: string) => {
     if (cursor !== "") {
-      const { response, data } = await api.get(
-        `/users?limit=${paginationModel.pageSize}&after=${cursor}`
-      );
-      return data;
+      if (searchQuery) {
+        const { response, data } = await api.get(
+          `/users?firstName=${searchQuery}`
+        );
+        return data;
+      } else {
+        const { response, data } = await api.get(
+          `/users?limit=${paginationModel.pageSize}&after=${cursor}`
+        );
+        return data;
+      }
     } else {
       const { response, data } = await api.get(
         `/users?limit=${paginationModel.pageSize}`
@@ -169,11 +181,11 @@ const ManageUsers = ({}: ManageUsersProps) => {
     }
   };
 
-  /** Tanstack query for fetching users */
-  const { data, isPending, error, isPlaceholderData } = useQuery({
+  /** Tanstack query for fetching users  */
+  const { data, isPending, error, isPlaceholderData, refetch } = useQuery({
     queryKey: ["users", paginationModel.page],
     queryFn: async () => {
-      return await fetchUsersBatch(cursor);
+      return await fetchUsersBatch(cursor, searchQuery);
     },
     staleTime: Infinity,
   });
@@ -196,13 +208,18 @@ const ManageUsers = ({}: ManageUsersProps) => {
     totalNumberofData / paginationModel.pageSize
   );
 
+  // Update row data when search query changes
+  useEffect(() => {
+    refetch();
+  }, [searchQuery]);
+
   // Prefetch the next page
   const queryClient = useQueryClient();
   useEffect(() => {
     if (!isPlaceholderData && paginationModel.page < totalNumberOfPages) {
       queryClient.prefetchQuery({
         queryKey: ["users", paginationModel.page + 1],
-        queryFn: async () => fetchUsersBatch(cursor),
+        queryFn: async () => fetchUsersBatch(cursor, searchQuery),
         staleTime: Infinity,
       });
     }
@@ -217,6 +234,7 @@ const ManageUsers = ({}: ManageUsersProps) => {
           usersLength={totalNumberofData}
           paginationModel={paginationModel}
           setPaginationModel={setPaginationModel}
+          setSearchQuery={setSearchQuery}
         />
       ),
     },
@@ -230,6 +248,7 @@ const ManageUsers = ({}: ManageUsersProps) => {
           usersLength={totalNumberofData}
           paginationModel={paginationModel}
           setPaginationModel={setPaginationModel}
+          setSearchQuery={setSearchQuery}
         />
       ),
     },
