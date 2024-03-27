@@ -10,9 +10,9 @@ import cron from "node-cron";
 const app: Application = express();
 
 // Scheduled cron jobs
-cron.schedule("*/1 * * * *", () => {
-  console.log("running a task every minute");
-});
+// cron.schedule("*/1 * * * *", () => {
+//   console.log("running a task every minute");
+// });
 
 // Middleware to parse json request bodies
 app.use(bodyParser.json());

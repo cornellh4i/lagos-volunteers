@@ -86,6 +86,7 @@ const SignupForm = () => {
         const errorData = await response.json();
         throw new Error(errorData.error);
       }
+      await sendEmailVerification();
       return response;
     },
     retry: false,
@@ -99,9 +100,7 @@ const SignupForm = () => {
 
       // Log in
       const { email, password } = data;
-      const emailSent = await sendEmailVerification();
       const signedInUser = await signInWithEmailAndPassword(email, password);
-       // Send email verification
 
       // Change URL
       if (signedInUser?.user) {
