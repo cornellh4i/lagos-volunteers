@@ -12,7 +12,7 @@ import Select from "../atoms/Select";
 import DatePicker from "../atoms/DatePicker";
 import TimePicker from "../atoms/TimePicker";
 import Snackbar from "../atoms/Snackbar";
-import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
+import { useQuery, useQueryClient, useMutation, QueryClient } from "@tanstack/react-query";
 import { convertToISO, fetchUserIdFromDatabase } from "@/utils/helpers";
 import { useAuth } from "@/utils/AuthContext";
 import router from "next/router";
@@ -20,8 +20,6 @@ import { api } from "@/utils/api";
 import { useRouter } from "next/router";
 import Loading from "../molecules/Loading";
 import Card from "../molecules/Card";
-import { User } from "firebase/auth";
-import { userAgentFromString } from "next/server";
 
 //Initial push
 
@@ -39,6 +37,7 @@ interface attendeeTableProps {
   totalNumberofData: number;
   paginationModel: GridPaginationModel;
   setPaginationModel: React.Dispatch<React.SetStateAction<GridPaginationModel>>;
+  eventId: string;
 }
 
 type FormValues = {
@@ -51,24 +50,39 @@ type FormValues = {
 interface ManageAttendeesProps { }
 
 
-const getEventIdFromUrl = (url: string = window.location.href): string | null => {
-  const regex = /\/events\/([^\/]+)/;
-  const match = url.match(regex);
-  return match ? match[1] : null;
-};
+const AttendeesTable = ({
+  status,
+  setPaginationModel,
+  paginationModel,
+  rows,
+  totalNumberofData,
+  eventId,
+}: attendeeTableProps) => {
+  const queryClient = useQueryClient();
+
+  const { mutateAsync, isPending, isError, isSuccess } = useMutation({
+    mutationFn: async (variables: {userId: string, newValue: string}) => {
+      const {userId, newValue} = variables;
+      const { response } = await api.put(`/events/${eventId}/users/${userId}`, {
+        status: newValue // Only update the status field
+      });
+      return response;
+    },
+    retry: false,
+    onSuccess: () => {
+      console.log("success");
+      queryClient.invalidateQueries({ queryKey: ["event", eventId]});
+    },
+  });
 
 const handleStatusChange = async (userId: string, newValue: string) => {
-  const eventId = getEventIdFromUrl(); // Retrieve event ID from URL
   if (!eventId) {
     console.error("Event ID not found in URL");
     return;
   }
 
   try {
-    // Make a PUT request to update the user
-    const response = await api.put(`/events/${eventId}/users/${userId}`, {
-      status: newValue // Only update the status field
-    }); console.log("success")
+    await mutateAsync({userId, newValue})
   } catch (error) {
     console.error("Error updating user status:", error);
   }
@@ -131,13 +145,6 @@ const eventColumns: GridColDef[] = [
   },
 ];
 
-const AttendeesTable = ({
-  status,
-  setPaginationModel,
-  paginationModel,
-  rows,
-  totalNumberofData,
-}: attendeeTableProps) => {
   /** Search bar */
   const [value, setValue] = React.useState("");
   const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -456,6 +463,7 @@ const ManageAttendees = ({ }: ManageAttendeesProps) => {
           setPaginationModel={setPaginationModel}
           rows={attendeeList.filter((attendee) => attendee.status === "PENDING")}
           totalNumberofData={totalNumberofData}
+          eventId={eventid}
         />
       ),
     },
@@ -468,6 +476,7 @@ const ManageAttendees = ({ }: ManageAttendeesProps) => {
           setPaginationModel={setPaginationModel}
           rows={attendeeList.filter((attendee) => attendee.status === "CHECKED_IN")} 
           totalNumberofData={totalNumberofData}
+          eventId={eventid}
         />
       ),
     },
@@ -480,6 +489,7 @@ const ManageAttendees = ({ }: ManageAttendeesProps) => {
           setPaginationModel={setPaginationModel}
           rows={attendeeList.filter((attendee) => attendee.status === "CHECKED_OUT")}
           totalNumberofData={totalNumberofData}
+          eventId={eventid}
         />
       ),
     },
@@ -492,6 +502,7 @@ const ManageAttendees = ({ }: ManageAttendeesProps) => {
           setPaginationModel={setPaginationModel}
           rows={attendeeList.filter((attendee) => attendee.status === "REMOVED")}
           totalNumberofData={totalNumberofData}
+          eventId={eventid}
         />
       ),
     },
@@ -504,6 +515,7 @@ const ManageAttendees = ({ }: ManageAttendeesProps) => {
           setPaginationModel={setPaginationModel}
           rows={attendeeList.filter((attendee) => attendee.status === "CANCELED")}
           totalNumberofData={totalNumberofData}
+          eventId={eventid}
         />
       ),
     },
@@ -527,6 +539,7 @@ const ManageAttendees = ({ }: ManageAttendeesProps) => {
 
   /** Loading screen */
   if (isPending) return <Loading />;
+
 
   return (
     <>

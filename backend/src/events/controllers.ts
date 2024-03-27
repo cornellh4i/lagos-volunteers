@@ -295,17 +295,6 @@ const updateEnrollmentStatus = async (eventID: string, userID: string, newStatus
   });
 }
 
-const getEnrollmentStatus = async (eventID: string, userID: string) => {
-  return await prisma.eventEnrollment.findUnique({
-    where: {
-      userId_eventId: {
-        userId: userID,
-        eventId: eventID,
-      },
-    },
-  });
-}
-
 /**
  * Adds specified user to an event
  * @param eventID (String)
@@ -468,5 +457,4 @@ export default {
   updateEventOwner,
   confirmUser,
   updateEnrollmentStatus,
-  getEnrollmentStatus,
 };

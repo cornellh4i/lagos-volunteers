@@ -114,12 +114,6 @@ eventRouter.put("/:eventid/users/:userid", async (req: Request, res: Response) =
   );
 });
 
-eventRouter.get("/:eventid/users/:userid", async (req: Request, res: Response) => {
-  // #swagger.tags = ['Events']
-  attempt(res, 200, () =>
-    eventController.getEnrollmentStatus(req.params.eventid, req.params.userid)
-  );
-});
 
 
 eventRouter.put("/:eventid/attendees", async (req: Request, res: Response) => {
