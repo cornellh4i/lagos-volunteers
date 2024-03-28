@@ -538,20 +538,19 @@ const editRole = async (userId: string, role: string) => {
     },
     select: {
       role: true,
+      email: true,
     },
   });
   const prevUserRole = user?.role;
   var userEmail = user?.email as string;
   if (process.env.NODE_ENV != "test") {
-    if (prevUserRole === "SUPERVISOR" && user?.role === "ADMIN") {
+    if (prevUserRole === "SUPERVISOR" && role === "ADMIN") {
       await sendEmail(userEmail, "Your email subject", htmlSuperAdmin);
     }
-    else if ( prevUserRole === "VOLUNTEER" && user?.role === "SUPERVISOR") {
+    else if (prevUserRole === "VOLUNTEER" && role === "SUPERVISOR") {
       await sendEmail(userEmail, "Your email subject", htmlVolunSuper);
     }
   }
-  console.log(prevUserRole)
-  // console.log(user?.role)
   return prisma.user.update({
     where: {
       id: userId,
