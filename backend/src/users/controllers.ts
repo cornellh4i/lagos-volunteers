@@ -5,6 +5,9 @@ import admin from "firebase-admin";
 // We are using one connection to prisma client to prevent multiple connections
 import prisma from "../../client";
 import { setVolunteerCustomClaims } from "../middleware/auth";
+import userController from "../users/controllers";
+import sgMail from "@sendgrid/mail";
+import { readFile } from "fs/promises";
 
 const htmlRegCancel = "./src/emails/Registration_Cancellation.html"
 const htmlRegSuccess = "./src/emails/Registration_Successful.html"
@@ -495,7 +498,23 @@ const editPreferences = async (
  * @param userid: id of user to be updated
  * @returns promise with user or error
  */
-const editStatus = async (userId: string, status: string) => {
+const editStatus = async (
+  userId: string, 
+  status: string
+  ) => {
+
+  // grabs the user and their email for SendGrid functionality
+  const user = await userController.getUserByID(userId);
+  var userEmail = user?.email as string;
+
+  // sets the email message
+  // const emailHtml = "<b>htmlRegCancel</b>";
+  if (process.env.NODE_ENV != "test") {
+    if (user?.status === "INACTIVE") {
+      await sendEmail(userEmail, "Your email subject", htmlBlacklist);
+    }
+  }
+
   return prisma.user.update({
     where: {
       id: userId,
@@ -522,7 +541,17 @@ const editRole = async (userId: string, role: string) => {
     },
   });
   const prevUserRole = user?.role;
-  console.log(user?.role)
+  var userEmail = user?.email as string;
+  if (process.env.NODE_ENV != "test") {
+    if (prevUserRole === "SUPERVISOR" && user?.role === "ADMIN") {
+      await sendEmail(userEmail, "Your email subject", htmlSuperAdmin);
+    }
+    else if ( prevUserRole === "VOLUNTEER" && user?.role === "SUPERVISOR") {
+      await sendEmail(userEmail, "Your email subject", htmlVolunSuper);
+    }
+  }
+  console.log(prevUserRole)
+  // console.log(user?.role)
   return prisma.user.update({
     where: {
       id: userId,
@@ -608,6 +637,35 @@ const deleteUser = async (userID: string) => {
   });
 };
 
+/**
+ * Sends an email to the specified address
+ * @param email is the email address to send to
+ * @param subject is the email subject
+ * @param path is the path of the email template
+ */
+const sendEmail = async (email: string, subject: string, path: string) => {
+  try {
+    // Loads an email template
+    const html = await readFile(path, "utf-8");
+    console.log("File content:", html);
+
+    // Create an email message
+    const msg = {
+      to: email, // Recipient's email address
+      from: "lagosfoodbankdev@gmail.com", // Sender's email address
+      subject: subject, // Email subject
+      html: html, // HTML body content
+    };
+
+    // Send the email
+    await sgMail.send(msg);
+    console.log("Email sent successfully!");
+  } catch (err) {
+    console.error("Error sending email:", err);
+  }
+};
+
+
 export default {
   createUser,
   deleteUser,
@@ -629,4 +687,5 @@ export default {
   editRole,
   editHours,
   getUsersSorted,
+  sendEmail,
 };
