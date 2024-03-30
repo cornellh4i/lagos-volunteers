@@ -24,7 +24,7 @@ const Select = ({
       height = "35px";
       break;
     case "medium":
-      height = "45px";
+      height = "42px";
       break;
   }
 
