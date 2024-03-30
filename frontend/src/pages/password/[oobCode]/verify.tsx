@@ -9,7 +9,6 @@ import { applyActionCode } from "firebase/auth";
 import CancelIcon from "@mui/icons-material/Cancel";
 import Loading from "@/components/molecules/Loading";
 
-
 const Verify = () => {
   const router = useRouter();
 
@@ -36,7 +35,7 @@ const Verify = () => {
     },
   });
 
-  if (isLoading) return <Loading/>
+  if (isLoading) return <Loading />;
 
   return (
     <WelcomeTemplate>

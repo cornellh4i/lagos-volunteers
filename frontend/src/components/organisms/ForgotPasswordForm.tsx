@@ -49,7 +49,8 @@ const ForgotPasswordForm = () => {
       <Snackbar
         variety="error"
         open={errorSnackbarOpen}
-        onClose={() => setErrorSnackbarOpen(false)}>
+        onClose={() => setErrorSnackbarOpen(false)}
+      >
         Error: {handleErrors(error.message)}
       </Snackbar>
     ) : null;
@@ -60,7 +61,8 @@ const ForgotPasswordForm = () => {
       <Snackbar
         variety="success"
         open={success}
-        onClose={() => setSuccess(false)}>
+        onClose={() => setSuccess(false)}
+      >
         Success: Password reset email sent. Please check your inbox.
       </Snackbar>
     ) : null;
@@ -101,13 +103,16 @@ const ForgotPasswordForm = () => {
         />
       </div>
       <div>
-        <Button loading={sending} type="submit">Email me a link</Button>
+        <Button loading={sending} type="submit">
+          Email me a link
+        </Button>
       </div>
       <div className="justify-center flex flex-row">
         <div>Have an account?&nbsp;</div>
         <Link
           href="/login"
-          className="text-primary-200 hover:underline no-underline">
+          className="text-primary-200 hover:underline no-underline"
+        >
           Log in
         </Link>
       </div>

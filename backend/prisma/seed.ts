@@ -71,7 +71,7 @@ async function createPoolOfRandomUsers(pool: number) {
     },
   });
 
-  // Supervisor 
+  // Supervisor
   const supervisor = await prisma.user.create({
     data: {
       email: "olumidetest@gmail.com",

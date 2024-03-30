@@ -54,13 +54,15 @@ const Verify = () => {
       <Snackbar
         variety="success"
         open={notifOpenOnSuccess}
-        onClose={() => setNotifOpenOnSuccess(false)}>
+        onClose={() => setNotifOpenOnSuccess(false)}
+      >
         Verification email sent successfully!
       </Snackbar>
       <Snackbar
         variety="error"
         open={notifOpenOnError}
-        onClose={() => setNotifOpenOnError(false)}>
+        onClose={() => setNotifOpenOnError(false)}
+      >
         Error sending verification email. Please try again later.
       </Snackbar>
       <div className="max-w-lg mx-auto border border-gray-300 rounded-lg p-6">
@@ -78,7 +80,8 @@ const Verify = () => {
           <Button
             onClick={handleResendEmail}
             variety="primary"
-            className="w-full mb-4">
+            className="w-full mb-4"
+          >
             Resend Verification Email
           </Button>
           <Button onClick={handleSignOut} variety="primary" className="w-full">

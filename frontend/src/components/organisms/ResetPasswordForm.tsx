@@ -87,7 +87,8 @@ const ResetPassword = () => {
       <Snackbar
         variety="error"
         open={openSnackbar}
-        onClose={() => setOpenSnackbar(false)}>
+        onClose={() => setOpenSnackbar(false)}
+      >
         Error : {errorMessage}
       </Snackbar>
       <form onSubmit={handleSubmit(handleSubmitForm)} className="space-y-4">

@@ -115,10 +115,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   ];
 
   // paths that can be accessed when not verified
-  const verifyPaths = [
-    "/verify",
-    "/password",
-];
+  const verifyPaths = ["/verify", "/password"];
 
   const isResetPage = (path: string) => {
     return path.startsWith("/password");
@@ -134,7 +131,12 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         setIsAuthenticated(false);
       } else if (user && user.emailVerified && authPaths.includes(path)) {
         router.replace("/events/view");
-      } else if (user && !user.emailVerified && !verifyPaths.includes(path) && !isResetPage(path)) {
+      } else if (
+        user &&
+        !user.emailVerified &&
+        !verifyPaths.includes(path) &&
+        !isResetPage(path)
+      ) {
         router.replace("/verify");
       } else {
         setIsAuthenticated(true);
