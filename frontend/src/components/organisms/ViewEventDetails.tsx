@@ -100,12 +100,11 @@ const ViewEventDetails = () => {
               header={<>{capacity} volunteers needed</>}
             />
           </div>
-          <div className="mt-5" />
         </div>
       }
       body={
         <div>
-          <div className="font-semibold text-xl">About the event</div>
+          <div className="sm:mt-5 font-semibold text-xl">About the event</div>
           <Divider />
           <div className="mt-5"></div>
 
@@ -196,7 +195,7 @@ const ViewEventDetails = () => {
           <div className="bg-red-300 mt-5">Future location widget here</div>
         </div>
       }
-      img={<img className="w-full rounded-2xl" src={image_src} />}
+      img={<img className="w-full rounded-2xl" src="/lfbi_splash.png" />}
       card={
         userHasCanceledAttendance ? (
           <EventCardCancelConfirmation />
