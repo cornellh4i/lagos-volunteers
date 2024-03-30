@@ -146,14 +146,14 @@ const SignupForm = () => {
           <div className="pb-4 sm:pb-0">
             <TextField
               error={errors.firstName ? "Required" : undefined}
-              label="First Name"
+              label="First name"
               {...register("firstName", { required: true })}
             />
           </div>
           <div>
             <TextField
               error={errors.lastName ? "Required" : undefined}
-              label="Last Name"
+              label="Last name"
               {...register("lastName", { required: true })}
             />
           </div>
@@ -176,13 +176,13 @@ const SignupForm = () => {
                 ? "Passwords do not match"
                 : undefined
             }
-            label="Confirm Password"
+            label="Confirm password"
             {...register("confirmPassword", { required: true })}
           />
         </div>
-        <div>
+        <div className="pt-2">
           <Button loading={isPending} disabled={isPending} type="submit">
-            Continue
+            Sign up
           </Button>
         </div>
         <div className="justify-center flex flex-row">

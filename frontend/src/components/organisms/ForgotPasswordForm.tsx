@@ -102,7 +102,7 @@ const ForgotPasswordForm = () => {
           {...register("email", { required: "true" })}
         />
       </div>
-      <div>
+      <div className="pt-2">
         <Button loading={sending} type="submit">
           Email me a link
         </Button>
