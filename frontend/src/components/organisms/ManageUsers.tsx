@@ -90,13 +90,7 @@ const Active = ({
       flex: 0.5,
       minWidth: 140,
       renderCell: (params) => (
-        <div
-        // style={{
-        //   display: "flex",
-        //   alignItems: "center",
-        //   justifyContent: "flex-end",
-        // }}
-        >
+        <div>
           <Link
             href={`/users/${params.row.id}/manage`}
             className="no-underline"
