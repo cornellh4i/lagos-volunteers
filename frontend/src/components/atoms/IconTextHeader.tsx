@@ -11,7 +11,7 @@ const IconTextHeader = ({ icon, header, body }: IconTextHeaderProps) => {
   return (
     <div className="flex">
       <div className="flex items-center pr-2">
-        <div className="flex items-center justify-center w-12 h-12 bg-slate-300 rounded-lg text-gray-700">
+        <div className="flex items-center justify-center w-12 h-12 bg-primary-100 rounded-lg text-gray-700">
           {icon}
         </div>
       </div>
