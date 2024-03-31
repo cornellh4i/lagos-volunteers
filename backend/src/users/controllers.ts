@@ -402,17 +402,9 @@ const getUserProfile = async (userId: string) => {
 };
 
 
-const getAllUserProfiles = async () => {
-  return prisma.profile.findMany();
-};
 
-const getAllUserPermissions = async () => {
-  return prisma.permission.findMany()
-}
 
-const getAllUserPreferences = async () => {
-  return prisma.userPreferences.findMany()
-}
+
 
 
 /**
@@ -624,7 +616,4 @@ export default {
   editRole,
   editHours,
   getUsersSorted,
-  getAllUserProfiles,
-  getAllUserPermissions,
-  getAllUserPreferences
 };

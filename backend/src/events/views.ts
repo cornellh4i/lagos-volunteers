@@ -87,8 +87,8 @@ eventRouter.get("/past", async (req: Request, res: Response) => {
   attempt(res, 200, eventController.getPastEvents);
 });
 
-eventRouter.get("/enrollments", async (req: Request, res: Response) => {
-  attempt(res, 200, () => eventController.getAllEnrollments());
+eventRouter.get("/download", async (req: Request, res: Response) => {
+  attempt(res, 200, () => eventController.getEverything());
 });
 
 eventRouter.get("/:eventid", async (req: Request, res: Response) => {

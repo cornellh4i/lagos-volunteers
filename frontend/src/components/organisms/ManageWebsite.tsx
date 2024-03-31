@@ -2,8 +2,12 @@ import React from "react";
 import Button from "../atoms/Button";
 import { api } from "@/utils/api";
 import Card from "../molecules/Card";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 
 const ManageWebsite = () => {
+
+const queryCilent = useQueryClient
+
   function convertToCSV(data: any[]) {
     const csvArray = [];
   
@@ -38,33 +42,20 @@ const ManageWebsite = () => {
     URL.revokeObjectURL(anchor.href);
   }
 
+  const {data, isPending, isError} = useQuery({
+    queryKey: ["website"],
+    queryFn: async () => {
+      const {data} = await api.get("/events/download"); //new endpoint
+      return data.data
+    }
+  })
+
   const handleDownloadDatabase = async () => {
-
-    const eventsData = await api.get("/events/")
-    const events = eventsData.data.data.result
-
-    const enrollmentsData = await api.get("/events/enrollments") // new endpoint
-    const enrollments = enrollmentsData.data.data
-
-    const profilesData = await api.get("/users/profiles") // new endpoint
-    const profiles = profilesData.data.data
-
-    const permissionsData = await api.get("/users/permissions") // new endpoint but this table is empty
-    const permissions = permissionsData.data.data
-
-    const userData = await api.get("/users/")
-    const users = userData.data.data.result
-
-    const preferencesData = await api.get("/users/preferences") // new endpoint
-    const preferences = preferencesData.data.data
-
-    // Combine all data arrays
-    const allData = [events, enrollments, users, preferences];
+    
     const allCSVs = []
 
-    // Download data for each array
-    for (let i = 0; i < allData.length; i++) {
-      const csv = convertToCSV(allData[i]);
+    for (let i = 0; i < data.length; i++) {
+      const csv = convertToCSV(data[i]);
       allCSVs.push(csv)
     }
 

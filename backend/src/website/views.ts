@@ -13,7 +13,7 @@ process.env.NODE_ENV === "test"
   ? (useAuth = NoAuth as RequestHandler)
   : (useAuth = auth as RequestHandler);
 
-userRouter.get("/enrollments", useAuth, async (req: Request, res: Response) => {
+userRouter.get("/", useAuth, async (req: Request, res: Response) => {
   attempt(res, 200, () => websiteController.getAllEnrollments());
 });
 

@@ -36,7 +36,6 @@
     "react-firebase-hooks": "^5.1.1",
     "react-hook-form": "^7.50.1",
     "react-html-parser": "^2.0.2",
-    "react-json-csv-convert": "^1.1.1",
     "react-quill": "^2.0.0",
     "typescript": "^5.3.3"
   },
