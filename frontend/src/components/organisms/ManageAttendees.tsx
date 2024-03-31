@@ -443,7 +443,7 @@ const ManageAttendees = ({ }: ManageAttendeesProps) => {
         queryKey: ["event", eventid, paginationModel.page + 1],
         queryFn: async () => {
           const { data } = await api.get(
-            `/users?eventid=${eventid}&limit=${paginationModel.pageSize}&after=${cursor}`
+            `/users?eventId=${eventid}&limit=${paginationModel.pageSize}&after=${cursor}`
           );
           return data["data"];
         },
