@@ -16,7 +16,7 @@ jobs:
       - name: Setup Node.js environment to run migrations
         uses: actions/setup-node@v3
         with: 
-          node-version: '20'
+          node-version: '18.x'
 
       - name: Install dependencies and run migrations
         working-directory: backend/
