@@ -164,12 +164,12 @@ const ManageUsers = ({}: ManageUsersProps) => {
     if (cursor !== "") {
       if (searchQuery) {
         const { response, data } = await api.get(
-          `/users?firstName=${searchQuery}`
+          `/users?firstName=${searchQuery}.toLowerCase()}`
         );
         return data;
       } else {
         const { response, data } = await api.get(
-          `/users?limit=${paginationModel.pageSize}&after=${cursor}`
+          `/users?limit=${paginationModel.pageSize}&after=${cursor}.toLowerCase()}`
         );
         return data;
       }
