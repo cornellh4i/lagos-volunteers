@@ -6,9 +6,14 @@ import eventRouter from "./events/views";
 import swaggerUI from "swagger-ui-express";
 import spec from "../api-spec.json";
 import cors from "cors";
-import prisma from "../client";
+import cron from "node-cron";
 
 const app: Application = express();
+
+// Scheduled cron jobs
+cron.schedule("*/1 * * * *", () => {
+  console.log("running a task every minute");
+});
 
 // Middleware to parse json request bodies
 app.use(bodyParser.json());

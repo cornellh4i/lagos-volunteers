@@ -1,7 +1,25 @@
 import app from "./server";
 import admin from "firebase-admin";
 import sgMail from "@sendgrid/mail";
+import { WebSocketServer } from "ws";
 
+// WebSocket server
+export const wss = new WebSocketServer({ port: 8080 });
+wss.on("connection", (ws) => {
+  // Error handling
+  ws.on("error", console.error);
+
+  // What happens when the server receives data
+  ws.on("message", (data) => {
+    console.log("received: %s", data);
+    ws.send("server received your message!");
+  });
+
+  // Default message to send when connected
+  ws.send("something");
+});
+
+// Express server
 const server = app.listen(process.env.PORT || 8000);
 
 const serviceAccount = {
