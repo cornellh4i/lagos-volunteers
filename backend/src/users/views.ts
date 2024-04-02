@@ -4,8 +4,7 @@ import userController from "./controllers";
 import { auth, setVolunteerCustomClaims, NoAuth } from "../middleware/auth";
 const userRouter = Router();
 import * as firebase from "firebase-admin";
-
-import { attempt } from "../utils/helpers";
+import { attempt, socketNotify } from "../utils/helpers";
 
 let useAuth: RequestHandler;
 
@@ -18,6 +17,7 @@ userRouter.post(
   NoAuth as RequestHandler,
   async (req: Request, res: Response) => {
     // #swagger.tags = ['Users']
+    socketNotify("/users");
     let user;
     const { password, ...rest } = req.body;
     try {
@@ -70,13 +70,17 @@ userRouter.post(
 userRouter.delete("/:userid", useAuth, async (req: Request, res: Response) => {
   // #swagger.tags = ['Users']
   attempt(res, 200, () => userController.deleteUser(req.params.userid));
+  socketNotify("/users");
 });
 
 userRouter.put("/:userid", useAuth, async (req: Request, res: Response) => {
   // #swagger.tags = ['Users']
+
+  // Do API call
   attempt(res, 200, () =>
     userController.updateUser(req.params.userid, req.body)
   );
+  socketNotify(`/users/${req.params.userid}`);
 });
 
 userRouter.get("/count", useAuth, async (req: Request, res: Response) => {
@@ -216,6 +220,7 @@ userRouter.put(
     attempt(res, 200, () =>
       userController.editProfile(req.params.userid, req.body)
     );
+    socketNotify(`/users/${req.params.userid}`);
   }
 );
 
@@ -227,6 +232,7 @@ userRouter.put(
     attempt(res, 200, () =>
       userController.editPreferences(req.params.userid, req.body)
     );
+    socketNotify(`/users/${req.params.userid}`);
   }
 );
 
@@ -234,6 +240,7 @@ userRouter.patch("/:userid/status", async (req: Request, res: Response) => {
   // #swagger.tags = ['Users']
   const { status } = req.body;
   attempt(res, 200, () => userController.editStatus(req.params.userid, status));
+  socketNotify(`/users/${req.params.userid}`);
 });
 
 userRouter.patch(
@@ -243,6 +250,7 @@ userRouter.patch(
     // #swagger.tags = ['Users']
     const { role } = req.body;
     attempt(res, 200, () => userController.editRole(req.params.userid, role));
+    socketNotify(`/users/${req.params.userid}`);
   }
 );
 
@@ -253,6 +261,7 @@ userRouter.patch(
     // #swagger.tags = ['Users']
     const { hours } = req.body;
     attempt(res, 200, () => userController.editHours(req.params.userid, hours));
+    socketNotify(`/users/${req.params.userid}`);
   }
 );
 

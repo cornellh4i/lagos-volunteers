@@ -101,6 +101,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     "/signup",
     "/password/forgot",
     "/password/reset/*",
+    "/verify",
   ];
 
   // Paths that can be accessed freely when not logged in
@@ -108,20 +109,35 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     "/login",
     "/signup",
     "/password/forgot",
-    "/password/reset/*",
+    "/password/reset",
     "/_404",
     "/_error",
   ];
 
+  // paths that can be accessed when not verified
+  const verifyPaths = ["/verify", "/password"];
+
+  const isResetPage = (path: string) => {
+    return path.startsWith("/password");
+  };
+
   const router = useRouter();
   useEffect(() => {
     const path = router.asPath;
+
     const unsubscribe = onAuthStateChanged(auth, (user) => {
-      if (!user && !publicPaths.includes(path)) {
+      if (!user && !publicPaths.includes(path) && !isResetPage(path)) {
         router.replace("/login");
         setIsAuthenticated(false);
-      } else if (user && authPaths.includes(path)) {
+      } else if (user && user.emailVerified && authPaths.includes(path)) {
         router.replace("/events/view");
+      } else if (
+        user &&
+        !user.emailVerified &&
+        !verifyPaths.includes(path) &&
+        !isResetPage(path)
+      ) {
+        router.replace("/verify");
       } else {
         setIsAuthenticated(true);
       }

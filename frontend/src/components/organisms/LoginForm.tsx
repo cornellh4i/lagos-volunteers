@@ -80,7 +80,7 @@ const LoginForm = () => {
 
   /** Handles login success */
   useEffect(() => {
-    if (signedInUser) {
+    if (signedInUser?.user.emailVerified) {
       router.push("/events/view");
     }
   }, [signedInUser]);
