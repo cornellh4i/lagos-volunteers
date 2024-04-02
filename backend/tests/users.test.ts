@@ -1,6 +1,12 @@
 import { userRole } from "@prisma/client";
 import request from "supertest";
-import app from "../src/server";
+import { app, wss } from "../src/server";
+import { server } from "../src/index";
+
+afterAll(() => {
+  wss.close(); 
+  server.close();
+});
 
 // Testing users endpoints
 describe("Testing GET /users", () => {

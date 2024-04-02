@@ -5,7 +5,7 @@ import { User } from "@prisma/client";
 import deleteUser from "../users/controllers";
 import prisma from "../../client";
 import { WebSocket } from "ws";
-import { wss } from "..";
+import { wss } from "../server";
 
 /**
  * Attempts the given controller and sends a success code or error code as necessary

@@ -1,10 +1,8 @@
-import app from "./server";
+import { app, wss } from "./server";
 import admin from "firebase-admin";
 import sgMail from "@sendgrid/mail";
-import { WebSocketServer } from "ws";
 
 // WebSocket server
-export const wss = new WebSocketServer({ port: 8080 });
 wss.on("connection", (ws) => {
   // Error handling
   ws.on("error", console.error);
@@ -20,7 +18,7 @@ wss.on("connection", (ws) => {
 });
 
 // Express server
-const server = app.listen(process.env.PORT || 8000);
+export const server = app.listen(process.env.PORT || 8000);
 
 const serviceAccount = {
   type: process.env.TYPE,
