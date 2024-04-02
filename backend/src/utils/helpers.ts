@@ -4,6 +4,8 @@ import admin from "firebase-admin";
 import { User } from "@prisma/client";
 import deleteUser from "../users/controllers";
 import prisma from "../../client";
+import { WebSocket } from "ws";
+import { wss } from "..";
 
 /**
  * Attempts the given controller and sends a success code or error code as necessary
@@ -68,3 +70,19 @@ export const deleteUnverifiedUsers = async () => {
     console.error('Error deleting unverified users:', error);
   }
 }
+/**
+ * Sends a message from the WebSocket server to all WebSocket-connected clients
+ * @param resource is the API resource endpoint that has been updated. For example,
+ * if a specific user with uuid "1234" was updated, the resource would be "/users/1234"
+ */
+export const socketNotify = (resource: string) => {
+  const dataToSend = {
+    resource: resource,
+    message: "The resource has been updated!",
+  };
+  wss.clients.forEach((client) => {
+    if (client.readyState === WebSocket.OPEN) {
+      client.send(JSON.stringify(dataToSend));
+    }
+  });
+};
