@@ -30,7 +30,6 @@ const HorizontalTabContainer = ({
             {left}
             <div className={fullWidth ? "w-full" : "ml-auto min-w-fit"}>
               <TabList
-                value={value}
                 onChange={handleChange}
                 variant="scrollable"
                 scrollButtons={false}

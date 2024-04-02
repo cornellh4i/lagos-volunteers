@@ -106,6 +106,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     "/signup",
     "/password/forgot",
     "/password/reset/*",
+    "/verify",
   ];
 
   // Paths that can be accessed freely when not logged in
@@ -113,7 +114,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     "/login",
     "/signup",
     "/password/forgot",
-    "/password/reset/*",
+    "/password/reset",
     "/_404",
     "/_error",
   ];
@@ -142,6 +143,12 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       return "Volunteer";
     }
   };
+  // paths that can be accessed when not verified
+  const verifyPaths = ["/verify", "/password"];
+
+  const isResetPage = (path: string) => {
+    return path.startsWith("/password");
+  };
 
   const router = useRouter();
   useEffect(() => {
@@ -162,22 +169,32 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         setIsAuthenticated(false);
       }
 
-      if (!user && !publicPaths.includes(path)) {
+      if (!user && !publicPaths.includes(path) && !isResetPage(path)) {
         router.replace("/login");
-      } else if (user && authPaths.includes(path)) {
-        router.replace("/events/view");
-      } else if (user && adminPaths.includes(path) && userRole !== "Admin") {
+      } else if (user && user.emailVerified && authPaths.includes(path)) {
         router.replace("/events/view");
       } else if (
         user &&
+        user.emailVerified &&
+        adminPaths.includes(path) &&
+        userRole !== "Admin"
+      ) {
+        router.replace("/events/view");
+      } else if (
+        user &&
+        user.emailVerified &&
         regexMatcherforSupervisorPaths.test(path) &&
         userRole === "Volunteer"
       ) {
         router.replace("/events/view");
-      } else {
-        setIsAuthenticated(true);
+      } else if (
+        user &&
+        !user.emailVerified &&
+        !verifyPaths.includes(path) &&
+        !isResetPage(path)
+      ) {
+        router.replace("/verify");
       }
-
       const hideContent = () => setIsAuthenticated(false);
       router.events.on("routeChangeStart", hideContent);
 
