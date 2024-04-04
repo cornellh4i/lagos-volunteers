@@ -13,6 +13,7 @@
   "dependencies": {
     "@emotion/react": "^11.11.3",
     "@emotion/styled": "^11.11.0",
+    "@mdxeditor/editor": "^2.16.0",
     "@mui/icons-material": "^5.15.8",
     "@mui/lab": "^5.0.0-alpha.164",
     "@mui/material": "^5.15.7",
@@ -36,7 +37,9 @@
     "react-firebase-hooks": "^5.1.1",
     "react-hook-form": "^7.50.1",
     "react-html-parser": "^2.0.2",
+    "react-markdown": "^9.0.1",
     "react-quill": "^2.0.0",
+    "react-use-websocket": "^4.8.1",
     "typescript": "^5.3.3"
   },
   "devDependencies": {
