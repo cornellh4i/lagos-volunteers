@@ -12,6 +12,7 @@ import Snackbar from "../atoms/Snackbar";
 
 import UploadIcon from "@mui/icons-material/Upload";
 import EditIcon from "@mui/icons-material/Edit";
+import { useAuth } from "@/utils/AuthContext";
 
 interface AboutProps {
   edit: boolean;
@@ -48,13 +49,14 @@ const ModalBody = ({ handleModal, handleConfirmClose }: modalBodyProps) => {
 
 type aboutPageData = {
   pageid: string;
-  content: string
+  content: string;
 };
 
 /**
  * An About component
  */
 const About = ({ edit }: AboutProps) => {
+  const { role } = useAuth();
 
   /** State variables for the notification popups */
   const [successNotificationOpen, setSuccessNotificationOpen] = useState(false);
@@ -78,10 +80,7 @@ const About = ({ edit }: AboutProps) => {
     },
   });
 
-  let {
-    pageid,
-    content,
-  }: aboutPageData = {
+  let { pageid, content }: aboutPageData = {
     pageid: aboutPageDetailsQuery?.id,
     content: aboutPageDetailsQuery?.content,
   };
@@ -239,6 +238,23 @@ const About = ({ edit }: AboutProps) => {
           </div>
         </div>
 
+        {role === "Supervisor" ? (
+          <div>
+            <h2>You're a supervisor</h2>
+          </div>
+        ) : role === "Admin" ? (
+          <div>
+            <h2>
+              Yay!! you're an admin. You get special privileges on this page.
+            </h2>
+          </div>
+        ) : role === "Volunteer" ? (
+          <div>
+            <h2>You're a volunteer</h2>
+          </div>
+        ) : (
+          <></>
+        )}
         <div>{ReactHtmlParser(value)}</div>
       </div>
     );

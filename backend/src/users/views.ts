@@ -1,7 +1,13 @@
 import { Router, RequestHandler, Request, Response } from "express";
 import { Prisma, userRole, UserStatus } from "@prisma/client";
 import userController from "./controllers";
-import { auth, setVolunteerCustomClaims, NoAuth } from "../middleware/auth";
+import {
+  auth,
+  setVolunteerCustomClaims,
+  updateFirebaseUserToSupervisor,
+  updateFirebaseUserToAdmin,
+  NoAuth,
+} from "../middleware/auth";
 const userRouter = Router();
 import * as firebase from "firebase-admin";
 import { attempt, socketNotify } from "../utils/helpers";
@@ -48,6 +54,8 @@ userRouter.post(
         });
         if (fbUser) {
           await firebase.auth().setCustomUserClaims(fbUser.uid, {
+            admin: false,
+            supervisor: false,
             volunteer: true,
           });
           return res.status(200).send({ success: true, user: user });
@@ -249,8 +257,31 @@ userRouter.patch(
   async (req: Request, res: Response) => {
     // #swagger.tags = ['Users']
     const { role } = req.body;
-    attempt(res, 200, () => userController.editRole(req.params.userid, role));
-    socketNotify(`/users/${req.params.userid}`);
+    const userid = req.params.userid;
+    const user = await userController.getUserByID(userid);
+
+    try {
+      if (user) {
+        const email = user?.email;
+        if (role === "VOLUNTEER") {
+          const response = await setVolunteerCustomClaims(email);
+        } else if (role === "SUPERVISOR") {
+          const response = await updateFirebaseUserToSupervisor(email);
+        } else if (role === "ADMIN") {
+          const response = await updateFirebaseUserToAdmin(email);
+        } else {
+          throw new Error("Invalid role type");
+        }
+
+        const editRoleResponse = await userController.editRole(userid, role);
+        socketNotify(`/users/${req.params.userid}`);
+        res.status(200).json(editRoleResponse);
+      } else {
+        throw new Error("User not found");
+      }
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
   }
 );
 
