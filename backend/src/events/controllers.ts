@@ -9,8 +9,7 @@ import {
 import { EventDTO } from "./views";
 import userController from "../users/controllers";
 import prisma from "../../client";
-import sgMail from "@sendgrid/mail";
-import { readFile } from "fs/promises";
+import { sendEmail } from "../utils/helpers";
 
 /**
  * Creates an object utf8 that can encode the buffer and convert to string.
@@ -325,34 +324,6 @@ const addAttendee = async (eventID: string, userID: string) => {
       },
     },
   });
-};
-
-/**
- * Sends an email to the specified address
- * @param email is the email address to send to
- * @param subject is the email subject
- * @param path is the path of the email template
- */
-const sendEmail = async (email: string, subject: string, path: string) => {
-  try {
-    // Loads an email template
-    const html = await readFile(path, "utf-8");
-    console.log("File content:", html);
-
-    // Create an email message
-    const msg = {
-      to: email, // Recipient's email address
-      from: "lagosfoodbankdev@gmail.com", // Sender's email address
-      subject: subject, // Email subject
-      html: html, // HTML body content
-    };
-
-    // Send the email
-    await sgMail.send(msg);
-    console.log("Email sent successfully!");
-  } catch (err) {
-    console.error("Error sending email:", err);
-  }
 };
 
 /**
