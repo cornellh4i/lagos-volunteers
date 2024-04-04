@@ -2,8 +2,6 @@ import request from "supertest";
 import { app, wss } from "../src/server";
 import { server } from "../src/index";
 
-
-
 afterAll(() => {
   wss.close();
   server.close();

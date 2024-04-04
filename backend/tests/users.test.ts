@@ -4,7 +4,7 @@ import { app, wss } from "../src/server";
 import { server } from "../src/index";
 
 afterAll(() => {
-  wss.close(); 
+  wss.close();
   server.close();
 });
 

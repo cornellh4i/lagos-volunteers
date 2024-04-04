@@ -33,43 +33,46 @@ interface UserRecord {
 }
 
 /**
- * Looks through Firebase and deletes every user created over 24 hours ago with an 
+ * Looks through Firebase and deletes every user created over 24 hours ago with an
  * unverified email. Also deletes the user from the local database.
  */
 export const deleteUnverifiedUsers = async () => {
   try {
     const listUsersResult = await admin.auth().listUsers();
-    
+
     const currentTime = Date.now();
     const twentyFourHours = 24 * 60 * 60 * 1000;
 
     for (const userRecord of listUsersResult.users) {
       const userData = userRecord.toJSON()! as UserRecord;
 
-      const creationTime = new Date(userRecord.metadata.creationTime!).getTime();
+      const creationTime = new Date(
+        userRecord.metadata.creationTime!
+      ).getTime();
       const timeDifference = currentTime - creationTime;
 
       if (!userData.emailVerified && timeDifference > twentyFourHours) {
-        
         // await admin.auth().deleteUser(userData.uid);
-        
+
         // await prisma.user.delete({
         //   where: {
         //     email: userData.email,
         //   },
         // });
-        
-        console.log(`Deleted unverified user: ${userData.uid}, ${userData.email}`);
+
+        console.log(
+          `Deleted unverified user: ${userData.uid}, ${userData.email}`
+        );
       } else if (userData.emailVerified) {
-        console.log(`User is verified: ${userData.uid}, ${userData.email}`)
+        console.log(`User is verified: ${userData.uid}, ${userData.email}`);
       }
     }
-    
-    console.log('Deletion complete.');
+
+    console.log("Deletion complete.");
   } catch (error) {
-    console.error('Error deleting unverified users:', error);
+    console.error("Error deleting unverified users:", error);
   }
-}
+};
 /**
  * Sends a message from the WebSocket server to all WebSocket-connected clients
  * @param resource is the API resource endpoint that has been updated. For example,
