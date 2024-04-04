@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Button from "../atoms/Button";
 import TextField from "../atoms/TextField";
 import Link from "next/link";
@@ -28,7 +28,12 @@ const SignupForm = () => {
   const router = useRouter();
 
   /** Firebase hooks */
-  const [signInWithEmailAndPassword] = useSignInWithEmailAndPassword(auth);
+  const [
+    signInWithEmailAndPassword,
+    signedInUser,
+    signInLoading,
+    signInErrors,
+  ] = useSignInWithEmailAndPassword(auth);
   const [sendEmailVerification, sending, emailError] =
     useSendEmailVerification(auth);
 
@@ -39,31 +44,6 @@ const SignupForm = () => {
     watch,
     formState: { errors },
   } = useForm<FormValues>();
-
-  /** Handle errors */
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const handleErrors = (errors: any) => {
-    const userAlreadyExistsPrisma = /Unique constraint failed/;
-    const passwordLengthError =
-      /The password must be a string with at least 6 characters./;
-    const invalidEmailError = /The email address is badly formatted./;
-    const EmailAlreadyExists = /A user with that email already exists/;
-
-    // TODO: add more common error patterns
-
-    switch (true) {
-      case userAlreadyExistsPrisma.test(errors):
-        return "A user with that email already exists.";
-      case passwordLengthError.test(errors):
-        return "Password should be at least 6 characters.";
-      case invalidEmailError.test(errors):
-        return "Invalid email address format.";
-      case EmailAlreadyExists.test(errors):
-        return "A user with that email already exists.";
-      default:
-        return "Something went wrong trying to create your account. Please try again.";
-    }
-  };
 
   /** State variables for the notification popups */
   const [notifOpen, setNotifOpen] = useState(false);
@@ -93,31 +73,62 @@ const SignupForm = () => {
   });
 
   /** Handles submit */
-  const handleSubmitUser: SubmitHandler<FormValues> = async (data, event) => {
-    try {
-      // Create a new user
-      const res = await mutateAsync(data);
+  const handleUserSignUp: SubmitHandler<FormValues> = async (data, event) => {
+    // Create a new user
+    const res = await mutateAsync(data);
 
-      // Log in
-      const { email, password } = data;
-      if (res.ok) {
-        const signedInUser = await signInWithEmailAndPassword(email, password);
-        if (signedInUser?.user) {
-          await sendEmailVerification();
-          router.push("/verify");
-        }
-      } else {
-        // Handle the case when the response is not ok
-        setNotifOpen(true);
-        setErrorMessage(
-          "Something went wrong trying to create your account. Please try again."
-        );
+    // Log in
+    const { email, password } = data;
+    if(res.ok){
+      const signedInUser = await signInWithEmailAndPassword(email, password);
+      if (signedInUser?.user) {
+        await sendEmailVerification()
+        router.push('/verify')        
       }
-    } catch (error: any) {
-      setNotifOpen(true);
-      setErrorMessage(error.message);
     }
   };
+
+  /** Handles signup success */
+  useEffect(() => {
+    if (signedInUser) {
+      router.push("/events/view");
+    }
+  }, [signedInUser]);
+
+  /** Handles signup API errors */
+  const [errorMessage, setErrorMessage] = useState("");
+  useEffect(() => {
+    if (isError) {
+      const userAlreadyExistsPrisma = /Unique constraint failed/;
+      const passwordLengthError =
+        /The password must be a string with at least 6 characters./;
+      const invalidEmailError = /The email address is badly formatted./;
+      const EmailAlreadyExists = /A user with that email already exists/;
+
+      // TODO: add more common error pattern
+
+      switch (true) {
+        case userAlreadyExistsPrisma.test(error.message):
+          setErrorMessage("A user with that email already exists.");
+          break;
+        case passwordLengthError.test(error.message):
+          setErrorMessage("Password should be at least 6 characters.");
+          break;
+        case invalidEmailError.test(error.message):
+          setErrorMessage("Invalid email address format.");
+          break;
+        case EmailAlreadyExists.test(error.message):
+          setErrorMessage("A user with that email already exists.");
+          break;
+        default:
+          setErrorMessage(
+            "Something went wrong trying to create your account. Please try again."
+          );
+          break;
+      }
+      setNotifOpen(true);
+    }
+  }, [isError]);
 
   return (
     <>
@@ -127,11 +138,11 @@ const SignupForm = () => {
         open={notifOpen}
         onClose={() => setNotifOpen(false)}
       >
-        Error: {handleErrors(errorMessage)}
+        Error: {errorMessage}
       </Snackbar>
 
       {/* Sign up form */}
-      <form onSubmit={handleSubmit(handleSubmitUser)} className="space-y-4">
+      <form onSubmit={handleSubmit(handleUserSignUp)} className="space-y-4">
         <img src="/lfbi_logo.png" className="w-24" />
         <div className="font-bold text-3xl">Sign Up</div>
         <div>

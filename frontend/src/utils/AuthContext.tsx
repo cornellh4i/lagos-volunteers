@@ -16,9 +16,11 @@ import { UserCredential, onAuthStateChanged } from "firebase/auth";
 import { useRouter } from "next/router";
 import Loading from "@/components/molecules/Loading";
 
+type Role = "Volunteer" | "Supervisor" | "Admin";
 // Define types for authentication context value
 type AuthContextValue = {
   user: User | null | undefined;
+  role: Role;
   loading: boolean;
   error: AuthError | Error | null | undefined;
   signOutUser: () => Promise<void>;
@@ -32,6 +34,7 @@ type AuthContextValue = {
 
 export const AuthContext = createContext<AuthContextValue>({
   user: undefined,
+  role: "Volunteer",
   loading: true,
   error: undefined,
   signInUserWithCustomToken: async () => {},
@@ -49,6 +52,7 @@ type AuthProviderProps = {
 
 export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [user, loading, error] = useAuthState(auth);
+  const [role, setRole] = useState<Role>("Volunteer");
   const [createUserWithEmailAndPassword] =
     useCreateUserWithEmailAndPassword(auth);
   const [signOut] = useSignOut(auth);
@@ -85,6 +89,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
   const value = {
     user,
+    role,
     loading,
     error,
     signOutUser,
@@ -114,6 +119,30 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     "/_error",
   ];
 
+  // Paths that can be accessed only by supervisors
+  const supervisorPaths = [
+    "/events/[eventid]/attendees",
+    "/events/[eventid]/edit",
+    "/events/create",
+  ];
+
+  // Paths that can be accessed only by admins
+  // TODO: /manage is not an actual path yet; replace this with whatever is the
+  // eventual path for the manage website page
+  const adminPaths = ["/manage", "/users/view"];
+
+  const setUserRoleBasedOnClaims = (claims: any) => {
+    if (claims.admin) {
+      setRole("Admin");
+      return "Admin";
+    } else if (claims.supervisor) {
+      setRole("Supervisor");
+      return "Supervisor";
+    } else if (claims.volunteer) {
+      setRole("Volunteer");
+      return "Volunteer";
+    }
+  };
   // paths that can be accessed when not verified
   const verifyPaths = ["/verify", "/password"];
 
@@ -124,12 +153,39 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const router = useRouter();
   useEffect(() => {
     const path = router.asPath;
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+      let userRole;
+      const regexMatcherforSupervisorPaths =
+        /^\/events\/[a-zA-Z0-9_-]+\/(attendees|edit)|\/events\/create$/;
 
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      // check auth state
+      if (user) {
+        const { claims } = await user.getIdTokenResult();
+        if (claims) {
+          userRole = setUserRoleBasedOnClaims(claims);
+          setIsAuthenticated(true);
+        }
+      } else {
+        setIsAuthenticated(false);
+      }
+
       if (!user && !publicPaths.includes(path) && !isResetPage(path)) {
         router.replace("/login");
-        setIsAuthenticated(false);
       } else if (user && user.emailVerified && authPaths.includes(path)) {
+        router.replace("/events/view");
+      } else if (
+        user &&
+        user.emailVerified &&
+        adminPaths.includes(path) &&
+        userRole !== "Admin"
+      ) {
+        router.replace("/events/view");
+      } else if (
+        user &&
+        user.emailVerified &&
+        regexMatcherforSupervisorPaths.test(path) &&
+        userRole === "Volunteer"
+      ) {
         router.replace("/events/view");
       } else if (
         user &&
@@ -141,6 +197,12 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       } else {
         setIsAuthenticated(true);
       }
+      const hideContent = () => setIsAuthenticated(false);
+      router.events.on("routeChangeStart", hideContent);
+
+      return () => {
+        router.events.off("routeChangeStart", hideContent);
+      };
     });
     return unsubscribe;
   }, [user, router, loading]);
