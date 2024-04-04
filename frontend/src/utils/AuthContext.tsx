@@ -194,6 +194,8 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         !isResetPage(path)
       ) {
         router.replace("/verify");
+      } else {
+        setIsAuthenticated(true);
       }
       const hideContent = () => setIsAuthenticated(false);
       router.events.on("routeChangeStart", hideContent);
