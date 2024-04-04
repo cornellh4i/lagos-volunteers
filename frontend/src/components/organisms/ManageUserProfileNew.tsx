@@ -104,7 +104,7 @@ const ModalBody = ({ status, blacklistFunc, handleClose }: modalBodyProps) => {
 const ManageUserProfileNew = () => {
   const router = useRouter();
   const { userid } = router.query;
-  const {user} = useAuth();
+  const { user } = useAuth();
 
   /** State variables for the notification popups */
   const [statusChangeNotifOnSuccess, setStatusChangeNotifOnSuccess] =

@@ -137,14 +137,17 @@ const About = ({ edit }: AboutProps) => {
           </div>
         ) : role === "Admin" ? (
           <div>
-            <h2>Yay!! you're an admin. You get special privileges on this page.</h2>
+            <h2>
+              Yay!! you're an admin. You get special privileges on this page.
+            </h2>
           </div>
         ) : role === "Volunteer" ? (
           <div>
             <h2>You're a volunteer</h2>
           </div>
-        ) : (<></>)
-        }
+        ) : (
+          <></>
+        )}
         <div>{ReactHtmlParser(value)}</div>
         <Grid item container>
           <Grid xs={11}></Grid>
