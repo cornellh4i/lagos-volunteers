@@ -20,7 +20,7 @@ import { formatDateString } from "@/utils/helpers";
 
 /** Displays upcoming events for the user */
 const UpcomingEvents = () => {
-  const { user } = useAuth();
+  const { user, role } = useAuth();
   const [userid, setUserid] = useState<string>("");
 
   /** Tanstack query for fetching upcoming events */
@@ -87,6 +87,25 @@ const UpcomingEvents = () => {
 
   return (
     <div>
+      {role === "Supervisor" ? (
+        <div>
+          <h2>
+            Yay!! you're a supervisor. You get special privileges on this page.
+          </h2>
+        </div>
+      ) : role === "Admin" ? (
+        <div>
+          <h2>
+            Yay!! you're an admin. You get special privileges on this page.
+          </h2>
+        </div>
+      ) : role === "Volunteer" ? (
+        <div>
+          <h2>You're a volunteer</h2>
+        </div>
+      ) : (
+        <></>
+      )}
       <Link href="/events/create">
         <Button className="mb-2 w-full sm:w-max">Create New Event</Button>
       </Link>
