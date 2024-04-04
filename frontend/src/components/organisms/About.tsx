@@ -5,6 +5,7 @@ import "react-quill/dist/quill.snow.css";
 import Button from "../atoms/Button";
 import Modal from "../molecules/Modal";
 import ReactHtmlParser from "react-html-parser";
+import { useAuth } from "@/utils/AuthContext";
 
 interface AboutProps {
   edit: boolean;
@@ -35,6 +36,8 @@ const ModalBody = ({ handleModal, handleClose }: modalBodyProps) => {
  * An About component
  */
 const About = ({ edit }: AboutProps) => {
+  const { role } = useAuth();
+
   var default_text = `
   <h2>About Lagos Food Bank</h2>
   <h3>Mission</h3>
@@ -128,6 +131,23 @@ const About = ({ edit }: AboutProps) => {
   } else {
     return (
       <div>
+        {role === "Supervisor" ? (
+          <div>
+            <h2>You're a supervisor</h2>
+          </div>
+        ) : role === "Admin" ? (
+          <div>
+            <h2>
+              Yay!! you're an admin. You get special privileges on this page.
+            </h2>
+          </div>
+        ) : role === "Volunteer" ? (
+          <div>
+            <h2>You're a volunteer</h2>
+          </div>
+        ) : (
+          <></>
+        )}
         <div>{ReactHtmlParser(value)}</div>
         <Grid item container>
           <Grid xs={11}></Grid>
