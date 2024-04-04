@@ -96,10 +96,16 @@ const ForgotPasswordForm = () => {
       </div>
       <div>
         <TextField
-          error={errors.email ? "Required" : undefined}
-          type="email"
+          error={errors.email?.message}
           label="Email"
-          {...register("email", { required: "true" })}
+          {...register("email", {
+            required: { value: true, message: "Required" },
+            pattern: {
+              value:
+                /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/,
+              message: "Invalid email address",
+            },
+          })}
         />
       </div>
       <div className="pt-2">

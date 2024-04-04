@@ -136,11 +136,12 @@ const EventCardCancel = ({ eventId, attendeeId }: EventCardCancelProps) => {
         <form onSubmit={handleSubmit(handleCancelSubmissionReason)}>
           <div className="font-semibold text-lg">Reason for canceling</div>
           <MultilineTextField
-            error={errors.cancelReason}
+            error={errors.cancelReason?.message}
             placeholder="Your answer here"
-            required={true}
             value={cancelationMessage}
-            {...register("cancelReason", { required: true })}
+            {...register("cancelReason", {
+              required: { value: true, message: "Required" },
+            })}
             onChange={(e: any) => setCancelationMessage(e.target.value)}
           />
           <div className="mt-3" />

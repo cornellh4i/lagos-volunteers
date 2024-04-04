@@ -251,8 +251,10 @@ const EventForm = ({ eventId, eventType, eventDetails }: EventFormProps) => {
         <div className="grid grid-cols-1 sm:grid-cols-2  col-span-2  sm:col-span-1">
           <TextField
             label="Event Name"
-            error={errors.eventName ? "Required" : undefined}
-            {...register("eventName", { required: true })}
+            error={errors.eventName?.message}
+            {...register("eventName", {
+              required: { value: true, message: "Required" },
+            })}
           />
         </div>
         <div className="sm:space-x-4 grid grid-cols-1 sm:grid-cols-2">
@@ -260,12 +262,12 @@ const EventForm = ({ eventId, eventType, eventDetails }: EventFormProps) => {
             <Controller
               name="startDate"
               control={control}
-              rules={{ required: true }}
+              rules={{ required: { value: true, message: "Required" } }}
               defaultValue={undefined}
               render={({ field }) => (
                 <DatePicker
                   label="Start Date"
-                  error={errors.startDate ? "Required" : undefined}
+                  error={errors.startDate?.message}
                   {...field}
                 />
               )}
@@ -274,11 +276,11 @@ const EventForm = ({ eventId, eventType, eventDetails }: EventFormProps) => {
           <Controller
             name="endDate"
             control={control}
-            rules={{ required: true }}
+            rules={{ required: { value: true, message: "Required" } }}
             defaultValue={undefined}
             render={({ field }) => (
               <DatePicker
-                error={errors.endDate ? "Required" : undefined}
+                error={errors.endDate?.message}
                 label="End Date"
                 {...field}
               />
@@ -290,11 +292,11 @@ const EventForm = ({ eventId, eventType, eventDetails }: EventFormProps) => {
             <Controller
               name="startTime"
               control={control}
-              rules={{ required: true }}
+              rules={{ required: { value: true, message: "Required" } }}
               defaultValue={undefined}
               render={({ field }) => (
                 <TimePicker
-                  error={errors.startTime ? "Required" : undefined}
+                  error={errors.startTime?.message}
                   label="Start Time"
                   {...field}
                 />
@@ -304,11 +306,11 @@ const EventForm = ({ eventId, eventType, eventDetails }: EventFormProps) => {
           <Controller
             name="endTime"
             control={control}
-            rules={{ required: true }}
+            rules={{ required: { value: true, message: "Required" } }}
             defaultValue={undefined}
             render={({ field }) => (
               <TimePicker
-                error={errors.endTime ? "Required" : undefined}
+                error={errors.endTime?.message}
                 label="End Time"
                 {...field}
               />
@@ -347,7 +349,7 @@ const EventForm = ({ eventId, eventType, eventDetails }: EventFormProps) => {
                   name: "location",
                   setFormValue: setValue,
                 }}
-                error={errors.location ? "Required" : undefined}
+                error={errors.location?.message}
               />
             )}
           </div>
@@ -356,14 +358,18 @@ const EventForm = ({ eventId, eventType, eventDetails }: EventFormProps) => {
           <TextField
             label="Volunteer Sign Up Cap"
             type="number"
-            error={errors.volunteerSignUpCap ? "Required" : undefined}
-            {...register("volunteerSignUpCap", { required: true })}
+            error={errors.volunteerSignUpCap?.message}
+            {...register("volunteerSignUpCap", {
+              required: { value: true, message: "Required " },
+            })}
           />
         </div>
         <MultilineTextField
           label="Event Description"
-          error={errors.eventDescription ? "Required" : undefined}
-          {...register("eventDescription", { required: true })}
+          error={errors.eventDescription?.message}
+          {...register("eventDescription", {
+            required: { value: true, message: "Required " },
+          })}
         />
         <Dropzone setError={setDropzoneError} label="Event Image" />
         <TextCopy
