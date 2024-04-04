@@ -12,21 +12,18 @@ import prisma from "../../client";
 import sgMail from "@sendgrid/mail";
 import { readFile } from "fs/promises";
 
-
 /**
  * Creates an object utf8 that can encode the buffer and convert to string.
  * Creates an object for each html file to return a string.
  */
 
-const htmlRegCancel = "./src/emails/Registration_Cancellation.html"
-const htmlRegSuccess = "./src/emails/Registration_Successful.html"
-const htmlCertApprove = "./src/emails/Certificate_Approval.html"
-const htmlBlacklist = "./src/emails/Blacklisted.html"
-const htmlVolunSuper = "./src/emails/Volunteer_Supervisor.html"
-const htmlSuperAdmin = "./src/emails/Supervisor_Admin.html"
-const htmlAttendConfirm = "./src/emails/Attendance_Confirmation.html"
-
-
+const htmlRegCancel = "./src/emails/Registration_Cancellation.html";
+const htmlRegSuccess = "./src/emails/Registration_Successful.html";
+const htmlCertApprove = "./src/emails/Certificate_Approval.html";
+const htmlBlacklist = "./src/emails/Blacklisted.html";
+const htmlVolunSuper = "./src/emails/Volunteer_Supervisor.html";
+const htmlSuperAdmin = "./src/emails/Supervisor_Admin.html";
+const htmlAttendConfirm = "./src/emails/Attendance_Confirmation.html";
 
 /**
  * Creates a new event and assign owner to it.

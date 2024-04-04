@@ -9,14 +9,13 @@ import userController from "../users/controllers";
 import sgMail from "@sendgrid/mail";
 import { readFile } from "fs/promises";
 
-const htmlRegCancel = "./src/emails/Registration_Cancellation.html"
-const htmlRegSuccess = "./src/emails/Registration_Successful.html"
-const htmlCertApprove = "./src/emails/Certificate_Approval.html"
-const htmlBlacklist = "./src/emails/Blacklisted.html"
-const htmlVolunSuper = "./src/emails/Volunteer_Supervisor.html"
-const htmlSuperAdmin = "./src/emails/Supervisor_Admin.html"
-const htmlAttendConfirm = "./src/emails/Attendance_Confirmation.html"
-
+const htmlRegCancel = "./src/emails/Registration_Cancellation.html";
+const htmlRegSuccess = "./src/emails/Registration_Successful.html";
+const htmlCertApprove = "./src/emails/Certificate_Approval.html";
+const htmlBlacklist = "./src/emails/Blacklisted.html";
+const htmlVolunSuper = "./src/emails/Volunteer_Supervisor.html";
+const htmlSuperAdmin = "./src/emails/Supervisor_Admin.html";
+const htmlAttendConfirm = "./src/emails/Attendance_Confirmation.html";
 
 /**
  * Creates a new user
@@ -498,11 +497,7 @@ const editPreferences = async (
  * @param userid: id of user to be updated
  * @returns promise with user or error
  */
-const editStatus = async (
-  userId: string, 
-  status: string
-  ) => {
-
+const editStatus = async (userId: string, status: string) => {
   // grabs the user and their email for SendGrid functionality
   const user = await userController.getUserByID(userId);
   var userEmail = user?.email as string;
@@ -546,8 +541,7 @@ const editRole = async (userId: string, role: string) => {
   if (process.env.NODE_ENV != "test") {
     if (prevUserRole === "SUPERVISOR" && role === "ADMIN") {
       await sendEmail(userEmail, "Your email subject", htmlSuperAdmin);
-    }
-    else if (prevUserRole === "VOLUNTEER" && role === "SUPERVISOR") {
+    } else if (prevUserRole === "VOLUNTEER" && role === "SUPERVISOR") {
       await sendEmail(userEmail, "Your email subject", htmlVolunSuper);
     }
   }
@@ -663,7 +657,6 @@ const sendEmail = async (email: string, subject: string, path: string) => {
     console.error("Error sending email:", err);
   }
 };
-
 
 export default {
   createUser,
