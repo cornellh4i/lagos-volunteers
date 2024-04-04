@@ -1,6 +1,7 @@
 import express, { Application } from "express";
 import bodyParser from "body-parser";
 import userRouter from "./users/views";
+import aboutRouter from "./about/views";
 import eventRouter from "./events/views";
 import swaggerUI from "swagger-ui-express";
 import spec from "../api-spec.json";
@@ -33,6 +34,7 @@ app.use(cors());
  */
 app.use("/users", userRouter);
 app.use("/events", eventRouter);
+app.use("/about", aboutRouter);
 
 // Root Url
 app.get("/", (req, res) => {
