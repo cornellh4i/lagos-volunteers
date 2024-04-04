@@ -1,18 +1,26 @@
 import express, { Application } from "express";
 import bodyParser from "body-parser";
 import userRouter from "./users/views";
+import aboutRouter from "./about/views";
 import eventRouter from "./events/views";
 import swaggerUI from "swagger-ui-express";
 import spec from "../api-spec.json";
 import cors from "cors";
 import cron from "node-cron";
+import { deleteUnverifiedUsers } from "./utils/helpers";
+import { WebSocketServer } from "ws";
 
-const app: Application = express();
+export const app: Application = express();
+export const wss = new WebSocketServer({ port: 8080 });
 
 // Scheduled cron jobs
-cron.schedule("*/1 * * * *", () => {
-  console.log("running a task every minute");
-});
+
+if (process.env.NODE_ENV !== `test`) {
+  cron.schedule("0 0 * * *", () => {
+    console.log("running a task every 24 hours");
+    // deleteUnverifiedUsers();
+  });
+}
 
 // Middleware to parse json request bodies
 app.use(bodyParser.json());
@@ -26,6 +34,7 @@ app.use(cors());
  */
 app.use("/users", userRouter);
 app.use("/events", eventRouter);
+app.use("/about", aboutRouter);
 
 // Root Url
 app.get("/", (req, res) => {
@@ -36,5 +45,3 @@ app.get("/", (req, res) => {
 app.get("*", (req, res) => {
   res.send("You have reached a route not defined in this API");
 });
-
-export default app;

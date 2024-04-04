@@ -17,6 +17,7 @@ import { Box, Grid } from "@mui/material";
 import Modal from "../molecules/Modal";
 import Snackbar from "../atoms/Snackbar";
 import { formatRoleOrStatus } from "@/utils/helpers";
+import { useAuth } from "@/utils/AuthContext";
 
 type userProfileData = {
   name: string;
@@ -103,6 +104,7 @@ const ModalBody = ({ status, blacklistFunc, handleClose }: modalBodyProps) => {
 const ManageUserProfileNew = () => {
   const router = useRouter();
   const { userid } = router.query;
+  const { user } = useAuth();
 
   /** State variables for the notification popups */
   const [statusChangeNotifOnSuccess, setStatusChangeNotifOnSuccess] =
@@ -231,6 +233,8 @@ const ManageUserProfileNew = () => {
     retry: false,
     onSuccess: () => {
       setRoleChangeNotifOpenOnSuccess(true);
+      // refresh firebase tokens
+      user?.getIdToken(true);
       queryClient.invalidateQueries({ queryKey: ["user", userid] });
     },
     onError: () => {
@@ -286,7 +290,9 @@ const ManageUserProfileNew = () => {
         variety="success"
       >
         {`Success: ${name} is now ${
-          role === "ADMIN" ? ` an ${formatRoleOrStatus(role)}` : ` a ${formatRoleOrStatus(role)}`
+          role === "ADMIN"
+            ? ` an ${formatRoleOrStatus(role)}`
+            : ` a ${formatRoleOrStatus(role)}`
         }`}
       </Snackbar>
 
@@ -330,7 +336,8 @@ const ManageUserProfileNew = () => {
       <div className="grid gap-4 md:grid-cols-2">
         <Card>
           <h3 className="mb-2 mt-0">
-            {name} is {role === "ADMIN" ? "an Admin" : `a ${formatRoleOrStatus(role)}`}
+            {name} is{" "}
+            {role === "ADMIN" ? "an Admin" : `a ${formatRoleOrStatus(role)}`}
           </h3>
           <div className="mb-4">
             This member currently has {hours} hours of volunteer experience.
