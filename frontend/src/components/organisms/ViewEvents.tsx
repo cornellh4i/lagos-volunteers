@@ -15,7 +15,7 @@ import { api } from "@/utils/api";
 import ManageSearchIcon from "@mui/icons-material/ManageSearch";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import Loading from "@/components/molecules/Loading";
-import Error from "./Error";
+import FetchDataError from "./FetchDataError";
 import { formatDateString } from "@/utils/helpers";
 
 /** Displays upcoming events for the user */
@@ -83,7 +83,7 @@ const UpcomingEvents = () => {
   if (isLoading) return <Loading />;
 
   /** Error screen */
-  if (isError) return <Error />;
+  if (isError) return <FetchDataError />;
 
   return (
     <div>

@@ -20,6 +20,8 @@ import { formatDateTimeToUI } from "@/utils/helpers";
 import EventCardCancelConfirmation from "./EventCardCancelConfirmation";
 import EventCardCancel from "./EventCardCancel";
 import Markdown from "react-markdown";
+import DefaultTemplate from "../templates/DefaultTemplate";
+import FetchDataError from "./FetchDataError";
 
 interface ViewEventDetailsProps {}
 
@@ -30,7 +32,7 @@ const ViewEventDetails = () => {
   const [userid, setUserid] = React.useState("");
 
   /** Tanstack query to fetch and update the event details */
-  const { data, isLoading, isError } = useQuery({
+  const { data, isLoading, isError, error } = useQuery({
     queryKey: ["event", id],
     queryFn: async () => {
       const userid = await fetchUserIdFromDatabase(user?.email as string);
@@ -74,9 +76,24 @@ const ViewEventDetails = () => {
     name: eventData.name,
   };
 
-  if (isLoading) return <Loading />;
-
   const dateHeader = formatDateTimeToUI(datetime);
+
+  if (isLoading) {
+    return (
+      <DefaultTemplate>
+        <Loading />
+      </DefaultTemplate>
+    );
+  }
+
+  if (isError) {
+    console.log(error);
+    return (
+      <DefaultTemplate>
+        <FetchDataError />
+      </DefaultTemplate>
+    );
+  }
 
   return (
     <EventTemplate
