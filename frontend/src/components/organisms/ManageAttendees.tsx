@@ -28,6 +28,7 @@ import GroupsIcon from "@mui/icons-material/Groups";
 import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
 import PersonIcon from "@mui/icons-material/Person";
 import EditIcon from "@mui/icons-material/Edit";
+import TextCopy from "../atoms/TextCopy";
 
 type attendeeData = {
   id: number;
@@ -532,17 +533,17 @@ const ManageAttendees = ({}: ManageAttendeesProps) => {
       />
 
       {/* Manage event */}
-      <div className="flex flex-col sm:flex-row sm:justify-between pb-6">
+      <div className="flex flex-col sm:flex-row sm:justify-between pb-6 sm:pb-4">
         <div className="font-semibold text-3xl mb-6">Malta Outreach</div>
         <div className="flex flex-col sm:flex-row gap-4">
           <Link href={`/events/${eventid}/edit`}>
-            <Button icon={<EditIcon />}>Edit Event</Button>
+            <Button icon={<EditIcon />}>Edit event</Button>
           </Link>
           <Link href={`/events/${eventid}/register`}>
-            <Button icon={<ArrowOutwardIcon />}>View Event</Button>
+            <Button icon={<ArrowOutwardIcon />}>View event</Button>
           </Link>
           <Button onClick={handleDuplicateEvent} icon={<FileCopyIcon />}>
-            Duplicate Event
+            Duplicate event
           </Button>
         </div>
       </div>
@@ -568,7 +569,7 @@ const ManageAttendees = ({}: ManageAttendeesProps) => {
         </div>
       </div>
       <br />
-      <div className="font-semibold text-2xl mb-6">Manage Volunteers</div>
+      <div className="font-semibold text-2xl mt-6 mb-6">Manage Volunteers</div>
       <TabContainer fullWidth tabs={tabs} />
     </>
   );
