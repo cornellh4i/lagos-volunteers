@@ -15,7 +15,7 @@ type FormValues = {
   email: string;
   firstName: string;
   lastName: string;
-  preferredName: string;
+  // preferredName: string;
   oldPassword: string;
   newPassword: string;
   confirmNewPassword: string;
@@ -79,13 +79,13 @@ const ProfileForm = ({ userDetails }: ProfileFormProps) => {
     handleSubmit,
     watch,
     reset,
-    formState: { errors },
+    formState: { errors, isDirty },
   } = useForm<FormValues>({
     defaultValues: {
       email: userDetails.email,
       firstName: userDetails.firstName,
       lastName: userDetails.lastName,
-      preferredName: userDetails.nickname,
+      // preferredName: userDetails.nickname,
       oldPassword: "",
       newPassword: "",
       confirmNewPassword: "",
@@ -131,7 +131,7 @@ const ProfileForm = ({ userDetails }: ProfileFormProps) => {
       return api.put(`/users/${userDetails.id}/profile`, {
         firstName: data.firstName,
         lastName: data.lastName,
-        nickname: data.preferredName,
+        // nickname: data.preferredName,
       });
     },
     onSuccess: () => {
@@ -201,13 +201,13 @@ const ProfileForm = ({ userDetails }: ProfileFormProps) => {
             required: { value: true, message: "Required" },
           })}
         />
-        <TextField
+        {/* <TextField
           label="Preferred name"
           error={errors.preferredName?.message}
           {...register("preferredName", {
             required: { value: true, message: "Required" },
           })}
-        />
+        /> */}
         <TextField
           type="password"
           label="Old password"
@@ -268,8 +268,9 @@ const ProfileForm = ({ userDetails }: ProfileFormProps) => {
               type="button"
               variety="secondary"
               onClick={() => {
-                reset(userDetails, { keepDefaultValues: true });
+                reset(undefined, { keepDefaultValues: true });
               }}
+              disabled={!isDirty}
             >
               Reset changes
             </Button>
