@@ -1,10 +1,8 @@
 import { Grid } from "@mui/material";
 import React, { useState, useRef } from "react";
-import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import Button from "../atoms/Button";
 import Modal from "../molecules/Modal";
-import ReactHtmlParser from "react-html-parser";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { api } from "@/utils/api";
 import Loading from "../molecules/Loading";
@@ -81,7 +79,6 @@ const About = ({ edit }: AboutProps) => {
     queryKey: ["about"],
     queryFn: async () => {
       const { data } = await api.get("/about");
-      setValue(data["data"].content);
       setMarkdown(data["data"]?.content);
       return data["data"];
     },
@@ -122,22 +119,18 @@ const About = ({ edit }: AboutProps) => {
     console.log(markdown);
   };
 
-  const [value, setValue] = useState(content);
   const [openConfirm, setOpenConfirm] = React.useState(false);
   const [editMode, setEditMode] = React.useState(false);
-  const lastValueRef = useRef(value);
   const handleConfirmOpen = () => setOpenConfirm(true);
   const handleConfirmClose = () => setOpenConfirm(false);
   const handleEditOpen = () => setEditMode(true);
   const handleEditClose = () => {
     setEditMode(false);
-    setValue(lastValueRef.current);
     setMarkdown(content);
   };
   const handleModalClick = async () => {
     setEditMode(false);
     handleConfirmClose();
-    lastValueRef.current = value;
     await updateAboutPage({ newContent: markdown });
   };
 
@@ -197,13 +190,6 @@ const About = ({ edit }: AboutProps) => {
         <div className="border border-gray-300 border-solid rounded-lg bg-white">
           <EditorComp onChange={handleEditorChange} markdown={markdown} />
         </div>
-        {/* <ReactQuill
-          theme="snow"
-          value={value}
-          onChange={setValue}
-          readOnly={false}
-        /> */}
-        {/* <br></br> */}
       </>
     );
   } else {
@@ -266,7 +252,6 @@ const About = ({ edit }: AboutProps) => {
         ) : (
           <></>
         )}
-        {/* <div>{ReactHtmlParser(value)}</div> */}
         <Markdown>{markdown}</Markdown>
       </div>
     );
