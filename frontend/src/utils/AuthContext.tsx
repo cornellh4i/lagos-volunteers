@@ -207,13 +207,14 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     return unsubscribe;
   }, [user, router, loading]);
 
-  if (loading || !isAuthenticated) {
-    return (
-      <div>
-        <Loading />
-      </div>
-    );
-  }
+  // No longer needed, moved to individual templates to avoid white flash on load
+  // if (loading || !isAuthenticated) {
+  //   return (
+  //     <div>
+  //       <Loading />
+  //     </div>
+  //   );
+  // }
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
