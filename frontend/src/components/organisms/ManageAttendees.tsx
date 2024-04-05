@@ -20,6 +20,13 @@ import { api } from "@/utils/api";
 import { useRouter } from "next/router";
 import Loading from "../molecules/Loading";
 import Card from "../molecules/Card";
+import Link from "next/link";
+import ArrowOutwardIcon from "@mui/icons-material/ArrowOutward";
+import IconTextHeader from "../atoms/IconTextHeader";
+import FmdGoodIcon from "@mui/icons-material/FmdGood";
+import GroupsIcon from "@mui/icons-material/Groups";
+import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
+import PersonIcon from "@mui/icons-material/Person";
 
 type attendeeData = {
   id: number;
@@ -526,14 +533,36 @@ const ManageAttendees = ({}: ManageAttendeesProps) => {
       {/* Manage event */}
       <div className="flex justify-between">
         <div className="font-semibold text-3xl mb-6">Malta Outreach</div>
-        <div>
+        <div className="flex gap-4">
+          <Link href={`/events/${eventid}/register`}>
+            <Button icon={<ArrowOutwardIcon />}>View Event Page</Button>
+          </Link>
           <Button onClick={handleDuplicateEvent} icon={<FileCopyIcon />}>
             Duplicate Event
           </Button>
         </div>
       </div>
       <div className="font-semibold text-2xl mb-6">Event Recap</div>
-      <div>Event recap here</div>
+      <div>
+        <div className="mt-5" />
+        <div className="grid gap-2 xl:gap-6 xl:grid-cols-2">
+          <IconTextHeader
+            icon={<CalendarTodayIcon />}
+            header={<>header</>}
+            body={<>body</>}
+          />
+          <IconTextHeader icon={<FmdGoodIcon />} header={<>location</>} />
+          <IconTextHeader
+            icon={<PersonIcon />}
+            header={<>header</>}
+            body={<>Supervisor</>}
+          />
+          <IconTextHeader
+            icon={<GroupsIcon />}
+            header={<>(capacity) volunteers needed</>}
+          />
+        </div>
+      </div>
       <br />
       <div className="font-semibold text-2xl mb-6">Manage Volunteers</div>
       <TabContainer fullWidth tabs={tabs} />

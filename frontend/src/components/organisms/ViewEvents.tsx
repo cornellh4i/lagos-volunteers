@@ -85,35 +85,40 @@ const UpcomingEvents = () => {
   /** Error screen */
   if (isError) return <FetchDataError />;
 
+  console.log(upcomingEventsSupervisor);
+
   return (
     <div>
-      {role === "Supervisor" ||
-        (role === "Admin" && (
-          <Link href="/events/create">
-            <Button className="mb-2 w-full sm:w-max">Create New Event</Button>
-          </Link>
-        ))}
+      {(role === "Supervisor" || role === "Admin") && (
+        <Link href="/events/create">
+          <Button className="mb-2 w-full sm:w-max">Create New Event</Button>
+        </Link>
+      )}
       {/* Display when no events are found */}
       {/* TODO: make this look better */}
-      {upcomingEventsSupervisor.length == 0 && upcomingEventsVolunteer == 0 && (
+      {((role === "Admin" && upcomingEventsSupervisor.length == 0) ||
+        (role === "Supervisor" && upcomingEventsSupervisor.length == 0) ||
+        (role === "Volunteer" && upcomingEventsVolunteer == 0)) && (
         <div className="p-10">
           <div className="text-center">You have no upcoming events</div>
         </div>
       )}
       {/* List of Upcoming events user supervises */}
-      {upcomingEventsSupervisor.map((event: ViewEventsEvent) => (
-        <div>
-          <div className="mt-5" />
-          <EventCardNew key={event.id} event={event} />
-        </div>
-      ))}
+      {(role === "Supervisor" || role === "Admin") &&
+        upcomingEventsSupervisor.map((event: ViewEventsEvent) => (
+          <div>
+            <div className="mt-5" />
+            <EventCardNew key={event.id} event={event} />
+          </div>
+        ))}
       {/* List of Upcoming events user registered for */}
-      {upcomingEventsVolunteer.map((event: ViewEventsEvent) => (
-        <div>
-          <div className="mt-5" />
-          <EventCardNew key={event.id} event={event} />
-        </div>
-      ))}
+      {role === "Volunteer" &&
+        upcomingEventsVolunteer.map((event: ViewEventsEvent) => (
+          <div>
+            <div className="mt-5" />
+            <EventCardNew key={event.id} event={event} />
+          </div>
+        ))}
       {/* <CardList>
         {eventDetails.map((event) => (
           <EventCard
@@ -136,7 +141,7 @@ const UpcomingEvents = () => {
 
 /** Displays past events for the user */
 const PastEvents = () => {
-  const { user } = useAuth();
+  const { user, role } = useAuth();
   const [userid, setUserid] = useState<string>("");
 
   /** Table pagination models and page sizes */
@@ -380,20 +385,31 @@ const PastEvents = () => {
 
   return (
     <>
-      <Table
-        columns={volunteerEventColumns}
-        rows={pastVolunteerEvents.result}
-        dataSetLength={pastVolunteerEvents.total}
-        paginationModel={paginationModelVolunteer}
-        setPaginationModel={setPaginationModelVolunteer}
-      />
-      <Table
-        columns={SupervisoreventColumns}
-        rows={pastSupervisorEvents.result}
-        dataSetLength={pastSupervisorEvents.total}
-        paginationModel={paginationModelSupervisor}
-        setPaginationModel={setPaginationModelSupervisor}
-      />
+      {((role === "Admin" && pastSupervisorEvents.result.length == 0) ||
+        (role === "Supervisor" && pastSupervisorEvents.result.length == 0) ||
+        (role === "Volunteer" && pastVolunteerEvents.result.length == 0)) && (
+        <div className="p-10">
+          <div className="text-center">There are no past events</div>
+        </div>
+      )}
+      {role === "Volunteer" && (
+        <Table
+          columns={volunteerEventColumns}
+          rows={pastVolunteerEvents.result}
+          dataSetLength={pastVolunteerEvents.total}
+          paginationModel={paginationModelVolunteer}
+          setPaginationModel={setPaginationModelVolunteer}
+        />
+      )}
+      {(role === "Supervisor" || role === "Admin") && (
+        <Table
+          columns={SupervisoreventColumns}
+          rows={pastSupervisorEvents.result}
+          dataSetLength={pastSupervisorEvents.total}
+          paginationModel={paginationModelSupervisor}
+          setPaginationModel={setPaginationModelSupervisor}
+        />
+      )}
     </>
   );
 };

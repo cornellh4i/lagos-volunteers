@@ -96,12 +96,12 @@ const About = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["about"] });
       setSuccessNotificationOpen(true);
-      setSuccessMessage("Successfully Updated Page Content!");
+      setSuccessMessage("Successfully updated page content!");
     },
     onError: (e: Error) => {
       console.log(e.message);
       setErrorNotificationOpen(true);
-      setErrorMessage("Couldn't Update Page Content");
+      setErrorMessage("Couldn't update page content");
     },
   });
 
