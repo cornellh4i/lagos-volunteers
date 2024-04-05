@@ -187,9 +187,7 @@ const About = ({ edit }: AboutProps) => {
             }
           />
         </div>
-        <div className="border border-gray-300 border-solid rounded-lg bg-white">
-          <EditorComp onChange={handleEditorChange} markdown={markdown} />
-        </div>
+        <EditorComp onChange={handleEditorChange} markdown={markdown} />
       </>
     );
   } else {

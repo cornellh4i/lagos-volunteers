@@ -377,9 +377,7 @@ const EventForm = ({ eventId, eventType, eventDetails }: EventFormProps) => {
         </div>
         <div>
           <div className="mb-1">Event Description</div>
-          <div className="border border-gray-300 border-solid rounded-lg">
-            <EditorComp onChange={handleEditorChange} markdown={markdown} />
-          </div>
+          <EditorComp onChange={handleEditorChange} markdown={markdown} />
           <div className="mt-1 text-xs text-red-500">
             {errors.eventDescription?.message}
           </div>

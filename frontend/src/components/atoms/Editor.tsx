@@ -9,6 +9,7 @@ import {
   headingsPlugin,
   listsPlugin,
   linkPlugin,
+  linkDialogPlugin,
   markdownShortcutPlugin,
 } from "@mdxeditor/editor";
 
@@ -35,32 +36,37 @@ interface EditorProps {
  */
 const Editor: FC<EditorProps> = ({ markdown, onChange, editorRef }) => {
   return (
-    <MDXEditor
-      ref={editorRef}
-      onChange={onChange}
-      markdown={markdown}
-      plugins={[
-        headingsPlugin(),
-        listsPlugin(),
-        markdownShortcutPlugin(),
-        toolbarPlugin({
-          toolbarContents: () => (
-            <>
-              {" "}
-              <UndoRedo />
-              <Separator />
-              <BoldItalicUnderlineToggles />
-              <Separator />
-              <ListsToggle />
-              <Separator />
-              <BlockTypeSelect />
-              <Separator />
-              <CreateLink />
-            </>
-          ),
-        }),
-      ]}
-    />
+    <div className="border border-gray-300 border-solid rounded-md bg-[#f0f0f3]">
+      <MDXEditor
+        contentEditableClassName="bg-white rounded-b-md"
+        ref={editorRef}
+        onChange={onChange}
+        markdown={markdown}
+        plugins={[
+          headingsPlugin(),
+          listsPlugin(),
+          markdownShortcutPlugin(),
+          linkPlugin(),
+          linkDialogPlugin(),
+          toolbarPlugin({
+            toolbarContents: () => (
+              <>
+                {" "}
+                <UndoRedo />
+                <Separator />
+                <BoldItalicUnderlineToggles />
+                <Separator />
+                <ListsToggle />
+                <Separator />
+                <BlockTypeSelect />
+                <Separator />
+                <CreateLink />
+              </>
+            ),
+          }),
+        ]}
+      />
+    </div>
   );
 };
 
