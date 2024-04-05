@@ -28,7 +28,7 @@ interface ViewEventDetailsProps {}
 const ViewEventDetails = () => {
   const router = useRouter();
   const id = router.query.eventid as string;
-  const { user } = useAuth();
+  const { user, role } = useAuth();
   const [userid, setUserid] = React.useState("");
 
   /** Tanstack query to fetch and update the event details */
@@ -130,12 +130,16 @@ const ViewEventDetails = () => {
       }
       img={<img className="w-full rounded-2xl" src="/lfbi_splash.png" />}
       card={
-        userHasCanceledAttendance ? (
-          <EventCardCancelConfirmation />
-        ) : eventAttendance ? (
-          <EventCardCancel eventId={eventid} attendeeId={userid} />
-        ) : (
-          <EventCardRegister eventId={eventid} attendeeId={userid} />
+        role === "Volunteer" && (
+          <div>
+            {userHasCanceledAttendance ? (
+              <EventCardCancelConfirmation />
+            ) : eventAttendance ? (
+              <EventCardCancel eventId={eventid} attendeeId={userid} />
+            ) : (
+              <EventCardRegister eventId={eventid} attendeeId={userid} />
+            )}
+          </div>
         )
       }
     />
