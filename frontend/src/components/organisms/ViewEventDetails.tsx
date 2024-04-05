@@ -107,7 +107,7 @@ const ViewEventDetails = () => {
         <div>
           <div className="sm:mt-5 font-semibold text-xl">About the event</div>
           <Divider />
-          <div className="mt-5"></div>
+          <div className="mt-5" />
           <Markdown>{description}</Markdown>
         </div>
       }
