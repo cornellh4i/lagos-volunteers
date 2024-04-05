@@ -19,6 +19,7 @@ import Loading from "@/components/molecules/Loading";
 import { formatDateTimeToUI } from "@/utils/helpers";
 import EventCardCancelConfirmation from "./EventCardCancelConfirmation";
 import EventCardCancel from "./EventCardCancel";
+import Markdown from "react-markdown";
 
 interface ViewEventDetailsProps {}
 
@@ -109,7 +110,7 @@ const ViewEventDetails = () => {
           <div className="mt-5"></div>
 
           <div>{name}</div>
-          <div>{description}</div>
+          <Markdown>{description}</Markdown>
           {/* TODO: Format description */}
           <div>Kindly find below the details of the outreach:</div>
           <div className="mt-5"></div>
