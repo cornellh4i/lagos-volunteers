@@ -254,7 +254,7 @@ const ProfileForm = ({ userDetails }: ProfileFormProps) => {
             </Button>
           </div>
           <div>
-            <Button type="submit">Save Changes</Button>
+            <Button type="submit">Save changes</Button>
           </div>
         </div>
       </form>
