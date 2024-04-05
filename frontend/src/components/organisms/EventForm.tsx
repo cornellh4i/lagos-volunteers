@@ -410,7 +410,9 @@ const EventForm = ({ eventId, eventType, eventDetails }: EventFormProps) => {
                 </Button>
               </div>
               <div className="order-2 sm:order-1">
-                <Button variety="secondary">Cancel</Button>
+                <Link href="/events/view">
+                  <Button variety="secondary">Cancel</Button>
+                </Link>
               </div>
             </div>
           ) : (
