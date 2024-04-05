@@ -121,6 +121,7 @@ const ManageUserProfileNew = () => {
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
 
+  // TODO: REPLACE CONSTANTS WITH ACTUAL VALUES
   const REFERENCE_HOURS = 80;
   const CERTIFICATE_HOURS = 120;
 

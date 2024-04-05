@@ -17,6 +17,9 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import Loading from "@/components/molecules/Loading";
 import FetchDataError from "./FetchDataError";
 import { formatDateString } from "@/utils/helpers";
+import Card from "../molecules/Card";
+import LinearProgress from "../atoms/LinearProgress";
+import ArrowOutwardIcon from "@mui/icons-material/ArrowOutward";
 
 /** Displays upcoming events for the user */
 const UpcomingEvents = () => {
@@ -305,7 +308,7 @@ const PastEvents = () => {
       field: "name",
       headerName: "Program Name",
       minWidth: 200,
-      flex: 1,
+      flex: 2,
       renderHeader: (params) => (
         <div style={{ fontWeight: "bold" }}>{params.colDef.headerName}</div>
       ),
@@ -321,6 +324,7 @@ const PastEvents = () => {
     {
       field: "hours",
       headerName: "Hours",
+      minWidth: 150,
       renderHeader: (params) => (
         <div style={{ fontWeight: "bold" }}>{params.colDef.headerName}</div>
       ),
@@ -340,6 +344,24 @@ const PastEvents = () => {
           />
         );
       },
+    },
+    {
+      headerName: "",
+      field: "actions",
+      minWidth: 150,
+      align: "right",
+      renderCell: (params) => (
+        <div>
+          <Link
+            href={`/events/${params.row.id}/register`}
+            className="no-underline"
+          >
+            <Button variety="tertiary" size="small" icon={<ArrowOutwardIcon />}>
+              View Event
+            </Button>
+          </Link>
+        </div>
+      ),
     },
   ];
 
@@ -383,6 +405,11 @@ const PastEvents = () => {
   /** Error screen */
   // if (isError) return <Error />;
 
+  // TODO: Replace constants with actual values
+  const hours = 36;
+  const REFERENCE_HOURS = 80;
+  const CERTIFICATE_HOURS = 120;
+
   return (
     <>
       {((role === "Admin" && pastSupervisorEvents.result.length == 0) ||
@@ -393,22 +420,58 @@ const PastEvents = () => {
         </div>
       )}
       {role === "Volunteer" && (
-        <Table
-          columns={volunteerEventColumns}
-          rows={pastVolunteerEvents.result}
-          dataSetLength={pastVolunteerEvents.total}
-          paginationModel={paginationModelVolunteer}
-          setPaginationModel={setPaginationModelVolunteer}
-        />
+        <>
+          <div className="grid gap-4 md:grid-cols-2 pb-4">
+            <Card>
+              <LinearProgress value={100 * (hours / REFERENCE_HOURS)} />
+              <h3 className="mb-2 mt-4">Reference Hour Tracker</h3>
+              <div className="mb-4">
+                {hours} / {REFERENCE_HOURS} hours complete
+              </div>
+              <div>
+                You must complete a minimum of 80 hours, have photo proof, and
+                write a reflection to receive a reference.
+              </div>
+              {/* <div className="mt-4">
+                <Button>Request Reference</Button>
+              </div> */}
+            </Card>
+            <Card>
+              <LinearProgress value={100 * (hours / CERTIFICATE_HOURS)} />
+              <h3 className="mb-2 mt-4">Certificate Hour Tracker</h3>
+              <div className="mb-4">
+                {hours} / {CERTIFICATE_HOURS} hours complete
+              </div>
+              <div>
+                You must complete a minimum of 120 hours, have photo proof, and
+                write a reflection to receive a volunteer certificate.
+              </div>
+              {/* <div className="mt-4">
+                <Button disabled>Request Certificate</Button>
+              </div> */}
+            </Card>
+          </div>
+          <Card size="table">
+            <Table
+              columns={volunteerEventColumns}
+              rows={pastVolunteerEvents.result}
+              dataSetLength={pastVolunteerEvents.total}
+              paginationModel={paginationModelVolunteer}
+              setPaginationModel={setPaginationModelVolunteer}
+            />
+          </Card>
+        </>
       )}
       {(role === "Supervisor" || role === "Admin") && (
-        <Table
-          columns={SupervisoreventColumns}
-          rows={pastSupervisorEvents.result}
-          dataSetLength={pastSupervisorEvents.total}
-          paginationModel={paginationModelSupervisor}
-          setPaginationModel={setPaginationModelSupervisor}
-        />
+        <Card size="table">
+          <Table
+            columns={SupervisoreventColumns}
+            rows={pastSupervisorEvents.result}
+            dataSetLength={pastSupervisorEvents.total}
+            paginationModel={paginationModelSupervisor}
+            setPaginationModel={setPaginationModelSupervisor}
+          />
+        </Card>
       )}
     </>
   );
