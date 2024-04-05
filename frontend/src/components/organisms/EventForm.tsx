@@ -415,21 +415,21 @@ const EventForm = ({ eventId, eventType, eventDetails }: EventFormProps) => {
             </div>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-12 gap-4">
-              <div className="sm:col-start-4 sm:col-span-3">
-                <Link href="/events/view">
-                  <Button>Cancel</Button>
+              <div className="order-last sm:order-first sm:col-start-4 sm:col-span-3">
+                <Link href={`/events/${eventId}/attendees`}>
+                  <Button variety="secondary">Go back</Button>
                 </Link>
               </div>
               <div className="sm:col-start-7 sm:col-span-3">
-                <Button>Cancel Event</Button>
+                <Button variety="error">Cancel event</Button>
               </div>
-              <div className="sm:col-start-10 sm:col-span-3">
+              <div className="order-first sm:order-last sm:col-start-10 sm:col-span-3">
                 <Button
                   type="submit"
                   loading={editEventPending}
                   disabled={editEventPending}
                 >
-                  Save Changes
+                  Save changes
                 </Button>
               </div>
             </div>

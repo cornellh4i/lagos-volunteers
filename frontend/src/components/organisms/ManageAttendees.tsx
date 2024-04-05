@@ -27,6 +27,7 @@ import FmdGoodIcon from "@mui/icons-material/FmdGood";
 import GroupsIcon from "@mui/icons-material/Groups";
 import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
 import PersonIcon from "@mui/icons-material/Person";
+import EditIcon from "@mui/icons-material/Edit";
 
 type attendeeData = {
   id: number;
@@ -531,11 +532,14 @@ const ManageAttendees = ({}: ManageAttendeesProps) => {
       />
 
       {/* Manage event */}
-      <div className="flex justify-between">
+      <div className="flex flex-col sm:flex-row sm:justify-between pb-6">
         <div className="font-semibold text-3xl mb-6">Malta Outreach</div>
-        <div className="flex gap-4">
+        <div className="flex flex-col sm:flex-row gap-4">
+          <Link href={`/events/${eventid}/edit`}>
+            <Button icon={<EditIcon />}>Edit Event</Button>
+          </Link>
           <Link href={`/events/${eventid}/register`}>
-            <Button icon={<ArrowOutwardIcon />}>View Event Page</Button>
+            <Button icon={<ArrowOutwardIcon />}>View Event</Button>
           </Link>
           <Button onClick={handleDuplicateEvent} icon={<FileCopyIcon />}>
             Duplicate Event
