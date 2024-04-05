@@ -87,28 +87,12 @@ const UpcomingEvents = () => {
 
   return (
     <div>
-      {role === "Supervisor" ? (
-        <div>
-          <h2>
-            Yay!! you're a supervisor. You get special privileges on this page.
-          </h2>
-        </div>
-      ) : role === "Admin" ? (
-        <div>
-          <h2>
-            Yay!! you're an admin. You get special privileges on this page.
-          </h2>
-        </div>
-      ) : role === "Volunteer" ? (
-        <div>
-          <h2>You're a volunteer</h2>
-        </div>
-      ) : (
-        <></>
-      )}
-      <Link href="/events/create">
-        <Button className="mb-2 w-full sm:w-max">Create New Event</Button>
-      </Link>
+      {role === "Supervisor" ||
+        (role === "Admin" && (
+          <Link href="/events/create">
+            <Button className="mb-2 w-full sm:w-max">Create New Event</Button>
+          </Link>
+        ))}
       {/* Display when no events are found */}
       {/* TODO: make this look better */}
       {upcomingEventsSupervisor.length == 0 && upcomingEventsVolunteer == 0 && (
@@ -123,7 +107,6 @@ const UpcomingEvents = () => {
           <EventCardNew key={event.id} event={event} />
         </div>
       ))}
-
       {/* List of Upcoming events user registered for */}
       {upcomingEventsVolunteer.map((event: ViewEventsEvent) => (
         <div>
@@ -131,7 +114,6 @@ const UpcomingEvents = () => {
           <EventCardNew key={event.id} event={event} />
         </div>
       ))}
-
       {/* <CardList>
         {eventDetails.map((event) => (
           <EventCard
