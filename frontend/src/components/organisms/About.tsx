@@ -18,10 +18,6 @@ const EditorComp = dynamic(() => import("@/components/atoms/Editor"), {
   ssr: false,
 });
 
-interface AboutProps {
-  edit: boolean;
-}
-
 type modalBodyProps = {
   handleModal: () => void;
   handleConfirmClose: () => void;
@@ -30,23 +26,19 @@ type modalBodyProps = {
 const ModalBody = ({ handleModal, handleConfirmClose }: modalBodyProps) => {
   return (
     <div>
-      <p className="text-center text-2xl font-bold">Publish text changes?</p>
-      <Grid container spacing={2}>
-        <Grid item md={6} xs={12}>
-          <Button
-            className="border-solid border-2 border-black font-semibold"
-            variety="secondary"
-            onClick={handleConfirmClose}
-          >
+      <p className="mt-0 text-center text-2xl font-semibold">
+        Publish text changes?
+      </p>
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+        <div className="order-1 sm:order-2">
+          <Button onClick={handleModal}>Yes, publish</Button>
+        </div>
+        <div className="order-2 sm:order-1">
+          <Button variety="secondary" onClick={handleConfirmClose}>
             Cancel
           </Button>
-        </Grid>
-        <Grid item md={6} xs={12}>
-          <Button className="font-semibold" onClick={handleModal}>
-            Yes, publish
-          </Button>
-        </Grid>
-      </Grid>
+        </div>
+      </div>
     </div>
   );
 };
@@ -59,7 +51,7 @@ type aboutPageData = {
 /**
  * An About component
  */
-const About = ({ edit }: AboutProps) => {
+const About = () => {
   const { role } = useAuth();
 
   /** State variables for the notification popups */
@@ -116,7 +108,6 @@ const About = ({ edit }: AboutProps) => {
   const [markdown, setMarkdown] = useState("");
   const handleEditorChange = (editorValue: string) => {
     setMarkdown(editorValue);
-    console.log(markdown);
   };
 
   const [openConfirm, setOpenConfirm] = React.useState(false);
@@ -138,7 +129,7 @@ const About = ({ edit }: AboutProps) => {
     return <Loading />;
   }
 
-  if (editMode == true) {
+  if (editMode === true) {
     return (
       <>
         <div className="grid grid-cols-1 sm:grid-cols-6 gap-4">
@@ -156,7 +147,6 @@ const About = ({ edit }: AboutProps) => {
             <Button
               className="bg-white"
               variety="secondary"
-              onClick={handleEditClose}
               disabled
               icon={<EditIcon />}
             >
@@ -211,44 +201,28 @@ const About = ({ edit }: AboutProps) => {
           {successMessage}
         </Snackbar>
 
-        <div className="grid grid-cols-1 sm:grid-cols-6 gap-4">
-          <div className="col-start-1 col-span-1 sm:col-start-1 sm:col-span-1">
-            <Button
-              className="bg-white"
-              variety="secondary"
-              icon={<UploadIcon />}
-            >
-              Upload Image
-            </Button>
+        {role === "Admin" && (
+          <div className="grid grid-cols-1 sm:grid-cols-6 gap-4">
+            <div className="col-start-1 col-span-1 sm:col-start-1 sm:col-span-1">
+              <Button
+                className="bg-white"
+                variety="secondary"
+                icon={<UploadIcon />}
+              >
+                Upload Image
+              </Button>
+            </div>
+            <div className="col-start-1 col-span-1 sm:col-start-2 sm:col-span-1">
+              <Button
+                className="bg-white"
+                variety="secondary"
+                onClick={handleEditOpen}
+                icon={<EditIcon />}
+              >
+                Edit Text
+              </Button>
+            </div>
           </div>
-          <div className="col-start-1 col-span-1 sm:col-start-2 sm:col-span-1">
-            <Button
-              className="bg-white"
-              variety="secondary"
-              onClick={handleEditOpen}
-              icon={<EditIcon />}
-            >
-              Edit Text
-            </Button>
-          </div>
-        </div>
-
-        {role === "Supervisor" ? (
-          <div>
-            <h2>You're a supervisor</h2>
-          </div>
-        ) : role === "Admin" ? (
-          <div>
-            <h2>
-              Yay!! you're an admin. You get special privileges on this page.
-            </h2>
-          </div>
-        ) : role === "Volunteer" ? (
-          <div>
-            <h2>You're a volunteer</h2>
-          </div>
-        ) : (
-          <></>
         )}
         <Markdown>{markdown}</Markdown>
       </div>

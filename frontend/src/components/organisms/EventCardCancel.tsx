@@ -32,7 +32,7 @@ const ModalBody = ({ handleClose, mutateFn }: modalProps) => {
           alignItems: "center",
         }}
       >
-        <h2>Cancel Registration</h2>
+        <h2 className="mt-0">Cancel Registration</h2>
       </Box>
       <Box
         sx={{
@@ -44,16 +44,16 @@ const ModalBody = ({ handleClose, mutateFn }: modalProps) => {
       >
         <div>Are you sure you want to cancel?</div>
       </Box>
-      <Grid container spacing={2}>
-        <Grid item md={6} xs={12}>
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+        <div className="order-1 sm:order-2">
+          <Button onClick={mutateFn}>Yes</Button>
+        </div>
+        <div className="order-2 sm:order-1">
           <Button variety="secondary" onClick={handleClose}>
             No
           </Button>
-        </Grid>
-        <Grid item md={6} xs={12}>
-          <Button onClick={mutateFn}>Yes</Button>
-        </Grid>
-      </Grid>
+        </div>
+      </div>
     </div>
   );
 };

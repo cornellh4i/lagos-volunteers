@@ -403,16 +403,14 @@ const EventForm = ({ eventId, eventType, eventDetails }: EventFormProps) => {
         />
         <div>
           {eventType == "create" ? (
-            <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
-              <div className="col-start-1 col-span-1 sm:col-start-3 sm:col-span-1">
-                <Link href="/events/view">
-                  <Button variety="secondary">Cancel</Button>
-                </Link>
-              </div>
-              <div className="col-start-1 col-span-1 sm:col-start-4 sm:col-span-1">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+              <div className="order-1 sm:order-2">
                 <Button loading={isPending} disabled={isPending} type="submit">
                   Create
                 </Button>
+              </div>
+              <div className="order-2 sm:order-1">
+                <Button variety="secondary">Cancel</Button>
               </div>
             </div>
           ) : (

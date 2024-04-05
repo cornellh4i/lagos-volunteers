@@ -241,8 +241,11 @@ const ProfileForm = ({ userDetails }: ProfileFormProps) => {
           onChange={handleCheckbox}
           label="Email notifications"
         />
-        <div className="sm:space-x-4 grid grid-cols-1 sm:grid-cols-2">
-          <div className="pb-4 sm:pb-0">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <div className="order-1 sm:order-2">
+            <Button type="submit">Save changes</Button>
+          </div>
+          <div className="order-2 sm:order-1">
             <Button
               type="button"
               variety="secondary"
@@ -250,11 +253,8 @@ const ProfileForm = ({ userDetails }: ProfileFormProps) => {
                 reset(userDetails, { keepDefaultValues: true });
               }}
             >
-              Cancel
+              Reset changes
             </Button>
-          </div>
-          <div>
-            <Button type="submit">Save changes</Button>
           </div>
         </div>
       </form>
