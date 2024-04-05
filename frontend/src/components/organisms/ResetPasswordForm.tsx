@@ -94,20 +94,38 @@ const ResetPassword = () => {
       <form onSubmit={handleSubmit(handleSubmitForm)} className="space-y-4">
         <div className="font-bold text-3xl">Reset Password</div>
         <div className="text-sm">
-          Password should meet the following requirements:
+          Passwords should meet the following requirements:
           <ul className="m-0 px-4">
-            <li>At least 8 characters in length</li>
-            <li>Contains a mix of uppercase and lowercase letters</li>
-            <li>Includes at least one number and one special character</li>
+            <li>At least 6 characters in length</li>
+            <li>Contain a mix of uppercase and lowercase letters</li>
+            <li>Include at least one number and one special character</li>
           </ul>
         </div>
         <div>
           <TextField
             error={errors.password?.message}
             type="password"
-            label="Password"
+            label="New password"
             {...register("password", {
               required: { value: true, message: "Required" },
+              minLength: {
+                value: 6,
+                message: "Password must be at least 6 characters",
+              },
+              validate: {
+                hasUpper: (value) =>
+                  /.*[A-Z].*/.test(value) ||
+                  "Password must contain at least one uppercase letter",
+                hasLower: (value) =>
+                  /.*[a-z].*/.test(value) ||
+                  "Password must contain at least one lowercase letter",
+                hasNumber: (value) =>
+                  /.*[0-9].*/.test(value) ||
+                  "Password must contain at least one number",
+                hasSpecialChar: (value) =>
+                  /.*[\W_].*/.test(value) ||
+                  "Password must contain at least one special character",
+              },
             })}
           />
         </div>
@@ -130,12 +148,12 @@ const ResetPassword = () => {
             Reset Password
           </Button>
         </div>
-        <div className="justify-center flex flex-row text-sm">
+        {/* <div className="justify-center flex flex-row text-sm">
           <Link href="/" className="text-black">
             {" "}
             Didn't request to reset password?
           </Link>
-        </div>
+        </div> */}
       </form>
     </>
   );

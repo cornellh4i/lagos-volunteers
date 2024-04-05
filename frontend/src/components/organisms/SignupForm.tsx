@@ -145,6 +145,14 @@ const SignupForm = () => {
       <form onSubmit={handleSubmit(handleUserSignUp)} className="space-y-4">
         <img src="/lfbi_logo.png" className="w-24" />
         <div className="font-bold text-3xl">Sign Up</div>
+        <div className="text-sm">
+          Passwords should meet the following requirements:
+          <ul className="m-0 px-4">
+            <li>At least 6 characters in length</li>
+            <li>Contain a mix of uppercase and lowercase letters</li>
+            <li>Include at least one number and one special character</li>
+          </ul>
+        </div>
         <div>
           <TextField
             error={errors.email?.message}
@@ -186,6 +194,24 @@ const SignupForm = () => {
             label="Password"
             {...register("password", {
               required: { value: true, message: "Required" },
+              minLength: {
+                value: 6,
+                message: "Password must be at least 6 characters",
+              },
+              validate: {
+                hasUpper: (value) =>
+                  /.*[A-Z].*/.test(value) ||
+                  "Password must contain at least one uppercase letter",
+                hasLower: (value) =>
+                  /.*[a-z].*/.test(value) ||
+                  "Password must contain at least one lowercase letter",
+                hasNumber: (value) =>
+                  /.*[0-9].*/.test(value) ||
+                  "Password must contain at least one number",
+                hasSpecialChar: (value) =>
+                  /.*[\W_].*/.test(value) ||
+                  "Password must contain at least one special character",
+              },
             })}
           />
         </div>
