@@ -59,12 +59,24 @@ const Profile = () => {
           You are {data?.role === "ADMIN" ? "an " : "a "}
           <span className="font-bold">{formatRoleOrStatus(data.role)}</span>
         </h3>
-        You are currently{" "}
-        {data?.role === "ADMIN" ? "an Admin" : `a ${data?.role.toLowerCase()}`}.{" "}
-        {data?.role === "ADMIN"
-          ? "An Admin"
-          : `A ${formatRoleOrStatus(data?.role)}`}{" "}
-        is allowed to register for and attend events.
+        {data?.role === "ADMIN" && (
+          <div>
+            You are currently an admin. An admin is allowed to create events,
+            manage events, and manage users.
+          </div>
+        )}
+        {data?.role === "SUPERVISOR" && (
+          <div>
+            You are currently a supervisor. A supervisor is allowed to create
+            events and manage events.
+          </div>
+        )}
+        {data?.role === "VOLUNTEER" && (
+          <div>
+            You are currently a volunteer. A volunteer is allowed to register
+            for and attend events.
+          </div>
+        )}
       </Card>
       <Card>
         <h3 className="mt-0 mb-2 font-normal">
@@ -73,10 +85,17 @@ const Profile = () => {
             {formatRoleOrStatus(data?.status)} Member
           </span>
         </h3>
-        You are currently an {data?.status.toLowerCase()} member. Your account
-        is {data?.status.toLowerCase()} and you are{" "}
-        {data?.status === "ACTIVE" ? "able to" : "not able to"} access all
-        normal website functions.
+        {data?.status === "ACTIVE" ? (
+          <div>
+            You are currently an active member. Your account is active and you
+            are able to access all normal website functions.
+          </div>
+        ) : (
+          <div>
+            You are currently an inactive member. Your account is inactive and
+            you are not able to access all normal website functions.
+          </div>
+        )}
       </Card>
       <h3 className="text-xl font-normal">My Profile</h3>
       <Card size="medium">
