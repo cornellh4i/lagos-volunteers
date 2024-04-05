@@ -176,46 +176,65 @@ const ProfileForm = ({ userDetails }: ProfileFormProps) => {
       {/* Profile form */}
       <form onSubmit={handleSubmit(handleChanges)} className="space-y-4">
         <TextField
+          error={errors.email?.message}
           label="Email"
-          disabled={true}
-          error={errors.email ? "Required" : undefined}
-          {...register("email", { required: true })}
+          {...register("email", {
+            required: { value: true, message: "Required" },
+            pattern: {
+              value:
+                /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/,
+              message: "Invalid email address",
+            },
+          })}
         />
         <TextField
+          error={errors.firstName?.message}
           label="First name"
-          error={errors.firstName ? "Required" : undefined}
-          {...register("firstName", { required: true })}
+          {...register("firstName", {
+            required: { value: true, message: "Required" },
+          })}
         />
         <TextField
+          error={errors.lastName?.message}
           label="Last name"
-          error={errors.lastName ? "Required" : undefined}
-          {...register("lastName", { required: true })}
+          {...register("lastName", {
+            required: { value: true, message: "Required" },
+          })}
         />
         <TextField
           label="Preferred name"
-          error={errors.preferredName ? "Required" : undefined}
-          {...register("preferredName", { required: true })}
+          error={errors.preferredName?.message}
+          {...register("preferredName", {
+            required: { value: true, message: "Required" },
+          })}
         />
         <TextField
           type="password"
           label="Old password"
-          error={errors.oldPassword ? "Required" : undefined}
-          {...register("oldPassword", { required: true })}
+          error={errors.oldPassword?.message}
+          {...register("oldPassword", {
+            required: { value: true, message: "Required" },
+          })}
         />
         <TextField
           type="password"
           label="New password "
-          {...register("newPassword", { required: false })}
+          error={errors.newPassword?.message}
+          {...register("newPassword", {
+            required: { value: true, message: "Required" },
+          })}
         />
         <TextField
           type="password"
-          label="Confirm new password"
-          error={
-            watch("newPassword") === watch("confirmNewPassword")
-              ? undefined
-              : "Passwords must match"
-          }
-          {...register("confirmNewPassword", { required: false })}
+          error={errors.confirmNewPassword?.message}
+          label="Confirm password"
+          {...register("confirmNewPassword", {
+            required: { value: true, message: "Required" },
+            validate: {
+              matchPassword: (value) =>
+                value === watch("newPassword") || "Passwords do not match",
+            },
+          })}
         />
         <Checkbox
           checked={checked}
@@ -235,7 +254,7 @@ const ProfileForm = ({ userDetails }: ProfileFormProps) => {
             </Button>
           </div>
           <div>
-            <Button type="submit">Save Changes</Button>
+            <Button type="submit">Save changes</Button>
           </div>
         </div>
       </form>

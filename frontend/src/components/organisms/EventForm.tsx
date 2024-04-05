@@ -21,6 +21,11 @@ import { convertToISO, fetchUserIdFromDatabase } from "@/utils/helpers";
 import { api } from "@/utils/api";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import Dropzone from "../atoms/Dropzone";
+import dynamic from "next/dynamic";
+
+const EditorComp = dynamic(() => import("@/components/atoms/Editor"), {
+  ssr: false,
+});
 
 interface EventFormProps {
   eventId?: string | string[] | undefined;
@@ -46,6 +51,12 @@ type FormValues = {
 const EventForm = ({ eventId, eventType, eventDetails }: EventFormProps) => {
   const { user } = useAuth();
   const queryClient = useQueryClient();
+
+  /** Markdown editor */
+  const [markdown, setMarkdown] = React.useState(`Hello **world**!`);
+  const handleEditorChange = (value: any) => {
+    setMarkdown(value);
+  };
 
   /** Dropzone errors */
   const [dropzoneError, setDropzoneError] = useState("");
@@ -251,8 +262,10 @@ const EventForm = ({ eventId, eventType, eventDetails }: EventFormProps) => {
         <div className="grid grid-cols-1 sm:grid-cols-2  col-span-2  sm:col-span-1">
           <TextField
             label="Event Name"
-            error={errors.eventName ? "Required" : undefined}
-            {...register("eventName", { required: true })}
+            error={errors.eventName?.message}
+            {...register("eventName", {
+              required: { value: true, message: "Required" },
+            })}
           />
         </div>
         <div className="sm:space-x-4 grid grid-cols-1 sm:grid-cols-2">
@@ -260,12 +273,12 @@ const EventForm = ({ eventId, eventType, eventDetails }: EventFormProps) => {
             <Controller
               name="startDate"
               control={control}
-              rules={{ required: true }}
+              rules={{ required: { value: true, message: "Required" } }}
               defaultValue={undefined}
               render={({ field }) => (
                 <DatePicker
                   label="Start Date"
-                  error={errors.startDate ? "Required" : undefined}
+                  error={errors.startDate?.message}
                   {...field}
                 />
               )}
@@ -274,11 +287,11 @@ const EventForm = ({ eventId, eventType, eventDetails }: EventFormProps) => {
           <Controller
             name="endDate"
             control={control}
-            rules={{ required: true }}
+            rules={{ required: { value: true, message: "Required" } }}
             defaultValue={undefined}
             render={({ field }) => (
               <DatePicker
-                error={errors.endDate ? "Required" : undefined}
+                error={errors.endDate?.message}
                 label="End Date"
                 {...field}
               />
@@ -290,11 +303,11 @@ const EventForm = ({ eventId, eventType, eventDetails }: EventFormProps) => {
             <Controller
               name="startTime"
               control={control}
-              rules={{ required: true }}
+              rules={{ required: { value: true, message: "Required" } }}
               defaultValue={undefined}
               render={({ field }) => (
                 <TimePicker
-                  error={errors.startTime ? "Required" : undefined}
+                  error={errors.startTime?.message}
                   label="Start Time"
                   {...field}
                 />
@@ -304,11 +317,11 @@ const EventForm = ({ eventId, eventType, eventDetails }: EventFormProps) => {
           <Controller
             name="endTime"
             control={control}
-            rules={{ required: true }}
+            rules={{ required: { value: true, message: "Required" } }}
             defaultValue={undefined}
             render={({ field }) => (
               <TimePicker
-                error={errors.endTime ? "Required" : undefined}
+                error={errors.endTime?.message}
                 label="End Time"
                 {...field}
               />
@@ -347,7 +360,7 @@ const EventForm = ({ eventId, eventType, eventDetails }: EventFormProps) => {
                   name: "location",
                   setFormValue: setValue,
                 }}
-                error={errors.location ? "Required" : undefined}
+                error={errors.location?.message}
               />
             )}
           </div>
@@ -356,15 +369,31 @@ const EventForm = ({ eventId, eventType, eventDetails }: EventFormProps) => {
           <TextField
             label="Volunteer Sign Up Cap"
             type="number"
-            error={errors.volunteerSignUpCap ? "Required" : undefined}
-            {...register("volunteerSignUpCap", { required: true })}
+            error={errors.volunteerSignUpCap?.message}
+            {...register("volunteerSignUpCap", {
+              required: { value: true, message: "Required " },
+            })}
           />
         </div>
-        <MultilineTextField
-          label="Event Description"
-          error={errors.eventDescription ? "Required" : undefined}
-          {...register("eventDescription", { required: true })}
-        />
+        <div>
+          <div className="mb-1">Event Description</div>
+          <div className="border border-gray-300 border-solid rounded-lg">
+            <EditorComp onChange={handleEditorChange} markdown={markdown} />
+          </div>
+          <div className="mt-1 text-xs text-red-500">
+            {errors.eventDescription?.message}
+          </div>
+        </div>
+        <div className="hidden">
+          <MultilineTextField
+            label="Event Description"
+            value={markdown}
+            error={errors.eventDescription?.message}
+            {...register("eventDescription", {
+              required: { value: true, message: "Required " },
+            })}
+          />
+        </div>
         <Dropzone setError={setDropzoneError} label="Event Image" />
         <TextCopy
           label="RSVP Link Image"

@@ -136,16 +136,24 @@ const LoginForm = () => {
         <form onSubmit={handleSubmit(handleLogin)} className="space-y-4">
           <div className="font-bold text-3xl"> Log In </div>
           <TextField
-            error={errors.email ? "Required" : undefined}
+            error={errors.email?.message}
             label="Email"
-            type="email"
-            {...register("email", { required: true })}
+            {...register("email", {
+              required: { value: true, message: "Required " },
+              pattern: {
+                value:
+                  /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/,
+                message: "Invalid email address",
+              },
+            })}
           />
           <TextField
-            error={errors.password ? "Required" : undefined}
+            error={errors.password?.message}
             label="Password"
             type="password"
-            {...register("password", { required: true })}
+            {...register("password", {
+              required: { value: true, message: "Required" },
+            })}
           />
           <div className="text-center">
             <Link

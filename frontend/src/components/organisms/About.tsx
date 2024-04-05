@@ -1,18 +1,22 @@
 import { Grid } from "@mui/material";
 import React, { useState, useRef } from "react";
-import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import Button from "../atoms/Button";
 import Modal from "../molecules/Modal";
-import ReactHtmlParser from "react-html-parser";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { api } from "@/utils/api";
 import Loading from "../molecules/Loading";
 import Snackbar from "../atoms/Snackbar";
+import Markdown from "react-markdown";
 
 import UploadIcon from "@mui/icons-material/Upload";
 import EditIcon from "@mui/icons-material/Edit";
 import { useAuth } from "@/utils/AuthContext";
+import dynamic from "next/dynamic";
+
+const EditorComp = dynamic(() => import("@/components/atoms/Editor"), {
+  ssr: false,
+});
 
 interface AboutProps {
   edit: boolean;
@@ -75,7 +79,7 @@ const About = ({ edit }: AboutProps) => {
     queryKey: ["about"],
     queryFn: async () => {
       const { data } = await api.get("/about");
-      setValue(data["data"].content);
+      setMarkdown(data["data"]?.content);
       return data["data"];
     },
   });
@@ -109,22 +113,25 @@ const About = ({ edit }: AboutProps) => {
     },
   });
 
-  const [value, setValue] = useState(content);
+  const [markdown, setMarkdown] = useState("");
+  const handleEditorChange = (editorValue: string) => {
+    setMarkdown(editorValue);
+    console.log(markdown);
+  };
+
   const [openConfirm, setOpenConfirm] = React.useState(false);
   const [editMode, setEditMode] = React.useState(false);
-  const lastValueRef = useRef(value);
   const handleConfirmOpen = () => setOpenConfirm(true);
   const handleConfirmClose = () => setOpenConfirm(false);
   const handleEditOpen = () => setEditMode(true);
   const handleEditClose = () => {
     setEditMode(false);
-    setValue(lastValueRef.current);
+    setMarkdown(content);
   };
   const handleModalClick = async () => {
     setEditMode(false);
     handleConfirmClose();
-    lastValueRef.current = value;
-    await updateAboutPage({ newContent: value });
+    await updateAboutPage({ newContent: markdown });
   };
 
   if (aboutPageFetchPending) {
@@ -137,8 +144,9 @@ const About = ({ edit }: AboutProps) => {
         <div className="grid grid-cols-1 sm:grid-cols-6 gap-4">
           <div className="col-start-1 col-span-1 sm:col-start-1 sm:col-span-1">
             <Button
-              className="bg-white font-semibold"
+              className="bg-white"
               variety="secondary"
+              disabled
               icon={<UploadIcon />}
             >
               Upload Image
@@ -146,30 +154,23 @@ const About = ({ edit }: AboutProps) => {
           </div>
           <div className="col-start-1 col-span-1 sm:col-start-2 sm:col-span-1">
             <Button
-              className="bg-white font-semibold"
+              className="bg-white"
               variety="secondary"
               onClick={handleEditClose}
+              disabled
               icon={<EditIcon />}
             >
               Edit Text
             </Button>
           </div>
           <div className="col-start-1 col-span-1 sm:col-start-5 sm:col-span-1">
-            <Button
-              className="border-solid border-2 border-[#CB2F2F] font-semibold text-[#CB2F2F]"
-              variety="secondary"
-              onClick={handleEditClose}
-            >
+            <Button variety="error" onClick={handleEditClose}>
               Cancel
             </Button>
           </div>
           <div className="col-start-1 col-span-1 sm:col-start-6 sm:col-span-1">
-            <Button
-              className="font-semibold"
-              variety="primary"
-              onClick={handleConfirmOpen}
-            >
-              Publish Changes
+            <Button variety="primary" onClick={handleConfirmOpen}>
+              Publish changes
             </Button>
           </div>
         </div>
@@ -186,13 +187,9 @@ const About = ({ edit }: AboutProps) => {
             }
           />
         </div>
-        <ReactQuill
-          theme="snow"
-          value={value}
-          onChange={setValue}
-          readOnly={false}
-        />
-        <br></br>
+        <div className="border border-gray-300 border-solid rounded-lg bg-white">
+          <EditorComp onChange={handleEditorChange} markdown={markdown} />
+        </div>
       </>
     );
   } else {
@@ -219,7 +216,7 @@ const About = ({ edit }: AboutProps) => {
         <div className="grid grid-cols-1 sm:grid-cols-6 gap-4">
           <div className="col-start-1 col-span-1 sm:col-start-1 sm:col-span-1">
             <Button
-              className="bg-white font-semibold"
+              className="bg-white"
               variety="secondary"
               icon={<UploadIcon />}
             >
@@ -228,7 +225,7 @@ const About = ({ edit }: AboutProps) => {
           </div>
           <div className="col-start-1 col-span-1 sm:col-start-2 sm:col-span-1">
             <Button
-              className="bg-white font-semibold"
+              className="bg-white"
               variety="secondary"
               onClick={handleEditOpen}
               icon={<EditIcon />}
@@ -255,7 +252,7 @@ const About = ({ edit }: AboutProps) => {
         ) : (
           <></>
         )}
-        <div>{ReactHtmlParser(value)}</div>
+        <Markdown>{markdown}</Markdown>
       </div>
     );
   }

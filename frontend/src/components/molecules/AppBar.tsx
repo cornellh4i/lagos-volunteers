@@ -56,78 +56,86 @@ const DrawerAppBar = ({ navs, buttons }: AppBarProps) => {
   );
 
   return (
-    <Box sx={{ display: "flex" }}>
-      <AppBar
-        sx={{ background: "transparent" }}
-        component="nav"
-        elevation={0}
-        position="static"
+    <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
+      <Box
+        sx={{
+          display: "flex",
+          maxWidth: 1328,
+          margin: "auto",
+        }}
       >
-        <Toolbar
-          variant="dense"
-          sx={{
-            paddingTop: 1,
-            paddingBottom: 1,
-            borderBottom: 1,
-            borderColor: "divider",
-          }}
+        <AppBar
+          sx={{ background: "transparent" }}
+          component="nav"
+          elevation={0}
+          position="static"
         >
-          {/* LFBI navbar brand */}
-          <div className="flex-1 h-8">
-            <img src="/lfbi_logo.png" className="h-full" />
-          </div>
-
-          {/* Navbar items */}
-          <Box className="hidden md:flex">
-            {navs.map((nav, index) => (
-              <Link key={index} href={nav.link}>
-                <Button className="text-black normal-case">{nav.label}</Button>
-              </Link>
-            ))}
-
-            {/* Right aligned components */}
-            <div className="ml-2 min-w-0">
-              {buttons.map((button, index) => (
-                <Button
-                  key={index}
-                  onClick={button.onClick}
-                  className="text-black normal-case"
-                >
-                  {button.label}
-                </Button>
-              ))}
-            </div>
-          </Box>
-          <IconButton
-            color="inherit"
-            aria-label="open drawer"
-            onClick={handleDrawerToggle}
-            className="default md:hidden"
+          <Toolbar
+            variant="dense"
+            sx={{
+              paddingTop: 1,
+              paddingBottom: 1,
+            }}
           >
-            <MenuIcon />
-          </IconButton>
-        </Toolbar>
-      </AppBar>
-      <Box component="nav">
-        <Drawer
-          container={() => document.getElementById("__next")}
-          variant="temporary"
-          open={mobileOpen}
-          onClose={handleDrawerToggle}
-          anchor="right"
-          ModalProps={{
-            keepMounted: true, // Better open performance on mobile.
-          }}
-          className="block md:hidden"
-          sx={{
-            "& .MuiDrawer-paper": {
-              boxSizing: "border-box",
-              width: drawerWidth,
-            },
-          }}
-        >
-          {drawer}
-        </Drawer>
+            {/* LFBI navbar brand */}
+            <div className="flex-1 h-8">
+              <img src="/lfbi_logo.png" className="h-full" />
+            </div>
+
+            {/* Navbar items */}
+            <Box className="hidden md:flex">
+              {navs.map((nav, index) => (
+                <Link key={index} href={nav.link}>
+                  <Button className="text-black normal-case">
+                    {nav.label}
+                  </Button>
+                </Link>
+              ))}
+
+              {/* Right aligned components */}
+              <div className="ml-2 min-w-0">
+                {buttons.map((button, index) => (
+                  <Button
+                    key={index}
+                    onClick={button.onClick}
+                    className="text-black normal-case"
+                  >
+                    {button.label}
+                  </Button>
+                ))}
+              </div>
+            </Box>
+            <IconButton
+              color="primary"
+              aria-label="open drawer"
+              onClick={handleDrawerToggle}
+              className="default md:hidden"
+            >
+              <MenuIcon />
+            </IconButton>
+          </Toolbar>
+        </AppBar>
+        <Box component="nav">
+          <Drawer
+            container={() => document.getElementById("__next")}
+            variant="temporary"
+            open={mobileOpen}
+            onClose={handleDrawerToggle}
+            anchor="right"
+            ModalProps={{
+              keepMounted: true, // Better open performance on mobile.
+            }}
+            className="block md:hidden"
+            sx={{
+              "& .MuiDrawer-paper": {
+                boxSizing: "border-box",
+                width: drawerWidth,
+              },
+            }}
+          >
+            {drawer}
+          </Drawer>
+        </Box>
       </Box>
     </Box>
   );
