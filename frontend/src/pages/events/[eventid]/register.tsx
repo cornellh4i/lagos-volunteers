@@ -14,57 +14,57 @@ import ViewEventDetails from "@/components/organisms/ViewEventDetails";
 
 /** An EventRegistration page */
 const EventRegistration = () => {
-  const router = useRouter();
-  const eventid = router.query.eventid as string;
-  const { user } = useAuth();
+  // const router = useRouter();
+  // const eventid = router.query.eventid as string;
+  // const { user } = useAuth();
 
-  /** Tanstack query to fetch and update the event details */
-  const { data, isLoading, isError } = useQuery({
-    queryKey: ["event", eventid],
-    queryFn: async () => {
-      const userid = await fetchUserIdFromDatabase(user?.email as string);
-      const { data } = await api.get(
-        `/users/${userid}/registered?eventid=${eventid}`
-      );
-      return data["data"];
-    },
-  });
-  let eventData = data?.eventDetails || {};
-  let eventAttendance = data?.attendance;
+  // /** Tanstack query to fetch and update the event details */
+  // const { data, isLoading, isError } = useQuery({
+  //   queryKey: ["event", eventid],
+  //   queryFn: async () => {
+  //     const userid = await fetchUserIdFromDatabase(user?.email as string);
+  //     const { data } = await api.get(
+  //       `/users/${userid}/registered?eventid=${eventid}`
+  //     );
+  //     return data["data"];
+  //   },
+  // });
+  // let eventData = data?.eventDetails || {};
+  // let eventAttendance = data?.attendance;
 
-  /** If the user canceled their event registration */
-  const userHasCanceledAttendance =
-    eventAttendance && eventAttendance["canceled"];
+  // /** If the user canceled their event registration */
+  // const userHasCanceledAttendance =
+  //   eventAttendance && eventAttendance["canceled"];
 
-  /** Throw error if fetching error */
+  // /** Throw error if fetching error */
 
-  /** Set event details */
-  const eventDetails: EventData = {
-    eventid: eventData.id,
-    location: eventData.location,
-    datetime: formatDateTimeRange(eventData.startDate, eventData.endDate),
-    capacity: eventData.capacity,
-    image_src: eventData.imageURL,
-    tags: eventData.tags,
-    supervisors: [
-      `${eventData.owner?.profile?.firstName} ${eventData.owner?.profile?.lastName}`,
-    ],
-    description: eventData.description,
-    name: eventData.name,
-  };
+  // /** Set event details */
+  // const eventDetails: EventData = {
+  //   eventid: eventData.id,
+  //   location: eventData.location,
+  //   datetime: formatDateTimeRange(eventData.startDate, eventData.endDate),
+  //   capacity: eventData.capacity,
+  //   image_src: eventData.imageURL,
+  //   tags: eventData.tags,
+  //   supervisors: [
+  //     `${eventData.owner?.profile?.firstName} ${eventData.owner?.profile?.lastName}`,
+  //   ],
+  //   description: eventData.description,
+  //   name: eventData.name,
+  // };
 
-  // TODO: remove
-  // if (userHasCanceledAttendance) {
-  //   router.push(`/events/${eventid}/cancel`);
+  // // TODO: remove
+  // // if (userHasCanceledAttendance) {
+  // //   router.push(`/events/${eventid}/cancel`);
+  // // }
+
+  // /** Loading screen */
+  // if (isLoading) return <Loading />;
+
+  // // TODO: Add Error Page
+  // if (isError) {
+  //   return <Error />;
   // }
-
-  /** Loading screen */
-  if (isLoading) return <Loading />;
-
-  // TODO: Add Error Page
-  if (isError) {
-    return <Error />;
-  }
 
   return (
     <ViewEventDetails />
