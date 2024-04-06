@@ -146,17 +146,13 @@ const ModalBody = ({
   eventDetails,
   eventid,
   setErrorMessage,
-  setSuccessMessage,
   setErrorNotificationOpen,
-  setSuccessNotificationOpen,
 }: {
   handleClose: () => void;
   eventDetails?: FormValues;
   eventid: string;
   setErrorMessage: React.Dispatch<React.SetStateAction<string>>;
-  setSuccessMessage: React.Dispatch<React.SetStateAction<string>>;
   setErrorNotificationOpen: React.Dispatch<React.SetStateAction<boolean>>;
-  setSuccessNotificationOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }) => {
   const { user } = useAuth();
   const queryClient = useQueryClient();
@@ -437,12 +433,10 @@ const ManageAttendees = ({}: ManageAttendeesProps) => {
   };
 
   /** State variables for the notification popups */
-  const [successNotificationOpen, setSuccessNotificationOpen] = useState(false);
   const [errorNotificationOpen, setErrorNotificationOpen] = useState(false);
 
   /** Handles form errors for time and date validation */
   const [errorMessage, setErrorMessage] = useState<string>("");
-  const [successMessage, setSuccessMessage] = useState<string>("");
 
   /** Loading screen */
   if (isPending) return <Loading />;
@@ -457,13 +451,6 @@ const ManageAttendees = ({}: ManageAttendeesProps) => {
         Error: {errorMessage}
       </Snackbar>
 
-      <Snackbar
-        variety="success"
-        open={successNotificationOpen}
-        onClose={() => setSuccessNotificationOpen(false)}>
-        {successMessage}
-      </Snackbar>
-
       {/* Duplicate event modal */}
       <Modal
         open={open}
@@ -473,9 +460,7 @@ const ManageAttendees = ({}: ManageAttendeesProps) => {
             eventid={eventid}
             handleClose={handleClose}
             setErrorMessage={setErrorMessage}
-            setSuccessMessage={setSuccessMessage}
             setErrorNotificationOpen={setErrorNotificationOpen}
-            setSuccessNotificationOpen={setSuccessNotificationOpen}
           />
         }
       />
