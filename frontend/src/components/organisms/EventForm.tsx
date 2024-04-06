@@ -109,11 +109,6 @@ const EventForm = ({
 
   /** Handles form errors for time and date validation */
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const [successMessage, setSuccessMessage] = useState<string | null>(null);
-
-  const back = () => {
-    router.push("/events/view");
-  };
 
   /** Tanstack mutation for creating a new event */
   const {
@@ -199,7 +194,6 @@ const EventForm = ({
     try {
       await handleCreateNewEvent(data);
     } catch (error) {
-      // console.error(error);
       setErrorNotificationOpen(true);
       setErrorMessage("We were unable to create this event. Please try again");
     }
@@ -210,7 +204,6 @@ const EventForm = ({
     try {
       await handleEditEventAsync(data);
     } catch (error) {
-      // console.error(error);
       setErrorNotificationOpen(true);
       setErrorMessage("We were unable to edit this event. Please try again");
     }
