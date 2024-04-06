@@ -38,10 +38,9 @@ interface attendeeTableProps {
 }
 
 type FormValues = {
-  startDate: string;
-  endDate: string;
-  startTime: string;
-  endTime: string;
+  startDate: Date;
+  startTime: Date;
+  endTime: Date;
 };
 
 interface ManageAttendeesProps {}
@@ -87,8 +86,7 @@ const eventColumns: GridColDef[] = [
         <Select
           size="small"
           value="PENDING"
-          onChange={(event: any) => console.log(event.target.value)}
-        >
+          onChange={(event: any) => console.log(event.target.value)}>
           <MenuItem value="CHECKED IN">Checked in</MenuItem>
           <MenuItem value="CHECKED OUT">Checked out</MenuItem>
           <MenuItem value="PENDING">Pending</MenuItem>
@@ -177,7 +175,6 @@ const ModalBody = ({
       ? {
           defaultValues: {
             startDate: eventDetails.startDate,
-            endDate: eventDetails.endDate,
             startTime: eventDetails.startTime,
             endTime: eventDetails.endTime,
           },
@@ -185,35 +182,14 @@ const ModalBody = ({
       : {}
   );
 
-  /** Handles form errors for time and date validation */
-  const timeAndDateValidation = () => {
-    const { startTime, startDate, endTime, endDate } = getValues();
-    const startDateTime = convertToISO(startTime, startDate);
-    const endDateTime = convertToISO(endTime, endDate);
-    if (new Date(startDateTime) >= new Date(endDateTime)) {
-      setErrorNotificationOpen(true);
-      setErrorMessage(
-        "End Date and Time must be later than Start Date and Time"
-      );
-      return false;
-    } else {
-      setErrorMessage("");
-    }
-    return true;
-  };
-
-  const back = () => {
-    router.push("/events/view");
-  };
-
   /** Tanstack mutation for creating a new event */
   const { mutateAsync, isPending, isError, isSuccess } = useMutation({
     mutationFn: async (formData: FormValues) => {
       // const eventid = router.query.eventid as string;
       const { data } = await api.get(`/events/${eventid}`);
-      const { startDate, endDate, startTime, endTime } = formData;
+      const { startDate, startTime, endTime } = formData;
       const startDateTime = convertToISO(startTime, startDate);
-      const endDateTime = convertToISO(endTime, endDate);
+      const endDateTime = convertToISO(endTime, startDate);
       const userid = await fetchUserIdFromDatabase(user?.email as string);
       const { response } = await api.post("/events", {
         userID: `${userid}`,
@@ -222,8 +198,8 @@ const ModalBody = ({
           location: `${data["data"].location}`,
           description: `${data["data"].description}`,
           imageURL: `${data["data"].imageURL}`,
-          startDate: new Date(startDateTime),
-          endDate: new Date(endDateTime),
+          startDate: startDateTime,
+          endDate: endDateTime,
           capacity: +data["data"].capacity,
           mode: `${data["data"].mode}`,
         },
@@ -232,19 +208,18 @@ const ModalBody = ({
     },
     retry: false,
     onSuccess: () => {
-      setSuccessNotificationOpen(true);
-      setSuccessMessage("Successfully Created Event! Redirecting...");
-      setTimeout(back, 1000);
+      localStorage.setItem("eventCreated", "true");
+      queryClient.invalidateQueries({
+        queryKey: ["events"],
+      });
+      router.push("/events/view");
     },
   });
 
   /** Helper for handling duplicating events */
   const handleDuplicateEvent: SubmitHandler<FormValues> = async (data) => {
     try {
-      const validation = timeAndDateValidation();
-      if (validation) {
-        await mutateAsync(data);
-      }
+      await mutateAsync(data);
     } catch (error) {
       setErrorNotificationOpen(true);
       setErrorMessage(
@@ -256,77 +231,61 @@ const ModalBody = ({
   return (
     <div>
       <form onSubmit={handleSubmit(handleDuplicateEvent)} className="space-y-4">
-        <div className="font-bold text-center text-2xl">Duplicate Event</div>
+        <div className="font-bold text-2xl">Duplicate Event</div>
         <div className="mb-12">
-          <div className="text-center">
+          <div>
             Create a new event with the same information as this one. Everything
             except the volunteer list will be copied over.
           </div>
         </div>
         <div className="font-bold">Date and Time for New Event</div>
-        <div className="sm:space-x-0 grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div className="pb-0 sm:pb-0">
-            <Controller
-              name="startDate"
-              control={control}
-              rules={{ required: true }}
-              defaultValue={undefined}
-              render={({ field }) => (
-                <DatePicker
-                  label={<span className="font-medium">Start Date</span>}
-                  error={errors.startDate ? "Required" : undefined}
-                  {...field}
-                />
-              )}
-            />
-          </div>
-          <div className="pb-0 sm:pb-0">
-            <Controller
-              name="startTime"
-              control={control}
-              rules={{ required: true }}
-              defaultValue={undefined}
-              render={({ field }) => (
-                <TimePicker
-                  error={errors.startTime ? "Required" : undefined}
-                  label={<span className="font-medium">Start Time</span>}
-                  {...field}
-                />
-              )}
-            />
-          </div>
-        </div>
-        <div className="sm:space-x-0 grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div className="pb-0 sm:pb-0">
-            <Controller
-              name="endDate"
-              control={control}
-              rules={{ required: true }}
-              defaultValue={undefined}
-              render={({ field }) => (
-                <DatePicker
-                  error={errors.endDate ? "Required" : undefined}
-                  label={<span className="font-medium">End Date</span>}
-                  {...field}
-                />
-              )}
-            />
-          </div>
-          <div className="pb-0 sm:pb-0">
-            <Controller
-              name="endTime"
-              control={control}
-              rules={{ required: true }}
-              defaultValue={undefined}
-              render={({ field }) => (
-                <TimePicker
-                  error={errors.endTime ? "Required" : undefined}
-                  label={<span className="font-medium">End Time</span>}
-                  {...field}
-                />
-              )}
-            />
-          </div>
+        <div className="sm:space-x-4 grid grid-cols-1 sm:grid-cols-3">
+          <Controller
+            name="startDate"
+            control={control}
+            rules={{ required: { value: true, message: "Required" } }}
+            render={({ field }) => (
+              <DatePicker
+                label="Date"
+                error={errors.startDate?.message}
+                {...field}
+              />
+            )}
+          />
+          <Controller
+            name="startTime"
+            control={control}
+            rules={{
+              required: { value: true, message: "Required" },
+              validate: (value) =>
+                value < watch("endTime") ||
+                "Start time must be before end time",
+            }}
+            render={({ field }) => (
+              <TimePicker
+                error={errors.startTime?.message}
+                label="Start Time"
+                {...field}
+              />
+            )}
+          />
+          <Controller
+            name="endTime"
+            control={control}
+            rules={{
+              required: { value: true, message: "Required" },
+              validate: (value) =>
+                value > watch("startTime") ||
+                "End time must be after start time",
+            }}
+            render={({ field }) => (
+              <TimePicker
+                error={errors.endTime?.message}
+                label="End Time"
+                {...field}
+              />
+            )}
+          />
         </div>
         <div className="grid gird-cols-1 gap-4 sm:grid-cols-2">
           <div className="order-1 sm:order-2">
@@ -494,16 +453,14 @@ const ManageAttendees = ({}: ManageAttendeesProps) => {
       <Snackbar
         variety="error"
         open={errorNotificationOpen}
-        onClose={() => setErrorNotificationOpen(false)}
-      >
+        onClose={() => setErrorNotificationOpen(false)}>
         Error: {errorMessage}
       </Snackbar>
 
       <Snackbar
         variety="success"
         open={successNotificationOpen}
-        onClose={() => setSuccessNotificationOpen(false)}
-      >
+        onClose={() => setSuccessNotificationOpen(false)}>
         {successMessage}
       </Snackbar>
 
