@@ -7,16 +7,17 @@ import { api } from "@/utils/api";
 import { useQuery } from "@tanstack/react-query";
 
 type eventData = {
+  id: string;
   eventName: string;
   location: string;
   volunteerSignUpCap: string;
   eventDescription: string;
   eventImage: string;
   rsvpLinkImage: string;
-  startDate: string;
-  endDate: string;
-  startTime: string;
-  endTime: string;
+  startDate: Date;
+  endDate: Date;
+  startTime: Date;
+  endTime: Date;
   mode: string;
 };
 
@@ -34,6 +35,7 @@ const EditEvent = () => {
     },
   });
   let event: eventData = {
+    id: data?.id,
     eventName: data?.name,
     location: data?.location,
     volunteerSignUpCap: data?.capacity,
@@ -52,7 +54,7 @@ const EditEvent = () => {
 
   return (
     <CenteredTemplate>
-      <EventForm eventId={eventid} eventType="edit" eventDetails={event} />
+      <EventForm eventType="edit" eventDetails={event} />
     </CenteredTemplate>
   );
 };
