@@ -111,7 +111,12 @@ const ViewEventDetails = () => {
           <Markdown>{description}</Markdown>
         </div>
       }
-      img={<img className="w-full rounded-2xl" src="/lfbi_splash.png" />}
+      img={
+        <img
+          className="w-full rounded-2xl"
+          src={image_src || "/lfbi_splash.png"}
+        />
+      }
       card={
         userHasCanceledAttendance ? (
           <EventCardCancelConfirmation />
