@@ -79,20 +79,12 @@ const ViewEventDetails = () => {
   const dateHeader = formatDateTimeToUI(datetime);
 
   if (isLoading) {
-    return (
-      <DefaultTemplate>
-        <Loading />
-      </DefaultTemplate>
-    );
+    return <Loading />;
   }
 
   if (isError) {
     console.log(error);
-    return (
-      <DefaultTemplate>
-        <FetchDataError />
-      </DefaultTemplate>
-    );
+    return <FetchDataError />;
   }
 
   return (
