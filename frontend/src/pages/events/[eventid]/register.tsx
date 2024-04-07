@@ -11,6 +11,7 @@ import { api } from "@/utils/api";
 import { useQuery } from "@tanstack/react-query";
 import FetchDataError from "@/components/organisms/FetchDataError";
 import ViewEventDetails from "@/components/organisms/ViewEventDetails";
+import DefaultTemplate from "@/components/templates/DefaultTemplate";
 
 /** An EventRegistration page */
 const EventRegistration = () => {
@@ -67,7 +68,9 @@ const EventRegistration = () => {
   // }
 
   return (
-    <ViewEventDetails />
+    <DefaultTemplate>
+      <ViewEventDetails />
+    </DefaultTemplate>
     // <CenteredTemplate>
     //   {eventAttendance ? (
     //     <EventConfirmation event={eventDetails} confirmation="register" />
