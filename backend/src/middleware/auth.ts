@@ -122,6 +122,7 @@ export const authIfAdmin = (
     try {
       const { authToken } = req;
       const userInfo = await firebase.auth().verifyIdToken(authToken);
+      console.log(userInfo);
       if (userInfo.admin === true) {
         req.authId = userInfo.uid;
         return next();

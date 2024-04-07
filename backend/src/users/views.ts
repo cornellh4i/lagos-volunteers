@@ -3,6 +3,8 @@ import { Prisma, userRole, UserStatus } from "@prisma/client";
 import userController from "./controllers";
 import {
   auth,
+  authIfAdmin,
+  authIfSupervisor,
   setVolunteerCustomClaims,
   updateFirebaseUserToSupervisor,
   updateFirebaseUserToAdmin,
@@ -13,6 +15,8 @@ import * as firebase from "firebase-admin";
 import { attempt, socketNotify } from "../utils/helpers";
 
 let useAuth: RequestHandler;
+let useAdminAuth = authIfAdmin as RequestHandler;
+let useSupervisorAuth = authIfSupervisor as RequestHandler;
 
 process.env.NODE_ENV === "test"
   ? (useAuth = NoAuth as RequestHandler)
@@ -96,7 +100,7 @@ userRouter.get("/count", useAuth, async (req: Request, res: Response) => {
   attempt(res, 200, userController.getCountUsers);
 });
 
-userRouter.get("/", useAuth, async (req: Request, res: Response) => {
+userRouter.get("/", useSupervisorAuth || useAdminAuth, async (req: Request, res: Response) => {
   // #swagger.tags = ['Users']
   const filter = {
     firstName: req.query.firstName as string,
@@ -156,7 +160,7 @@ userRouter.get("/sorting", useAuth, async (req: Request, res: Response) => {
 
 userRouter.get(
   "/:userid/profile",
-  useAuth,
+  useAdminAuth,
   async (req: Request, res: Response) => {
     // #swagger.tags = ['Users']
     attempt(res, 200, () => userController.getUserProfile(req.params.userid));
@@ -222,7 +226,7 @@ userRouter.get(
 
 userRouter.put(
   "/:userid/profile",
-  useAuth,
+  useAdminAuth,
   async (req: Request, res: Response) => {
     // #swagger.tags = ['Users']
     attempt(res, 200, () =>

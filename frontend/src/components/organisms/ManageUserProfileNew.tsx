@@ -267,6 +267,10 @@ const ManageUserProfileNew = () => {
     return <Loading />;
   }
 
+  if (isError) {
+    return <div>Error</div>;
+  }
+
   return (
     <>
       <Modal
