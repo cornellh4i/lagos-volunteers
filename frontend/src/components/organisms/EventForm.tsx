@@ -215,7 +215,8 @@ const EventForm = ({
       <Snackbar
         variety="error"
         open={errorNotificationOpen}
-        onClose={() => setErrorNotificationOpen(false)}>
+        onClose={() => setErrorNotificationOpen(false)}
+      >
         Error: {errorMessage}
       </Snackbar>
 
@@ -225,7 +226,8 @@ const EventForm = ({
             ? handleSubmit(handleCreateEvent)
             : handleSubmit(handleEditEvent)
         }
-        className="space-y-4">
+        className="space-y-4"
+      >
         <div className="font-bold text-3xl">
           {eventType == "create" ? "Create Event" : "Edit Event"}
         </div>
@@ -238,7 +240,7 @@ const EventForm = ({
             })}
           />
         </div>
-        <div className="sm:space-x-4 grid grid-cols-1 sm:grid-cols-3">
+        <div className="space-y-4 sm:space-y-0 sm:space-x-4 grid grid-cols-1 sm:grid-cols-3">
           <Controller
             name="startDate"
             control={control}
@@ -294,7 +296,8 @@ const EventForm = ({
               aria-labelledby="demo-row-radio-buttons-group-label"
               name="row-radio-buttons-group"
               defaultValue={eventDetails ? eventDetails.mode : "Virtual"}
-              sx={{ borderRadius: 2, borderColor: "primary.main" }}>
+              sx={{ borderRadius: 2, borderColor: "primary.main" }}
+            >
               <FormControlLabel
                 value="Virtual"
                 control={<Radio />}
@@ -389,7 +392,8 @@ const EventForm = ({
                 <Button
                   type="submit"
                   loading={editEventPending}
-                  disabled={editEventPending}>
+                  disabled={editEventPending}
+                >
                   Save Changes
                 </Button>
               </div>
