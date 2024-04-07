@@ -55,10 +55,11 @@ interface LocationPickerProps {
 const LocationPicker = ({
   label,
   form,
+  defaultValue,
   error = "",
   ...props
 }: LocationPickerProps) => {
-  const [value, setValue] = React.useState<PlaceType | null>(null);
+  const [value, setValue] = React.useState<PlaceType | null>(defaultValue);
   const [inputValue, setInputValue] = React.useState("");
   const [options, setOptions] = React.useState<readonly PlaceType[]>([]);
   const loaded = React.useRef(false);
@@ -135,6 +136,7 @@ const LocationPicker = ({
       <div className="mb-1">{label}</div>
       <Autocomplete
         {...props}
+        freeSolo
         id="google-map-demo"
         getOptionLabel={(option) =>
           typeof option === "string" ? option : option.description
@@ -146,9 +148,18 @@ const LocationPicker = ({
         filterSelectedOptions
         value={value}
         noOptionsText="No locations"
-        onChange={(event: any, newValue: PlaceType | null) => {
-          setOptions(newValue ? [newValue, ...options] : options);
-          setValue(newValue);
+        onChange={(event: any, newValue: PlaceType | string | null) => {
+          if (typeof newValue === "string") {
+            newValue = {
+              description: newValue,
+              structured_formatting: {
+                main_text: newValue,
+                secondary_text: "",
+              },
+            };
+            setOptions(newValue ? [newValue, ...options] : options);
+            setValue(newValue);
+          }
         }}
         onInputChange={(event, newInputValue) => {
           setInputValue(newInputValue);
@@ -158,6 +169,9 @@ const LocationPicker = ({
         }}
         renderInput={(params) => <TextField {...params} />}
         renderOption={(props, option) => {
+          if (typeof option === "string") {
+            return <div>{option}</div>;
+          }
           const matches =
             option.structured_formatting.main_text_matched_substrings || [];
 
@@ -168,7 +182,6 @@ const LocationPicker = ({
               match.offset + match.length,
             ])
           );
-
           return (
             <li {...props}>
               <Grid container alignItems="center">
@@ -177,14 +190,12 @@ const LocationPicker = ({
                 </Grid>
                 <Grid
                   item
-                  sx={{ width: "calc(100% - 44px)", wordWrap: "break-word" }}
-                >
+                  sx={{ width: "calc(100% - 44px)", wordWrap: "break-word" }}>
                   {parts.map((part, index) => (
                     <Box
                       key={index}
                       component="span"
-                      sx={{ fontWeight: part.highlight ? "bold" : "regular" }}
-                    >
+                      sx={{ fontWeight: part.highlight ? "bold" : "regular" }}>
                       {part.text}
                     </Box>
                   ))}
