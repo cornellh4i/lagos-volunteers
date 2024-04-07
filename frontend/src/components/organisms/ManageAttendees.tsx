@@ -86,7 +86,8 @@ const eventColumns: GridColDef[] = [
         <Select
           size="small"
           value="PENDING"
-          onChange={(event: any) => console.log(event.target.value)}>
+          onChange={(event: any) => console.log(event.target.value)}
+        >
           <MenuItem value="CHECKED IN">Checked in</MenuItem>
           <MenuItem value="CHECKED OUT">Checked out</MenuItem>
           <MenuItem value="PENDING">Pending</MenuItem>
@@ -235,7 +236,7 @@ const ModalBody = ({
           </div>
         </div>
         <div className="font-bold">Date and Time for New Event</div>
-        <div className="sm:space-x-4 grid grid-cols-1 sm:grid-cols-3">
+        <div className="space-y-4 sm:space-y-0 sm:space-x-4 grid grid-cols-1 sm:grid-cols-3">
           <Controller
             name="startDate"
             control={control}
@@ -447,7 +448,8 @@ const ManageAttendees = ({}: ManageAttendeesProps) => {
       <Snackbar
         variety="error"
         open={errorNotificationOpen}
-        onClose={() => setErrorNotificationOpen(false)}>
+        onClose={() => setErrorNotificationOpen(false)}
+      >
         Error: {errorMessage}
       </Snackbar>
 
