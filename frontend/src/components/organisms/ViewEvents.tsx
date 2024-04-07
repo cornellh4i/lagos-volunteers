@@ -17,6 +17,8 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import Loading from "@/components/molecules/Loading";
 import Error from "./Error";
 import { formatDateString } from "@/utils/helpers";
+import Snackbar from "../atoms/Snackbar";
+
 
 /** Displays upcoming events for the user */
 const UpcomingEvents = () => {
@@ -390,12 +392,6 @@ const PastEvents = () => {
     },
   ];
 
-  /** Loading screen */
-  // if (isLoading) return <Loading />;
-
-  /** Error screen */
-  // if (isError) return <Error />;
-
   return (
     <>
       <Table
@@ -431,8 +427,38 @@ const ViewEvents = () => {
       },
     ];
 
+    const [isEventCreated, setIsEventCreated] = useState(false);
+    const [isEventEdited, setIsEventEdited] = useState(false);
+
+    useEffect(() => {
+      const isEventCreated = localStorage.getItem("eventCreated");
+      if (isEventCreated) {
+        setIsEventCreated(true);
+        localStorage.removeItem("eventCreated");
+      }
+      if (localStorage.getItem("eventEdited")) {
+        setIsEventEdited(true);
+        localStorage.removeItem("eventEdited");
+      }
+    }, []);
+
     return (
       <>
+        {/* Event creation success notification */}
+        <Snackbar
+          variety="success"
+          open={isEventCreated}
+          onClose={() => setIsEventCreated(false)}>
+          Your event was successfully created!
+        </Snackbar>
+
+        {/* Event editing success notification */}
+        <Snackbar
+          variety="success"
+          open={isEventEdited}
+          onClose={() => setIsEventEdited(false)}>
+          Your event has been successfully updated!
+        </Snackbar>
         <TabContainer
           tabs={tabs}
           left={<div className="text-3xl font-semibold">My Events</div>}
