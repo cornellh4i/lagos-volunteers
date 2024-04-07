@@ -412,13 +412,6 @@ const PastEvents = () => {
 
   return (
     <>
-      {((role === "Admin" && pastSupervisorEvents.result.length == 0) ||
-        (role === "Supervisor" && pastSupervisorEvents.result.length == 0) ||
-        (role === "Volunteer" && pastVolunteerEvents.result.length == 0)) && (
-        <div className="p-10">
-          <div className="text-center">There are no past events</div>
-        </div>
-      )}
       {role === "Volunteer" && (
         <>
           <div className="grid gap-4 md:grid-cols-2 pb-4">
@@ -451,27 +444,50 @@ const PastEvents = () => {
               </div> */}
             </Card>
           </div>
-          <Card size="table">
-            <Table
-              columns={volunteerEventColumns}
-              rows={pastVolunteerEvents.result}
-              dataSetLength={pastVolunteerEvents.total}
-              paginationModel={paginationModelVolunteer}
-              setPaginationModel={setPaginationModelVolunteer}
-            />
-          </Card>
+          {/* {((role === "Admin" && pastSupervisorEvents.result.length == 0) ||
+            (role === "Supervisor" &&
+              pastSupervisorEvents.result.length == 0) ||
+            (role === "Volunteer" &&
+              pastVolunteerEvents.result.length == 0)) && (
+            <div className="p-10">
+              <div className="text-center">There are no past events</div>
+            </div>
+          )} */}
+          {pastVolunteerEvents.result.length === 0 ? (
+            <div className="p-10">
+              <div className="text-center">There are no past events</div>
+            </div>
+          ) : (
+            <Card size="table">
+              <Table
+                columns={volunteerEventColumns}
+                rows={pastVolunteerEvents.result}
+                dataSetLength={pastVolunteerEvents.total}
+                paginationModel={paginationModelVolunteer}
+                setPaginationModel={setPaginationModelVolunteer}
+              />
+            </Card>
+          )}
         </>
       )}
       {(role === "Supervisor" || role === "Admin") && (
-        <Card size="table">
-          <Table
-            columns={SupervisoreventColumns}
-            rows={pastSupervisorEvents.result}
-            dataSetLength={pastSupervisorEvents.total}
-            paginationModel={paginationModelSupervisor}
-            setPaginationModel={setPaginationModelSupervisor}
-          />
-        </Card>
+        <>
+          {pastSupervisorEvents.result.length === 0 ? (
+            <div className="p-10">
+              <div className="text-center">There are no past events</div>
+            </div>
+          ) : (
+            <Card size="table">
+              <Table
+                columns={SupervisoreventColumns}
+                rows={pastSupervisorEvents.result}
+                dataSetLength={pastSupervisorEvents.total}
+                paginationModel={paginationModelSupervisor}
+                setPaginationModel={setPaginationModelSupervisor}
+              />
+            </Card>
+          )}
+        </>
       )}
     </>
   );
