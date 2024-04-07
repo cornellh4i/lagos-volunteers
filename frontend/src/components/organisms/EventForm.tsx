@@ -57,9 +57,12 @@ const EventForm = ({
   const queryClient = useQueryClient();
 
   /** Markdown editor */
-  const [markdown, setMarkdown] = React.useState(`Hello **world**!`);
+  const [markdown, setMarkdown] = React.useState(
+    eventDetails?.eventDescription || ""
+  );
   const handleEditorChange = (value: any) => {
     setMarkdown(value);
+    setValue("eventDescription", value);
   };
 
   /** Dropzone errors */
@@ -170,7 +173,7 @@ const EventForm = ({
         const endDateTime = convertToISO(endTime, startDate);
         const { response } = await api.put(`/events/${eventId}`, {
           name: `${eventName}`,
-          location: `${location}`,
+          location: status === 0 ? "VIRTUAL" : `${location}`,
           description: `${eventDescription}`,
           startDate: startDateTime,
           endDate: endDateTime,
@@ -295,7 +298,9 @@ const EventForm = ({
               row
               aria-labelledby="demo-row-radio-buttons-group-label"
               name="row-radio-buttons-group"
-              defaultValue={eventDetails ? eventDetails.mode : "Virtual"}
+              defaultValue={
+                eventDetails?.mode === "VIRTUAL" ? "Virtual" : "In_Person"
+              }
               sx={{ borderRadius: 2, borderColor: "primary.main" }}
             >
               <FormControlLabel
@@ -314,13 +319,28 @@ const EventForm = ({
           </FormControl>
           <div className="grid grid-cols-1 sm:grid-cols-2 col-span-2  sm:col-span-1">
             {status == 1 && (
-              <LocationPicker
-                label=""
-                form={{
-                  name: "location",
-                  setFormValue: setValue,
-                }}
-                error={errors.location?.message}
+              <Controller
+                name="location"
+                control={control}
+                rules={{ required: { value: true, message: "Required" } }}
+                render={({ field }) => (
+                  <LocationPicker
+                    label=""
+                    error={errors.location?.message}
+                    defaultValue={{
+                      description: eventDetails?.location,
+                      structured_formatting: {
+                        main_text: eventDetails?.location,
+                        secondary_text: "",
+                      },
+                    }}
+                    {...field}
+                    form={{
+                      name: "location",
+                      setFormValue: setValue,
+                    }}
+                  />
+                )}
               />
             )}
           </div>

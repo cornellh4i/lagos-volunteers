@@ -15,7 +15,7 @@ const EventTemplate = ({ header, body, img, card }: EventTemplateProps) => {
       {/* DESKTOP VIEW */}
       <div className="hidden sm:flex">
         {/* Left column */}
-        <div className="flex-1 mr-6">
+        <div className="flex-1 mr-6 overflow-auto">
           {header}
           {body}
         </div>
