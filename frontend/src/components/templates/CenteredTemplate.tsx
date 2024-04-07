@@ -16,7 +16,7 @@ const CenteredTemplate = ({ children }: CenteredTemplateProps) => {
   return (
     <div className="bg-gradient-to-b from-[#F7F7F2] to-[#EAEFE8]">
       <div className="min-h-screen">
-        <NavBar />
+        {hideContent ? null : <NavBar />}
         <div className="max-w-2xl mx-auto p-6 sm:py-12">
           {hideContent ? <Loading /> : children}
         </div>
