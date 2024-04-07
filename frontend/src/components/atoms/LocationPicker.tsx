@@ -190,12 +190,14 @@ const LocationPicker = ({
                 </Grid>
                 <Grid
                   item
-                  sx={{ width: "calc(100% - 44px)", wordWrap: "break-word" }}>
+                  sx={{ width: "calc(100% - 44px)", wordWrap: "break-word" }}
+                >
                   {parts.map((part, index) => (
                     <Box
                       key={index}
                       component="span"
-                      sx={{ fontWeight: part.highlight ? "bold" : "regular" }}>
+                      sx={{ fontWeight: part.highlight ? "bold" : "regular" }}
+                    >
                       {part.text}
                     </Box>
                   ))}
