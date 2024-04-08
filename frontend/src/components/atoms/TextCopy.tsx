@@ -20,7 +20,7 @@ const TextCopy = ({ label, text }: TextCopyProps) => {
   };
 
   return (
-    <div>
+    <div className="overflow-auto">
       <div className="flow-root">
         <div className="pt-3 float-left">{label}:</div>
         <div className="float-right">
