@@ -34,28 +34,35 @@ interface EventFormProps {
 }
 
 type FormValues = {
+  id: string;
   eventName: string;
   location: string;
   volunteerSignUpCap: string;
   eventDescription: string;
   eventImage: string;
   rsvpLinkImage: string;
-  startDate: string;
-  endDate: string;
-  startTime: string;
-  endTime: string;
+  startDate: Date;
+  startTime: Date;
+  endTime: Date;
   mode: string;
 };
 
 /** An EventForm page */
-const EventForm = ({ eventId, eventType, eventDetails }: EventFormProps) => {
+const EventForm = ({
+  eventDetails,
+  eventType,
+  eventId = eventDetails?.id,
+}: EventFormProps) => {
   const { user } = useAuth();
   const queryClient = useQueryClient();
 
   /** Markdown editor */
-  const [markdown, setMarkdown] = React.useState(`Hello **world**!`);
+  const [markdown, setMarkdown] = React.useState(
+    eventDetails?.eventDescription || ""
+  );
   const handleEditorChange = (value: any) => {
     setMarkdown(value);
+    setValue("eventDescription", value);
   };
 
   /** Dropzone errors */
@@ -96,7 +103,6 @@ const EventForm = ({ eventId, eventType, eventDetails }: EventFormProps) => {
             eventImage: eventDetails.eventImage,
             rsvpLinkImage: eventDetails.rsvpLinkImage,
             startDate: eventDetails.startDate,
-            endDate: eventDetails.endDate,
             startTime: eventDetails.startTime,
             endTime: eventDetails.endTime,
           },
@@ -106,29 +112,14 @@ const EventForm = ({ eventId, eventType, eventDetails }: EventFormProps) => {
 
   /** Handles form errors for time and date validation */
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const [successMessage, setSuccessMessage] = useState<string | null>(null);
-  const timeAndDateValidation = () => {
-    const { startTime, startDate, endTime, endDate } = getValues();
-    const startDateTime = convertToISO(startTime, startDate);
-    const endDateTime = convertToISO(endTime, endDate);
-    if (new Date(startDateTime) >= new Date(endDateTime)) {
-      setErrorNotificationOpen(true);
-      setErrorMessage(
-        "End Date and Time must be later than Start Date and Time"
-      );
-      return false;
-    } else {
-      setErrorMessage(null);
-    }
-    return true;
-  };
-
-  const back = () => {
-    router.push("/events/view");
-  };
 
   /** Tanstack mutation for creating a new event */
-  const { mutateAsync, isPending, isError, isSuccess } = useMutation({
+  const {
+    mutateAsync: handleCreateNewEvent,
+    isPending,
+    isError,
+    isSuccess,
+  } = useMutation({
     mutationFn: async (data: FormValues) => {
       const mode = status === 0 ? "VIRTUAL" : "IN_PERSON";
       const {
@@ -137,21 +128,20 @@ const EventForm = ({ eventId, eventType, eventDetails }: EventFormProps) => {
         volunteerSignUpCap,
         eventDescription,
         startDate,
-        endDate,
         startTime,
         endTime,
       } = data;
-      const startDateTime = convertToISO(startTime, startDate);
-      const endDateTime = convertToISO(endTime, endDate);
       const userid = await fetchUserIdFromDatabase(user?.email as string);
+      const startDateTime = convertToISO(startTime, startDate);
+      const endDateTime = convertToISO(endTime, startDate);
       const { response } = await api.post("/events", {
         userID: `${userid}`,
         event: {
           name: `${eventName}`,
           location: status === 0 ? "VIRTUAL" : `${location}`,
           description: `${eventDescription}`,
-          startDate: new Date(startDateTime),
-          endDate: new Date(endDateTime),
+          startDate: startDateTime,
+          endDate: endDateTime,
           capacity: +volunteerSignUpCap,
           mode: `${mode}`,
         },
@@ -160,51 +150,53 @@ const EventForm = ({ eventId, eventType, eventDetails }: EventFormProps) => {
     },
     retry: false,
     onSuccess: () => {
-      setSuccessNotificationOpen(true);
-      let countdown = 3;
-      setSuccessMessage("Successfully Created Event! Redirecting...");
-      setTimeout(back, 1000);
+      localStorage.setItem("eventCreated", "true");
+      router.push("/events/view");
     },
   });
 
   /** Tanstack mutation for updating an existing event */
-  const { mutateAsync: editEvent, isPending: editEventPending } = useMutation({
-    mutationFn: async (data: FormValues) => {
-      const mode = status === 0 ? "VIRTUAL" : "IN_PERSON";
-      const { startTime, startDate, endTime, endDate } = getValues();
-      const startDateTime = convertToISO(startTime, startDate);
-      const endDateTime = convertToISO(endTime, endDate);
-      const { eventName, location, volunteerSignUpCap, eventDescription } =
-        data;
-      const { response } = await api.put(`/events/${eventId}`, {
-        name: `${eventName}`,
-        location: `${location}`,
-        description: `${eventDescription}`,
-        startDate: new Date(startDateTime),
-        endDate: new Date(endDateTime),
-        capacity: +volunteerSignUpCap,
-        mode: `${mode}`,
-      });
-      return response;
-    },
-    retry: false,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["event", eventId] });
-      setSuccessNotificationOpen(true);
-      setSuccessMessage("Successfully Edited Event! Redirecting...");
-      setTimeout(back, 1000);
-    },
-  });
+  const { mutateAsync: handleEditEventAsync, isPending: editEventPending } =
+    useMutation({
+      mutationFn: async (data: FormValues) => {
+        const mode = status === 0 ? "VIRTUAL" : "IN_PERSON";
+        const {
+          eventName,
+          location,
+          volunteerSignUpCap,
+          eventDescription,
+          startDate,
+          startTime,
+          endTime,
+        } = data;
+        const startDateTime = convertToISO(startTime, startDate);
+        const endDateTime = convertToISO(endTime, startDate);
+        const { response } = await api.put(`/events/${eventId}`, {
+          name: `${eventName}`,
+          location: status === 0 ? "VIRTUAL" : `${location}`,
+          description: `${eventDescription}`,
+          startDate: startDateTime,
+          endDate: endDateTime,
+          capacity: +volunteerSignUpCap,
+          mode: `${mode}`,
+        });
+        return response;
+      },
+      retry: false,
+      onSuccess: () => {
+        queryClient.invalidateQueries({
+          queryKey: ["event", eventId],
+        });
+        localStorage.setItem("eventEdited", "true");
+        router.push("/events/view");
+      },
+    });
 
   /** Helper for handling creating events */
   const handleCreateEvent: SubmitHandler<FormValues> = async (data) => {
     try {
-      const validation = timeAndDateValidation();
-      if (validation) {
-        await mutateAsync(data);
-      }
+      await handleCreateNewEvent(data);
     } catch (error) {
-      console.error(error);
       setErrorNotificationOpen(true);
       setErrorMessage("We were unable to create this event. Please try again");
     }
@@ -213,12 +205,8 @@ const EventForm = ({ eventId, eventType, eventDetails }: EventFormProps) => {
   /** Helper for handling editing events */
   const handleEditEvent: SubmitHandler<FormValues> = async (data) => {
     try {
-      const validation = timeAndDateValidation();
-      if (validation) {
-        await editEvent(data);
-      }
+      await handleEditEventAsync(data);
     } catch (error) {
-      console.error(error);
       setErrorNotificationOpen(true);
       setErrorMessage("We were unable to edit this event. Please try again");
     }
@@ -235,19 +223,6 @@ const EventForm = ({ eventId, eventType, eventDetails }: EventFormProps) => {
         Error: {errorMessage}
       </Snackbar>
 
-      {/* Success component */}
-
-      {/* TODO: It would make a lot more sense if the success notification
-      appeared on the home screen after EventForm redirects to the home page,
-      rather than waiting a timeout and then redirecting */}
-      <Snackbar
-        variety="success"
-        open={successNotificationOpen}
-        onClose={() => setSuccessNotificationOpen(false)}
-      >
-        {successMessage}
-      </Snackbar>
-
       <form
         onSubmit={
           eventType == "create"
@@ -259,7 +234,7 @@ const EventForm = ({ eventId, eventType, eventDetails }: EventFormProps) => {
         <div className="font-bold text-3xl">
           {eventType == "create" ? "Create Event" : "Edit Event"}
         </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2  col-span-2  sm:col-span-1">
+        <div className="grid grid-cols-1 col-span-2">
           <TextField
             label="Event Name"
             error={errors.eventName?.message}
@@ -268,57 +243,45 @@ const EventForm = ({ eventId, eventType, eventDetails }: EventFormProps) => {
             })}
           />
         </div>
-        <div className="sm:space-x-4 grid grid-cols-1 sm:grid-cols-2">
-          <div className="pb-4 sm:pb-0">
-            <Controller
-              name="startDate"
-              control={control}
-              rules={{ required: { value: true, message: "Required" } }}
-              defaultValue={undefined}
-              render={({ field }) => (
-                <DatePicker
-                  label="Start Date"
-                  error={errors.startDate?.message}
-                  {...field}
-                />
-              )}
-            />
-          </div>
+        <div className="space-y-4 sm:space-y-0 sm:space-x-4 grid grid-cols-1 sm:grid-cols-3">
           <Controller
-            name="endDate"
+            name="startDate"
             control={control}
             rules={{ required: { value: true, message: "Required" } }}
-            defaultValue={undefined}
             render={({ field }) => (
               <DatePicker
-                error={errors.endDate?.message}
-                label="End Date"
+                label="Date"
+                error={errors.startDate?.message}
                 {...field}
               />
             )}
           />
-        </div>
-        <div className="sm:space-x-4 grid grid-cols-1 sm:grid-cols-2">
-          <div className="pb-4 sm:pb-0">
-            <Controller
-              name="startTime"
-              control={control}
-              rules={{ required: { value: true, message: "Required" } }}
-              defaultValue={undefined}
-              render={({ field }) => (
-                <TimePicker
-                  error={errors.startTime?.message}
-                  label="Start Time"
-                  {...field}
-                />
-              )}
-            />
-          </div>
+          <Controller
+            name="startTime"
+            control={control}
+            rules={{
+              required: { value: true, message: "Required" },
+              validate: (value) =>
+                value < watch("endTime") ||
+                "Start time must be before end time",
+            }}
+            render={({ field }) => (
+              <TimePicker
+                error={errors.startTime?.message}
+                label="Start Time"
+                {...field}
+              />
+            )}
+          />
           <Controller
             name="endTime"
             control={control}
-            rules={{ required: { value: true, message: "Required" } }}
-            defaultValue={undefined}
+            rules={{
+              required: { value: true, message: "Required" },
+              validate: (value) =>
+                value > watch("startTime") ||
+                "End time must be after start time",
+            }}
             render={({ field }) => (
               <TimePicker
                 error={errors.endTime?.message}
@@ -335,7 +298,9 @@ const EventForm = ({ eventId, eventType, eventDetails }: EventFormProps) => {
               row
               aria-labelledby="demo-row-radio-buttons-group-label"
               name="row-radio-buttons-group"
-              defaultValue={eventDetails ? eventDetails.mode : "Virtual"}
+              defaultValue={
+                eventDetails?.mode === "VIRTUAL" ? "Virtual" : "In_Person"
+              }
               sx={{ borderRadius: 2, borderColor: "primary.main" }}
             >
               <FormControlLabel
@@ -354,13 +319,28 @@ const EventForm = ({ eventId, eventType, eventDetails }: EventFormProps) => {
           </FormControl>
           <div className="grid grid-cols-1 sm:grid-cols-2 col-span-2  sm:col-span-1">
             {status == 1 && (
-              <LocationPicker
-                label=""
-                form={{
-                  name: "location",
-                  setFormValue: setValue,
-                }}
-                error={errors.location?.message}
+              <Controller
+                name="location"
+                control={control}
+                rules={{ required: { value: true, message: "Required" } }}
+                render={({ field }) => (
+                  <LocationPicker
+                    label=""
+                    error={errors.location?.message}
+                    defaultValue={{
+                      description: eventDetails?.location,
+                      structured_formatting: {
+                        main_text: eventDetails?.location,
+                        secondary_text: "",
+                      },
+                    }}
+                    {...field}
+                    form={{
+                      name: "location",
+                      setFormValue: setValue,
+                    }}
+                  />
+                )}
               />
             )}
           </div>
@@ -422,6 +402,7 @@ const EventForm = ({ eventId, eventType, eventDetails }: EventFormProps) => {
                   <Button variety="secondary">Go back</Button>
                 </Link>
               </div>
+              {/* TODO: Add functionality */}
               <div className="sm:col-start-7 sm:col-span-3">
                 <Button variety="error">Cancel event</Button>
               </div>

@@ -1,6 +1,5 @@
 import { Grid } from "@mui/material";
 import React, { useState, useRef } from "react";
-import "react-quill/dist/quill.snow.css";
 import Button from "../atoms/Button";
 import Modal from "../molecules/Modal";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
