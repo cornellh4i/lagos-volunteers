@@ -15,10 +15,12 @@ import { api } from "@/utils/api";
 import ManageSearchIcon from "@mui/icons-material/ManageSearch";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import Loading from "@/components/molecules/Loading";
-import Error from "./Error";
+import FetchDataError from "./FetchDataError";
 import { formatDateString } from "@/utils/helpers";
+import Card from "../molecules/Card";
+import LinearProgress from "../atoms/LinearProgress";
+import ArrowOutwardIcon from "@mui/icons-material/ArrowOutward";
 import Snackbar from "../atoms/Snackbar";
-
 
 /** Displays upcoming events for the user */
 const UpcomingEvents = () => {
@@ -85,55 +87,42 @@ const UpcomingEvents = () => {
   if (isLoading) return <Loading />;
 
   /** Error screen */
-  if (isError) return <Error />;
+  if (isError) return <FetchDataError />;
+
+  console.log(upcomingEventsSupervisor);
 
   return (
     <div>
-      {role === "Supervisor" ? (
-        <div>
-          <h2>
-            Yay!! you're a supervisor. You get special privileges on this page.
-          </h2>
-        </div>
-      ) : role === "Admin" ? (
-        <div>
-          <h2>
-            Yay!! you're an admin. You get special privileges on this page.
-          </h2>
-        </div>
-      ) : role === "Volunteer" ? (
-        <div>
-          <h2>You're a volunteer</h2>
-        </div>
-      ) : (
-        <></>
+      {(role === "Supervisor" || role === "Admin") && (
+        <Link href="/events/create">
+          <Button className="mb-2 w-full sm:w-max">Create New Event</Button>
+        </Link>
       )}
-      <Link href="/events/create">
-        <Button className="mb-2 w-full sm:w-max">Create New Event</Button>
-      </Link>
       {/* Display when no events are found */}
       {/* TODO: make this look better */}
-      {upcomingEventsSupervisor.length == 0 && upcomingEventsVolunteer == 0 && (
+      {((role === "Admin" && upcomingEventsSupervisor.length == 0) ||
+        (role === "Supervisor" && upcomingEventsSupervisor.length == 0) ||
+        (role === "Volunteer" && upcomingEventsVolunteer == 0)) && (
         <div className="p-10">
           <div className="text-center">You have no upcoming events</div>
         </div>
       )}
       {/* List of Upcoming events user supervises */}
-      {upcomingEventsSupervisor.map((event: ViewEventsEvent) => (
-        <div>
-          <div className="mt-5" />
-          <EventCardNew key={event.id} event={event} />
-        </div>
-      ))}
-
+      {(role === "Supervisor" || role === "Admin") &&
+        upcomingEventsSupervisor.map((event: ViewEventsEvent) => (
+          <div>
+            <div className="mt-5" />
+            <EventCardNew key={event.id} event={event} />
+          </div>
+        ))}
       {/* List of Upcoming events user registered for */}
-      {upcomingEventsVolunteer.map((event: ViewEventsEvent) => (
-        <div>
-          <div className="mt-5" />
-          <EventCardNew key={event.id} event={event} />
-        </div>
-      ))}
-
+      {role === "Volunteer" &&
+        upcomingEventsVolunteer.map((event: ViewEventsEvent) => (
+          <div>
+            <div className="mt-5" />
+            <EventCardNew key={event.id} event={event} />
+          </div>
+        ))}
       {/* <CardList>
         {eventDetails.map((event) => (
           <EventCard
@@ -156,7 +145,7 @@ const UpcomingEvents = () => {
 
 /** Displays past events for the user */
 const PastEvents = () => {
-  const { user } = useAuth();
+  const { user, role } = useAuth();
   const [userid, setUserid] = useState<string>("");
 
   /** Table pagination models and page sizes */
@@ -320,7 +309,7 @@ const PastEvents = () => {
       field: "name",
       headerName: "Program Name",
       minWidth: 200,
-      flex: 1,
+      flex: 2,
       renderHeader: (params) => (
         <div style={{ fontWeight: "bold" }}>{params.colDef.headerName}</div>
       ),
@@ -336,6 +325,7 @@ const PastEvents = () => {
     {
       field: "hours",
       headerName: "Hours",
+      minWidth: 150,
       renderHeader: (params) => (
         <div style={{ fontWeight: "bold" }}>{params.colDef.headerName}</div>
       ),
@@ -355,6 +345,24 @@ const PastEvents = () => {
           />
         );
       },
+    },
+    {
+      headerName: "",
+      field: "actions",
+      minWidth: 150,
+      align: "right",
+      renderCell: (params) => (
+        <div>
+          <Link
+            href={`/events/${params.row.id}/register`}
+            className="no-underline"
+          >
+            <Button variety="tertiary" size="small" icon={<ArrowOutwardIcon />}>
+              View Event
+            </Button>
+          </Link>
+        </div>
+      ),
     },
   ];
 
@@ -392,22 +400,96 @@ const PastEvents = () => {
     },
   ];
 
+  /** Loading screen */
+  // if (isLoading) return <Loading />;
+
+  /** Error screen */
+  // if (isError) return <Error />;
+
+  // TODO: Replace constants with actual values
+  const hours = 36;
+  const REFERENCE_HOURS = 80;
+  const CERTIFICATE_HOURS = 120;
+
   return (
     <>
-      <Table
-        columns={volunteerEventColumns}
-        rows={pastVolunteerEvents.result}
-        dataSetLength={pastVolunteerEvents.total}
-        paginationModel={paginationModelVolunteer}
-        setPaginationModel={setPaginationModelVolunteer}
-      />
-      <Table
-        columns={SupervisoreventColumns}
-        rows={pastSupervisorEvents.result}
-        dataSetLength={pastSupervisorEvents.total}
-        paginationModel={paginationModelSupervisor}
-        setPaginationModel={setPaginationModelSupervisor}
-      />
+      {role === "Volunteer" && (
+        <>
+          <div className="grid gap-4 md:grid-cols-2 pb-4">
+            <Card>
+              <LinearProgress value={100 * (hours / REFERENCE_HOURS)} />
+              <h3 className="mb-2 mt-4">Reference Hour Tracker</h3>
+              <div className="mb-4">
+                {hours} / {REFERENCE_HOURS} hours complete
+              </div>
+              <div>
+                You must complete a minimum of 80 hours, have photo proof, and
+                write a reflection to receive a reference.
+              </div>
+              {/* <div className="mt-4">
+                <Button>Request Reference</Button>
+              </div> */}
+            </Card>
+            <Card>
+              <LinearProgress value={100 * (hours / CERTIFICATE_HOURS)} />
+              <h3 className="mb-2 mt-4">Certificate Hour Tracker</h3>
+              <div className="mb-4">
+                {hours} / {CERTIFICATE_HOURS} hours complete
+              </div>
+              <div>
+                You must complete a minimum of 120 hours, have photo proof, and
+                write a reflection to receive a volunteer certificate.
+              </div>
+              {/* <div className="mt-4">
+                <Button disabled>Request Certificate</Button>
+              </div> */}
+            </Card>
+          </div>
+          {/* {((role === "Admin" && pastSupervisorEvents.result.length == 0) ||
+            (role === "Supervisor" &&
+              pastSupervisorEvents.result.length == 0) ||
+            (role === "Volunteer" &&
+              pastVolunteerEvents.result.length == 0)) && (
+            <div className="p-10">
+              <div className="text-center">There are no past events</div>
+            </div>
+          )} */}
+          {pastVolunteerEvents.result.length === 0 ? (
+            <div className="p-10">
+              <div className="text-center">There are no past events</div>
+            </div>
+          ) : (
+            <Card size="table">
+              <Table
+                columns={volunteerEventColumns}
+                rows={pastVolunteerEvents.result}
+                dataSetLength={pastVolunteerEvents.total}
+                paginationModel={paginationModelVolunteer}
+                setPaginationModel={setPaginationModelVolunteer}
+              />
+            </Card>
+          )}
+        </>
+      )}
+      {(role === "Supervisor" || role === "Admin") && (
+        <>
+          {pastSupervisorEvents.result.length === 0 ? (
+            <div className="p-10">
+              <div className="text-center">There are no past events</div>
+            </div>
+          ) : (
+            <Card size="table">
+              <Table
+                columns={SupervisoreventColumns}
+                rows={pastSupervisorEvents.result}
+                dataSetLength={pastSupervisorEvents.total}
+                paginationModel={paginationModelSupervisor}
+                setPaginationModel={setPaginationModelSupervisor}
+              />
+            </Card>
+          )}
+        </>
+      )}
     </>
   );
 };
@@ -448,7 +530,8 @@ const ViewEvents = () => {
         <Snackbar
           variety="success"
           open={isEventCreated}
-          onClose={() => setIsEventCreated(false)}>
+          onClose={() => setIsEventCreated(false)}
+        >
           Your event was successfully created!
         </Snackbar>
 
@@ -456,7 +539,8 @@ const ViewEvents = () => {
         <Snackbar
           variety="success"
           open={isEventEdited}
-          onClose={() => setIsEventEdited(false)}>
+          onClose={() => setIsEventEdited(false)}
+        >
           Your event has been successfully updated!
         </Snackbar>
         <TabContainer

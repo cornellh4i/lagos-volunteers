@@ -129,7 +129,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   // Paths that can be accessed only by admins
   // TODO: /manage is not an actual path yet; replace this with whatever is the
   // eventual path for the manage website page
-  const adminPaths = ["/manage", "/users/view"];
+  // const adminPaths = ["/manage", "/users/view"];
 
   const setUserRoleBasedOnClaims = (claims: any) => {
     if (claims.admin) {
@@ -158,6 +158,8 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       const regexMatcherforSupervisorPaths =
         /^\/events\/[a-zA-Z0-9_-]+\/(attendees|edit)|\/events\/create$/;
 
+      const regexMatcherforAdminPaths =
+        /^\/users\/([a-zA-Z0-9_-]+)\/(manage|view)$/
       // check auth state
       if (user) {
         const { claims } = await user.getIdTokenResult();
@@ -176,7 +178,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       } else if (
         user &&
         user.emailVerified &&
-        adminPaths.includes(path) &&
+        regexMatcherforAdminPaths.test(path) &&
         userRole !== "Admin"
       ) {
         router.replace("/events/view");
@@ -207,13 +209,14 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     return unsubscribe;
   }, [user, router, loading]);
 
-  if (loading || !isAuthenticated) {
-    return (
-      <div>
-        <Loading />
-      </div>
-    );
-  }
+  // No longer needed, moved to individual templates to avoid white flash on load
+  // if (loading || !isAuthenticated) {
+  //   return (
+  //     <div>
+  //       <Loading />
+  //     </div>
+  //   );
+  // }
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };

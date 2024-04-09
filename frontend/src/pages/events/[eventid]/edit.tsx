@@ -5,6 +5,7 @@ import CenteredTemplate from "@/components/templates/CenteredTemplate";
 import Loading from "@/components/molecules/Loading";
 import { api } from "@/utils/api";
 import { useQuery } from "@tanstack/react-query";
+import Card from "@/components/molecules/Card";
 
 type eventData = {
   id: string;
@@ -54,7 +55,9 @@ const EditEvent = () => {
 
   return (
     <CenteredTemplate>
-      <EventForm eventType="edit" eventDetails={event} />
+      <Card size="medium">
+        <EventForm eventType="edit" eventDetails={event} />
+      </Card>
     </CenteredTemplate>
   );
 };

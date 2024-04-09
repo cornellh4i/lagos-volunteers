@@ -20,6 +20,15 @@ import { api } from "@/utils/api";
 import { useRouter } from "next/router";
 import Loading from "../molecules/Loading";
 import Card from "../molecules/Card";
+import Link from "next/link";
+import ArrowOutwardIcon from "@mui/icons-material/ArrowOutward";
+import IconTextHeader from "../atoms/IconTextHeader";
+import FmdGoodIcon from "@mui/icons-material/FmdGood";
+import GroupsIcon from "@mui/icons-material/Groups";
+import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
+import PersonIcon from "@mui/icons-material/Person";
+import EditIcon from "@mui/icons-material/Edit";
+import TextCopy from "../atoms/TextCopy";
 
 type attendeeData = {
   id: number;
@@ -284,7 +293,7 @@ const ModalBody = ({
             )}
           />
         </div>
-        <div className="grid gird-cols-1 gap-4 sm:grid-cols-2">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <div className="order-1 sm:order-2">
             <Button type="submit" loading={isPending}>
               Duplicate
@@ -468,18 +477,43 @@ const ManageAttendees = ({}: ManageAttendeesProps) => {
       />
 
       {/* Manage event */}
-      <div className="flex justify-between">
+      <div className="flex flex-col sm:flex-row sm:justify-between pb-6 sm:pb-4">
         <div className="font-semibold text-3xl mb-6">Malta Outreach</div>
-        <div>
+        <div className="flex flex-col sm:flex-row gap-4">
+          <Link href={`/events/${eventid}/edit`}>
+            <Button icon={<EditIcon />}>Edit event</Button>
+          </Link>
+          <Link href={`/events/${eventid}/register`}>
+            <Button icon={<ArrowOutwardIcon />}>View event</Button>
+          </Link>
           <Button onClick={handleDuplicateEvent} icon={<FileCopyIcon />}>
-            Duplicate Event
+            Duplicate event
           </Button>
         </div>
       </div>
       <div className="font-semibold text-2xl mb-6">Event Recap</div>
-      <div>Event recap here</div>
+      <div>
+        <div className="mt-5" />
+        <div className="grid gap-2 xl:gap-6 xl:grid-cols-2">
+          <IconTextHeader
+            icon={<CalendarTodayIcon />}
+            header={<>header</>}
+            body={<>body</>}
+          />
+          <IconTextHeader icon={<FmdGoodIcon />} header={<>location</>} />
+          <IconTextHeader
+            icon={<PersonIcon />}
+            header={<>header</>}
+            body={<>Supervisor</>}
+          />
+          <IconTextHeader
+            icon={<GroupsIcon />}
+            header={<>(capacity) volunteers needed</>}
+          />
+        </div>
+      </div>
       <br />
-      <div className="font-semibold text-2xl mb-6">Manage Volunteers</div>
+      <div className="font-semibold text-2xl mt-6 mb-6">Manage Volunteers</div>
       <TabContainer fullWidth tabs={tabs} />
     </>
   );

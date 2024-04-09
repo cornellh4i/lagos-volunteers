@@ -20,17 +20,19 @@ import { formatDateTimeToUI } from "@/utils/helpers";
 import EventCardCancelConfirmation from "./EventCardCancelConfirmation";
 import EventCardCancel from "./EventCardCancel";
 import Markdown from "react-markdown";
+import DefaultTemplate from "../templates/DefaultTemplate";
+import FetchDataError from "./FetchDataError";
 
 interface ViewEventDetailsProps {}
 
 const ViewEventDetails = () => {
   const router = useRouter();
   const id = router.query.eventid as string;
-  const { user } = useAuth();
+  const { user, role } = useAuth();
   const [userid, setUserid] = React.useState("");
 
   /** Tanstack query to fetch and update the event details */
-  const { data, isLoading, isError } = useQuery({
+  const { data, isLoading, isError, error } = useQuery({
     queryKey: ["event", id],
     queryFn: async () => {
       const userid = await fetchUserIdFromDatabase(user?.email as string);
@@ -74,9 +76,16 @@ const ViewEventDetails = () => {
     name: eventData.name,
   };
 
-  if (isLoading) return <Loading />;
-
   const dateHeader = formatDateTimeToUI(datetime);
+
+  if (isLoading) {
+    return <Loading />;
+  }
+
+  if (isError) {
+    console.log(error);
+    return <FetchDataError />;
+  }
 
   return (
     <EventTemplate
@@ -118,12 +127,16 @@ const ViewEventDetails = () => {
         />
       }
       card={
-        userHasCanceledAttendance ? (
-          <EventCardCancelConfirmation />
-        ) : eventAttendance ? (
-          <EventCardCancel eventId={eventid} attendeeId={userid} />
-        ) : (
-          <EventCardRegister eventId={eventid} attendeeId={userid} />
+        role === "Volunteer" && (
+          <div>
+            {userHasCanceledAttendance ? (
+              <EventCardCancelConfirmation />
+            ) : eventAttendance ? (
+              <EventCardCancel eventId={eventid} attendeeId={userid} />
+            ) : (
+              <EventCardRegister eventId={eventid} attendeeId={userid} />
+            )}
+          </div>
         )
       }
     />

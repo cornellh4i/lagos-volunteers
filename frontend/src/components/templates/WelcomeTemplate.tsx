@@ -1,4 +1,5 @@
 import React, { ReactNode } from "react";
+import { useAuth } from "@/utils/AuthContext";
 
 /** A WelcomeTemplate page */
 interface WelcomeTemplateProps {
@@ -6,11 +7,14 @@ interface WelcomeTemplateProps {
 }
 
 const WelcomeTemplate = ({ children }: WelcomeTemplateProps) => {
+  const { loading, isAuthenticated } = useAuth();
+  const hideContent = loading || !isAuthenticated;
+
   return (
     <div className="flex min-h-screen">
       {/* Left */}
       <div className="flex overflow-auto w-full sm:max-w-lg py-10 px-10 sm:px-20 items-center justify-center">
-        <div className="w-full">{children}</div>
+        <div className="w-full">{hideContent ? <div /> : children}</div>
       </div>
 
       {/* Right */}

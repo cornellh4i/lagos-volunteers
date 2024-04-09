@@ -85,18 +85,18 @@ const ModalBody = ({ status, blacklistFunc, handleClose }: modalBodyProps) => {
           ? "Are you sure you want to blacklist this user?"
           : "Are you sure you want to remove this member from the blacklist?"}
       </Box>
-      <Grid container spacing={2}>
-        <Grid item md={6} xs={12}>
-          <Button variety="error" onClick={handleClose}>
-            Cancel
-          </Button>
-        </Grid>
-        <Grid item md={6} xs={12}>
-          <Button variety="secondary" onClick={blacklistFunc}>
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+        <div className="order-1 sm:order-2">
+          <Button variety="error" onClick={blacklistFunc}>
             {status == "ACTIVE" ? "Yes, blacklist" : "Yes, Remove"}
           </Button>
-        </Grid>
-      </Grid>
+        </div>
+        <div className="order-2 sm:order-1">
+          <Button variety="secondary" onClick={handleClose}>
+            Cancel
+          </Button>
+        </div>
+      </div>
     </div>
   );
 };
@@ -121,6 +121,7 @@ const ManageUserProfileNew = () => {
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
 
+  // TODO: REPLACE CONSTANTS WITH ACTUAL VALUES
   const REFERENCE_HOURS = 80;
   const CERTIFICATE_HOURS = 120;
 

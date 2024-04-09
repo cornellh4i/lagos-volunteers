@@ -357,9 +357,7 @@ const EventForm = ({
         </div>
         <div>
           <div className="mb-1">Event Description</div>
-          <div className="border border-gray-300 border-solid rounded-lg">
-            <EditorComp onChange={handleEditorChange} markdown={markdown} />
-          </div>
+          <EditorComp onChange={handleEditorChange} markdown={markdown} />
           <div className="mt-1 text-xs text-red-500">
             {errors.eventDescription?.message}
           </div>
@@ -385,36 +383,36 @@ const EventForm = ({
         />
         <div>
           {eventType == "create" ? (
-            <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
-              <div className="col-start-1 col-span-1 sm:col-start-3 sm:col-span-1">
-                <Link href="/events/view">
-                  <Button variety="secondary">Cancel</Button>
-                </Link>
-              </div>
-              <div className="col-start-1 col-span-1 sm:col-start-4 sm:col-span-1">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+              <div className="order-1 sm:order-2">
                 <Button loading={isPending} disabled={isPending} type="submit">
                   Create
                 </Button>
               </div>
+              <div className="order-2 sm:order-1">
+                <Link href="/events/view">
+                  <Button variety="secondary">Cancel</Button>
+                </Link>
+              </div>
             </div>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-12 gap-4">
-              <div className="sm:col-start-4 sm:col-span-3">
-                <Link href="/events/view">
-                  <Button>Cancel</Button>
+              <div className="order-last sm:order-first sm:col-start-4 sm:col-span-3">
+                <Link href={`/events/${eventId}/attendees`}>
+                  <Button variety="secondary">Go back</Button>
                 </Link>
               </div>
               {/* TODO: Add functionality */}
               <div className="sm:col-start-7 sm:col-span-3">
-                <Button>Cancel Event</Button>
+                <Button variety="error">Cancel event</Button>
               </div>
-              <div className="sm:col-start-10 sm:col-span-3">
+              <div className="order-first sm:order-last sm:col-start-10 sm:col-span-3">
                 <Button
                   type="submit"
                   loading={editEventPending}
                   disabled={editEventPending}
                 >
-                  Save Changes
+                  Save changes
                 </Button>
               </div>
             </div>

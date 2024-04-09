@@ -6,7 +6,7 @@ import { useRouter } from "next/router";
 import { useQueryClient } from "@tanstack/react-query";
 
 const NavBar = () => {
-  const { user, loading, error, signOutUser } = useAuth();
+  const { user, role, loading, error, signOutUser } = useAuth();
   const queryClient = useQueryClient();
   const router = useRouter();
 
@@ -26,25 +26,25 @@ const NavBar = () => {
     setLoginStatus(!(auth.currentUser == null));
   });
 
-  const navs = [
-    { label: "Home", link: "/" },
+  let navs = [
     { label: "My Events", link: "/events/view" },
-    { label: "Manage Members", link: "/users/view" },
-    { label: "Manage Website", link: "/" },
     { label: "FAQ", link: "/about" },
     { label: "Profile", link: "/profile" },
   ];
+
+  if (role === "Admin") {
+    navs = [
+      { label: "My Events", link: "/events/view" },
+      { label: "Manage Members", link: "/users/view" },
+      { label: "Manage Website", link: "/" },
+      { label: "FAQ", link: "/about" },
+      { label: "Profile", link: "/profile" },
+    ];
+  }
+
   const buttons = [{ label: "Log Out", onClick: handleSignOut }];
 
-  return (
-    <>
-      {loginStatus ? (
-        <AppBar navs={navs} buttons={buttons} />
-      ) : (
-        <AppBar navs={[]} buttons={[]} />
-      )}
-    </>
-  );
+  return <AppBar navs={navs} buttons={buttons} />;
 };
 
 export default NavBar;

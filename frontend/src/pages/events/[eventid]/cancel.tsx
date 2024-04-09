@@ -9,7 +9,7 @@ import Loading from "@/components/molecules/Loading";
 import { EventData } from "@/utils/types";
 import { api } from "@/utils/api";
 import { useQuery } from "@tanstack/react-query";
-import Error from "@/components/organisms/Error";
+import FetchDataError from "@/components/organisms/FetchDataError";
 
 /** An EventCancellation page */
 const EventCancellation = () => {
@@ -39,7 +39,7 @@ const EventCancellation = () => {
 
   // TODO: make better
   if (isError) {
-    return <Error />;
+    return <FetchDataError />;
   }
 
   /** Set event details */
