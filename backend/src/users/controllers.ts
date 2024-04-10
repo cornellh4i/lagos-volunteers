@@ -165,9 +165,13 @@ const getUsers = async (
       equals: filter.status,
     },
     profile: {
-      firstName: Array.isArray(filter.firstName)
-        ? { in: filter.firstName }
-        : filter.firstName,
+      // firstName: Array.isArray(filter.firstName)
+      //   ? { in: filter.firstName }
+      //   : filter.firstName,
+      firstName: {
+        contains: filter.firstName,
+        mode: Prisma.QueryMode.insensitive,
+      },
       lastName: Array.isArray(filter.lastName)
         ? { in: filter.lastName }
         : filter.lastName,
