@@ -1,20 +1,18 @@
 import { Router, RequestHandler, Request, Response } from "express";
-import { Prisma, userRole, UserStatus } from "@prisma/client";
 import websiteController from "./controllers";
 import { auth, setVolunteerCustomClaims, NoAuth } from "../middleware/auth";
-const userRouter = Router();
-import * as firebase from "firebase-admin";
-
 import { attempt } from "../utils/helpers";
+const websiteRouter = Router();
 
 let useAuth: RequestHandler;
 
 process.env.NODE_ENV === "test"
   ? (useAuth = NoAuth as RequestHandler)
   : (useAuth = auth as RequestHandler);
+  
+websiteRouter.get("/download", useAuth, async (req: Request, res: Response) => {
+  attempt(res, 200, () => websiteController.downloadAllWebsiteData());
+}
+);
 
-userRouter.get("/", useAuth, async (req: Request, res: Response) => {
-  attempt(res, 200, () => websiteController.getAllEnrollments());
-});
-
-export default userRouter;
+export default websiteRouter;

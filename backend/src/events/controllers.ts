@@ -432,17 +432,6 @@ const confirmUser = async (eventID: string, userID: string) => {
   });
 };
 
-const getEverything = async () => {
-  const events = await prisma.event.findMany()
-  const enrollments = await prisma.eventEnrollment.findMany()
-  const profiles = await prisma.profile.findMany()
-  const permissions = await prisma.permission.findMany()
-  const users = await prisma.user.findMany()
-  const preferences = await prisma.userPreferences.findMany()
-  const allData = [events, enrollments, users, preferences];
-  return allData
-};
-
 export default {
   createEvent,
   deleteEvent,
@@ -458,5 +447,4 @@ export default {
   updateEventStatus,
   updateEventOwner,
   confirmUser,
-  getEverything
 };

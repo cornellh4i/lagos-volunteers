@@ -1,14 +1,45 @@
-import { Request, Response, query } from "express";
-import { Prisma, userRole, UserStatus } from "@prisma/client";
-import { User, Profile, Permission, UserPreferences } from "@prisma/client";
-import admin from "firebase-admin";
 // We are using one connection to prisma client to prevent multiple connections
 import prisma from "../../client";
-import { setVolunteerCustomClaims } from "../middleware/auth";
 
-const getAllEnrollments = async () => {
-   return prisma.eventEnrollment.findMany()
-}
+const downloadAllWebsiteData = async () => {
+  const getAllUsers = await prisma.user.findMany({
+    include: {
+      profile: true,
+      permissions: true,
+      preferences: true,
+      events: true,
+    },
+  });
 
+  const getAlEvents = await prisma.event.findMany({});
 
-export default { getAllEnrollments };
+  const getAllEnrollments = await prisma.eventEnrollment.findMany({
+    include: {
+      event: {
+        select: {
+          name: true,
+          description: true,
+          location: true,
+          startDate: true,
+          endDate: true,
+        },
+      },
+      user: {
+        select: {
+          email: true,
+          profile: {
+            select: {
+              firstName: true,
+              lastName: true,
+              phoneNumber: true,
+            },
+          },
+        },
+      },
+    },
+  });
+
+  return Promise.all([getAllUsers, getAlEvents, getAllEnrollments]);
+};
+
+export default { downloadAllWebsiteData };
