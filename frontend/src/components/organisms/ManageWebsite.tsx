@@ -3,63 +3,61 @@ import Button from "../atoms/Button";
 import { api } from "@/utils/api";
 import Card from "../molecules/Card";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
+import Papa from "papaparse";
+import JSZip from "jszip";
 
 const ManageWebsite = () => {
-
-const queryCilent = useQueryClient
-
-  function convertToCSV(data: any[]) {
-    const csvArray = [];
-  
-    // Add header row
-    const headers = Object.keys(data[0]);
-    csvArray.push(headers.join(","));
-  
-    // Add data rows
-    data.forEach(item => {
-      const values = headers.map(header => item[header]);
-      csvArray.push(values.join(","));
-    });
-  
-    // Join rows with newline character
-    return csvArray.join("\n");
-  }
-
-  function createCSVFromArray(csvDataArray: any[]) {
-    // Combine all CSV data into one string
-    const combinedCSVData = csvDataArray.join('\n');
-  
-    // Create a Blob object from the combined CSV data
-    const blob = new Blob([combinedCSVData], { type: 'text/csv' });
-  
-    // Create a temporary anchor element to trigger the download
-    const anchor = document.createElement('a');
-    anchor.href = URL.createObjectURL(blob);
-    anchor.download = 'database.csv';
-    anchor.click();
-  
-    // Clean up
-    URL.revokeObjectURL(anchor.href);
-  }
-
-  const {data, isPending, isError} = useQuery({
+  const { data, isError, refetch, isRefetching } = useQuery({
     queryKey: ["website"],
     queryFn: async () => {
-      const {data} = await api.get("/events/download"); //new endpoint
-      return data.data
+      const { data } = await api.get("/website/download"); //new endpoint
+      return data.data;
+    },
+    enabled: false,
+  });
+
+  function flattenObject(ob: any) {
+    var toReturn: any = {};
+
+    for (var i in ob) {
+      if (!ob.hasOwnProperty(i)) continue;
+
+      if (typeof ob[i] == "object" && ob[i] !== null) {
+        var flatObject = flattenObject(ob[i]);
+        for (var x in flatObject) {
+          if (!flatObject.hasOwnProperty(x)) continue;
+
+          toReturn[i + "." + x] = flatObject[x];
+        }
+      } else {
+        toReturn[i] = ob[i];
+      }
     }
-  })
+    return toReturn;
+  }
 
   const handleDownloadDatabase = async () => {
-    
-    const allCSVs = []
+    const { data } = await refetch();
 
-    for (let i = 0; i < data.length; i++) {
-      const csv = convertToCSV(data[i]);
-      allCSVs.push(csv)
-    }
+    const [users, events, enrollments] = data;
+    const zip = new JSZip();
+    const flattenedUsers = users.map((user: any) => flattenObject(user));
+    const flattenedEvents = events.map((event: any) => flattenObject(event));
+    const flattenedEnrollments = enrollments.map((enrollment: any) =>
+      flattenObject(enrollment)
+    );
+    zip.file("users.csv", Papa.unparse(flattenedUsers));
+    zip.file("events.csv", Papa.unparse(flattenedEvents));
+    zip.file("enrollments.csv", Papa.unparse(flattenedEnrollments));
 
-    createCSVFromArray(allCSVs);
+    zip.generateAsync({ type: "blob" }).then(function (content) {
+      const url = URL.createObjectURL(content);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "website_data.zip";
+      a.click();
+      URL.revokeObjectURL(url);
+    });
   };
 
   return (
@@ -68,9 +66,12 @@ const queryCilent = useQueryClient
         <Card>
           <h3 className="mb-2 mt-4">Website Download</h3>
           <div className="mb-4">
-            Download website data? Data includes all tables volunteer hours, and user information.
+            Download website data? Data includes all tables volunteer hours, and
+            user information.
           </div>
-          <Button onClick={handleDownloadDatabase}>Download Data</Button>
+          <Button onClick={handleDownloadDatabase} loading={isRefetching}>
+            Download Data
+          </Button>
         </Card>
       </div>
     </div>
