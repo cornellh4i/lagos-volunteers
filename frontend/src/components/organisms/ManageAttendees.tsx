@@ -145,17 +145,20 @@ const ManageAttendees = ({}: ManageAttendeesProps) => {
     if (cursor !== "") {
       if (searchQuery) {
         const { response, data } = await api.get(
+          //`/users?firstName=${searchQuery}`
           `/users?eventid=${eventid}&firstName=${searchQuery}`
         );
         return data;
       } else {
         const { response, data } = await api.get(
+          //`/users?limit=${paginationModel.pageSize}&after=${cursor}`
           `/users?eventid=${eventid}&limit=${paginationModel.pageSize}&after=${cursor}`
         );
         return data;
       }
     } else {
       const { response, data } = await api.get(
+        //`/users?limit=${paginationModel.pageSize}`
         `/users?eventid=${eventid}&limit=${paginationModel.pageSize}`
       );
       return data;
