@@ -402,21 +402,18 @@ const ManageAttendees = ({ }: ManageAttendeesProps) => {
   const { data, isPending, isError, isPlaceholderData } = useQuery({
     queryKey: ["event", eventid, paginationModel.page],
     queryFn: async () => {
-      // TODO: Double check endpoint
-      // It currently returns list of ALL users, not just attendees for a specific event
-      // const { data } = await api.get(
-      //   `/events/${eventid}`
-      // );
       const {
         data,
-      } = await api.get(`/users?eventId=${eventid}&limit=${paginationModel.pageSize}`);
+      } = await api.get(`/users?eventId=${eventid}&eventStatus=${'CHECKED_IN'}&limit=${paginationModel.pageSize}`);
       return data["data"];
     },
     staleTime: Infinity,
   });
 
+  
 
 
+  console.log(data)
   // Set attendees list, total entries, and total pages
   let attendees = data?.result;
   let attendeeList: attendeeData[] = [];
@@ -443,7 +440,7 @@ const ManageAttendees = ({ }: ManageAttendeesProps) => {
         queryKey: ["event", eventid, paginationModel.page + 1],
         queryFn: async () => {
           const { data } = await api.get(
-            `/users?eventId=${eventid}&limit=${paginationModel.pageSize}&after=${cursor}`
+            `/users?eventId=${eventid}&eventStatus=${"PLACEHOLDER"}&limit=${paginationModel.pageSize}&after=${cursor}`
           );
           return data["data"];
         },

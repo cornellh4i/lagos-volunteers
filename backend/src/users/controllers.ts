@@ -1,6 +1,6 @@
 import { Request, Response, query } from "express";
 import { Prisma, userRole, UserStatus } from "@prisma/client";
-import { User, Profile, Permission, UserPreferences } from "@prisma/client";
+import { User, Profile, Permission, UserPreferences, EnrollmentStatus } from "@prisma/client";
 import admin from "firebase-admin";
 // We are using one connection to prisma client to prevent multiple connections
 import prisma from "../../client";
@@ -85,6 +85,7 @@ const getUsers = async (
     hours?: number;
     status?: UserStatus;
     eventId?: string;
+    eventStatus?: EnrollmentStatus
   },
   sort: {
     key: string;
@@ -144,15 +145,17 @@ const getUsers = async (
 
   // Handles GET /events?eventid=asdf
   const eventId = filter.eventId;
-  console.log(eventId);
+  const eventStatus = filter.eventStatus;
+  console.log(eventStatus);
   let events: { [key: string]: any } = {};
-  if (eventId) {
+  if (eventId && eventStatus) {
     events = {
         some:{
+          attendeeStatus: eventStatus,
           eventId: eventId,
         }
     };
-  }
+  }  
 
   // Handles all other filtering
   let whereDict = {

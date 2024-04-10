@@ -819,31 +819,6 @@
             "description": ""
           }
         }
-      },
-      "get": {
-        "tags": [
-          "Events"
-        ],
-        "description": "",
-        "parameters": [
-          {
-            "name": "eventid",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "name": "userid",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          }
-        ],
-        "responses": {
-          "default": {
-            "description": ""
-          }
-        }
       }
     },
     "/events/{eventid}/status": {
