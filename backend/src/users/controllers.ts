@@ -401,12 +401,6 @@ const getUserProfile = async (userId: string) => {
   });
 };
 
-
-
-
-
-
-
 /**
  * Updates a user profile
  * - Profile (Profile)

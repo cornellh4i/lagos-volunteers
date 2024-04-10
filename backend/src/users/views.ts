@@ -151,12 +151,6 @@ userRouter.get(
   }
 );
 
-
-
-
-
-
-
 userRouter.get(
   "/:userid/role",
   useAuth,
