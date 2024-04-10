@@ -316,45 +316,6 @@
         }
       }
     },
-    "/users/profiles": {
-      "get": {
-        "tags": [
-          "Users"
-        ],
-        "description": "",
-        "responses": {
-          "default": {
-            "description": ""
-          }
-        }
-      }
-    },
-    "/users/permissions": {
-      "get": {
-        "tags": [
-          "Users"
-        ],
-        "description": "",
-        "responses": {
-          "default": {
-            "description": ""
-          }
-        }
-      }
-    },
-    "/users/preferences": {
-      "get": {
-        "tags": [
-          "Users"
-        ],
-        "description": "",
-        "responses": {
-          "default": {
-            "description": ""
-          }
-        }
-      }
-    },
     "/users/{userid}/role": {
       "get": {
         "tags": [
@@ -730,16 +691,6 @@
         }
       }
     },
-    "/events/enrollments": {
-      "get": {
-        "description": "",
-        "responses": {
-          "default": {
-            "description": ""
-          }
-        }
-      }
-    },
     "/events/{eventid}/attendees": {
       "get": {
         "tags": [
@@ -917,6 +868,19 @@
             "type": "string"
           }
         ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/website/download": {
+      "get": {
+        "tags": [
+          "Website"
+        ],
+        "description": "",
         "responses": {
           "default": {
             "description": ""

@@ -9,8 +9,9 @@ let useAuth: RequestHandler;
 process.env.NODE_ENV === "test"
   ? (useAuth = NoAuth as RequestHandler)
   : (useAuth = auth as RequestHandler);
-  
+
 websiteRouter.get("/download", useAuth, async (req: Request, res: Response) => {
+  // #swagger.tags = ['Website']
   attempt(res, 200, () => websiteController.downloadAllWebsiteData());
 }
 );
