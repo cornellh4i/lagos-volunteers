@@ -8,6 +8,20 @@ import { setVolunteerCustomClaims } from "../middleware/auth";
 import userController from "../users/controllers";
 import { sendEmail } from "../utils/helpers";
 
+import fs from 'fs'; // importing built-in file system
+
+/**
+ * Creates an object utf8 that can encode the buffer and convert to string.
+ * Creates an object for each html file to return a string.
+ */
+const utf8: BufferEncoding = 'utf8';
+const stringRegCancel: string = fs.readFileSync('Registration_Cancellation.html', utf8);
+const stringRegSuccess: string = fs.readFileSync('Registration_Successful.html', utf8);
+const stringCertApprove: string = fs.readFileSync('Certificate_Approval.html', utf8);
+const stringBlacklist: string = fs.readFileSync('Blacklisted.html', utf8);
+const stringVolunSuper: string = fs.readFileSync('Volunteer_Supervisor.html', utf8);
+const stringSuperAdmin: string = fs.readFileSync('Supervisor_Admin.html', utf8);
+
 const htmlRegCancel = "./src/emails/Registration_Cancellation.html";
 const htmlRegSuccess = "./src/emails/Registration_Successful.html";
 const htmlCertApprove = "./src/emails/Certificate_Approval.html";

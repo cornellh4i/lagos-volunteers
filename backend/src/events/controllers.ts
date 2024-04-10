@@ -11,6 +11,21 @@ import userController from "../users/controllers";
 import prisma from "../../client";
 import { sendEmail } from "../utils/helpers";
 
+import fs from 'fs'; // importing built-in file system
+
+/**
+ * Creates an object utf8 that can encode the buffer and convert to string.
+ * Creates an object for each html file to return a string.
+ */
+const utf8: BufferEncoding = 'utf8';
+const stringRegCancel: string = fs.readFileSync('Registration_Cancellation.html', utf8);
+const stringRegSuccess: string = fs.readFileSync('Registration_Successful.html', utf8);
+const stringCertApprove: string = fs.readFileSync('Certificate_Approval.html', utf8);
+const stringBlacklist: string = fs.readFileSync('Blacklisted.html', utf8);
+const stringVolunSuper: string = fs.readFileSync('Volunteer_Supervisor.html', utf8);
+const stringSuperAdmin: string = fs.readFileSync('Supervisor_Admin.html', utf8);
+
+
 /**
  * Creates an object utf8 that can encode the buffer and convert to string.
  * Creates an object for each html file to return a string.
@@ -343,6 +358,10 @@ const deleteAttendee = async (
 
   // sets the email message
   // const emailHtml = "<b>htmlRegCancel</b>";
+  const emailHtml = "<b>email here, EVENT NAME...</b>"
+  function replace() {
+    // checks emailHTML string, finds instances of EVENT NAME and replaces it with ${event.name}
+  }
   if (process.env.NODE_ENV != "test") {
     await sendEmail(userEmail, "Your email subject", htmlRegCancel);
   }
