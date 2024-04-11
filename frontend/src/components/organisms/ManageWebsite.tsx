@@ -70,7 +70,7 @@ const ManageWebsite = () => {
             user information.
           </div>
           <Button onClick={handleDownloadDatabase} loading={isRefetching}>
-            Download Data
+            Download data
           </Button>
         </Card>
       </div>
