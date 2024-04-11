@@ -1,18 +1,11 @@
 import React from "react";
-import dynamic from "next/dynamic";
 import DefaultTemplate from "@/components/templates/DefaultTemplate";
-
-const DynamicAboutPage = dynamic(
-  () => import("../components/organisms/About"),
-  {
-    ssr: false,
-  }
-);
+import About from "@/components/organisms/About";
 
 const AboutPage = () => {
   return (
     <DefaultTemplate>
-      <DynamicAboutPage edit={true} />
+      <About />
     </DefaultTemplate>
   );
 };

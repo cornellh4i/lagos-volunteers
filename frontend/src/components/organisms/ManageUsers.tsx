@@ -3,7 +3,7 @@ import Table from "@/components/molecules/Table";
 import TabContainer from "@/components/molecules/TabContainer";
 import Button from "../atoms/Button";
 import { GridColDef, GridPaginationModel } from "@mui/x-data-grid";
-import AccountBoxIcon from "@mui/icons-material/AccountBox";
+import PersonIcon from "@mui/icons-material/Person";
 import SearchBar from "@/components/atoms/SearchBar";
 import Link from "next/link";
 import { formatDateString } from "@/utils/helpers";
@@ -88,20 +88,14 @@ const Active = ({
       headerName: "",
       field: "actions",
       flex: 0.5,
-      minWidth: 180,
+      minWidth: 140,
       renderCell: (params) => (
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "flex-end",
-          }}
-        >
+        <div>
           <Link
             href={`/users/${params.row.id}/manage`}
             className="no-underline"
           >
-            <Button variety="tertiary" size="small" icon={<AccountBoxIcon />}>
+            <Button variety="tertiary" size="small" icon={<PersonIcon />}>
               View Profile
             </Button>
           </Link>

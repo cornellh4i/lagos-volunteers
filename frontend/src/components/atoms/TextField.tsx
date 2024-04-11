@@ -23,7 +23,7 @@ const TextField = forwardRef(
               borderRadius: "8px",
             },
             "& .MuiInputBase-input": {
-              height: "12px",
+              height: "9px",
             },
           }}
           fullWidth
@@ -31,6 +31,7 @@ const TextField = forwardRef(
           type={type}
           InputProps={type === "number" ? { inputProps: { min: 0 } } : {}}
           error={error !== ""}
+          autoComplete="off"
           {...props}
         />
         <div className="mt-1 text-xs text-red-500">{error}</div>

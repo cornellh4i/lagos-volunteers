@@ -47,6 +47,72 @@ async function createPoolOfRandomUsers(pool: number) {
     });
     userDataSeed.push(createdUser);
   }
+
+  // Create users with a an email that can be verified:
+
+  // Admin
+  const admin = await prisma.user.create({
+    data: {
+      email: "lagosfoodbankdev@gmail.com",
+      role: "ADMIN",
+      profile: {
+        create: {
+          firstName: "Lagos",
+          lastName: "Food Bank",
+          nickname: "LFB",
+          phoneNumber: "08012345678",
+        },
+      },
+      preferences: {
+        create: {
+          sendPromotions: true,
+        },
+      },
+    },
+  });
+
+  // Supervisor
+  const supervisor = await prisma.user.create({
+    data: {
+      email: "olumidetest@gmail.com",
+      role: "SUPERVISOR",
+      profile: {
+        create: {
+          firstName: "Olumide",
+          lastName: "Ade",
+          nickname: "Olu",
+          phoneNumber: "08012345678",
+        },
+      },
+      preferences: {
+        create: {
+          sendPromotions: true,
+        },
+      },
+    },
+  });
+
+  // Volunteer
+  const volunteer = await prisma.user.create({
+    data: {
+      email: "lagosfoodbankvolunteer@gmail.com",
+      role: "VOLUNTEER",
+      profile: {
+        create: {
+          firstName: "LFB",
+          lastName: "Volunteer",
+          nickname: "Volunteer",
+          phoneNumber: "08012345678",
+        },
+      },
+      preferences: {
+        create: {
+          sendPromotions: true,
+        },
+      },
+    },
+  });
+  userDataSeed.push(admin, supervisor, volunteer);
   console.log("Done creating pool of random users");
 }
 
@@ -271,6 +337,7 @@ async function main() {
   // This is for seeding purposes only. Everytime seed, we will get constraint errors becuause we are creating the same data again.
   await prisma.event.deleteMany({});
   await prisma.user.deleteMany({});
+  await prisma.about.deleteMany({});
 
   for (const u of userData) {
     const user = await prisma.user.create({
@@ -307,6 +374,59 @@ async function main() {
 
   await createPoolOfRandomUsers(100);
   await createPoolOfRandomEvents(100);
+
+  const defaultAboutContent = `
+  <h2>About Lagos Food Bank</h2>
+  <h3>Mission</h3>
+  <p>
+    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+    eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim
+    ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut
+    aliquip ex ea commodo consequat. Duis aute irure dolor in
+    reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla
+    pariatur. Excepteur sint occaecat cupidatat non proident, sunt in
+    culpa qui officia deserunt mollit anim id est laborum.
+  </p>
+  <h3>Why Volunteer?</h3>
+  <p>
+    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+    eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim
+    ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut
+    aliquip ex ea commodo consequat. Duis aute irure dolor in
+    reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla
+    pariatur. Excepteur sint occaecat cupidatat non proident, sunt in
+    culpa qui officia deserunt mollit anim id est laborum.
+  </p>
+  <h2>Sign Up Process</h2>
+  <p>
+    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+    eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim
+    ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut
+    aliquip ex ea commodo consequat. Duis aute irure dolor in
+    reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla
+    pariatur. Excepteur sint occaecat cupidatat non proident, sunt in
+    culpa qui officia deserunt mollit anim id est laborum.
+  </p>
+  <h2>Programs</h2>
+  <h2>Certificate Request Process</h2>
+  <p>
+    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+    eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim
+    ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut
+    aliquip ex ea commodo consequat. Duis aute irure dolor in
+    reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla
+    pariatur. Excepteur sint occaecat cupidatat non proident, sunt in
+    culpa qui officia deserunt mollit anim id est laborum.
+  </p>
+  <h2>Request Certificate</h2>
+  <p>Fill out this form. Login first</p>
+  `;
+
+  const page = await prisma.about.create({
+    data: {
+      content: defaultAboutContent,
+    },
+  });
 
   console.log(`Seeded ${await prisma.user.count()} users.`);
   console.log(`Seeded ${await prisma.event.count()} events.`);

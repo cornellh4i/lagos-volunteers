@@ -114,6 +114,15 @@ model EventEnrollment {
   @@id([userId, eventId])
 }
 
+model About {
+  //Metadata
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  id      String @id @default(cuid())
+  content String
+}
+
 enum userRole {
   ADMIN
   VOLUNTEER

@@ -12,10 +12,11 @@ const SearchBar = ({ ...props }: SearchBarProps) => {
     <TextField
       sx={{
         "& .MuiInputBase-root": {
+          background: "white",
           borderRadius: "8px",
         },
         "& .MuiInputBase-input": {
-          height: "12px",
+          height: "9px",
         },
       }}
       fullWidth

@@ -15,7 +15,7 @@ type FormValues = {
   email: string;
   firstName: string;
   lastName: string;
-  preferredName: string;
+  // preferredName: string;
   oldPassword: string;
   newPassword: string;
   confirmNewPassword: string;
@@ -79,13 +79,13 @@ const ProfileForm = ({ userDetails }: ProfileFormProps) => {
     handleSubmit,
     watch,
     reset,
-    formState: { errors },
+    formState: { errors, isDirty },
   } = useForm<FormValues>({
     defaultValues: {
       email: userDetails.email,
       firstName: userDetails.firstName,
       lastName: userDetails.lastName,
-      preferredName: userDetails.nickname,
+      // preferredName: userDetails.nickname,
       oldPassword: "",
       newPassword: "",
       confirmNewPassword: "",
@@ -131,7 +131,7 @@ const ProfileForm = ({ userDetails }: ProfileFormProps) => {
       return api.put(`/users/${userDetails.id}/profile`, {
         firstName: data.firstName,
         lastName: data.lastName,
-        nickname: data.preferredName,
+        // nickname: data.preferredName,
       });
     },
     onSuccess: () => {
@@ -176,66 +176,104 @@ const ProfileForm = ({ userDetails }: ProfileFormProps) => {
       {/* Profile form */}
       <form onSubmit={handleSubmit(handleChanges)} className="space-y-4">
         <TextField
+          error={errors.email?.message}
           label="Email"
-          disabled={true}
-          error={errors.email ? "Required" : undefined}
-          {...register("email", { required: true })}
+          {...register("email", {
+            required: { value: true, message: "Required" },
+            pattern: {
+              value:
+                /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/,
+              message: "Invalid email address",
+            },
+          })}
         />
         <TextField
+          error={errors.firstName?.message}
           label="First name"
-          error={errors.firstName ? "Required" : undefined}
-          {...register("firstName", { required: true })}
+          {...register("firstName", {
+            required: { value: true, message: "Required" },
+          })}
         />
         <TextField
+          error={errors.lastName?.message}
           label="Last name"
-          error={errors.lastName ? "Required" : undefined}
-          {...register("lastName", { required: true })}
+          {...register("lastName", {
+            required: { value: true, message: "Required" },
+          })}
         />
-        <TextField
+        {/* <TextField
           label="Preferred name"
-          error={errors.preferredName ? "Required" : undefined}
-          {...register("preferredName", { required: true })}
-        />
+          error={errors.preferredName?.message}
+          {...register("preferredName", {
+            required: { value: true, message: "Required" },
+          })}
+        /> */}
         <TextField
           type="password"
           label="Old password"
-          error={errors.oldPassword ? "Required" : undefined}
-          {...register("oldPassword", { required: true })}
+          error={errors.oldPassword?.message}
+          {...register("oldPassword", {
+            required: { value: true, message: "Required" },
+          })}
         />
         <TextField
           type="password"
           label="New password "
-          {...register("newPassword", { required: false })}
+          error={errors.newPassword?.message}
+          {...register("newPassword", {
+            required: { value: true, message: "Required" },
+            minLength: {
+              value: 6,
+              message: "Password must be at least 6 characters",
+            },
+            validate: {
+              hasUpper: (value) =>
+                /.*[A-Z].*/.test(value) ||
+                "Password must contain at least one uppercase letter",
+              hasLower: (value) =>
+                /.*[a-z].*/.test(value) ||
+                "Password must contain at least one lowercase letter",
+              hasNumber: (value) =>
+                /.*[0-9].*/.test(value) ||
+                "Password must contain at least one number",
+              hasSpecialChar: (value) =>
+                /.*[\W_].*/.test(value) ||
+                "Password must contain at least one special character",
+            },
+          })}
         />
         <TextField
           type="password"
-          label="Confirm new password"
-          error={
-            watch("newPassword") === watch("confirmNewPassword")
-              ? undefined
-              : "Passwords must match"
-          }
-          {...register("confirmNewPassword", { required: false })}
+          error={errors.confirmNewPassword?.message}
+          label="Confirm password"
+          {...register("confirmNewPassword", {
+            required: { value: true, message: "Required" },
+            validate: {
+              matchPassword: (value) =>
+                value === watch("newPassword") || "Passwords do not match",
+            },
+          })}
         />
         <Checkbox
           checked={checked}
           onChange={handleCheckbox}
           label="Email notifications"
         />
-        <div className="sm:space-x-4 grid grid-cols-1 sm:grid-cols-2">
-          <div className="pb-4 sm:pb-0">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <div className="order-1 sm:order-2">
+            <Button type="submit">Save changes</Button>
+          </div>
+          <div className="order-2 sm:order-1">
             <Button
               type="button"
               variety="secondary"
               onClick={() => {
-                reset(userDetails, { keepDefaultValues: true });
+                reset(undefined, { keepDefaultValues: true });
               }}
+              disabled={!isDirty}
             >
-              Cancel
+              Reset changes
             </Button>
-          </div>
-          <div>
-            <Button type="submit">Save Changes</Button>
           </div>
         </div>
       </form>
