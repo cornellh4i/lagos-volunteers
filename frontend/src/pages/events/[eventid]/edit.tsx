@@ -5,18 +5,20 @@ import CenteredTemplate from "@/components/templates/CenteredTemplate";
 import Loading from "@/components/molecules/Loading";
 import { api } from "@/utils/api";
 import { useQuery } from "@tanstack/react-query";
+import Card from "@/components/molecules/Card";
 
 type eventData = {
+  id: string;
   eventName: string;
   location: string;
   volunteerSignUpCap: string;
   eventDescription: string;
   eventImage: string;
   rsvpLinkImage: string;
-  startDate: string;
-  endDate: string;
-  startTime: string;
-  endTime: string;
+  startDate: Date;
+  endDate: Date;
+  startTime: Date;
+  endTime: Date;
   mode: string;
 };
 
@@ -34,6 +36,7 @@ const EditEvent = () => {
     },
   });
   let event: eventData = {
+    id: data?.id,
     eventName: data?.name,
     location: data?.location,
     volunteerSignUpCap: data?.capacity,
@@ -52,7 +55,9 @@ const EditEvent = () => {
 
   return (
     <CenteredTemplate>
-      <EventForm eventId={eventid} eventType="edit" eventDetails={event} />
+      <Card size="medium">
+        <EventForm eventType="edit" eventDetails={event} />
+      </Card>
     </CenteredTemplate>
   );
 };

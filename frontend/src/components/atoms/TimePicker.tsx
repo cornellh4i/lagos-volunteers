@@ -33,7 +33,7 @@ const CustomTimePicker = forwardRef(
                 borderRadius: "8px",
               },
               "& .MuiInputBase-input": {
-                height: "12px",
+                height: "9px",
               },
             }}
             fullWidth

@@ -1,12 +1,13 @@
-import React from "react";
+import React, { useEffect } from "react";
 import Button from "../atoms/Button";
 import TextField from "../atoms/TextField";
 import Link from "next/link";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { useSendPasswordResetEmail } from "react-firebase-hooks/auth";
 import { auth } from "@/utils/firebase";
-import Alert from "../atoms/Alert";
+import Snackbar from "../atoms/Snackbar";
 import { BASE_URL_CLIENT } from "@/utils/constants";
+import { useMutation } from "@tanstack/react-query";
 
 type FormValues = {
   email: string;
@@ -19,6 +20,8 @@ const ForgotPasswordForm = () => {
 
   const [errorMessage, setErrorMessage] = React.useState<string>("");
   const [success, setSuccess] = React.useState<boolean>(false);
+  const [errorSnackbarOpen, setErrorSnackbarOpen] =
+    React.useState<boolean>(false);
   const {
     register,
     handleSubmit,
@@ -43,36 +46,42 @@ const ForgotPasswordForm = () => {
 
   const ForgotPasswordErrorComponent = (): JSX.Element | null => {
     return error ? (
-      <Alert severity="error">Error: {handleErrors(error.message)}</Alert>
+      <Snackbar
+        variety="error"
+        open={errorSnackbarOpen}
+        onClose={() => setErrorSnackbarOpen(false)}
+      >
+        Error: {handleErrors(error.message)}
+      </Snackbar>
     ) : null;
   };
 
   const ForgotPasswordSuccessComponent = (): JSX.Element | null => {
     return success ? (
-      <Alert severity="success">
+      <Snackbar
+        variety="success"
+        open={success}
+        onClose={() => setSuccess(false)}
+      >
         Success: Password reset email sent. Please check your inbox.
-      </Alert>
+      </Snackbar>
     ) : null;
   };
 
   const handleForgotPassword: SubmitHandler<FormValues> = async (data) => {
     const { email } = data;
-    const actionCodeSettings = {
-      url: `${BASE_URL_CLIENT}/login`,
-    };
 
-    const resetPassword = await sendPasswordResetEmail(
-      email,
-      actionCodeSettings
-    );
+    const resetPassword = await sendPasswordResetEmail(email);
     if (resetPassword) {
       setSuccess(true);
     }
-    if (error) {
-      console.log(error.message);
-    }
-    console.log(email);
   };
+
+  useEffect(() => {
+    if (error) {
+      setErrorSnackbarOpen(true);
+    }
+  }, [error]);
 
   return (
     <form onSubmit={handleSubmit(handleForgotPassword)} className="space-y-4">
@@ -87,14 +96,22 @@ const ForgotPasswordForm = () => {
       </div>
       <div>
         <TextField
-          error={errors.email ? "Required" : undefined}
-          type="email"
+          error={errors.email?.message}
           label="Email"
-          {...register("email", { required: "true" })}
+          {...register("email", {
+            required: { value: true, message: "Required" },
+            pattern: {
+              value:
+                /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/,
+              message: "Invalid email address",
+            },
+          })}
         />
       </div>
-      <div>
-        <Button type="submit">Email me a link</Button>
+      <div className="pt-2">
+        <Button loading={sending} type="submit">
+          Email me a link
+        </Button>
       </div>
       <div className="justify-center flex flex-row">
         <div>Have an account?&nbsp;</div>
