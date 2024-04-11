@@ -103,11 +103,11 @@ model EventEnrollment {
   // Attendees info
   eventId            String
   userId             String
-  event              Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
-  user               User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  showedUp           Boolean? @default(false)
-  workedHours        Int?     @default(0)
-  canceled           Boolean? @default(false)
+  event              Event            @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  user               User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  showedUp           Boolean?         @default(false)
+  workedHours        Int?             @default(0)
+  canceled           Boolean?         @default(false)
   cancelationMessage String?
   attendeeStatus     EnrollmentStatus @default(PENDING)
 

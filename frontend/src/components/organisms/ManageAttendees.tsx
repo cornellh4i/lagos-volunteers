@@ -12,7 +12,12 @@ import Select from "../atoms/Select";
 import DatePicker from "../atoms/DatePicker";
 import TimePicker from "../atoms/TimePicker";
 import Snackbar from "../atoms/Snackbar";
-import { useQuery, useQueryClient, useMutation, QueryClient } from "@tanstack/react-query";
+import {
+  useQuery,
+  useQueryClient,
+  useMutation,
+  QueryClient,
+} from "@tanstack/react-query";
 import { convertToISO, fetchUserIdFromDatabase } from "@/utils/helpers";
 import { useAuth } from "@/utils/AuthContext";
 import router from "next/router";
@@ -47,8 +52,7 @@ type FormValues = {
   endTime: string;
 };
 
-interface ManageAttendeesProps { }
-
+interface ManageAttendeesProps {}
 
 const AttendeesTable = ({
   status,
@@ -61,89 +65,88 @@ const AttendeesTable = ({
   const queryClient = useQueryClient();
 
   const { mutateAsync, isPending, isError, isSuccess } = useMutation({
-    mutationFn: async (variables: {userId: string, newValue: string}) => {
-      const {userId, newValue} = variables;
+    mutationFn: async (variables: { userId: string; newValue: string }) => {
+      const { userId, newValue } = variables;
       const { response } = await api.put(`/events/${eventId}/users/${userId}`, {
-        status: newValue // Only update the status field
+        status: newValue, // Only update the status field
       });
       return response;
     },
     retry: false,
     onSuccess: () => {
       console.log("success");
-      queryClient.invalidateQueries({ queryKey: ["event", eventId]});
+      queryClient.invalidateQueries({ queryKey: ["event", eventId] });
     },
   });
 
-const handleStatusChange = async (userId: string, newValue: string) => {
-  if (!eventId) {
-    console.error("Event ID not found in URL");
-    return;
-  }
+  const handleStatusChange = async (userId: string, newValue: string) => {
+    if (!eventId) {
+      console.error("Event ID not found in URL");
+      return;
+    }
 
-  try {
-    await mutateAsync({userId, newValue})
-  } catch (error) {
-    console.error("Error updating user status:", error);
-  }
-};
+    try {
+      await mutateAsync({ userId, newValue });
+    } catch (error) {
+      console.error("Error updating user status:", error);
+    }
+  };
 
-
-
-
-const eventColumns: GridColDef[] = [
-  {
-    field: "name",
-    headerName: "Name",
-    minWidth: 200,
-    flex: 2,
-    renderHeader: (params) => (
-      <div style={{ fontWeight: "bold" }}>{params.colDef.headerName}</div>
-    ),
-  },
-  {
-    field: "email",
-    headerName: "Email",
-    minWidth: 200,
-    flex: 0.5,
-    renderHeader: (params) => (
-      <div style={{ fontWeight: "bold" }}>{params.colDef.headerName}</div>
-    ),
-  },
-  {
-    field: "phone",
-    headerName: "Phone number",
-    minWidth: 200,
-    flex: 0.5,
-    renderHeader: (params) => (
-      <div style={{ fontWeight: "bold" }}>{params.colDef.headerName}</div>
-    ),
-  },
-  {
-    field: "status",
-    headerName: "Status",
-    minWidth: 175,
-    flex: 0.5,
-    renderHeader: (params) => (
-      <div style={{ fontWeight: "bold" }}>{params.colDef.headerName}</div>
-    ),
-    renderCell: (params) => (
-      <div className="w-full">
-        <Select
-          size="small"
-          value= {params.row.status}
-          onChange={(event: any) => handleStatusChange(params.row.id, event.target.value)}
-        >
-          <MenuItem value="CHECKED_IN">Checked in</MenuItem>
-          <MenuItem value="CHECKED_OUT">Checked out</MenuItem>
-          <MenuItem value="PENDING">Pending</MenuItem>
-          <MenuItem value="REMOVED">Removed</MenuItem>
-          <MenuItem value="CANCELED">Canceled</MenuItem>
-        </Select>
-      </div>
-    ),
-  },
-];
+  const eventColumns: GridColDef[] = [
+    {
+      field: "name",
+      headerName: "Name",
+      minWidth: 200,
+      flex: 2,
+      renderHeader: (params) => (
+        <div style={{ fontWeight: "bold" }}>{params.colDef.headerName}</div>
+      ),
+    },
+    {
+      field: "email",
+      headerName: "Email",
+      minWidth: 200,
+      flex: 0.5,
+      renderHeader: (params) => (
+        <div style={{ fontWeight: "bold" }}>{params.colDef.headerName}</div>
+      ),
+    },
+    {
+      field: "phone",
+      headerName: "Phone number",
+      minWidth: 200,
+      flex: 0.5,
+      renderHeader: (params) => (
+        <div style={{ fontWeight: "bold" }}>{params.colDef.headerName}</div>
+      ),
+    },
+    {
+      field: "status",
+      headerName: "Status",
+      minWidth: 175,
+      flex: 0.5,
+      renderHeader: (params) => (
+        <div style={{ fontWeight: "bold" }}>{params.colDef.headerName}</div>
+      ),
+      renderCell: (params) => (
+        <div className="w-full">
+          <Select
+            size="small"
+            value={params.row.status}
+            onChange={(event: any) =>
+              handleStatusChange(params.row.id, event.target.value)
+            }
+          >
+            <MenuItem value="CHECKED_IN">Checked in</MenuItem>
+            <MenuItem value="CHECKED_OUT">Checked out</MenuItem>
+            <MenuItem value="PENDING">Pending</MenuItem>
+            <MenuItem value="REMOVED">Removed</MenuItem>
+            <MenuItem value="CANCELED">Canceled</MenuItem>
+          </Select>
+        </div>
+      ),
+    },
+  ];
 
   /** Search bar */
   const [value, setValue] = React.useState("");
@@ -216,13 +219,13 @@ const ModalBody = ({
   } = useForm<FormValues>(
     eventDetails
       ? {
-        defaultValues: {
-          startDate: eventDetails.startDate,
-          endDate: eventDetails.endDate,
-          startTime: eventDetails.startTime,
-          endTime: eventDetails.endTime,
-        },
-      }
+          defaultValues: {
+            startDate: eventDetails.startDate,
+            endDate: eventDetails.endDate,
+            startTime: eventDetails.startTime,
+            endTime: eventDetails.endTime,
+          },
+        }
       : {}
   );
 
@@ -387,7 +390,7 @@ const ModalBody = ({
 };
 
 /** A ManageAttendees component */
-const ManageAttendees = ({ }: ManageAttendeesProps) => {
+const ManageAttendees = ({}: ManageAttendeesProps) => {
   const router = useRouter();
   const eventid = router.query.eventid as string;
 
@@ -399,128 +402,221 @@ const ManageAttendees = ({ }: ManageAttendeesProps) => {
     });
 
   /** Tanstack query to fetch attendees data */
-const { data: pendingData, isPending: pendingIsPending, isError: pendingIsError, isPlaceholderData: pendingIsPlaceholderData } = useQuery({
-  queryKey: ["event", eventid, paginationModel.page, "pending"],
-  queryFn: async () => {
-    const { data } = await api.get(`/users?eventId=${eventid}&eventStatus=PENDING&limit=${paginationModel.pageSize}`);
-    return data["data"];
-  },
-  staleTime: Infinity,
-});
+  const {
+    data: pendingData,
+    isPending: pendingIsPending,
+    isError: pendingIsError,
+    isPlaceholderData: pendingIsPlaceholderData,
+  } = useQuery({
+    queryKey: ["event", eventid, paginationModel.page, "pending"],
+    queryFn: async () => {
+      const { data } = await api.get(
+        `/users?eventId=${eventid}&eventStatus=PENDING&limit=${paginationModel.pageSize}`
+      );
+      return data["data"];
+    },
+    staleTime: Infinity,
+  });
 
-const { data: checkedInData, isPending: checkedInIsPending, isError: checkedInIsError, isPlaceholderData: checkedInIsPlaceholderData } = useQuery({
-  queryKey: ["event", eventid, paginationModel.page, "checked_in"],
-  queryFn: async () => {
-    const { data } = await api.get(`/users?eventId=${eventid}&eventStatus=${'CHECKED_IN'}&limit=${paginationModel.pageSize}`);
-    return data["data"];
-  },
-  staleTime: Infinity,
-});
+  const {
+    data: checkedInData,
+    isPending: checkedInIsPending,
+    isError: checkedInIsError,
+    isPlaceholderData: checkedInIsPlaceholderData,
+  } = useQuery({
+    queryKey: ["event", eventid, paginationModel.page, "checked_in"],
+    queryFn: async () => {
+      const { data } = await api.get(
+        `/users?eventId=${eventid}&eventStatus=${"CHECKED_IN"}&limit=${
+          paginationModel.pageSize
+        }`
+      );
+      return data["data"];
+    },
+    staleTime: Infinity,
+  });
 
-const { data: checkedOutData, isPending: checkedOutIsPending, isError: checkedOutIsError, isPlaceholderData: checkedOutIsPlaceholderData } = useQuery({
-  queryKey: ["event", eventid, paginationModel.page, "checked_out"],
-  queryFn: async () => {
-    const { data } = await api.get(`/users?eventId=${eventid}&eventStatus=${'CHECKED_OUT'}&limit=${paginationModel.pageSize}`);
-    return data["data"];
-  },
-  staleTime: Infinity,
-});
+  const {
+    data: checkedOutData,
+    isPending: checkedOutIsPending,
+    isError: checkedOutIsError,
+    isPlaceholderData: checkedOutIsPlaceholderData,
+  } = useQuery({
+    queryKey: ["event", eventid, paginationModel.page, "checked_out"],
+    queryFn: async () => {
+      const { data } = await api.get(
+        `/users?eventId=${eventid}&eventStatus=${"CHECKED_OUT"}&limit=${
+          paginationModel.pageSize
+        }`
+      );
+      return data["data"];
+    },
+    staleTime: Infinity,
+  });
 
-const { data: removedData, isPending: removedIsPending, isError: removedIsError, isPlaceholderData: removedIsPlaceholderData } = useQuery({
-  queryKey: ["event", eventid, paginationModel.page, "removed"],
-  queryFn: async () => {
-    const { data } = await api.get(`/users?eventId=${eventid}&eventStatus=${'REMOVED'}&limit=${paginationModel.pageSize}`);
-    return data["data"];
-  },
-  staleTime: Infinity,
-});
+  const {
+    data: removedData,
+    isPending: removedIsPending,
+    isError: removedIsError,
+    isPlaceholderData: removedIsPlaceholderData,
+  } = useQuery({
+    queryKey: ["event", eventid, paginationModel.page, "removed"],
+    queryFn: async () => {
+      const { data } = await api.get(
+        `/users?eventId=${eventid}&eventStatus=${"REMOVED"}&limit=${
+          paginationModel.pageSize
+        }`
+      );
+      return data["data"];
+    },
+    staleTime: Infinity,
+  });
 
-const { data: canceledData, isPending: canceledIsPending, isError: canceledIsError, isPlaceholderData: canceledIsPlaceholderData } = useQuery({
-  queryKey: ["event", eventid, paginationModel.page, "canceled"],
-  queryFn: async () => {
-    const { data } = await api.get(`/users?eventId=${eventid}&eventStatus=${'CANCELED'}&limit=${paginationModel.pageSize}`);
-    return data["data"];
-  },
-  staleTime: Infinity,
-});
+  const {
+    data: canceledData,
+    isPending: canceledIsPending,
+    isError: canceledIsError,
+    isPlaceholderData: canceledIsPlaceholderData,
+  } = useQuery({
+    queryKey: ["event", eventid, paginationModel.page, "canceled"],
+    queryFn: async () => {
+      const { data } = await api.get(
+        `/users?eventId=${eventid}&eventStatus=${"CANCELED"}&limit=${
+          paginationModel.pageSize
+        }`
+      );
+      return data["data"];
+    },
+    staleTime: Infinity,
+  });
 
+  console.log(pendingData);
+  console.log(checkedInData);
+  // Process attendees data
+  const processAttendeesData = (data: any) => {
+    if (!data) return null;
 
-console.log(pendingData)
-console.log(checkedInData)
-// Process attendees data
-const processAttendeesData = (data: any) => {
-  if (!data) return null;
+    const attendees = data.result;
+    const attendeeList = attendees.map((attendee: any) => ({
+      id: attendee.id,
+      status: attendee.events[0].attendeeStatus,
+      name: `${attendee.profile?.firstName} ${attendee.profile?.lastName}`,
+      email: attendee.email,
+      phone: attendee.profile?.phoneNumber || "123-456-7890", // TODO: Change to actual phone number
+    }));
 
-  const attendees = data.result;
-  const attendeeList = attendees.map((attendee: any) => ({
-    id: attendee.id,
-    status: attendee.events[0].attendeeStatus,
-    name: `${attendee.profile?.firstName} ${attendee.profile?.lastName}`,
-    email: attendee.email,
-    phone: attendee.profile?.phoneNumber || "123-456-7890", // TODO: Change to actual phone number
-  }));
+    const totalNumberofData = data.totalItems || 0;
+    const cursor = data.cursor || "";
+    const totalNumberOfPages = Math.ceil(
+      totalNumberofData / paginationModel.pageSize
+    );
 
-  const totalNumberofData = data.totalItems || 0;
-  const cursor = data.cursor || "";
-  const totalNumberOfPages = Math.ceil(totalNumberofData / paginationModel.pageSize);
+    return { attendeeList, totalNumberofData, cursor, totalNumberOfPages };
+  };
 
-  return { attendeeList, totalNumberofData, cursor, totalNumberOfPages };
-};
+  // Process each query result
+  const processedPendingData = processAttendeesData(pendingData);
+  const processedCheckedInData = processAttendeesData(checkedInData);
+  const processedCheckedOutData = processAttendeesData(checkedOutData);
+  const processedRemovedData = processAttendeesData(removedData);
+  const processedCanceledData = processAttendeesData(canceledData);
+  const queryClient = useQueryClient();
+  // Prefetch logic for each query result
+  const prefetchNextPage = (
+    status: any,
+    page: any,
+    totalNumberOfPages: any,
+    cursor: any
+  ) => {
+    if (page < totalNumberOfPages) {
+      queryClient.prefetchQuery({
+        queryKey: ["event", eventid, page + 1],
+        queryFn: async () => {
+          const { data } = await api.get(
+            `/users?eventId=${eventid}&eventStatus=${status}&limit=${paginationModel.pageSize}&after=${cursor}`
+          );
+          return data["data"];
+        },
+        staleTime: Infinity,
+      });
+    }
+  };
 
-// Process each query result
-const processedPendingData = processAttendeesData(pendingData);
-const processedCheckedInData = processAttendeesData(checkedInData);
-const processedCheckedOutData = processAttendeesData(checkedOutData);
-const processedRemovedData = processAttendeesData(removedData);
-const processedCanceledData = processAttendeesData(canceledData);
-const queryClient = useQueryClient();
-// Prefetch logic for each query result
-const prefetchNextPage = (status: any, page: any, totalNumberOfPages: any, cursor: any) => {
-  if (page < totalNumberOfPages) {
-    queryClient.prefetchQuery({
-      queryKey: ["event", eventid, page + 1],
-      queryFn: async () => {
-        const { data } = await api.get(
-          `/users?eventId=${eventid}&eventStatus=${status}&limit=${paginationModel.pageSize}&after=${cursor}`
-        );
-        return data["data"];
-      },
-      staleTime: Infinity,
-    });
-  }
-};
+  // Call prefetch for each query result
+  useEffect(() => {
+    if (!pendingIsPlaceholderData) {
+      prefetchNextPage(
+        "PENDING",
+        paginationModel.page,
+        processedPendingData?.totalNumberOfPages,
+        processedPendingData?.cursor
+      );
+    }
+  }, [
+    pendingIsPlaceholderData,
+    processedPendingData?.totalNumberOfPages,
+    processedPendingData?.cursor,
+  ]);
 
-// Call prefetch for each query result
-useEffect(() => {
-  if (!pendingIsPlaceholderData) {
-    prefetchNextPage('PENDING', paginationModel.page, processedPendingData?.totalNumberOfPages, processedPendingData?.cursor);
-  }
-}, [pendingIsPlaceholderData, processedPendingData?.totalNumberOfPages, processedPendingData?.cursor]);
+  useEffect(() => {
+    if (!checkedInIsPlaceholderData) {
+      prefetchNextPage(
+        "CHECKED_IN",
+        paginationModel.page,
+        processedCheckedInData?.totalNumberOfPages,
+        processedCheckedInData?.cursor
+      );
+    }
+  }, [
+    checkedInIsPlaceholderData,
+    processedCheckedInData?.totalNumberOfPages,
+    processedCheckedInData?.cursor,
+  ]);
 
-useEffect(() => {
-  if (!checkedInIsPlaceholderData) {
-    prefetchNextPage('CHECKED_IN', paginationModel.page, processedCheckedInData?.totalNumberOfPages, processedCheckedInData?.cursor);
-  }
-}, [checkedInIsPlaceholderData, processedCheckedInData?.totalNumberOfPages, processedCheckedInData?.cursor]);
+  useEffect(() => {
+    if (!checkedOutIsPlaceholderData) {
+      prefetchNextPage(
+        "CHECKED_OUT",
+        paginationModel.page,
+        processedCheckedOutData?.totalNumberOfPages,
+        processedCheckedOutData?.cursor
+      );
+    }
+  }, [
+    checkedOutIsPlaceholderData,
+    processedCheckedOutData?.totalNumberOfPages,
+    processedCheckedOutData?.cursor,
+  ]);
 
-useEffect(() => {
-  if (!checkedOutIsPlaceholderData) {
-    prefetchNextPage('CHECKED_OUT', paginationModel.page, processedCheckedOutData?.totalNumberOfPages, processedCheckedOutData?.cursor);
-  }
-}, [checkedOutIsPlaceholderData, processedCheckedOutData?.totalNumberOfPages, processedCheckedOutData?.cursor]);
+  useEffect(() => {
+    if (!removedIsPlaceholderData) {
+      prefetchNextPage(
+        "REMOVED",
+        paginationModel.page,
+        processedRemovedData?.totalNumberOfPages,
+        processedRemovedData?.cursor
+      );
+    }
+  }, [
+    removedIsPlaceholderData,
+    processedRemovedData?.totalNumberOfPages,
+    processedRemovedData?.cursor,
+  ]);
 
-useEffect(() => {
-  if (!removedIsPlaceholderData) {
-    prefetchNextPage('REMOVED', paginationModel.page, processedRemovedData?.totalNumberOfPages, processedRemovedData?.cursor);
-  }
-}, [removedIsPlaceholderData, processedRemovedData?.totalNumberOfPages, processedRemovedData?.cursor]);
-
-useEffect(() => {
-  if (!canceledIsPlaceholderData) {
-    prefetchNextPage('CANCELED', paginationModel.page, processedCanceledData?.totalNumberOfPages, processedCanceledData?.cursor);
-  }
-}, [canceledIsPlaceholderData, processedCanceledData?.totalNumberOfPages, processedCanceledData?.cursor]);
-
+  useEffect(() => {
+    if (!canceledIsPlaceholderData) {
+      prefetchNextPage(
+        "CANCELED",
+        paginationModel.page,
+        processedCanceledData?.totalNumberOfPages,
+        processedCanceledData?.cursor
+      );
+    }
+  }, [
+    canceledIsPlaceholderData,
+    processedCanceledData?.totalNumberOfPages,
+    processedCanceledData?.cursor,
+  ]);
 
   /** Attendees list tabs */
   const tabs = [
@@ -544,7 +640,7 @@ useEffect(() => {
           status="CHECKED_IN"
           paginationModel={paginationModel}
           setPaginationModel={setPaginationModel}
-          rows={processedCheckedInData?.attendeeList} 
+          rows={processedCheckedInData?.attendeeList}
           totalNumberofData={processedCheckedInData?.totalNumberofData}
           eventId={eventid}
         />
@@ -613,7 +709,6 @@ useEffect(() => {
   if (removedIsPending) return <Loading />;
   if (canceledIsPending) return <Loading />;
   if (checkedInIsPending) return <Loading />;
-
 
   return (
     <>

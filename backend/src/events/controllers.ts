@@ -281,7 +281,11 @@ const getAttendees = async (eventID: string, userID: string) => {
   });
 };
 
-const updateEnrollmentStatus = async (eventID: string, userID: string, newStatus: any) => {
+const updateEnrollmentStatus = async (
+  eventID: string,
+  userID: string,
+  newStatus: any
+) => {
   return await prisma.eventEnrollment.update({
     where: {
       userId_eventId: {
@@ -290,10 +294,10 @@ const updateEnrollmentStatus = async (eventID: string, userID: string, newStatus
       },
     },
     data: {
-      attendeeStatus: newStatus
+      attendeeStatus: newStatus,
     },
   });
-}
+};
 
 /**
  * Adds specified user to an event
