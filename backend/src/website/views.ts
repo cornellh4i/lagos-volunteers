@@ -13,7 +13,6 @@ process.env.NODE_ENV === "test"
 websiteRouter.get("/download", useAuth, async (req: Request, res: Response) => {
   // #swagger.tags = ['Website']
   attempt(res, 200, () => websiteController.downloadAllWebsiteData());
-}
-);
+});
 
 export default websiteRouter;
