@@ -22,21 +22,27 @@ import fs from "fs"; // importing built-in file system
  */
 const utf8: BufferEncoding = "utf8";
 const stringRegUpdate: string = fs.readFileSync(
-  "Registration_Update.html",
+  "./src/emails/Registration_Update.html",
   utf8
 );
 const stringCertApprove: string = fs.readFileSync(
-  "Certificate_Approval.html",
+  "./src/emails/Certificate_Approval.html",
   utf8
 );
-const stringBlacklist: string = fs.readFileSync("Blacklisted.html", utf8);
+const stringBlacklist: string = fs.readFileSync(
+  "./src/emails/Blacklisted.html",
+  utf8
+);
 const stringVolunSuper: string = fs.readFileSync(
-  "Volunteer_Supervisor.html",
+  "./src/emails/Volunteer_Supervisor.html",
   utf8
 );
-const stringSuperAdmin: string = fs.readFileSync("Supervisor_Admin.html", utf8);
+const stringSuperAdmin: string = fs.readFileSync(
+  "./src/emails/Supervisor_Admin.html",
+  utf8
+);
 const stringAttendConfirm: string = fs.readFileSync(
-  "Attendance_Confirmation.html",
+  "./src/emails/Attendance_Confirmation.html",
   utf8
 );
 
