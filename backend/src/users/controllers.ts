@@ -602,17 +602,8 @@ const editStatus = async (userId: string, status: string) => {
  * @returns promise with user or error
  */
 const editRole = async (userId: string, role: string) => {
-  const user = await prisma.user.findUnique({
-    where: {
-      id: userId,
-    },
-    select: {
-      role: true,
-      email: true,
-    },
-  });
-  const prevUserRole = user?.role;
   const user = await userController.getUserProfile(userId);
+  const prevUserRole = user?.role;
   var userEmail = user?.email as string;
   var userName = user?.profile?.firstName as string;
 
