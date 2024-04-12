@@ -1125,7 +1125,7 @@ const ManageAttendees = ({}: ManageAttendeesProps) => {
 
       {/* Manage event */}
       <div className="flex flex-col sm:flex-row sm:justify-between pb-6 sm:pb-4">
-        <div className="font-semibold text-3xl mb-6">Malta Outreach</div>
+        <div className="font-semibold text-3xl mb-6">{name}</div>
         <div className="flex flex-col sm:flex-row gap-4">
           <Link href={`/events/${eventid}/edit`}>
             <Button icon={<EditIcon />}>Edit event</Button>
