@@ -47,7 +47,7 @@ type attendeeData = {
 
 interface attendeeTableProps {
   status: "PENDING" | "CHECKED_IN" | "CHECKED_OUT" | "REMOVED" | "CANCELED";
-  rows: attendeeData[];
+  rows?: attendeeData[];
   totalNumberofData: number;
   paginationModel: GridPaginationModel;
   setPaginationModel: React.Dispatch<React.SetStateAction<GridPaginationModel>>;
@@ -184,7 +184,7 @@ const AttendeesTable = ({
         />
       </div>
       <Card size="table">
-        {rows.length === 0 ? (
+        {!rows || rows.length === 0 ? (
           <div className="p-10">
             <div className="text-center">There are no attendees</div>
           </div>
@@ -456,7 +456,7 @@ const Pending = () => {
     processedPendingData?.cursor,
   ]);
 
-  if (pendingIsPending) return <Loading />;
+  // if (pendingIsPending) return <Loading />;
   return (
     <>
       <p>
@@ -571,7 +571,7 @@ const CheckedIn = () => {
     processedCheckedInData?.cursor,
   ]);
 
-  if (checkedInIsPending) return <Loading />;
+  // if (checkedInIsPending) return <Loading />;
   return (
     <>
       <p>
@@ -686,7 +686,7 @@ const CheckedOut = () => {
     processedCheckedOutData?.cursor,
   ]);
 
-  if (checkedOutIsPending) return <Loading />;
+  // if (checkedOutIsPending) return <Loading />;
   return (
     <>
       <p>
@@ -800,7 +800,7 @@ const RegistrationCanceled = () => {
     processedCanceledData?.cursor,
   ]);
 
-  if (canceledIsPending) return <Loading />;
+  // if (canceledIsPending) return <Loading />;
   return (
     <>
       <p>
@@ -915,7 +915,7 @@ const RegistrationRemoved = () => {
     processedRemovedData?.cursor,
   ]);
 
-  if (removedIsPending) return <Loading />;
+  // if (removedIsPending) return <Loading />;
   return (
     <>
       <p>
