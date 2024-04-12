@@ -14,6 +14,7 @@ const SearchBar = ({ onSubmit, ...props }: SearchBarProps) => {
       <TextField
         sx={{
           "& .MuiInputBase-root": {
+            background: "white",
             borderRadius: "8px",
           },
           "& .MuiInputBase-input": {
