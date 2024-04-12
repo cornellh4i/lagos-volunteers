@@ -18,8 +18,7 @@ import fs from 'fs'; // importing built-in file system
  * Creates an object for each html file to return a string.
  */
 const utf8: BufferEncoding = 'utf8';
-const stringRegCancel: string = fs.readFileSync('Registration_Cancellation.html', utf8);
-const stringRegSuccess: string = fs.readFileSync('Registration_Successful.html', utf8);
+const stringRegUpdate: string = fs.readFileSync('Registration_Update.html', utf8);
 const stringCertApprove: string = fs.readFileSync('Certificate_Approval.html', utf8);
 const stringBlacklist: string = fs.readFileSync('Blacklisted.html', utf8);
 const stringVolunSuper: string = fs.readFileSync('Volunteer_Supervisor.html', utf8);
@@ -31,8 +30,7 @@ const stringSuperAdmin: string = fs.readFileSync('Supervisor_Admin.html', utf8);
  * Creates an object for each html file to return a string.
  */
 
-const htmlRegCancel = "./src/emails/Registration_Cancellation.html";
-const htmlRegSuccess = "./src/emails/Registration_Successful.html";
+const htmlRegUpdate = "./src/emails/Registration_Update.html";
 const htmlCertApprove = "./src/emails/Certificate_Approval.html";
 const htmlBlacklist = "./src/emails/Blacklisted.html";
 const htmlVolunSuper = "./src/emails/Volunteer_Supervisor.html";
@@ -323,7 +321,7 @@ const addAttendee = async (eventID: string, userID: string) => {
   // const path = "./src/emails/test2.html";
 
   if (process.env.NODE_ENV !== "test") {
-    await sendEmail(userEmail, subject, htmlRegSuccess);
+    await sendEmail(userEmail, subject, htmlRegUpdate);
   }
   return await prisma.eventEnrollment.create({
     data: {
@@ -361,9 +359,10 @@ const deleteAttendee = async (
   const emailHtml = "<b>email here, EVENT NAME...</b>"
   function replace() {
     // checks emailHTML string, finds instances of EVENT NAME and replaces it with ${event.name}
+    // change path instead to the html file with the replaced "variables" given eventid or userid
   }
   if (process.env.NODE_ENV != "test") {
-    await sendEmail(userEmail, "Your email subject", htmlRegCancel);
+    await sendEmail(userEmail, "Your email subject", htmlRegUpdate);
   }
 
   // update db
