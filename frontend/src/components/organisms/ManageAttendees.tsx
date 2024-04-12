@@ -47,7 +47,7 @@ type attendeeData = {
 
 interface attendeeTableProps {
   status: "PENDING" | "CHECKED_IN" | "CHECKED_OUT" | "REMOVED" | "CANCELED";
-  rows: attendeeData[];
+  rows?: attendeeData[];
   totalNumberofData: number;
   paginationModel: GridPaginationModel;
   setPaginationModel: React.Dispatch<React.SetStateAction<GridPaginationModel>>;
@@ -158,33 +158,12 @@ const AttendeesTable = ({
     },
   ];
 
-  /** Search bar */
-  const [value, setValue] = React.useState("");
-  const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
-    setValue(event.target.value);
-  };
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
-    // Prevent page refresh
-    event.preventDefault();
-
-    // Actual function
-    console.log(value);
-  };
-
   // const filteredRows = rows.filter((attendee: attendeeData) => attendee.status === status);
 
   return (
     <>
-      <div className="pb-5 w-full sm:w-[600px]">
-        <SearchBar
-          placeholder="Search member by name, email"
-          value={value}
-          onChange={handleChange}
-          onClick={handleSubmit}
-        />
-      </div>
       <Card size="table">
-        {rows.length === 0 ? (
+        {!rows || rows.length === 0 ? (
           <div className="p-10">
             <div className="text-center">There are no attendees</div>
           </div>
@@ -362,111 +341,18 @@ const ModalBody = ({
   );
 };
 
-/** A ManageAttendees component */
-const ManageAttendees = ({}: ManageAttendeesProps) => {
+const Pending = () => {
   const router = useRouter();
   const eventid = router.query.eventid as string;
 
-  // TODO: For now -> we use the same state for all four tables
   const [paginationModel, setPaginationModel] =
     React.useState<GridPaginationModel>({
       page: 0,
       pageSize: 10,
     });
 
-  /** Tanstack query to fetch attendees data */
-  const {
-    data: pendingData,
-    isPending: pendingIsPending,
-    isError: pendingIsError,
-    isPlaceholderData: pendingIsPlaceholderData,
-  } = useQuery({
-    queryKey: ["event", eventid, paginationModel.page, "pending"],
-    queryFn: async () => {
-      const { data } = await api.get(
-        `/users?eventId=${eventid}&attendeeStatus=PENDING&limit=${paginationModel.pageSize}`
-      );
-      return data["data"];
-    },
-    staleTime: Infinity,
-  });
-
-  const {
-    data: checkedInData,
-    isPending: checkedInIsPending,
-    isError: checkedInIsError,
-    isPlaceholderData: checkedInIsPlaceholderData,
-  } = useQuery({
-    queryKey: ["event", eventid, paginationModel.page, "checked_in"],
-    queryFn: async () => {
-      const { data } = await api.get(
-        `/users?eventId=${eventid}&attendeeStatus=${"CHECKED_IN"}&limit=${
-          paginationModel.pageSize
-        }`
-      );
-      return data["data"];
-    },
-    staleTime: Infinity,
-  });
-
-  const {
-    data: checkedOutData,
-    isPending: checkedOutIsPending,
-    isError: checkedOutIsError,
-    isPlaceholderData: checkedOutIsPlaceholderData,
-  } = useQuery({
-    queryKey: ["event", eventid, paginationModel.page, "checked_out"],
-    queryFn: async () => {
-      const { data } = await api.get(
-        `/users?eventId=${eventid}&attendeeStatus=${"CHECKED_OUT"}&limit=${
-          paginationModel.pageSize
-        }`
-      );
-      return data["data"];
-    },
-    staleTime: Infinity,
-  });
-
-  const {
-    data: removedData,
-    isPending: removedIsPending,
-    isError: removedIsError,
-    isPlaceholderData: removedIsPlaceholderData,
-  } = useQuery({
-    queryKey: ["event", eventid, paginationModel.page, "removed"],
-    queryFn: async () => {
-      const { data } = await api.get(
-        `/users?eventId=${eventid}&attendeeStatus=${"REMOVED"}&limit=${
-          paginationModel.pageSize
-        }`
-      );
-      return data["data"];
-    },
-    staleTime: Infinity,
-  });
-
-  const {
-    data: canceledData,
-    isPending: canceledIsPending,
-    isError: canceledIsError,
-    isPlaceholderData: canceledIsPlaceholderData,
-  } = useQuery({
-    queryKey: ["event", eventid, paginationModel.page, "canceled"],
-    queryFn: async () => {
-      const { data } = await api.get(
-        `/users?eventId=${eventid}&attendeeStatus=${"CANCELED"}&limit=${
-          paginationModel.pageSize
-        }`
-      );
-      return data["data"];
-    },
-    staleTime: Infinity,
-  });
-
-  console.log(pendingData);
-  console.log(checkedInData);
-  // Process attendees data
-  const processAttendeesData = (data: any) => {
+  /** Process attendees data */
+  const processAttendeesData = (data: any, paginationModel: any) => {
     if (!data) return null;
 
     const attendees = data.result;
@@ -487,15 +373,12 @@ const ManageAttendees = ({}: ManageAttendeesProps) => {
     return { attendeeList, totalNumberofData, cursor, totalNumberOfPages };
   };
 
-  // Process each query result
-  const processedPendingData = processAttendeesData(pendingData);
-  const processedCheckedInData = processAttendeesData(checkedInData);
-  const processedCheckedOutData = processAttendeesData(checkedOutData);
-  const processedRemovedData = processAttendeesData(removedData);
-  const processedCanceledData = processAttendeesData(canceledData);
+  /** Process each query result */
   const queryClient = useQueryClient();
   // Prefetch logic for each query result
   const prefetchNextPage = (
+    eventid: any,
+    paginationModel: any,
     status: any,
     page: any,
     totalNumberOfPages: any,
@@ -515,10 +398,54 @@ const ManageAttendees = ({}: ManageAttendeesProps) => {
     }
   };
 
-  // Call prefetch for each query result
+  /** Tanstack query to fetch attendees data */
+  const {
+    data: pendingData,
+    isPending: pendingIsPending,
+    isError: pendingIsError,
+    isPlaceholderData: pendingIsPlaceholderData,
+    refetch,
+  } = useQuery({
+    queryKey: ["event", eventid, paginationModel.page, "pending"],
+    queryFn: async () => {
+      if (searchQuery) {
+        const { data } = await api.get(
+          `/users?eventId=${eventid}&attendeeStatus=PENDING&email=${searchQuery}&limit=${paginationModel.pageSize}`
+        );
+        return data["data"];
+      } else {
+        const { data } = await api.get(
+          `/users?eventId=${eventid}&attendeeStatus=PENDING&limit=${paginationModel.pageSize}`
+        );
+        return data["data"];
+      }
+    },
+    staleTime: Infinity,
+  });
+  const processedPendingData = processAttendeesData(
+    pendingData,
+    paginationModel
+  );
+
+  /** Search bar */
+  const [searchQuery, setSearchQuery] = React.useState("");
+  const [value, setValue] = React.useState("");
+  const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
+    setValue(event.target.value);
+  };
+  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+    // Prevent page refresh
+    event.preventDefault();
+
+    // Set search query
+    setSearchQuery(value);
+  };
+
   useEffect(() => {
     if (!pendingIsPlaceholderData) {
       prefetchNextPage(
+        eventid,
+        paginationModel,
         "PENDING",
         paginationModel.page,
         processedPendingData?.totalNumberOfPages,
@@ -531,9 +458,123 @@ const ManageAttendees = ({}: ManageAttendeesProps) => {
     processedPendingData?.cursor,
   ]);
 
+  // Update row data when search query changes
+  useEffect(() => {
+    refetch();
+  }, [searchQuery]);
+
+  // if (pendingIsPending) return <Loading />;
+
+  return (
+    <>
+      <p>
+        Volunteers are <b>pending</b> when they have registered for an event but
+        have not been checked in by a supervisor.
+      </p>
+      <div className="pb-5 w-full sm:w-[600px]">
+        <SearchBar
+          placeholder="Search member by email"
+          value={value}
+          onChange={handleChange}
+          onSubmit={handleSubmit}
+        />
+      </div>
+      <AttendeesTable
+        status="PENDING"
+        paginationModel={paginationModel}
+        setPaginationModel={setPaginationModel}
+        rows={processedPendingData?.attendeeList}
+        totalNumberofData={processedPendingData?.totalNumberofData}
+        eventId={eventid}
+      />
+    </>
+  );
+};
+
+const CheckedIn = () => {
+  const router = useRouter();
+  const eventid = router.query.eventid as string;
+
+  /** Process attendees data */
+  const processAttendeesData = (data: any, paginationModel: any) => {
+    if (!data) return null;
+
+    const attendees = data.result;
+    const attendeeList = attendees.map((attendee: any) => ({
+      id: attendee.id,
+      status: attendee.events[0].attendeeStatus,
+      name: `${attendee.profile?.firstName} ${attendee.profile?.lastName}`,
+      email: attendee.email,
+      phone: attendee.profile?.phoneNumber || "123-456-7890", // TODO: Change to actual phone number
+    }));
+
+    const totalNumberofData = data.totalItems || 0;
+    const cursor = data.cursor || "";
+    const totalNumberOfPages = Math.ceil(
+      totalNumberofData / paginationModel.pageSize
+    );
+
+    return { attendeeList, totalNumberofData, cursor, totalNumberOfPages };
+  };
+
+  /** Process each query result */
+  const queryClient = useQueryClient();
+  // Prefetch logic for each query result
+  const prefetchNextPage = (
+    eventid: any,
+    paginationModel: any,
+    status: any,
+    page: any,
+    totalNumberOfPages: any,
+    cursor: any
+  ) => {
+    if (page < totalNumberOfPages) {
+      queryClient.prefetchQuery({
+        queryKey: ["event", eventid, page + 1],
+        queryFn: async () => {
+          const { data } = await api.get(
+            `/users?eventId=${eventid}&attendeeStatus=${status}&limit=${paginationModel.pageSize}&after=${cursor}`
+          );
+          return data["data"];
+        },
+        staleTime: Infinity,
+      });
+    }
+  };
+
+  const [paginationModel, setPaginationModel] =
+    React.useState<GridPaginationModel>({
+      page: 0,
+      pageSize: 10,
+    });
+
+  /** Tanstack query to fetch attendees data */
+  const {
+    data: checkedInData,
+    isPending: checkedInIsPending,
+    isError: checkedInIsError,
+    isPlaceholderData: checkedInIsPlaceholderData,
+  } = useQuery({
+    queryKey: ["event", eventid, paginationModel.page, "checked_in"],
+    queryFn: async () => {
+      const { data } = await api.get(
+        `/users?eventId=${eventid}&attendeeStatus=${"CHECKED_IN"}&limit=${
+          paginationModel.pageSize
+        }`
+      );
+      return data["data"];
+    },
+    staleTime: Infinity,
+  });
+  const processedCheckedInData = processAttendeesData(
+    checkedInData,
+    paginationModel
+  );
   useEffect(() => {
     if (!checkedInIsPlaceholderData) {
       prefetchNextPage(
+        eventid,
+        paginationModel,
         "CHECKED_IN",
         paginationModel.page,
         processedCheckedInData?.totalNumberOfPages,
@@ -546,9 +587,109 @@ const ManageAttendees = ({}: ManageAttendeesProps) => {
     processedCheckedInData?.cursor,
   ]);
 
+  // if (checkedInIsPending) return <Loading />;
+  return (
+    <>
+      <p>
+        Volunteers are <b>checked in</b> when they arrive at the volunteer
+        event.
+      </p>
+      <AttendeesTable
+        status="CHECKED_IN"
+        paginationModel={paginationModel}
+        setPaginationModel={setPaginationModel}
+        rows={processedCheckedInData?.attendeeList}
+        totalNumberofData={processedCheckedInData?.totalNumberofData}
+        eventId={eventid}
+      />
+    </>
+  );
+};
+
+const CheckedOut = () => {
+  const router = useRouter();
+  const eventid = router.query.eventid as string;
+
+  /** Process attendees data */
+  const processAttendeesData = (data: any, paginationModel: any) => {
+    if (!data) return null;
+
+    const attendees = data.result;
+    const attendeeList = attendees.map((attendee: any) => ({
+      id: attendee.id,
+      status: attendee.events[0].attendeeStatus,
+      name: `${attendee.profile?.firstName} ${attendee.profile?.lastName}`,
+      email: attendee.email,
+      phone: attendee.profile?.phoneNumber || "123-456-7890", // TODO: Change to actual phone number
+    }));
+
+    const totalNumberofData = data.totalItems || 0;
+    const cursor = data.cursor || "";
+    const totalNumberOfPages = Math.ceil(
+      totalNumberofData / paginationModel.pageSize
+    );
+
+    return { attendeeList, totalNumberofData, cursor, totalNumberOfPages };
+  };
+
+  /** Process each query result */
+  const queryClient = useQueryClient();
+  // Prefetch logic for each query result
+  const prefetchNextPage = (
+    eventid: any,
+    paginationModel: any,
+    status: any,
+    page: any,
+    totalNumberOfPages: any,
+    cursor: any
+  ) => {
+    if (page < totalNumberOfPages) {
+      queryClient.prefetchQuery({
+        queryKey: ["event", eventid, page + 1],
+        queryFn: async () => {
+          const { data } = await api.get(
+            `/users?eventId=${eventid}&attendeeStatus=${status}&limit=${paginationModel.pageSize}&after=${cursor}`
+          );
+          return data["data"];
+        },
+        staleTime: Infinity,
+      });
+    }
+  };
+
+  const [paginationModel, setPaginationModel] =
+    React.useState<GridPaginationModel>({
+      page: 0,
+      pageSize: 10,
+    });
+
+  /** Tanstack query to fetch attendees data */
+  const {
+    data: checkedOutData,
+    isPending: checkedOutIsPending,
+    isError: checkedOutIsError,
+    isPlaceholderData: checkedOutIsPlaceholderData,
+  } = useQuery({
+    queryKey: ["event", eventid, paginationModel.page, "checked_out"],
+    queryFn: async () => {
+      const { data } = await api.get(
+        `/users?eventId=${eventid}&attendeeStatus=${"CHECKED_OUT"}&limit=${
+          paginationModel.pageSize
+        }`
+      );
+      return data["data"];
+    },
+    staleTime: Infinity,
+  });
+  const processedCheckedOutData = processAttendeesData(
+    checkedOutData,
+    paginationModel
+  );
   useEffect(() => {
     if (!checkedOutIsPlaceholderData) {
       prefetchNextPage(
+        eventid,
+        paginationModel,
         "CHECKED_OUT",
         paginationModel.page,
         processedCheckedOutData?.totalNumberOfPages,
@@ -561,24 +702,108 @@ const ManageAttendees = ({}: ManageAttendeesProps) => {
     processedCheckedOutData?.cursor,
   ]);
 
-  useEffect(() => {
-    if (!removedIsPlaceholderData) {
-      prefetchNextPage(
-        "REMOVED",
-        paginationModel.page,
-        processedRemovedData?.totalNumberOfPages,
-        processedRemovedData?.cursor
-      );
-    }
-  }, [
-    removedIsPlaceholderData,
-    processedRemovedData?.totalNumberOfPages,
-    processedRemovedData?.cursor,
-  ]);
+  // if (checkedOutIsPending) return <Loading />;
+  return (
+    <>
+      <p>
+        Volunteers are <b>checked out</b> when they leave the volunteer event.
+      </p>
+      <AttendeesTable
+        status="CHECKED_OUT"
+        paginationModel={paginationModel}
+        setPaginationModel={setPaginationModel}
+        rows={processedCheckedOutData?.attendeeList}
+        totalNumberofData={processedCheckedOutData?.totalNumberofData}
+        eventId={eventid}
+      />
+    </>
+  );
+};
 
+const RegistrationCanceled = () => {
+  const router = useRouter();
+  const eventid = router.query.eventid as string;
+
+  /** Process attendees data */
+  const processAttendeesData = (data: any, paginationModel: any) => {
+    if (!data) return null;
+
+    const attendees = data.result;
+    const attendeeList = attendees.map((attendee: any) => ({
+      id: attendee.id,
+      status: attendee.events[0].attendeeStatus,
+      name: `${attendee.profile?.firstName} ${attendee.profile?.lastName}`,
+      email: attendee.email,
+      phone: attendee.profile?.phoneNumber || "123-456-7890", // TODO: Change to actual phone number
+    }));
+
+    const totalNumberofData = data.totalItems || 0;
+    const cursor = data.cursor || "";
+    const totalNumberOfPages = Math.ceil(
+      totalNumberofData / paginationModel.pageSize
+    );
+
+    return { attendeeList, totalNumberofData, cursor, totalNumberOfPages };
+  };
+
+  /** Process each query result */
+  const queryClient = useQueryClient();
+  // Prefetch logic for each query result
+  const prefetchNextPage = (
+    eventid: any,
+    paginationModel: any,
+    status: any,
+    page: any,
+    totalNumberOfPages: any,
+    cursor: any
+  ) => {
+    if (page < totalNumberOfPages) {
+      queryClient.prefetchQuery({
+        queryKey: ["event", eventid, page + 1],
+        queryFn: async () => {
+          const { data } = await api.get(
+            `/users?eventId=${eventid}&attendeeStatus=${status}&limit=${paginationModel.pageSize}&after=${cursor}`
+          );
+          return data["data"];
+        },
+        staleTime: Infinity,
+      });
+    }
+  };
+
+  const [paginationModel, setPaginationModel] =
+    React.useState<GridPaginationModel>({
+      page: 0,
+      pageSize: 10,
+    });
+
+  /** Tanstack query to fetch attendees data */
+  const {
+    data: canceledData,
+    isPending: canceledIsPending,
+    isError: canceledIsError,
+    isPlaceholderData: canceledIsPlaceholderData,
+  } = useQuery({
+    queryKey: ["event", eventid, paginationModel.page, "canceled"],
+    queryFn: async () => {
+      const { data } = await api.get(
+        `/users?eventId=${eventid}&attendeeStatus=${"CANCELED"}&limit=${
+          paginationModel.pageSize
+        }`
+      );
+      return data["data"];
+    },
+    staleTime: Infinity,
+  });
+  const processedCanceledData = processAttendeesData(
+    canceledData,
+    paginationModel
+  );
   useEffect(() => {
     if (!canceledIsPlaceholderData) {
       prefetchNextPage(
+        eventid,
+        paginationModel,
         "CANCELED",
         paginationModel.page,
         processedCanceledData?.totalNumberOfPages,
@@ -591,102 +816,215 @@ const ManageAttendees = ({}: ManageAttendeesProps) => {
     processedCanceledData?.cursor,
   ]);
 
+  // if (canceledIsPending) return <Loading />;
+  return (
+    <>
+      <p>
+        Volunteers are listed here when they have canceled their registration
+        and will no longer be showing up to the event.
+      </p>
+      <AttendeesTable
+        status="CANCELED"
+        paginationModel={paginationModel}
+        setPaginationModel={setPaginationModel}
+        rows={processedCanceledData?.attendeeList}
+        totalNumberofData={processedCanceledData?.totalNumberofData}
+        eventId={eventid}
+      />
+    </>
+  );
+};
+
+const RegistrationRemoved = () => {
+  const router = useRouter();
+  const eventid = router.query.eventid as string;
+
+  /** Process attendees data */
+  const processAttendeesData = (data: any, paginationModel: any) => {
+    if (!data) return null;
+
+    const attendees = data.result;
+    const attendeeList = attendees.map((attendee: any) => ({
+      id: attendee.id,
+      status: attendee.events[0].attendeeStatus,
+      name: `${attendee.profile?.firstName} ${attendee.profile?.lastName}`,
+      email: attendee.email,
+      phone: attendee.profile?.phoneNumber || "123-456-7890", // TODO: Change to actual phone number
+    }));
+
+    const totalNumberofData = data.totalItems || 0;
+    const cursor = data.cursor || "";
+    const totalNumberOfPages = Math.ceil(
+      totalNumberofData / paginationModel.pageSize
+    );
+
+    return { attendeeList, totalNumberofData, cursor, totalNumberOfPages };
+  };
+
+  /** Process each query result */
+  const queryClient = useQueryClient();
+  // Prefetch logic for each query result
+  const prefetchNextPage = (
+    eventid: any,
+    paginationModel: any,
+    status: any,
+    page: any,
+    totalNumberOfPages: any,
+    cursor: any
+  ) => {
+    if (page < totalNumberOfPages) {
+      queryClient.prefetchQuery({
+        queryKey: ["event", eventid, page + 1],
+        queryFn: async () => {
+          const { data } = await api.get(
+            `/users?eventId=${eventid}&attendeeStatus=${status}&limit=${paginationModel.pageSize}&after=${cursor}`
+          );
+          return data["data"];
+        },
+        staleTime: Infinity,
+      });
+    }
+  };
+
+  const [paginationModel, setPaginationModel] =
+    React.useState<GridPaginationModel>({
+      page: 0,
+      pageSize: 10,
+    });
+
+  /** Tanstack query to fetch attendees data */
+  const {
+    data: removedData,
+    isPending: removedIsPending,
+    isError: removedIsError,
+    isPlaceholderData: removedIsPlaceholderData,
+  } = useQuery({
+    queryKey: ["event", eventid, paginationModel.page, "removed"],
+    queryFn: async () => {
+      const { data } = await api.get(
+        `/users?eventId=${eventid}&attendeeStatus=${"REMOVED"}&limit=${
+          paginationModel.pageSize
+        }`
+      );
+      return data["data"];
+    },
+    staleTime: Infinity,
+  });
+  const processedRemovedData = processAttendeesData(
+    removedData,
+    paginationModel
+  );
+  useEffect(() => {
+    if (!removedIsPlaceholderData) {
+      prefetchNextPage(
+        eventid,
+        paginationModel,
+        "REMOVED",
+        paginationModel.page,
+        processedRemovedData?.totalNumberOfPages,
+        processedRemovedData?.cursor
+      );
+    }
+  }, [
+    removedIsPlaceholderData,
+    processedRemovedData?.totalNumberOfPages,
+    processedRemovedData?.cursor,
+  ]);
+
+  // if (removedIsPending) return <Loading />;
+  return (
+    <>
+      <p>
+        Volunteers are listed here when their registration is removed manually
+        by a supervisor.
+      </p>
+      <AttendeesTable
+        status="REMOVED"
+        paginationModel={paginationModel}
+        setPaginationModel={setPaginationModel}
+        rows={processedRemovedData?.attendeeList}
+        totalNumberofData={processedRemovedData?.totalNumberofData}
+        eventId={eventid}
+      />
+    </>
+  );
+};
+
+/** A ManageAttendees component */
+const ManageAttendees = ({}: ManageAttendeesProps) => {
+  const router = useRouter();
+  const eventid = router.query.eventid as string;
+
+  // /** Process attendees data */
+  // const processAttendeesData = (data: any, paginationModel: any) => {
+  //   if (!data) return null;
+
+  //   const attendees = data.result;
+  //   const attendeeList = attendees.map((attendee: any) => ({
+  //     id: attendee.id,
+  //     status: attendee.events[0].attendeeStatus,
+  //     name: `${attendee.profile?.firstName} ${attendee.profile?.lastName}`,
+  //     email: attendee.email,
+  //     phone: attendee.profile?.phoneNumber || "123-456-7890", // TODO: Change to actual phone number
+  //   }));
+
+  //   const totalNumberofData = data.totalItems || 0;
+  //   const cursor = data.cursor || "";
+  //   const totalNumberOfPages = Math.ceil(
+  //     totalNumberofData / paginationModel.pageSize
+  //   );
+
+  //   return { attendeeList, totalNumberofData, cursor, totalNumberOfPages };
+  // };
+
+  // /** Process each query result */
+  // const queryClient = useQueryClient();
+  // // Prefetch logic for each query result
+  // const prefetchNextPage = (
+  //   eventid: any,
+  //   paginationModel: any,
+  //   status: any,
+  //   page: any,
+  //   totalNumberOfPages: any,
+  //   cursor: any
+  // ) => {
+  //   if (page < totalNumberOfPages) {
+  //     queryClient.prefetchQuery({
+  //       queryKey: ["event", eventid, page + 1],
+  //       queryFn: async () => {
+  //         const { data } = await api.get(
+  //           `/users?eventId=${eventid}&attendeeStatus=${status}&limit=${paginationModel.pageSize}&after=${cursor}`
+  //         );
+  //         return data["data"];
+  //       },
+  //       staleTime: Infinity,
+  //     });
+  //   }
+  // };
+
+  // Call prefetch for each query result
+
   /** Attendees list tabs */
   const tabs = [
     {
       label: "Pending",
-      panel: (
-        <>
-          <p>
-            Volunteers are <b>pending</b> when they have registered for an event
-            but have not been checked in by a supervisor.
-          </p>
-          <AttendeesTable
-            status="PENDING"
-            paginationModel={paginationModel}
-            setPaginationModel={setPaginationModel}
-            rows={processedPendingData?.attendeeList}
-            totalNumberofData={processedPendingData?.totalNumberofData}
-            eventId={eventid}
-          />
-        </>
-      ),
+      panel: <Pending />,
     },
     {
       label: "Checked in",
-      panel: (
-        <>
-          <p>
-            Volunteers are <b>checked in</b> when they arrive at the volunteer
-            event.
-          </p>
-          <AttendeesTable
-            status="CHECKED_IN"
-            paginationModel={paginationModel}
-            setPaginationModel={setPaginationModel}
-            rows={processedCheckedInData?.attendeeList}
-            totalNumberofData={processedCheckedInData?.totalNumberofData}
-            eventId={eventid}
-          />
-        </>
-      ),
+      panel: <CheckedIn />,
     },
     {
       label: "Checked out",
-      panel: (
-        <>
-          <p>
-            Volunteers are <b>checked out</b> when they leave the volunteer
-            event.
-          </p>
-          <AttendeesTable
-            status="CHECKED_OUT"
-            paginationModel={paginationModel}
-            setPaginationModel={setPaginationModel}
-            rows={processedCheckedOutData?.attendeeList}
-            totalNumberofData={processedCheckedOutData?.totalNumberofData}
-            eventId={eventid}
-          />
-        </>
-      ),
+      panel: <CheckedOut />,
     },
     {
       label: "Registration canceled",
-      panel: (
-        <>
-          <p>
-            Volunteers are listed here when they have canceled their
-            registration and will no longer be showing up to the event.
-          </p>
-          <AttendeesTable
-            status="CANCELED"
-            paginationModel={paginationModel}
-            setPaginationModel={setPaginationModel}
-            rows={processedCanceledData?.attendeeList}
-            totalNumberofData={processedCanceledData?.totalNumberofData}
-            eventId={eventid}
-          />
-        </>
-      ),
+      panel: <RegistrationCanceled />,
     },
     {
       label: "Registration removed",
-      panel: (
-        <>
-          <p>
-            Volunteers are listed here when their registration is removed
-            manually by a supervisor.
-          </p>
-          <AttendeesTable
-            status="REMOVED"
-            paginationModel={paginationModel}
-            setPaginationModel={setPaginationModel}
-            rows={processedRemovedData?.attendeeList}
-            totalNumberofData={processedRemovedData?.totalNumberofData}
-            eventId={eventid}
-          />
-        </>
-      ),
+      panel: <RegistrationRemoved />,
     },
   ];
 
@@ -705,11 +1043,6 @@ const ManageAttendees = ({}: ManageAttendeesProps) => {
   const [errorMessage, setErrorMessage] = useState<string>("");
 
   /** Loading screen */
-  if (pendingIsPending) return <Loading />;
-  if (checkedOutIsPending) return <Loading />;
-  if (removedIsPending) return <Loading />;
-  if (canceledIsPending) return <Loading />;
-  if (checkedInIsPending) return <Loading />;
 
   return (
     <>

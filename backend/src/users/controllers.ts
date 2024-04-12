@@ -165,7 +165,11 @@ const getUsers = async (
   // Handles all other filtering
   let whereDict = {
     events: events,
-    email: Array.isArray(filter.email) ? { in: filter.email } : filter.email,
+    // email: Array.isArray(filter.email) ? { in: filter.email } : filter.email,
+    email: {
+      contains: filter.email,
+      mode: Prisma.QueryMode.insensitive,
+    },
     role: {
       equals: filter.role,
     },
@@ -174,9 +178,13 @@ const getUsers = async (
       equals: filter.status,
     },
     profile: {
-      firstName: Array.isArray(filter.firstName)
-        ? { in: filter.firstName }
-        : filter.firstName,
+      // firstName: Array.isArray(filter.firstName)
+      //   ? { in: filter.firstName }
+      //   : filter.firstName,
+      firstName: {
+        contains: filter.firstName,
+        mode: Prisma.QueryMode.insensitive,
+      },
       lastName: Array.isArray(filter.lastName)
         ? { in: filter.lastName }
         : filter.lastName,
