@@ -4,14 +4,8 @@ import CircularProgress from "@mui/material/CircularProgress";
 
 function Loading() {
   return (
-    <div>
-      <Backdrop
-        sx={{ color: "#568124", zIndex: (theme) => theme.zIndex.drawer + 1 }}
-        invisible
-        open
-      >
-        <CircularProgress color="inherit" />
-      </Backdrop>
+    <div className="absolute top-[50vh] left-[50vw] -translate-x-1/2 -translate-y-1/2 text-primary-200">
+      <CircularProgress color="inherit" />
     </div>
   );
 }

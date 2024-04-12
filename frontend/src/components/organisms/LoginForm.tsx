@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Divider from "@mui/material/Divider";
 import Button from "../atoms/Button";
 import TextField from "../atoms/TextField";
@@ -72,36 +72,48 @@ const LoginForm = () => {
   /** State variables for the notification popups */
   const [notifOpen, setNotifOpen] = useState(false);
 
-  /** Handle login errors */
-  const handleErrors = (errors: any) => {
-    switch (errors) {
-      case "auth/invalid-email":
-        return "Invalid email address format.";
-      case "auth/user-disabled":
-        return "User with this email has been disabled.";
-      case "auth/user-not-found":
-        return "There is no user with this email address.";
-      case "auth/wrong-password":
-        return "Invalid email or password.";
-      case "auth/too-many-requests":
-        return "You have made too many requests to login. Please try again later.";
-      default:
-        return "Something went wrong.";
-    }
-  };
-
   /** Handles login */
   const handleLogin: SubmitHandler<FormValues> = async (data) => {
     const { email, password } = data;
-    try {
-      await signInWithEmailAndPassword(email, password);
-      if (signedInUser) {
-        router.push("/events/view");
+    await signInWithEmailAndPassword(email, password);
+  };
+
+  /** Handles login success */
+  useEffect(() => {
+    if (signedInUser?.user.emailVerified) {
+      router.push("/events/view");
+    }
+  }, [signedInUser]);
+
+  /** Handles login errors */
+  const [errorMessage, setErrorMessage] = useState("");
+  useEffect(() => {
+    if (signInErrors) {
+      switch (signInErrors.code) {
+        case "auth/invalid-email":
+          setErrorMessage("Invalid email address format.");
+          break;
+        case "auth/user-disabled":
+          setErrorMessage("User with this email has been disabled.");
+          break;
+        case "auth/user-not-found":
+          setErrorMessage("There is no user with this email address.");
+          break;
+        case "auth/wrong-password":
+          setErrorMessage("Invalid email or password.");
+          break;
+        case "auth/too-many-requests":
+          setErrorMessage(
+            "You made too many login requests. Please try again later."
+          );
+          break;
+        default:
+          setErrorMessage("Something went wrong.");
+          break;
       }
-    } catch (err) {
       setNotifOpen(true);
     }
-  };
+  }, [signInErrors]);
 
   /** Sign in with Google */
   const [signInWithGoogle, googleUser, googleLoading, googleError] =
@@ -115,7 +127,7 @@ const LoginForm = () => {
         open={notifOpen}
         onClose={() => setNotifOpen(false)}
       >
-        Error: {handleErrors(signInErrors?.code)}
+        Error: {errorMessage}
       </Snackbar>
 
       {/* Login form */}
@@ -124,16 +136,24 @@ const LoginForm = () => {
         <form onSubmit={handleSubmit(handleLogin)} className="space-y-4">
           <div className="font-bold text-3xl"> Log In </div>
           <TextField
-            error={errors.email ? "Required" : undefined}
+            error={errors.email?.message}
             label="Email"
-            type="email"
-            {...register("email", { required: true })}
+            {...register("email", {
+              required: { value: true, message: "Required " },
+              pattern: {
+                value:
+                  /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/,
+                message: "Invalid email address",
+              },
+            })}
           />
           <TextField
-            error={errors.password ? "Required" : undefined}
+            error={errors.password?.message}
             label="Password"
             type="password"
-            {...register("password", { required: true })}
+            {...register("password", {
+              required: { value: true, message: "Required" },
+            })}
           />
           <div className="text-center">
             <Link

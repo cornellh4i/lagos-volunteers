@@ -103,14 +103,24 @@ model EventEnrollment {
   // Attendees info
   eventId            String
   userId             String
-  event              Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
-  user               User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  showedUp           Boolean? @default(false)
-  workedHours        Int?     @default(0)
-  canceled           Boolean? @default(false)
+  event              Event            @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  user               User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  showedUp           Boolean?         @default(false)
+  workedHours        Int?             @default(0)
+  canceled           Boolean?         @default(false)
   cancelationMessage String?
+  attendeeStatus     EnrollmentStatus @default(PENDING)
 
   @@id([userId, eventId])
+}
+
+model About {
+  //Metadata
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  id      String @id @default(cuid())
+  content String
 }
 
 enum userRole {
@@ -135,4 +145,12 @@ enum EventStatus {
 enum EventMode {
   VIRTUAL
   IN_PERSON
+}
+
+enum EnrollmentStatus {
+  PENDING
+  CHECKED_IN
+  CHECKED_OUT
+  REMOVED
+  CANCELED
 }

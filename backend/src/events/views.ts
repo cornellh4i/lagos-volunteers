@@ -1,7 +1,7 @@
 import { Router, RequestHandler, Request, Response } from "express";
 import eventController from "./controllers";
 import { auth } from "../middleware/auth";
-import { attempt } from "../utils/helpers";
+import { attempt, socketNotify } from "../utils/helpers";
 
 import { errorJson, successJson } from "../utils/jsonResponses";
 import { EventMode, EventStatus, Prisma } from "@prisma/client";
@@ -33,6 +33,7 @@ eventRouter.post("/", async (req: Request, res: Response) => {
   // #swagger.tags = ['Events']
   const eventDTO: EventDTO = req.body;
   attempt(res, 201, () => eventController.createEvent(eventDTO));
+  socketNotify("/events");
 });
 
 eventRouter.put("/:eventid", async (req: Request, res: Response) => {
@@ -40,11 +41,13 @@ eventRouter.put("/:eventid", async (req: Request, res: Response) => {
   attempt(res, 200, () =>
     eventController.updateEvent(req.params.eventid, req.body)
   );
+  socketNotify(`/events/${req.params.eventid}`);
 });
 
 eventRouter.delete("/:eventid", async (req: Request, res: Response) => {
   // #swagger.tags = ['Events']
   attempt(res, 200, () => eventController.deleteEvent(req.params.eventid));
+  socketNotify("/events");
 });
 
 eventRouter.get("/", async (req: Request, res: Response) => {
@@ -104,7 +107,23 @@ eventRouter.post("/:eventid/attendees", async (req: Request, res: Response) => {
   attempt(res, 200, () =>
     eventController.addAttendee(req.params.eventid, attendeeid)
   );
+  socketNotify(`/events/${req.params.eventid}`);
 });
+
+eventRouter.patch(
+  "/:eventid/attendees/:userid/attendee-status",
+  async (req: Request, res: Response) => {
+    // #swagger.tags = ['Events']
+    const { attendeeStatus } = req.body;
+    attempt(res, 200, () =>
+      eventController.updateEnrollmentStatus(
+        req.params.eventid,
+        req.params.userid,
+        attendeeStatus
+      )
+    );
+  }
+);
 
 eventRouter.put("/:eventid/attendees", async (req: Request, res: Response) => {
   // #swagger.tags = ['Events']
@@ -116,6 +135,7 @@ eventRouter.put("/:eventid/attendees", async (req: Request, res: Response) => {
       cancelationMessage
     )
   );
+  socketNotify(`/events/${req.params.eventid}`);
 });
 
 eventRouter.patch("/:eventid/status", async (req: Request, res: Response) => {
@@ -124,6 +144,7 @@ eventRouter.patch("/:eventid/status", async (req: Request, res: Response) => {
   attempt(res, 200, () =>
     eventController.updateEventStatus(req.params.eventid, status)
   );
+  socketNotify(`/events/${req.params.eventid}`);
 });
 
 eventRouter.patch("/:eventid/owner", async (req: Request, res: Response) => {
@@ -141,6 +162,7 @@ eventRouter.patch(
     attempt(res, 200, () =>
       eventController.confirmUser(req.params.eventid, req.params.attendeeid)
     );
+    socketNotify(`/events/${req.params.eventid}`);
   }
 );
 

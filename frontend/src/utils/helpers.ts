@@ -1,6 +1,6 @@
 import dayjs from "dayjs";
 import { api } from "./api";
-import { isToday, isTomorrow, isPast } from "date-fns";
+import { isToday, isTomorrow, isPast, parseISO, format } from "date-fns";
 
 /**
  * This functions performs a search in the DB based on the email of the user that
@@ -69,35 +69,11 @@ export const formatDateString = (dateString: string) => {
  * @param inputDate is the inputDate
  * @returns the ISO string
  */
-export const convertToISO = (inputTime: string, inputDate: string) => {
-  var timeIndex = 0;
-  var counter = 0;
-  const time = String(inputTime);
-  const date = String(inputDate);
-  for (let i = 0; i < time.length; i++) {
-    if (time[i] === " ") {
-      counter += 1;
-      if (counter === 4) {
-        timeIndex = i;
-        counter = 0;
-        break;
-      }
-    }
-  }
-  var dateIndex = 0;
-  for (let i = 0; i < date.length; i++) {
-    if (date[i] === " ") {
-      counter += 1;
-      if (counter === 4) {
-        dateIndex = i;
-        counter = 0;
-        break;
-      }
-    }
-  }
-  const rawDateTime = date.substring(0, dateIndex) + time.substring(timeIndex);
-  const res = dayjs(rawDateTime).toJSON();
-  return res;
+export const convertToISO = (inputTime: Date, inputDate: Date) => {
+  const date = format(new Date(inputDate), "yyyy-MM-dd");
+  const time = format(new Date(inputTime), "HH:mm:ss");
+
+  return dayjs(`${date} ${time}`).toJSON(); 
 };
 
 /**
