@@ -8,19 +8,31 @@ import { setVolunteerCustomClaims } from "../middleware/auth";
 import userController from "../users/controllers";
 import { sendEmail } from "../utils/helpers";
 
-import fs from 'fs'; // importing built-in file system
+import fs from "fs"; // importing built-in file system
 
 /**
  * Creates an object utf8 that can encode the buffer and convert to string.
  * Creates an object for each html file to return a string.
  */
-const utf8: BufferEncoding = 'utf8';
-const stringRegUpdate: string = fs.readFileSync('Registration_Update.html', utf8);
-const stringCertApprove: string = fs.readFileSync('Certificate_Approval.html', utf8);
-const stringBlacklist: string = fs.readFileSync('Blacklisted.html', utf8);
-const stringVolunSuper: string = fs.readFileSync('Volunteer_Supervisor.html', utf8);
-const stringSuperAdmin: string = fs.readFileSync('Supervisor_Admin.html', utf8);
-
+const utf8: BufferEncoding = "utf8";
+const stringRegUpdate: string = fs.readFileSync(
+  "Registration_Update.html",
+  utf8
+);
+const stringCertApprove: string = fs.readFileSync(
+  "Certificate_Approval.html",
+  utf8
+);
+const stringBlacklist: string = fs.readFileSync("Blacklisted.html", utf8);
+const stringVolunSuper: string = fs.readFileSync(
+  "Volunteer_Supervisor.html",
+  utf8
+);
+const stringSuperAdmin: string = fs.readFileSync("Supervisor_Admin.html", utf8);
+const stringAttendConfirm: string = fs.readFileSync(
+  "Attendance_Confirmation.html",
+  utf8
+);
 
 /**
  * Creates an object utf8 that can encode the buffer and convert to string.
@@ -518,6 +530,27 @@ const editStatus = async (userId: string, status: string) => {
   // grabs the user and their email for SendGrid functionality
   const user = await userController.getUserByID(userId);
   var userEmail = user?.email as string;
+  var userName = user?.firstName as string;
+
+  function replaceInText(
+    originalString: string,
+    placeholder: string,
+    replacement: string
+  ) {
+    //const safePlaceholder = placeholder.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const regex = new RegExp("\\[" + placeholder + "\\]", "g");
+    return originalString.replace(regex, replacement);
+  }
+
+  // sets the email message
+  // const emailHtml = "<b>htmlRegCancel</b>";
+  const emailHtml = "<b>email here, EVENT NAME...</b>";
+
+  function replaceInputs() {
+    // checks emailHTML string, finds instances of EVENT NAME and replaces it with ${event.name}
+    // change path instead to the html file with the replaced "variables" given eventid or userid
+    return replaceInText(stringBlacklist, "USER NAME", userName);
+  }
 
   // sets the email message
   // const emailHtml = "<b>htmlRegCancel</b>";
@@ -555,6 +588,29 @@ const editRole = async (userId: string, role: string) => {
   });
   const prevUserRole = user?.role;
   var userEmail = user?.email as string;
+  var userName = user?.firstName as string;
+
+  function replaceInText(
+    originalString: string,
+    placeholder: string,
+    replacement: string
+  ) {
+    //const safePlaceholder = placeholder.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const regex = new RegExp("\\[" + placeholder + "\\]", "g");
+    return originalString.replace(regex, replacement);
+  }
+
+  // sets the email message
+  // const emailHtml = "<b>htmlRegCancel</b>";
+  const emailHtml = "<b>email here, EVENT NAME...</b>";
+
+  function replaceInputs() {
+    // checks emailHTML string, finds instances of EVENT NAME and replaces it with ${event.name}
+    // change path instead to the html file with the replaced "variables" given eventid or userid
+    return replaceInText(stringSuperAdmin, "USER NAME", userName);
+    return replaceInText(stringVolunSuper, "USER NAME", userName);
+  }
+
   if (process.env.NODE_ENV != "test") {
     if (prevUserRole === "SUPERVISOR" && role === "ADMIN") {
       await sendEmail(userEmail, "Your email subject", htmlSuperAdmin);
