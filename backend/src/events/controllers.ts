@@ -11,19 +11,27 @@ import userController from "../users/controllers";
 import prisma from "../../client";
 import { sendEmail } from "../utils/helpers";
 
-import fs from 'fs'; // importing built-in file system
+import fs from "fs"; // importing built-in file system
 
 /**
  * Creates an object utf8 that can encode the buffer and convert to string.
  * Creates an object for each html file to return a string.
  */
-const utf8: BufferEncoding = 'utf8';
-const stringRegUpdate: string = fs.readFileSync('Registration_Update.html', utf8);
-const stringCertApprove: string = fs.readFileSync('Certificate_Approval.html', utf8);
-const stringBlacklist: string = fs.readFileSync('Blacklisted.html', utf8);
-const stringVolunSuper: string = fs.readFileSync('Volunteer_Supervisor.html', utf8);
-const stringSuperAdmin: string = fs.readFileSync('Supervisor_Admin.html', utf8);
-
+const utf8: BufferEncoding = "utf8";
+const stringRegUpdate: string = fs.readFileSync(
+  "Registration_Update.html",
+  utf8
+);
+const stringCertApprove: string = fs.readFileSync(
+  "Certificate_Approval.html",
+  utf8
+);
+const stringBlacklist: string = fs.readFileSync("Blacklisted.html", utf8);
+const stringVolunSuper: string = fs.readFileSync(
+  "Volunteer_Supervisor.html",
+  utf8
+);
+const stringSuperAdmin: string = fs.readFileSync("Supervisor_Admin.html", utf8);
 
 /**
  * Creates an object utf8 that can encode the buffer and convert to string.
@@ -353,13 +361,43 @@ const deleteAttendee = async (
   // grabs the user and their email for SendGrid functionality
   const user = await userController.getUserByID(userID);
   var userEmail = user?.email as string;
+  var userName = user?.firstName as string;
+  const event = await getEvent(eventID);
+  var eventName = event?.name as string;
+  var eventLocation = event?.location as string;
+  var eventDateTimeUnknown = event?.startDate as unknown;
+  var eventDateTimeString = eventDateTimeUnknown as string;
+
+  function replaceInText(
+    originalString: string,
+    placeholder: string,
+    replacement: string
+  ) {
+    //const safePlaceholder = placeholder.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const regex = new RegExp("\\[" + placeholder + "\\]", "g");
+    return originalString.replace(regex, replacement);
+  }
 
   // sets the email message
   // const emailHtml = "<b>htmlRegCancel</b>";
-  const emailHtml = "<b>email here, EVENT NAME...</b>"
-  function replace() {
+  const emailHtml = "<b>email here, EVENT NAME...</b>";
+  //   async function prepareAndSendEmail(userEmail: string, eventName: string) {
+  //     // Replace the placeholder in the email template with the actual event name
+  //     const updatedEmailHtml = replaceInText(emailHtml, "\\[EVENT NAME\\]", eventName);
+
+  //     // Send the email if not in test environment
+  //     if (process.env.NODE_ENV !== "test") {
+  //         await sendEmail(userEmail, "Your Event Details", updatedEmailHtml);
+  //     }
+  // }
+
+  function replaceInputs() {
     // checks emailHTML string, finds instances of EVENT NAME and replaces it with ${event.name}
     // change path instead to the html file with the replaced "variables" given eventid or userid
+    return replaceInText(emailHtml, "EVENT NAME", eventName);
+    return replaceInText(emailHtml, "USER NAME", userName);
+    return replaceInText(emailHtml, "EVENT DATETIME", eventDateTimeString);
+    return replaceInText(emailHtml, "EVENT LOCATION", eventLocation);
   }
   if (process.env.NODE_ENV != "test") {
     await sendEmail(userEmail, "Your email subject", htmlRegUpdate);
