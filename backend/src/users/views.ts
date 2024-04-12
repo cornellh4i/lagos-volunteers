@@ -1,5 +1,5 @@
 import { Router, RequestHandler, Request, Response } from "express";
-import { Prisma, userRole, UserStatus } from "@prisma/client";
+import { Prisma, userRole, UserStatus, EnrollmentStatus } from "@prisma/client";
 import userController from "./controllers";
 import {
   auth,
@@ -107,6 +107,7 @@ userRouter.get("/", useAuth, async (req: Request, res: Response) => {
     hours: req.query.hours ? parseInt(req.query.hours as string) : undefined,
     status: req.query.status as UserStatus,
     eventId: req.query.eventId as string,
+    attendeeStatus: req.query.attendeeStatus as EnrollmentStatus,
   };
 
   const sortQuery = req.query.sort as string;

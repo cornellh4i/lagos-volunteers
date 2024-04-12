@@ -243,6 +243,7 @@ const getEvent = async (eventID: string) => {
         },
       },
       tags: true,
+      attendees: true,
     },
   });
 };
@@ -277,6 +278,24 @@ const getAttendees = async (eventID: string, userID: string) => {
     },
     include: {
       user: true,
+    },
+  });
+};
+
+const updateEnrollmentStatus = async (
+  eventID: string,
+  userID: string,
+  newStatus: any
+) => {
+  return await prisma.eventEnrollment.update({
+    where: {
+      userId_eventId: {
+        userId: userID,
+        eventId: eventID,
+      },
+    },
+    data: {
+      attendeeStatus: newStatus,
     },
   });
 };
@@ -447,4 +466,5 @@ export default {
   updateEventStatus,
   updateEventOwner,
   confirmUser,
+  updateEnrollmentStatus,
 };
