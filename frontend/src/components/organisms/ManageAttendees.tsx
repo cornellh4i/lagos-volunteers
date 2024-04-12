@@ -158,31 +158,10 @@ const AttendeesTable = ({
     },
   ];
 
-  /** Search bar */
-  const [value, setValue] = React.useState("");
-  const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
-    setValue(event.target.value);
-  };
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
-    // Prevent page refresh
-    event.preventDefault();
-
-    // Actual function
-    console.log(value);
-  };
-
   // const filteredRows = rows.filter((attendee: attendeeData) => attendee.status === status);
 
   return (
     <>
-      <div className="pb-5 w-full sm:w-[600px]">
-        <SearchBar
-          placeholder="Search member by name, email"
-          value={value}
-          onChange={handleChange}
-          onSubmit={handleSubmit}
-        />
-      </div>
       <Card size="table">
         {!rows || rows.length === 0 ? (
           <div className="p-10">
@@ -425,13 +404,21 @@ const Pending = () => {
     isPending: pendingIsPending,
     isError: pendingIsError,
     isPlaceholderData: pendingIsPlaceholderData,
+    refetch,
   } = useQuery({
     queryKey: ["event", eventid, paginationModel.page, "pending"],
     queryFn: async () => {
-      const { data } = await api.get(
-        `/users?eventId=${eventid}&attendeeStatus=PENDING&limit=${paginationModel.pageSize}`
-      );
-      return data["data"];
+      if (searchQuery) {
+        const { data } = await api.get(
+          `/users?eventId=${eventid}&attendeeStatus=PENDING&email=${searchQuery}&limit=${paginationModel.pageSize}`
+        );
+        return data["data"];
+      } else {
+        const { data } = await api.get(
+          `/users?eventId=${eventid}&attendeeStatus=PENDING&limit=${paginationModel.pageSize}`
+        );
+        return data["data"];
+      }
     },
     staleTime: Infinity,
   });
@@ -439,6 +426,21 @@ const Pending = () => {
     pendingData,
     paginationModel
   );
+
+  /** Search bar */
+  const [searchQuery, setSearchQuery] = React.useState("");
+  const [value, setValue] = React.useState("");
+  const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
+    setValue(event.target.value);
+  };
+  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+    // Prevent page refresh
+    event.preventDefault();
+
+    // Set search query
+    setSearchQuery(value);
+  };
+
   useEffect(() => {
     if (!pendingIsPlaceholderData) {
       prefetchNextPage(
@@ -456,13 +458,27 @@ const Pending = () => {
     processedPendingData?.cursor,
   ]);
 
+  // Update row data when search query changes
+  useEffect(() => {
+    refetch();
+  }, [searchQuery]);
+
   // if (pendingIsPending) return <Loading />;
+
   return (
     <>
       <p>
         Volunteers are <b>pending</b> when they have registered for an event but
         have not been checked in by a supervisor.
       </p>
+      <div className="pb-5 w-full sm:w-[600px]">
+        <SearchBar
+          placeholder="Search member by email"
+          value={value}
+          onChange={handleChange}
+          onSubmit={handleSubmit}
+        />
+      </div>
       <AttendeesTable
         status="PENDING"
         paginationModel={paginationModel}
