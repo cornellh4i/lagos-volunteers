@@ -34,6 +34,10 @@ import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
 import PersonIcon from "@mui/icons-material/Person";
 import EditIcon from "@mui/icons-material/Edit";
 import TextCopy from "../atoms/TextCopy";
+import { formatDateTimeToUI, formatDateTimeRange } from "@/utils/helpers";
+import { EventData } from "@/utils/types";
+import { FileCopy } from "@mui/icons-material";
+import { BASE_URL_CLIENT } from "@/utils/constants";
 
 //Initial push
 
@@ -955,6 +959,54 @@ const ManageAttendees = ({}: ManageAttendeesProps) => {
   const router = useRouter();
   const eventid = router.query.eventid as string;
 
+  const { user, role } = useAuth();
+  const [userid, setUserid] = React.useState("");
+
+  /** Tanstack query to fetch and update the event details */
+  const { data, isLoading, isError, error } = useQuery({
+    queryKey: ["event", eventid],
+    queryFn: async () => {
+      const userid = await fetchUserIdFromDatabase(user?.email as string);
+      setUserid(userid);
+      const { data } = await api.get(
+        `/users/${userid}/registered?eventid=${eventid}`
+      );
+      return data["data"];
+    },
+  });
+
+  let eventData = data?.eventDetails || {};
+  let eventAttendance = data?.attendance;
+
+  /** If the user canceled their event registration */
+  const userHasCanceledAttendance =
+    eventAttendance && eventAttendance["canceled"];
+
+  /** Set event details */
+  const {
+    location,
+    datetime,
+    capacity,
+    image_src,
+    tags,
+    supervisors,
+    description,
+    name,
+  }: EventData = {
+    location: eventData.location,
+    datetime: formatDateTimeRange(eventData.startDate, eventData.endDate),
+    capacity: eventData.capacity,
+    image_src: eventData.imageURL,
+    tags: eventData.tags,
+    supervisors: [
+      `${eventData.owner?.profile?.firstName} ${eventData.owner?.profile?.lastName}`,
+    ],
+    description: eventData.description,
+    name: eventData.name,
+  };
+
+  const dateHeader = formatDateTimeToUI(datetime);
+
   // /** Process attendees data */
   // const processAttendeesData = (data: any, paginationModel: any) => {
   //   if (!data) return null;
@@ -1086,26 +1138,28 @@ const ManageAttendees = ({}: ManageAttendeesProps) => {
       </div>
       <div className="font-semibold text-2xl mb-6">Event Recap</div>
       <div>
-        <div className="mt-5" />
         <div className="grid gap-2 xl:gap-6 xl:grid-cols-2">
           <IconTextHeader
             icon={<CalendarTodayIcon />}
-            header={<>header</>}
-            body={<>body</>}
+            header={<>{dateHeader[0]}</>}
+            body={<>{dateHeader[1]}</>}
           />
-          <IconTextHeader icon={<FmdGoodIcon />} header={<>location</>} />
+          <IconTextHeader icon={<FmdGoodIcon />} header={<>{location}</>} />
           <IconTextHeader
             icon={<PersonIcon />}
-            header={<>header</>}
+            header={<>{supervisors[0]}</>}
             body={<>Supervisor</>}
           />
           <IconTextHeader
             icon={<GroupsIcon />}
-            header={<>(capacity) volunteers needed</>}
+            header={<>{capacity} volunteers needed</>}
+          />
+          <TextCopy
+            label="RSVP Link"
+            text={`${BASE_URL_CLIENT}/events/${eventid}/register`}
           />
         </div>
       </div>
-      <br />
       <div className="font-semibold text-2xl mt-6 mb-6">Manage Volunteers</div>
       <TabContainer fullWidth tabs={tabs} />
     </>
