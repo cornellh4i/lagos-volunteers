@@ -152,7 +152,6 @@ const getUsers = async (
   // Handles GET /events?eventid=asdf
   const eventId = filter.eventId;
   const attendeeStatus = filter.attendeeStatus;
-  console.log(attendeeStatus);
   let events: { [key: string]: any } = {};
   if (eventId && attendeeStatus) {
     events = {
