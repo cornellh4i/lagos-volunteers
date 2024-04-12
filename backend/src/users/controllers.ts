@@ -528,16 +528,15 @@ const editPreferences = async (
  */
 const editStatus = async (userId: string, status: string) => {
   // grabs the user and their email for SendGrid functionality
-  const user = await userController.getUserByID(userId);
+  const user = await userController.getUserProfile(userId);
   var userEmail = user?.email as string;
-  var userName = user?.firstName as string;
+  var userName = user?.profile?.firstName as string;
 
   function replaceInText(
     originalString: string,
     placeholder: string,
     replacement: string
   ) {
-    //const safePlaceholder = placeholder.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
     const regex = new RegExp("\\[" + placeholder + "\\]", "g");
     return originalString.replace(regex, replacement);
   }
@@ -587,15 +586,15 @@ const editRole = async (userId: string, role: string) => {
     },
   });
   const prevUserRole = user?.role;
+  const user = await userController.getUserProfile(userId);
   var userEmail = user?.email as string;
-  var userName = user?.firstName as string;
+  var userName = user?.profile?.firstName as string;
 
   function replaceInText(
     originalString: string,
     placeholder: string,
     replacement: string
   ) {
-    //const safePlaceholder = placeholder.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
     const regex = new RegExp("\\[" + placeholder + "\\]", "g");
     return originalString.replace(regex, replacement);
   }

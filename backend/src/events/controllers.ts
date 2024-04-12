@@ -326,9 +326,9 @@ const getAttendees = async (eventID: string, userID: string) => {
  */
 const addAttendee = async (eventID: string, userID: string) => {
   // grabs the user and their email for SendGrid functionality
-  const user = await userController.getUserByID(userID);
+  const user = await userController.getUserProfile(userID);
   const userEmail = user?.email as string;
-  var userName = user?.firstName as string;
+  var userName = user?.profile?.firstName as string;
   const event = await getEvent(eventID);
   var eventName = event?.name as string;
   var eventLocation = event?.location as string;
@@ -340,7 +340,6 @@ const addAttendee = async (eventID: string, userID: string) => {
     placeholder: string,
     replacement: string
   ) {
-    //const safePlaceholder = placeholder.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
     const regex = new RegExp("\\[" + placeholder + "\\]", "g");
     return originalString.replace(regex, replacement);
   }
@@ -396,9 +395,9 @@ const deleteAttendee = async (
   cancelationMessage: string
 ) => {
   // grabs the user and their email for SendGrid functionality
-  const user = await userController.getUserByID(userID);
+  const user = await userController.getUserProfile(userID);
   var userEmail = user?.email as string;
-  var userName = user?.firstName as string;
+  var userName = user?.profile?.firstName as string;
   const event = await getEvent(eventID);
   var eventName = event?.name as string;
   var eventLocation = event?.location as string;
@@ -410,7 +409,6 @@ const deleteAttendee = async (
     placeholder: string,
     replacement: string
   ) {
-    //const safePlaceholder = placeholder.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
     const regex = new RegExp("\\[" + placeholder + "\\]", "g");
     return originalString.replace(regex, replacement);
   }
@@ -491,9 +489,9 @@ const updateEventOwner = async (eventID: string, ownerID: string) => {
  * @returns promise with event or error
  */
 const confirmUser = async (eventID: string, userID: string) => {
-  const user = await userController.getUserByID(userID);
+  const user = await userController.getUserProfile(userID);
   var userEmail = user?.email as string;
-  var userName = user?.firstName as string;
+  var userName = user?.profile?.firstName as string;
   const event = await getEvent(eventID);
   var eventName = event?.name as string;
   var eventLocation = event?.location as string;
