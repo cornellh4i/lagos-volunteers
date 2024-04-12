@@ -110,16 +110,16 @@ eventRouter.post("/:eventid/attendees", async (req: Request, res: Response) => {
   socketNotify(`/events/${req.params.eventid}`);
 });
 
-eventRouter.put(
-  "/:eventid/users/:userid",
+eventRouter.patch(
+  "/:eventid/attendees/:userid/attendee-status",
   async (req: Request, res: Response) => {
     // #swagger.tags = ['Events']
-    const { status } = req.body;
+    const { attendeeStatus } = req.body;
     attempt(res, 200, () =>
       eventController.updateEnrollmentStatus(
         req.params.eventid,
         req.params.userid,
-        status
+        attendeeStatus
       )
     );
   }

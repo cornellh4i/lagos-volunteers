@@ -91,7 +91,7 @@ const getUsers = async (
     hours?: number;
     status?: UserStatus;
     eventId?: string;
-    eventStatus?: EnrollmentStatus;
+    attendeeStatus?: EnrollmentStatus;
   },
   sort: {
     key: string;
@@ -151,13 +151,13 @@ const getUsers = async (
 
   // Handles GET /events?eventid=asdf
   const eventId = filter.eventId;
-  const eventStatus = filter.eventStatus;
-  console.log(eventStatus);
+  const attendeeStatus = filter.attendeeStatus;
+  console.log(attendeeStatus);
   let events: { [key: string]: any } = {};
-  if (eventId && eventStatus) {
+  if (eventId && attendeeStatus) {
     events = {
       some: {
-        attendeeStatus: eventStatus,
+        attendeeStatus: attendeeStatus,
         eventId: eventId,
       },
     };

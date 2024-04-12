@@ -75,9 +75,12 @@ const AttendeesTable = ({
   const { mutateAsync, isPending, isError, isSuccess } = useMutation({
     mutationFn: async (variables: { userId: string; newValue: string }) => {
       const { userId, newValue } = variables;
-      const { response } = await api.put(`/events/${eventId}/users/${userId}`, {
-        status: newValue, // Only update the status field
-      });
+      const { response } = await api.patch(
+        `/events/${eventId}/attendees/${userId}/attendee-status`,
+        {
+          attendeeStatus: newValue, // Only update the status field
+        }
+      );
       return response;
     },
     retry: false,
@@ -145,11 +148,10 @@ const AttendeesTable = ({
               handleStatusChange(params.row.id, event.target.value)
             }
           >
-            <MenuItem value="CHECKED_IN">Checked in</MenuItem>
-            <MenuItem value="CHECKED_OUT">Checked out</MenuItem>
             <MenuItem value="PENDING">Pending</MenuItem>
-            <MenuItem value="REMOVED">Removed</MenuItem>
-            <MenuItem value="CANCELED">Canceled</MenuItem>
+            <MenuItem value="CHECKED_IN">Check in</MenuItem>
+            <MenuItem value="CHECKED_OUT">Check out</MenuItem>
+            <MenuItem value="REMOVED">Remove</MenuItem>
           </Select>
         </div>
       ),
@@ -182,13 +184,19 @@ const AttendeesTable = ({
         />
       </div>
       <Card size="table">
-        <Table
-          columns={eventColumns}
-          rows={rows}
-          setPaginationModel={setPaginationModel}
-          dataSetLength={totalNumberofData}
-          paginationModel={paginationModel}
-        />
+        {rows.length === 0 ? (
+          <div className="p-10">
+            <div className="text-center">There are no attendees</div>
+          </div>
+        ) : (
+          <Table
+            columns={eventColumns}
+            rows={rows}
+            setPaginationModel={setPaginationModel}
+            dataSetLength={totalNumberofData}
+            paginationModel={paginationModel}
+          />
+        )}
       </Card>
     </>
   );
@@ -376,7 +384,7 @@ const ManageAttendees = ({}: ManageAttendeesProps) => {
     queryKey: ["event", eventid, paginationModel.page, "pending"],
     queryFn: async () => {
       const { data } = await api.get(
-        `/users?eventId=${eventid}&eventStatus=PENDING&limit=${paginationModel.pageSize}`
+        `/users?eventId=${eventid}&attendeeStatus=PENDING&limit=${paginationModel.pageSize}`
       );
       return data["data"];
     },
@@ -392,7 +400,7 @@ const ManageAttendees = ({}: ManageAttendeesProps) => {
     queryKey: ["event", eventid, paginationModel.page, "checked_in"],
     queryFn: async () => {
       const { data } = await api.get(
-        `/users?eventId=${eventid}&eventStatus=${"CHECKED_IN"}&limit=${
+        `/users?eventId=${eventid}&attendeeStatus=${"CHECKED_IN"}&limit=${
           paginationModel.pageSize
         }`
       );
@@ -410,7 +418,7 @@ const ManageAttendees = ({}: ManageAttendeesProps) => {
     queryKey: ["event", eventid, paginationModel.page, "checked_out"],
     queryFn: async () => {
       const { data } = await api.get(
-        `/users?eventId=${eventid}&eventStatus=${"CHECKED_OUT"}&limit=${
+        `/users?eventId=${eventid}&attendeeStatus=${"CHECKED_OUT"}&limit=${
           paginationModel.pageSize
         }`
       );
@@ -428,7 +436,7 @@ const ManageAttendees = ({}: ManageAttendeesProps) => {
     queryKey: ["event", eventid, paginationModel.page, "removed"],
     queryFn: async () => {
       const { data } = await api.get(
-        `/users?eventId=${eventid}&eventStatus=${"REMOVED"}&limit=${
+        `/users?eventId=${eventid}&attendeeStatus=${"REMOVED"}&limit=${
           paginationModel.pageSize
         }`
       );
@@ -446,7 +454,7 @@ const ManageAttendees = ({}: ManageAttendeesProps) => {
     queryKey: ["event", eventid, paginationModel.page, "canceled"],
     queryFn: async () => {
       const { data } = await api.get(
-        `/users?eventId=${eventid}&eventStatus=${"CANCELED"}&limit=${
+        `/users?eventId=${eventid}&attendeeStatus=${"CANCELED"}&limit=${
           paginationModel.pageSize
         }`
       );
@@ -498,7 +506,7 @@ const ManageAttendees = ({}: ManageAttendeesProps) => {
         queryKey: ["event", eventid, page + 1],
         queryFn: async () => {
           const { data } = await api.get(
-            `/users?eventId=${eventid}&eventStatus=${status}&limit=${paginationModel.pageSize}&after=${cursor}`
+            `/users?eventId=${eventid}&attendeeStatus=${status}&limit=${paginationModel.pageSize}&after=${cursor}`
           );
           return data["data"];
         },
@@ -588,66 +596,96 @@ const ManageAttendees = ({}: ManageAttendeesProps) => {
     {
       label: "Pending",
       panel: (
-        <AttendeesTable
-          status="PENDING"
-          paginationModel={paginationModel}
-          setPaginationModel={setPaginationModel}
-          rows={processedPendingData?.attendeeList}
-          totalNumberofData={processedPendingData?.totalNumberofData}
-          eventId={eventid}
-        />
+        <>
+          <p>
+            Volunteers are <b>pending</b> when they have registered for an event
+            but have not been checked in by a supervisor.
+          </p>
+          <AttendeesTable
+            status="PENDING"
+            paginationModel={paginationModel}
+            setPaginationModel={setPaginationModel}
+            rows={processedPendingData?.attendeeList}
+            totalNumberofData={processedPendingData?.totalNumberofData}
+            eventId={eventid}
+          />
+        </>
       ),
     },
     {
       label: "Checked in",
       panel: (
-        <AttendeesTable
-          status="CHECKED_IN"
-          paginationModel={paginationModel}
-          setPaginationModel={setPaginationModel}
-          rows={processedCheckedInData?.attendeeList}
-          totalNumberofData={processedCheckedInData?.totalNumberofData}
-          eventId={eventid}
-        />
+        <>
+          <p>
+            Volunteers are <b>checked in</b> when they arrive at the volunteer
+            event.
+          </p>
+          <AttendeesTable
+            status="CHECKED_IN"
+            paginationModel={paginationModel}
+            setPaginationModel={setPaginationModel}
+            rows={processedCheckedInData?.attendeeList}
+            totalNumberofData={processedCheckedInData?.totalNumberofData}
+            eventId={eventid}
+          />
+        </>
       ),
     },
     {
       label: "Checked out",
       panel: (
-        <AttendeesTable
-          status="CHECKED_OUT"
-          paginationModel={paginationModel}
-          setPaginationModel={setPaginationModel}
-          rows={processedCheckedOutData?.attendeeList}
-          totalNumberofData={processedCheckedOutData?.totalNumberofData}
-          eventId={eventid}
-        />
+        <>
+          <p>
+            Volunteers are <b>checked out</b> when they leave the volunteer
+            event.
+          </p>
+          <AttendeesTable
+            status="CHECKED_OUT"
+            paginationModel={paginationModel}
+            setPaginationModel={setPaginationModel}
+            rows={processedCheckedOutData?.attendeeList}
+            totalNumberofData={processedCheckedOutData?.totalNumberofData}
+            eventId={eventid}
+          />
+        </>
+      ),
+    },
+    {
+      label: "Registration canceled",
+      panel: (
+        <>
+          <p>
+            Volunteers are listed here when they have canceled their
+            registration and will no longer be showing up to the event.
+          </p>
+          <AttendeesTable
+            status="CANCELED"
+            paginationModel={paginationModel}
+            setPaginationModel={setPaginationModel}
+            rows={processedCanceledData?.attendeeList}
+            totalNumberofData={processedCanceledData?.totalNumberofData}
+            eventId={eventid}
+          />
+        </>
       ),
     },
     {
       label: "Registration removed",
       panel: (
-        <AttendeesTable
-          status="REMOVED"
-          paginationModel={paginationModel}
-          setPaginationModel={setPaginationModel}
-          rows={processedRemovedData?.attendeeList}
-          totalNumberofData={processedRemovedData?.totalNumberofData}
-          eventId={eventid}
-        />
-      ),
-    },
-    {
-      label: "Canceled registration",
-      panel: (
-        <AttendeesTable
-          status="CANCELED"
-          paginationModel={paginationModel}
-          setPaginationModel={setPaginationModel}
-          rows={processedCanceledData?.attendeeList}
-          totalNumberofData={processedCanceledData?.totalNumberofData}
-          eventId={eventid}
-        />
+        <>
+          <p>
+            Volunteers are listed here when their registration is removed
+            manually by a supervisor.
+          </p>
+          <AttendeesTable
+            status="REMOVED"
+            paginationModel={paginationModel}
+            setPaginationModel={setPaginationModel}
+            rows={processedRemovedData?.attendeeList}
+            totalNumberofData={processedRemovedData?.totalNumberofData}
+            eventId={eventid}
+          />
+        </>
       ),
     },
   ];
