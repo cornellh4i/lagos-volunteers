@@ -36,6 +36,8 @@ import EditIcon from "@mui/icons-material/Edit";
 import TextCopy from "../atoms/TextCopy";
 import { formatDateTimeToUI, formatDateTimeRange } from "@/utils/helpers";
 import { EventData } from "@/utils/types";
+import { FileCopy } from "@mui/icons-material";
+import { BASE_URL_CLIENT } from "@/utils/constants";
 
 //Initial push
 
@@ -1151,6 +1153,10 @@ const ManageAttendees = ({}: ManageAttendeesProps) => {
           <IconTextHeader
             icon={<GroupsIcon />}
             header={<>{capacity} volunteers needed</>}
+          />
+          <TextCopy
+            label="RSVP Link"
+            text={`${BASE_URL_CLIENT}/events/${eventid}/register`}
           />
         </div>
       </div>
