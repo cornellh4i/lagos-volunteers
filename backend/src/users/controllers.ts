@@ -203,7 +203,6 @@ const getUsers = async (
     ? queryResult[take - 1]
     : queryResult[queryResult.length - 1];
   const myCursor = lastPostInResults ? lastPostInResults.id : undefined;
-  // console.log(queryResult);
   return { result: queryResult, cursor: myCursor, totalItems: totalRecords };
 };
 
