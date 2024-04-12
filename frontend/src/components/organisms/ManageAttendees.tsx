@@ -984,6 +984,7 @@ const ManageAttendees = ({}: ManageAttendeesProps) => {
 
   /** Set event details */
   const {
+    eventid: idtmp, // TODO: remove this line
     location,
     datetime,
     capacity,
@@ -993,6 +994,7 @@ const ManageAttendees = ({}: ManageAttendeesProps) => {
     description,
     name,
   }: EventData = {
+    eventid: eventData.id,
     location: eventData.location,
     datetime: formatDateTimeRange(eventData.startDate, eventData.endDate),
     capacity: eventData.capacity,
