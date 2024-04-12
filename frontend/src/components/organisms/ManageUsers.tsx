@@ -21,6 +21,7 @@ type ActiveProps = {
   paginationModel: GridPaginationModel;
   setPaginationModel: React.Dispatch<React.SetStateAction<GridPaginationModel>>;
   setSearchQuery: React.Dispatch<React.SetStateAction<string>>;
+  setCursor: React.Dispatch<React.SetStateAction<string>>;
 };
 
 type userInfo = {
@@ -38,6 +39,7 @@ const Active = ({
   paginationModel,
   setPaginationModel,
   setSearchQuery,
+  setCursor,
 }: ActiveProps) => {
   const eventColumns: GridColDef[] = [
     {
@@ -111,10 +113,14 @@ const Active = ({
   const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
     setValue(event.target.value);
   };
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+  const handleSubmitSearch = (event: FormEvent<HTMLFormElement>) => {
     // Prevent page refresh
     event.preventDefault();
-    // Actual function
+
+    // Reset cursor on every new search
+    setCursor("");
+
+    // Set search query
     setSearchQuery(value);
   };
 
@@ -125,7 +131,7 @@ const Active = ({
           placeholder="Search member by name, email"
           value={value}
           onChange={handleChange}
-          onSubmit={handleSubmit}
+          onSubmit={handleSubmitSearch}
         />
       </div>
       <Card size="table">
@@ -151,25 +157,19 @@ const ManageUsers = ({}: ManageUsersProps) => {
     page: 0,
     pageSize: 20,
   });
-  let cursor = "";
+  // let cursor = "";
+  const [cursor, setCursor] = useState("");
 
   /** If a valid cursor is passed, fetch the next batch of users */
   const fetchUsersBatch = async (cursor?: string, searchQuery?: string) => {
-    if (cursor !== "") {
-      if (searchQuery) {
-        const { response, data } = await api.get(
-          `/users?firstName=${searchQuery}`
-        );
-        return data;
-      } else {
-        const { response, data } = await api.get(
-          `/users?limit=${paginationModel.pageSize}&after=${cursor}`
-        );
-        return data;
-      }
+    if (searchQuery) {
+      const { data } = await api.get(
+        `/users?email=${searchQuery}&limit=${paginationModel.pageSize}&after=${cursor}`
+      );
+      return data;
     } else {
-      const { response, data } = await api.get(
-        `/users?limit=${paginationModel.pageSize}`
+      const { data } = await api.get(
+        `/users?limit=${paginationModel.pageSize}&after=${cursor}`
       );
       return data;
     }
@@ -179,15 +179,16 @@ const ManageUsers = ({}: ManageUsersProps) => {
   const { data, isPending, error, isPlaceholderData, refetch } = useQuery({
     queryKey: ["users", paginationModel.page],
     queryFn: async () => {
-      return await fetchUsersBatch(cursor, searchQuery);
+      const data = await fetchUsersBatch(cursor, searchQuery);
+      if (data?.data.cursor) {
+        setCursor(data.data.cursor);
+      }
+      return data;
     },
     staleTime: Infinity,
   });
   const rows: userInfo[] = [];
   const totalNumberofData = data?.data.totalItems;
-  if (data?.data.cursor) {
-    cursor = data.data.cursor;
-  }
   data?.data.result.map((user: any) => {
     rows.push({
       id: user.id,
@@ -229,6 +230,7 @@ const ManageUsers = ({}: ManageUsersProps) => {
           paginationModel={paginationModel}
           setPaginationModel={setPaginationModel}
           setSearchQuery={setSearchQuery}
+          setCursor={setCursor}
         />
       ),
     },
@@ -243,6 +245,7 @@ const ManageUsers = ({}: ManageUsersProps) => {
           paginationModel={paginationModel}
           setPaginationModel={setPaginationModel}
           setSearchQuery={setSearchQuery}
+          setCursor={setCursor}
         />
       ),
     },
@@ -253,6 +256,7 @@ const ManageUsers = ({}: ManageUsersProps) => {
 
   return (
     <>
+      <button onClick={() => console.log(cursor)}>asdf</button>
       <TabContainer
         left={<div className="font-semibold text-3xl">Manage Members</div>}
         tabs={tabs}

@@ -165,7 +165,11 @@ const getUsers = async (
   // Handles all other filtering
   let whereDict = {
     events: events,
-    email: Array.isArray(filter.email) ? { in: filter.email } : filter.email,
+    // email: Array.isArray(filter.email) ? { in: filter.email } : filter.email,
+    email: {
+      contains: filter.email,
+      mode: Prisma.QueryMode.insensitive,
+    },
     role: {
       equals: filter.role,
     },
