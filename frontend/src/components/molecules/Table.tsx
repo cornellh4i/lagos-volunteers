@@ -22,7 +22,7 @@ const Table = ({
 }: TableProps) => {
   return (
     <div>
-      {rows.length > 0 && (
+      {rows.length > 0 ? (
         <DataGrid
           columns={columns}
           rows={rows}
@@ -35,7 +35,7 @@ const Table = ({
           paginationMode="server"
           disableColumnMenu
         />
-      )}
+      ): (<div className="flex justify-center">No records found</div>)}
     </div>
   );
 };

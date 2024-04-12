@@ -1,12 +1,13 @@
 import React from "react";
 import DefaultTemplate from "@/components/templates/DefaultTemplate";
-import About from "@/components/organisms/About";
+import ManageWebsite from "@/components/organisms/ManageWebsite";
 
-const AboutPage = () => {
+const Website = () => {
   return (
     <DefaultTemplate>
-      <About />
+      <ManageWebsite />
     </DefaultTemplate>
   );
 };
-export default AboutPage;
+
+export default Website;

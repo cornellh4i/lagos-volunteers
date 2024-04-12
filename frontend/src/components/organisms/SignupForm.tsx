@@ -79,11 +79,11 @@ const SignupForm = () => {
 
     // Log in
     const { email, password } = data;
-    if(res.ok){
+    if (res.ok) {
       const signedInUser = await signInWithEmailAndPassword(email, password);
       if (signedInUser?.user) {
-        await sendEmailVerification()
-        router.push('/verify')        
+        await sendEmailVerification();
+        router.push("/verify");
       }
     }
   };
@@ -145,55 +145,93 @@ const SignupForm = () => {
       <form onSubmit={handleSubmit(handleUserSignUp)} className="space-y-4">
         <img src="/lfbi_logo.png" className="w-24" />
         <div className="font-bold text-3xl">Sign Up</div>
+        <div className="text-sm">
+          Passwords should meet the following requirements:
+          <ul className="m-0 px-4">
+            <li>At least 6 characters in length</li>
+            <li>Contain a mix of uppercase and lowercase letters</li>
+            <li>Include at least one number and one special character</li>
+          </ul>
+        </div>
         <div>
           <TextField
-            error={errors.email ? "Required" : undefined}
-            type="email"
+            error={errors.email?.message}
             label="Email"
-            {...register("email", { required: true })}
+            {...register("email", {
+              required: { value: true, message: "Required" },
+              pattern: {
+                value:
+                  /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/,
+                message: "Invalid email address",
+              },
+            })}
           />
         </div>
         <div className="grid sm:space-x-4 grid-cols-1 sm:grid-cols-2 ">
           <div className="pb-4 sm:pb-0">
             <TextField
-              error={errors.firstName ? "Required" : undefined}
-              label="First Name"
-              {...register("firstName", { required: true })}
+              error={errors.firstName?.message}
+              label="First name"
+              {...register("firstName", {
+                required: { value: true, message: "Required" },
+              })}
             />
           </div>
           <div>
             <TextField
-              error={errors.lastName ? "Required" : undefined}
-              label="Last Name"
-              {...register("lastName", { required: true })}
+              error={errors.lastName?.message}
+              label="Last name"
+              {...register("lastName", {
+                required: { value: true, message: "Required" },
+              })}
             />
           </div>
         </div>
         <div>
           <TextField
-            error={errors.password ? "Required" : undefined}
+            error={errors.password?.message}
             type="password"
             label="Password"
-            {...register("password", { required: true })}
+            {...register("password", {
+              required: { value: true, message: "Required" },
+              minLength: {
+                value: 6,
+                message: "Password must be at least 6 characters",
+              },
+              validate: {
+                hasUpper: (value) =>
+                  /.*[A-Z].*/.test(value) ||
+                  "Password must contain at least one uppercase letter",
+                hasLower: (value) =>
+                  /.*[a-z].*/.test(value) ||
+                  "Password must contain at least one lowercase letter",
+                hasNumber: (value) =>
+                  /.*[0-9].*/.test(value) ||
+                  "Password must contain at least one number",
+                hasSpecialChar: (value) =>
+                  /.*[\W_].*/.test(value) ||
+                  "Password must contain at least one special character",
+              },
+            })}
           />
         </div>
         <div>
           <TextField
             type="password"
-            error={
-              errors.confirmPassword
-                ? "Required"
-                : watch("password") != watch("confirmPassword")
-                ? "Passwords do not match"
-                : undefined
-            }
-            label="Confirm Password"
-            {...register("confirmPassword", { required: true })}
+            error={errors.confirmPassword?.message}
+            label="Confirm password"
+            {...register("confirmPassword", {
+              required: { value: true, message: "Required" },
+              validate: {
+                matchPassword: (value) =>
+                  value === watch("password") || "Passwords do not match",
+              },
+            })}
           />
         </div>
-        <div>
+        <div className="pt-2">
           <Button loading={isPending} disabled={isPending} type="submit">
-            Continue
+            Sign up
           </Button>
         </div>
         <div className="justify-center flex flex-row">
