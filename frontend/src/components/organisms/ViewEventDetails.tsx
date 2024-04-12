@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import EventTemplate from "../templates/EventTemplate";
 import EventCardRegister from "./EventCardRegister";
 import Divider from "@mui/material/Divider";
@@ -194,7 +194,7 @@ const ViewEventDetails = () => {
 
           <div className="font-semibold">{location}</div>
           <div className="bg-red-300 mt-5">Future location widget here</div>
-
+        </div>
       }
       img={<img className="w-full rounded-2xl" src={image_src} />}
       card={
