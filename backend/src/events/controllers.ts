@@ -5,6 +5,7 @@ import {
   Event,
   EventEnrollment,
   Prisma,
+  EnrollmentStatus
 } from "@prisma/client";
 import { EventDTO } from "./views";
 import userController from "../users/controllers";
@@ -328,7 +329,8 @@ const getAttendees = async (eventID: string, userID: string) => {
 const updateEnrollmentStatus = async (
   eventID: string,
   userID: string,
-  newStatus: any
+  newStatus: EnrollmentStatus
+
 ) => {
   return await prisma.eventEnrollment.update({
     where: {
@@ -370,27 +372,30 @@ const addAttendee = async (eventID: string, userID: string) => {
   }
 
   // sets the email message
-  // const emailHtml = "<b>htmlRegCancel</b>";
-  const emailHtml = "<b>email here, EVENT NAME...</b>";
+  // const emailHtml = "<b>email here, EVENT NAME...</b>";
 
-  function replaceInputs() {
+  function replaceInputs(originalHtml: string) {
     // checks emailHTML string, finds instances of EVENT NAME and replaces it with ${event.name}
     // change path instead to the html file with the replaced "variables" given eventid or userid
-    return replaceInText(stringRegUpdate, "EVENT NAME", eventName);
-    return replaceInText(stringRegUpdate, "USER NAME", userName);
     return replaceInText(
-      stringRegUpdate,
-      "EVENT DATETIME",
-      eventDateTimeString
+      replaceInText(
+        replaceInText(
+          replaceInText(
+            replaceInText(originalHtml, "EVENT NAME", eventName),
+              "TEXT BODY", "Your registration was successful!"
+          ),
+          "USER NAME", userName
+        ),
+        "EVENT DATETIME", eventDateTimeString
+      ),
+    "EVENT LOCATION", eventLocation
     );
-    return replaceInText(stringRegUpdate, "EVENT LOCATION", eventLocation);
   }
-
-  const subject = "Your email subject here";
-  // const path = "./src/emails/test2.html";
-
-  if (process.env.NODE_ENV !== "test") {
-    await sendEmail(userEmail, subject, htmlRegUpdate);
+  
+  if (process.env.NODE_ENV != "test") {
+    // creates updated html path with the changed inputs
+    const updatedHtml = replaceInputs(stringRegUpdate);
+    await sendEmail(userEmail, "Your email subject", updatedHtml);
   }
   return await prisma.eventEnrollment.create({
     data: {
@@ -439,23 +444,30 @@ const deleteAttendee = async (
   }
 
   // sets the email message
-  // const emailHtml = "<b>htmlRegCancel</b>";
-  const emailHtml = "<b>email here, EVENT NAME...</b>";
+  // const emailHtml = "<b>email here, EVENT NAME...</b>";
 
-  function replaceInputs() {
+  function replaceInputs(originalHtml: string) {
     // checks emailHTML string, finds instances of EVENT NAME and replaces it with ${event.name}
     // change path instead to the html file with the replaced "variables" given eventid or userid
-    return replaceInText(stringRegUpdate, "EVENT NAME", eventName);
-    return replaceInText(stringRegUpdate, "USER NAME", userName);
     return replaceInText(
-      stringRegUpdate,
-      "EVENT DATETIME",
-      eventDateTimeString
+      replaceInText(
+        replaceInText(
+          replaceInText(
+            replaceInText(originalHtml, "EVENT NAME", eventName),
+              "TEXT BODY", "Your event cancellation was successful."
+          ),
+          "USER NAME", userName
+        ),
+        "EVENT DATETIME", eventDateTimeString
+      ),
+    "EVENT LOCATION", eventLocation
     );
-    return replaceInText(stringRegUpdate, "EVENT LOCATION", eventLocation);
   }
+  
   if (process.env.NODE_ENV != "test") {
-    await sendEmail(userEmail, "Your email subject", htmlRegUpdate);
+    // creates updated html path with the changed inputs
+    const updatedHtml = replaceInputs(stringRegUpdate);
+    await sendEmail(userEmail, "Your email subject", updatedHtml);
   }
 
   // update db
@@ -537,20 +549,24 @@ const confirmUser = async (eventID: string, userID: string) => {
   // const emailHtml = "<b>htmlRegCancel</b>";
   const emailHtml = "<b>email here, EVENT NAME...</b>";
 
-  function replaceInputs() {
+  function replaceInputs(originalHtml: string) {
     // checks emailHTML string, finds instances of EVENT NAME and replaces it with ${event.name}
     // change path instead to the html file with the replaced "variables" given eventid or userid
-    return replaceInText(stringAttendConfirm, "EVENT NAME", eventName);
-    return replaceInText(stringAttendConfirm, "USER NAME", userName);
     return replaceInText(
-      stringAttendConfirm,
-      "EVENT DATETIME",
-      eventDateTimeString
+      replaceInText(
+        replaceInText(
+          replaceInText(originalHtml, "EVENT NAME", eventName),
+          "USER NAME", userName
+        ),
+        "EVENT DATETIME", eventDateTimeString
+      ),
+    "EVENT LOCATION", eventLocation
     );
-    return replaceInText(stringAttendConfirm, "EVENT LOCATION", eventLocation);
   }
+
   if (process.env.NODE_ENV != "test") {
-    await sendEmail(userEmail, "Your email subject", htmlAttendConfirm);
+    const updatedHtml = replaceInputs(stringAttendConfirm);
+    await sendEmail(userEmail, "Your email subject", updatedHtml);
   }
 
   return await prisma.eventEnrollment.update({

@@ -1,5 +1,5 @@
 import { Request, Response, query } from "express";
-import { Prisma, userRole, UserStatus } from "@prisma/client";
+import { Prisma, userRole, UserStatus} from "@prisma/client";
 import {
   User,
   Profile,
@@ -577,17 +577,18 @@ const editStatus = async (userId: string, status: string) => {
   // const emailHtml = "<b>htmlRegCancel</b>";
   const emailHtml = "<b>email here, EVENT NAME...</b>";
 
-  function replaceInputs() {
-    // checks emailHTML string, finds instances of EVENT NAME and replaces it with ${event.name}
-    // change path instead to the html file with the replaced "variables" given eventid or userid
-    return replaceInText(stringBlacklist, "USER NAME", userName);
-  }
+  // function replaceInputs() {
+  //   // checks emailHTML string, finds instances of EVENT NAME and replaces it with ${event.name}
+  //   // change path instead to the html file with the replaced "variables" given eventid or userid
+  //   return replaceInText(stringBlacklist, "USER NAME", userName);
+  // }
 
   // sets the email message
   // const emailHtml = "<b>htmlRegCancel</b>";
   if (process.env.NODE_ENV != "test") {
     if (user?.status === "INACTIVE") {
-      await sendEmail(userEmail, "Your email subject", htmlBlacklist);
+      const updatedHtml = replaceInText(stringBlacklist, "USER NAME", userName);
+      await sendEmail(userEmail, "Your email subject", updatedHtml);
     }
   }
 
@@ -626,18 +627,20 @@ const editRole = async (userId: string, role: string) => {
   // const emailHtml = "<b>htmlRegCancel</b>";
   const emailHtml = "<b>email here, EVENT NAME...</b>";
 
-  function replaceInputs() {
-    // checks emailHTML string, finds instances of EVENT NAME and replaces it with ${event.name}
-    // change path instead to the html file with the replaced "variables" given eventid or userid
-    return replaceInText(stringSuperAdmin, "USER NAME", userName);
-    return replaceInText(stringVolunSuper, "USER NAME", userName);
-  }
+  // function replaceInputs() {
+  //   // checks emailHTML string, finds instances of EVENT NAME and replaces it with ${event.name}
+  //   // change path instead to the html file with the replaced "variables" given eventid or userid
+  //   return replaceInText(stringSuperAdmin, "USER NAME", userName);
+  //   return replaceInText(stringVolunSuper, "USER NAME", userName);
+  // }
 
   if (process.env.NODE_ENV != "test") {
     if (prevUserRole === "SUPERVISOR" && role === "ADMIN") {
-      await sendEmail(userEmail, "Your email subject", htmlSuperAdmin);
+      const updatedHtml = replaceInText(stringSuperAdmin, "USER NAME", userName);
+      await sendEmail(userEmail, "Your email subject", updatedHtml);
     } else if (prevUserRole === "VOLUNTEER" && role === "SUPERVISOR") {
-      await sendEmail(userEmail, "Your email subject", htmlVolunSuper);
+      const updatedHtml = replaceInText(stringVolunSuper, "USER NAME", userName);
+      await sendEmail(userEmail, "Your email subject", updatedHtml);
     }
   }
   return prisma.user.update({
