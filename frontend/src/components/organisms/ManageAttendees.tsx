@@ -1,4 +1,4 @@
-import React, { ChangeEvent, FormEvent, useEffect, useState } from "react";
+import React, { ChangeEvent, FormEvent, useEffect, useRef, useState } from "react";
 import TabContainer from "@/components/molecules/TabContainer";
 import { GridColDef, GridPaginationModel } from "@mui/x-data-grid";
 import Table from "@/components/molecules/Table";
@@ -38,6 +38,9 @@ import { formatDateTimeToUI, formatDateTimeRange } from "@/utils/helpers";
 import { EventData } from "@/utils/types";
 import { FileCopy } from "@mui/icons-material";
 import { BASE_URL_CLIENT } from "@/utils/constants";
+import useWebSocket from "react-use-websocket";
+import { BASE_WEBSOCKETS_URL } from "@/utils/constants";
+
 
 //Initial push
 
@@ -76,6 +79,20 @@ const AttendeesTable = ({
 }: attendeeTableProps) => {
   const queryClient = useQueryClient();
 
+  // Define the WebSocket URL
+  const socketUrl = BASE_WEBSOCKETS_URL as string;
+
+  // Use the useWebSocket hook
+  const {
+    sendMessage,
+    lastMessage,
+    readyState,
+  } = useWebSocket(socketUrl, {
+    onOpen: () => console.log('WebSocket connection opened'),
+    shouldReconnect: () => true,
+  });
+
+  // Define mutation function
   const { mutateAsync, isPending, isError, isSuccess } = useMutation({
     mutationFn: async (variables: { userId: string; newValue: string }) => {
       const { userId, newValue } = variables;
@@ -89,10 +106,24 @@ const AttendeesTable = ({
     },
     retry: false,
     onSuccess: () => {
-      console.log("success");
-      queryClient.invalidateQueries({ queryKey: ["event", eventId] });
+      queryClient.invalidateQueries({ queryKey: ['event', eventId] });
+      // Send a message through WebSocket upon successful mutation
+      sendMessage(`Status change successful for event ${eventId}`);
     },
   });
+
+  //Handle new websocket messages
+  const previousLastMessage: React.MutableRefObject<any> = useRef();
+  
+  if (lastMessage && lastMessage !== previousLastMessage.current) {
+    console.log("Got a new message");
+    console.log(lastMessage.data);
+    if (lastMessage.data == `received: Status change successful for event ${eventId}`) {
+      console.log("Change made to this event received")
+      queryClient.invalidateQueries({ queryKey: ['event', eventId] });
+    }
+    previousLastMessage.current = lastMessage;
+  };
 
   const handleStatusChange = async (userId: string, newValue: string) => {
     if (!eventId) {
@@ -162,7 +193,6 @@ const AttendeesTable = ({
     },
   ];
 
-  // const filteredRows = rows.filter((attendee: attendeeData) => attendee.status === status);
 
   return (
     <>
@@ -440,7 +470,7 @@ const Pending = () => {
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     // Prevent page refresh
     event.preventDefault();
-
+    //sendMessage("helo there lao");
     // Set search query
     setSearchQuery(value);
   };
