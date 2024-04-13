@@ -7,6 +7,8 @@ import {
   updateFirebaseUserToSupervisor,
   updateFirebaseUserToAdmin,
   NoAuth,
+  authIfAdmin,
+  authIfSupervisor,
 } from "../middleware/auth";
 const userRouter = Router();
 import * as firebase from "firebase-admin";
@@ -20,7 +22,7 @@ process.env.NODE_ENV === "test"
 
 userRouter.post(
   "/",
-  NoAuth as RequestHandler,
+  authIfAdmin as RequestHandler,
   async (req: Request, res: Response) => {
     // #swagger.tags = ['Users']
     socketNotify("/users");
@@ -75,89 +77,117 @@ userRouter.post(
   }
 );
 
-userRouter.delete("/:userid", useAuth, async (req: Request, res: Response) => {
-  // #swagger.tags = ['Users']
-  attempt(res, 200, () => userController.deleteUser(req.params.userid));
-  socketNotify("/users");
-});
+userRouter.delete(
+  "/:userid",
+  authIfAdmin as RequestHandler,
+  async (req: Request, res: Response) => {
+    // #swagger.tags = ['Users']
+    attempt(res, 200, () => userController.deleteUser(req.params.userid));
+    socketNotify("/users");
+  }
+);
 
-userRouter.put("/:userid", useAuth, async (req: Request, res: Response) => {
-  // #swagger.tags = ['Users']
+userRouter.put(
+  "/:userid",
+  authIfAdmin as RequestHandler,
+  async (req: Request, res: Response) => {
+    // #swagger.tags = ['Users']
 
-  // Do API call
-  attempt(res, 200, () =>
-    userController.updateUser(req.params.userid, req.body)
-  );
-  socketNotify(`/users/${req.params.userid}`);
-});
+    // Do API call
+    attempt(res, 200, () =>
+      userController.updateUser(req.params.userid, req.body)
+    );
+    socketNotify(`/users/${req.params.userid}`);
+  }
+);
 
-userRouter.get("/count", useAuth, async (req: Request, res: Response) => {
-  // #swagger.tags = ['Users']
-  attempt(res, 200, userController.getCountUsers);
-});
+userRouter.get(
+  "/count",
+  (authIfAdmin as RequestHandler) || (authIfSupervisor as RequestHandler),
+  async (req: Request, res: Response) => {
+    // #swagger.tags = ['Users']
+    attempt(res, 200, userController.getCountUsers);
+  }
+);
 
-userRouter.get("/", useAuth, async (req: Request, res: Response) => {
-  // #swagger.tags = ['Users']
-  const filter = {
-    firstName: req.query.firstName as string,
-    lastName: req.query.lastName as string,
-    nickname: req.query.nickname as string,
-    email: req.query.email as string,
-    role: req.query.role as userRole,
-    hours: req.query.hours ? parseInt(req.query.hours as string) : undefined,
-    status: req.query.status as UserStatus,
-    eventId: req.query.eventId as string,
-    attendeeStatus: req.query.attendeeStatus as EnrollmentStatus,
-  };
+userRouter.get(
+  "/",
+  (authIfAdmin as RequestHandler) || (authIfSupervisor as RequestHandler),
+  async (req: Request, res: Response) => {
+    // #swagger.tags = ['Users']
+    const filter = {
+      firstName: req.query.firstName as string,
+      lastName: req.query.lastName as string,
+      nickname: req.query.nickname as string,
+      email: req.query.email as string,
+      role: req.query.role as userRole,
+      hours: req.query.hours ? parseInt(req.query.hours as string) : undefined,
+      status: req.query.status as UserStatus,
+      eventId: req.query.eventId as string,
+      attendeeStatus: req.query.attendeeStatus as EnrollmentStatus,
+    };
 
-  const sortQuery = req.query.sort as string;
-  const querySplit = sortQuery ? sortQuery.split(":") : ["default", "asc"];
-  const key = querySplit[0];
-  const order = querySplit[1] as Prisma.SortOrder;
-  const sort = {
-    key: key,
-    order: order,
-  };
+    const sortQuery = req.query.sort as string;
+    const querySplit = sortQuery ? sortQuery.split(":") : ["default", "asc"];
+    const key = querySplit[0];
+    const order = querySplit[1] as Prisma.SortOrder;
+    const sort = {
+      key: key,
+      order: order,
+    };
 
-  const pagination = {
-    after: req.query.after as string,
-    limit: req.query.limit as string,
-  };
+    const pagination = {
+      after: req.query.after as string,
+      limit: req.query.limit as string,
+    };
 
-  attempt(res, 200, () => userController.getUsers(filter, sort, pagination));
-});
+    attempt(res, 200, () => userController.getUsers(filter, sort, pagination));
+  }
+);
 
-userRouter.get("/pagination", useAuth, async (req: Request, res: Response) => {
-  // #swagger.tags = ['Users']
-  attempt(res, 200, () => userController.getUsersPaginated(req));
-});
+userRouter.get(
+  "/pagination",
+  (authIfAdmin as RequestHandler) || (authIfSupervisor as RequestHandler),
+  async (req: Request, res: Response) => {
+    // #swagger.tags = ['Users']
+    attempt(res, 200, () => userController.getUsersPaginated(req));
+  }
+);
 
-userRouter.get("/search", useAuth, async (req: Request, res: Response) => {
-  // #swagger.tags = ['Users']
-  const { email, firstName, lastName, role, status, hours, nickname } =
-    req.body;
-  attempt(res, 200, () =>
-    userController.getSearchedUser(
-      req,
-      email,
-      firstName,
-      lastName,
-      role,
-      status,
-      hours,
-      nickname
-    )
-  );
-});
+userRouter.get(
+  "/search",
+  (authIfAdmin as RequestHandler) || (authIfSupervisor as RequestHandler),
+  async (req: Request, res: Response) => {
+    // #swagger.tags = ['Users']
+    const { email, firstName, lastName, role, status, hours, nickname } =
+      req.body;
+    attempt(res, 200, () =>
+      userController.getSearchedUser(
+        req,
+        email,
+        firstName,
+        lastName,
+        role,
+        status,
+        hours,
+        nickname
+      )
+    );
+  }
+);
 
-userRouter.get("/sorting", useAuth, async (req: Request, res: Response) => {
-  // #swagger.tags = ['Users']
-  attempt(res, 200, () => userController.getUsersSorted(req));
-});
+userRouter.get(
+  "/sorting",
+  (authIfAdmin as RequestHandler) || (authIfSupervisor as RequestHandler),
+  async (req: Request, res: Response) => {
+    // #swagger.tags = ['Users']
+    attempt(res, 200, () => userController.getUsersSorted(req));
+  }
+);
 
 userRouter.get(
   "/:userid/profile",
-  useAuth,
+  (authIfAdmin as RequestHandler) || (authIfSupervisor as RequestHandler),
   async (req: Request, res: Response) => {
     // #swagger.tags = ['Users']
     attempt(res, 200, () => userController.getUserProfile(req.params.userid));
@@ -166,7 +196,7 @@ userRouter.get(
 
 userRouter.get(
   "/:userid/role",
-  useAuth,
+  (authIfAdmin as RequestHandler) || (authIfSupervisor as RequestHandler),
   async (req: Request, res: Response) => {
     // #swagger.tags = ['Users']
     attempt(res, 200, () => userController.getUserRole(req.params.userid));
@@ -175,7 +205,7 @@ userRouter.get(
 
 userRouter.get(
   "/:userid/preferences",
-  useAuth,
+  (authIfAdmin as RequestHandler) || (authIfSupervisor as RequestHandler),
   async (req: Request, res: Response) => {
     // #swagger.tags = ['Users']
     attempt(res, 200, () =>
@@ -184,14 +214,18 @@ userRouter.get(
   }
 );
 
-userRouter.get("/:userid", useAuth, async (req: Request, res: Response) => {
-  // #swagger.tags = ['Users']
-  attempt(res, 200, () => userController.getUserByID(req.params.userid));
-});
+userRouter.get(
+  "/:userid",
+  (authIfAdmin as RequestHandler) || (authIfSupervisor as RequestHandler),
+  async (req: Request, res: Response) => {
+    // #swagger.tags = ['Users']
+    attempt(res, 200, () => userController.getUserByID(req.params.userid));
+  }
+);
 
 userRouter.get(
   "/:userid/created",
-  useAuth,
+  (authIfAdmin as RequestHandler) || (authIfSupervisor as RequestHandler),
   async (req: Request, res: Response) => {
     // #swagger.tags = ['Users']
     attempt(res, 200, () => userController.getCreatedEvents(req.params.userid));
@@ -200,7 +234,7 @@ userRouter.get(
 
 userRouter.get(
   "/:userid/registered",
-  useAuth,
+  (authIfAdmin as RequestHandler) || (authIfSupervisor as RequestHandler),
   async (req: Request, res: Response) => {
     // #swagger.tags = ['Users']
     attempt(res, 200, () =>
@@ -214,7 +248,7 @@ userRouter.get(
 
 userRouter.get(
   "/:userid/hours",
-  useAuth,
+  (authIfAdmin as RequestHandler) || (authIfSupervisor as RequestHandler),
   async (req: Request, res: Response) => {
     // #swagger.tags = ['Users']
     attempt(res, 200, () => userController.getHours(req.params.userid));
@@ -223,7 +257,7 @@ userRouter.get(
 
 userRouter.put(
   "/:userid/profile",
-  useAuth,
+  authIfAdmin as RequestHandler,
   async (req: Request, res: Response) => {
     // #swagger.tags = ['Users']
     attempt(res, 200, () =>
@@ -235,7 +269,7 @@ userRouter.put(
 
 userRouter.put(
   "/:userid/preferences",
-  useAuth,
+  authIfAdmin as RequestHandler,
   async (req: Request, res: Response) => {
     // #swagger.tags = ['Users']
     attempt(res, 200, () =>
@@ -245,16 +279,22 @@ userRouter.put(
   }
 );
 
-userRouter.patch("/:userid/status", async (req: Request, res: Response) => {
-  // #swagger.tags = ['Users']
-  const { status } = req.body;
-  attempt(res, 200, () => userController.editStatus(req.params.userid, status));
-  socketNotify(`/users/${req.params.userid}`);
-});
+userRouter.patch(
+  "/:userid/status",
+  authIfAdmin as RequestHandler,
+  async (req: Request, res: Response) => {
+    // #swagger.tags = ['Users']
+    const { status } = req.body;
+    attempt(res, 200, () =>
+      userController.editStatus(req.params.userid, status)
+    );
+    socketNotify(`/users/${req.params.userid}`);
+  }
+);
 
 userRouter.patch(
   "/:userid/role",
-  useAuth,
+  authIfAdmin as RequestHandler,
   async (req: Request, res: Response) => {
     // #swagger.tags = ['Users']
     const { role } = req.body;
@@ -288,7 +328,7 @@ userRouter.patch(
 
 userRouter.patch(
   "/:userid/hours",
-  useAuth,
+  (authIfAdmin as RequestHandler) || (authIfSupervisor as RequestHandler),
   async (req: Request, res: Response) => {
     // #swagger.tags = ['Users']
     const { hours } = req.body;
