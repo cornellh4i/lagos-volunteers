@@ -17,7 +17,11 @@ import { Typography } from "@mui/material";
 import { useAuth } from "@/utils/AuthContext";
 import router from "next/router";
 import Snackbar from "../atoms/Snackbar";
-import { convertToISO, fetchUserIdFromDatabase } from "@/utils/helpers";
+import {
+  convertToISO,
+  fetchUserIdFromDatabase,
+  uploadImage,
+} from "@/utils/helpers";
 import { api } from "@/utils/api";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import Dropzone from "../atoms/Dropzone";
@@ -64,6 +68,9 @@ const EventForm = ({
     setMarkdown(value);
     setValue("eventDescription", value);
   };
+
+  /** Dropzone file */
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
   /** Dropzone errors */
   const [dropzoneError, setDropzoneError] = useState("");
@@ -134,12 +141,20 @@ const EventForm = ({
       const userid = await fetchUserIdFromDatabase(user?.email as string);
       const startDateTime = convertToISO(startTime, startDate);
       const endDateTime = convertToISO(endTime, startDate);
+
+      const buffer = await selectedFile?.arrayBuffer();
+      let eventImageURL = "";
+      if (!(buffer === undefined)) {
+        eventImageURL = await uploadImage(userid, buffer);
+      }
+
       const { response } = await api.post("/events", {
         userID: `${userid}`,
         event: {
           name: `${eventName}`,
           location: status === 0 ? "VIRTUAL" : `${location}`,
           description: `${eventDescription}`,
+          imageURL: eventImageURL,
           startDate: startDateTime,
           endDate: endDateTime,
           capacity: +volunteerSignUpCap,
@@ -165,6 +180,7 @@ const EventForm = ({
           location,
           volunteerSignUpCap,
           eventDescription,
+          eventImage,
           startDate,
           startTime,
           endTime,
@@ -175,6 +191,7 @@ const EventForm = ({
           name: `${eventName}`,
           location: status === 0 ? "VIRTUAL" : `${location}`,
           description: `${eventDescription}`,
+          imageURL: eventImage,
           startDate: startDateTime,
           endDate: endDateTime,
           capacity: +volunteerSignUpCap,
@@ -372,7 +389,12 @@ const EventForm = ({
             })}
           />
         </div>
-        <Dropzone setError={setDropzoneError} label="Event Image" />
+        <Dropzone
+          setError={setDropzoneError}
+          label="Event Image"
+          selectedFile={selectedFile}
+          setSelectedFile={setSelectedFile}
+        />
         <TextCopy
           label="RSVP Link Image"
           text={
@@ -384,6 +406,56 @@ const EventForm = ({
         <div>
           {eventType == "create" ? (
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+              {/* TODO: delete this button */}
+              <button
+                onClick={async () => {
+                  const userid = await fetchUserIdFromDatabase(
+                    user?.email as string
+                  );
+                  console.log(await selectedFile?.arrayBuffer());
+                  const buffer = await selectedFile?.arrayBuffer();
+                  let eventImageURL = "";
+                  if (!(buffer === undefined)) {
+                    eventImageURL = await uploadImage(userid, buffer);
+                  }
+                  console.log(eventImageURL);
+                }}
+              >
+                aasdf
+              </button>
+              {/*
+              <button
+                onClick={async () => {
+                  const userid = await fetchUserIdFromDatabase(
+                    user?.email as string
+                  );
+
+                  if (!selectedFile) {
+                    console.error("No file selected");
+                    return;
+                  }
+
+                  const formData = new FormData();
+                  formData.append("image", selectedFile);
+                  formData.append("userID", userid); 
+
+                  fetch("/upload-image", {
+                    // This should match the path your router handles
+                    method: "POST",
+                    body: formData,
+                  })
+                    .then((response) => response.json())
+                    .then((data) => {
+                      console.log("Success:", data);
+                      const eventImageURL = data.url; 
+                    })
+                    .catch((error) => {
+                      console.error("Error:", error);
+                    });
+                }}
+              >
+                Upload Image
+              </button>*/}
               <div className="order-1 sm:order-2">
                 <Button loading={isPending} disabled={isPending} type="submit">
                   Create

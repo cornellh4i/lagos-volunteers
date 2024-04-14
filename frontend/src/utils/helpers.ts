@@ -1,6 +1,12 @@
 import dayjs from "dayjs";
 import { api } from "./api";
 import { isToday, isTomorrow, isPast, parseISO, format } from "date-fns";
+import {
+  getStorage,
+  ref,
+  uploadBytesResumable,
+  getDownloadURL,
+} from "firebase/storage";
 
 /**
  * This functions performs a search in the DB based on the email of the user that
@@ -73,7 +79,7 @@ export const convertToISO = (inputTime: Date, inputDate: Date) => {
   const date = format(new Date(inputDate), "yyyy-MM-dd");
   const time = format(new Date(inputTime), "HH:mm:ss");
 
-  return dayjs(`${date} ${time}`).toJSON(); 
+  return dayjs(`${date} ${time}`).toJSON();
 };
 
 /**
@@ -168,4 +174,39 @@ export const displayDateInfo = (date: Date) => {
  */
 export const formatRoleOrStatus = (str: string) => {
   return str[0] + str.substring(1).toLowerCase();
+};
+
+/**
+ * Upload image to firebase
+ * @param userID          - The userID of who uploads the image
+ * @param imageArrayByte  - The image array byte to upload
+ * @returns The string URL to the event.
+ */
+export const uploadImage = async (
+  userID: string | null,
+  imageArrayByte: ArrayBuffer
+) => {
+  if (!userID) {
+    console.error("No eventId provided");
+    return "";
+  }
+
+  const currentTime = Date.now();
+  const refString = `${userID}_${currentTime}`;
+  console.log(refString);
+  const storage = getStorage();
+  const imageRef = ref(storage, refString);
+  const uploadTask = uploadBytesResumable(imageRef, imageArrayByte);
+
+  // Retrieve the download URL
+  try {
+    // Wait for the upload to complete and retrieve the download URL
+    await uploadTask.then(); // Ensures the upload completes before proceeding
+    const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
+    console.log("File available at", downloadURL);
+    return downloadURL;
+  } catch (error) {
+    console.error("Upload failed:", error);
+    return "";
+  }
 };
