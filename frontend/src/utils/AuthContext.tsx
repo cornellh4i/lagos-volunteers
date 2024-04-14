@@ -175,31 +175,28 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         localStorage.setItem("redirectPath", path);
         router.replace("/login");
       } else if (user && user.emailVerified && authPaths.includes(path)) {
-        router.replace("/events/view");
+        const redirectPath = localStorage.getItem("redirectPath");
+        if (redirectPath) {
+          router
+            .replace(redirectPath)
+            .then(() => localStorage.removeItem("redirectPath"));
+        } else {
+          router.replace("/events/view");
+        }
       } else if (
         user &&
         user.emailVerified &&
         regexMatcherforAdminPaths.test(path) &&
         userRole !== "Admin"
       ) {
-        if (localStorage.getItem("redirectPath")) {
-          router.replace(localStorage.getItem("redirectPath") as string);
-          localStorage.removeItem("redirectPath");
-        } else {
-          router.replace("/events/view");
-        }
+        router.replace("/events/view");
       } else if (
         user &&
         user.emailVerified &&
         regexMatcherforSupervisorPaths.test(path) &&
         userRole === "Volunteer"
       ) {
-        if (localStorage.getItem("redirectPath")) {
-          router.replace(localStorage.getItem("redirectPath") as string);
-          localStorage.removeItem("redirectPath");
-        } else {
-          router.replace("/events/view");
-        }
+        router.replace("/events/view");
       } else if (
         user &&
         !user.emailVerified &&

@@ -89,8 +89,6 @@ const UpcomingEvents = () => {
   /** Error screen */
   if (isError) return <FetchDataError />;
 
-  console.log(upcomingEventsSupervisor);
-
   return (
     <div>
       {(role === "Supervisor" || role === "Admin") && (
