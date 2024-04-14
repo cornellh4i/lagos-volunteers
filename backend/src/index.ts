@@ -10,7 +10,7 @@ wss.on("connection", (ws) => {
   // What happens when the server receives data
   ws.on("message", (data) => {
     console.log("received: %s", data);
-    ws.send("received: " + data);
+    ws.send("" + data);
   });
 
   // Default message to send when connected

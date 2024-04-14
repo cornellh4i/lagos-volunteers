@@ -107,23 +107,16 @@ const AttendeesTable = ({
     retry: false,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['event', eventId] });
-      // Send a message through WebSocket upon successful mutation
-      sendMessage(`Status change successful for event ${eventId}`);
     },
   });
 
   //Handle new websocket messages
-  const previousLastMessage: React.MutableRefObject<any> = useRef();
-  
-  if (lastMessage && lastMessage !== previousLastMessage.current) {
-    console.log("Got a new message");
-    console.log(lastMessage.data);
-    if (lastMessage.data == `received: Status change successful for event ${eventId}`) {
-      console.log("Change made to this event received")
-      queryClient.invalidateQueries({ queryKey: ['event', eventId] });
-    }
-    previousLastMessage.current = lastMessage;
+
+  if (lastMessage && lastMessage.data == `{"resource":"/events/${eventId}","message":"The resource has been updated!"}`) {
+    console.log("Change made to this event received")
+    queryClient.invalidateQueries({ queryKey: ['event', eventId] });
   };
+  
 
   const handleStatusChange = async (userId: string, newValue: string) => {
     if (!eventId) {
