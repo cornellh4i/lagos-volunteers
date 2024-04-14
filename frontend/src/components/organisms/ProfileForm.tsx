@@ -6,10 +6,16 @@ import { auth } from "@/utils/firebase";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { reauthenticateWithCredential, EmailAuthProvider } from "firebase/auth";
 import Snackbar from "../atoms/Snackbar";
+import { useRouter } from "next/router";
 import { api } from "@/utils/api";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { updatePassword } from "firebase/auth";
 import { User } from "firebase/auth";
+import Modal from "@/components/molecules/Modal";
+import { Box, IconButton } from "@mui/material";
+import { Grid } from "@mui/material";
+
+import { useAuth } from "@/utils/AuthContext"; // - ndavid
 
 type FormValues = {
   email: string;
@@ -20,6 +26,10 @@ type FormValues = {
   newPassword: string;
   confirmNewPassword: string;
   emailNotifications: boolean;
+};
+
+type DeleteAccountFormValues = {
+  confirmation: string;
 };
 
 type formData = {
@@ -40,8 +50,102 @@ interface ProfileFormProps {
   userDetails: formData;
 }
 
-const ProfileForm = ({ userDetails }: ProfileFormProps) => {
+interface ModalBodyProps {
+  userDetails: formData;
+  handleClose: () => void;
+}
+
+/** Confirmation Modal To Delete An Account */
+const ModalBody = ({ userDetails, handleClose }: ModalBodyProps) => {
+  const {
+    register,
+    handleSubmit,
+    watch,
+    formState: { errors },
+  } = useForm<DeleteAccountFormValues>();
+
+  //changeUserStatus handles deleting user from prisma and firebase
+  const { mutateAsync: changeUserStatus, error: changeUserStatusError } =
+    useMutation({
+      mutationFn: async () => {
+        const { data } = await api.delete(`/users/${userDetails.id}`);
+        return data;
+      },
+      retry: false,
+      onSuccess: () => {
+        console.log("DELETED");
+      },
+    });
+
+  //Variables for signing out user
+  const { error, signOutUser } = useAuth();
   const queryClient = useQueryClient();
+  const router = useRouter();
+
+  //Signs out user and redirects them to login page
+  const handleSignOut = async () => {
+    try {
+      await signOutUser();
+      queryClient.clear(); // Clear cache for react query
+      router.replace("/login");
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  /**  When delete form is submitted, we will delete user, end their session,
+   * and redirect them to login page
+   */
+  const handleDeleteAccount = async () => {
+    await changeUserStatus();
+    await handleSignOut();
+  };
+
+  return (
+    <div className="space-y-4">
+      <div className="font-bold text-2xl text-center">Delete Account</div>
+      <div className="mb-12">
+        <div>
+          Are you sure you want to delete your account? This change is{" "}
+          <b>permanent</b> and there is{" "}
+          <b>no ability to restore your account once it is deleted</b>.
+        </div>
+      </div>
+
+      <form onSubmit={handleSubmit(handleDeleteAccount)}>
+        <TextField
+          error={errors.confirmation?.message}
+          label={`Type "${userDetails.email}" to confirm`}
+          {...register("confirmation", {
+            required: { value: true, message: "Required" },
+            validate: {
+              matchConfirmation: (value) =>
+                value === `${userDetails.email}` ||
+                "Confirmation message is incorrect.",
+            },
+          })}
+        />
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 mt-10">
+          <div className="order-1 sm:order-2">
+            <Button variety="bigred" type="submit">
+              Delete
+            </Button>
+          </div>
+          <div className="order-2 sm:order-1">
+            <Button variety="secondary" onClick={handleClose}>
+              Cancel
+            </Button>
+          </div>
+        </div>
+      </form>
+    </div>
+  );
+};
+
+const ProfileForm = ({ userDetails }: ProfileFormProps) => {
+  const router = useRouter();
+  const queryClient = useQueryClient();
+  const { userid } = router.query;
 
   /** State variables for the notification popups */
   const [successNotificationOpen, setSuccessNotificationOpen] = useState(false);
@@ -72,6 +176,9 @@ const ProfileForm = ({ userDetails }: ProfileFormProps) => {
         return "Something went wrong. Please try again";
     }
   };
+  const [open, setOpen] = useState(false);
+  const handleOpen = () => setOpen(true);
+  const handleClose = () => setOpen(false);
 
   /** React hook form */
   const {
@@ -140,6 +247,8 @@ const ProfileForm = ({ userDetails }: ProfileFormProps) => {
     retry: false,
   });
 
+  /** Tanstack query mutation to delete the user profile */
+
   /** Handles form submit */
   const handleChanges: SubmitHandler<FormValues> = async (data) => {
     try {
@@ -153,8 +262,27 @@ const ProfileForm = ({ userDetails }: ProfileFormProps) => {
     }
   };
 
+  // const { mutateAsync: changeUserStatus } = useMutation({
+  //   mutationFn: async () => {
+  //     const { data } = await api.delete(`/users/${userid}`);
+  //     return data;
+  //   },
+  //   retry: false,
+  //   onSuccess: () => {
+  //     console.log("DELETED");
+  //   }
+  // });
+
   return (
     <>
+      <Modal
+        open={open}
+        handleClose={handleClose}
+        children={
+          <ModalBody userDetails={userDetails} handleClose={handleClose} />
+        }
+      />
+
       {/* Profile update error snackbar */}
       <Snackbar
         variety="error"
@@ -259,11 +387,11 @@ const ProfileForm = ({ userDetails }: ProfileFormProps) => {
           onChange={handleCheckbox}
           label="Email notifications"
         />
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-          <div className="order-1 sm:order-2">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+          <div className="order-1 sm:order-3">
             <Button type="submit">Save changes</Button>
           </div>
-          <div className="order-2 sm:order-1">
+          <div className="order-2 sm:order-2">
             <Button
               type="button"
               variety="secondary"
@@ -273,6 +401,11 @@ const ProfileForm = ({ userDetails }: ProfileFormProps) => {
               disabled={!isDirty}
             >
               Reset changes
+            </Button>
+          </div>
+          <div className="order-2 sm:order-1">
+            <Button variety="error" type="button" onClick={handleOpen}>
+              Delete account
             </Button>
           </div>
         </div>

@@ -5,7 +5,7 @@ import CircularProgress from "@mui/material/CircularProgress";
 interface ButtonProps {
   children: ReactNode;
   icon?: ReactNode;
-  variety?: "primary" | "secondary" | "tertiary" | "error";
+  variety?: "primary" | "secondary" | "tertiary" | "error" | "bigred";
   size?: "small" | "medium";
   loading?: boolean;
   [key: string]: any;
@@ -53,6 +53,9 @@ const Button = ({
       variant = "outlined";
       color = "error";
       break;
+    case "bigred":
+      variant = "contained";
+      color = "error";
   }
 
   return (
