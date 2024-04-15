@@ -142,10 +142,9 @@ const EventForm = ({
       const startDateTime = convertToISO(startTime, startDate);
       const endDateTime = convertToISO(endTime, startDate);
 
-      const buffer = await selectedFile?.arrayBuffer();
-      let eventImageURL = "";
-      if (!(buffer === undefined)) {
-        eventImageURL = await uploadImage(userid, buffer);
+      let eventImageURL = ""; // If no image, default to original image.
+      if (selectedFile) {
+        eventImageURL = await uploadImage(userid, selectedFile);
       }
 
       const { response } = await api.post("/events", {
@@ -406,55 +405,22 @@ const EventForm = ({
         <div>
           {eventType == "create" ? (
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-              {/* TODO: delete this button */}
+              {/* TODO: delete this button 
               <button
                 onClick={async () => {
                   const userid = await fetchUserIdFromDatabase(
                     user?.email as string
                   );
-                  console.log(await selectedFile?.arrayBuffer());
-                  const buffer = await selectedFile?.arrayBuffer();
+                  // console.log(await selectedFile?.arrayBuffer());
+                  // const buffer = await selectedFile?.arrayBuffer();
                   let eventImageURL = "";
-                  if (!(buffer === undefined)) {
-                    eventImageURL = await uploadImage(userid, buffer);
+                  if (selectedFile) {
+                    eventImageURL = await uploadImage(userid, selectedFile);
                   }
                   console.log(eventImageURL);
                 }}
               >
                 aasdf
-              </button>
-              {/*
-              <button
-                onClick={async () => {
-                  const userid = await fetchUserIdFromDatabase(
-                    user?.email as string
-                  );
-
-                  if (!selectedFile) {
-                    console.error("No file selected");
-                    return;
-                  }
-
-                  const formData = new FormData();
-                  formData.append("image", selectedFile);
-                  formData.append("userID", userid); 
-
-                  fetch("/upload-image", {
-                    // This should match the path your router handles
-                    method: "POST",
-                    body: formData,
-                  })
-                    .then((response) => response.json())
-                    .then((data) => {
-                      console.log("Success:", data);
-                      const eventImageURL = data.url; 
-                    })
-                    .catch((error) => {
-                      console.error("Error:", error);
-                    });
-                }}
-              >
-                Upload Image
               </button>*/}
               <div className="order-1 sm:order-2">
                 <Button loading={isPending} disabled={isPending} type="submit">

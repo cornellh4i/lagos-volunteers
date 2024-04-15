@@ -179,24 +179,21 @@ export const formatRoleOrStatus = (str: string) => {
 /**
  * Upload image to firebase
  * @param userID          - The userID of who uploads the image
- * @param imageArrayByte  - The image array byte to upload
+ * @param image           - The image file to upload
  * @returns The string URL to the event.
  */
-export const uploadImage = async (
-  userID: string | null,
-  imageArrayByte: ArrayBuffer
-) => {
+export const uploadImage = async (userID: string | null, image: File) => {
   if (!userID) {
     console.error("No eventId provided");
     return "";
   }
 
+  const fileExtension = image.name.slice(image.name.lastIndexOf("."));
   const currentTime = Date.now();
-  const refString = `${userID}_${currentTime}`;
-  console.log(refString);
+  const refString = `${userID}_${currentTime}${fileExtension}`;
   const storage = getStorage();
   const imageRef = ref(storage, refString);
-  const uploadTask = uploadBytesResumable(imageRef, imageArrayByte);
+  const uploadTask = uploadBytesResumable(imageRef, image);
 
   // Retrieve the download URL
   try {
