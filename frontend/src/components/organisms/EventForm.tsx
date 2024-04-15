@@ -21,6 +21,7 @@ import {
   convertToISO,
   fetchUserIdFromDatabase,
   uploadImage,
+  fetchImageURLFromDB,
 } from "@/utils/helpers";
 import { api } from "@/utils/api";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -139,9 +140,9 @@ const EventForm = ({
       const userid = await fetchUserIdFromDatabase(user?.email as string);
       const startDateTime = convertToISO(startTime, startDate);
       const endDateTime = convertToISO(endTime, startDate);
-      let eventImageURL = "";
+      let imageURL = null;
       if (selectedFile) {
-        eventImageURL = await uploadImage(userid, selectedFile);
+        imageURL = await uploadImage(userid, selectedFile);
       }
 
       const { response } = await api.post("/events", {
@@ -150,7 +151,7 @@ const EventForm = ({
           name: `${eventName}`,
           location: status === 0 ? "VIRTUAL" : `${location}`,
           description: `${eventDescription}`,
-          imageURL: eventImageURL,
+          imageURL: imageURL,
           startDate: startDateTime,
           endDate: endDateTime,
           capacity: +volunteerSignUpCap,
@@ -183,16 +184,19 @@ const EventForm = ({
         const userid = await fetchUserIdFromDatabase(user?.email as string);
         const startDateTime = convertToISO(startTime, startDate);
         const endDateTime = convertToISO(endTime, startDate);
-        let eventImageURL = "";
+        let imageURL = null;
+        if (typeof eventId === "string") {
+          imageURL = await fetchImageURLFromDB(eventId); // Assign imageURL to previous URL.
+        }
         if (selectedFile) {
-          eventImageURL = await uploadImage(userid, selectedFile);
+          imageURL = await uploadImage(userid, selectedFile); // Update URL if there is any.
         }
 
         const { response } = await api.put(`/events/${eventId}`, {
           name: `${eventName}`,
           location: status === 0 ? "VIRTUAL" : `${location}`,
           description: `${eventDescription}`,
-          imageURL: eventImageURL,
+          imageURL: imageURL,
           startDate: startDateTime,
           endDate: endDateTime,
           capacity: +volunteerSignUpCap,

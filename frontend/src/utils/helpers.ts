@@ -207,3 +207,13 @@ export const uploadImage = async (userID: string | null, image: File) => {
     return "";
   }
 };
+
+/**
+ * This functions performs a search in the DB based on the eventid.
+ * @param eventid is eventid
+ * @returns image URL of previous save of this event
+ */
+export const fetchImageURLFromDB = async (eventid: string) => {
+  const { data } = await api.get(`/events/${eventid}`);
+  return data["data"]["imageURL"];
+};
