@@ -43,7 +43,6 @@ type FormValues = {
   location: string;
   volunteerSignUpCap: string;
   eventDescription: string;
-  eventImage: string;
   rsvpLinkImage: string;
   startDate: Date;
   startTime: Date;
@@ -107,7 +106,6 @@ const EventForm = ({
             location: eventDetails.location,
             volunteerSignUpCap: eventDetails.volunteerSignUpCap,
             eventDescription: eventDetails.eventDescription,
-            eventImage: eventDetails.eventImage,
             rsvpLinkImage: eventDetails.rsvpLinkImage,
             startDate: eventDetails.startDate,
             startTime: eventDetails.startTime,
@@ -141,8 +139,7 @@ const EventForm = ({
       const userid = await fetchUserIdFromDatabase(user?.email as string);
       const startDateTime = convertToISO(startTime, startDate);
       const endDateTime = convertToISO(endTime, startDate);
-
-      let eventImageURL = ""; // If no image, default to original image.
+      let eventImageURL = "";
       if (selectedFile) {
         eventImageURL = await uploadImage(userid, selectedFile);
       }
@@ -179,18 +176,23 @@ const EventForm = ({
           location,
           volunteerSignUpCap,
           eventDescription,
-          eventImage,
           startDate,
           startTime,
           endTime,
         } = data;
+        const userid = await fetchUserIdFromDatabase(user?.email as string);
         const startDateTime = convertToISO(startTime, startDate);
         const endDateTime = convertToISO(endTime, startDate);
+        let eventImageURL = "";
+        if (selectedFile) {
+          eventImageURL = await uploadImage(userid, selectedFile);
+        }
+
         const { response } = await api.put(`/events/${eventId}`, {
           name: `${eventName}`,
           location: status === 0 ? "VIRTUAL" : `${location}`,
           description: `${eventDescription}`,
-          imageURL: eventImage,
+          imageURL: eventImageURL,
           startDate: startDateTime,
           endDate: endDateTime,
           capacity: +volunteerSignUpCap,
@@ -405,23 +407,6 @@ const EventForm = ({
         <div>
           {eventType == "create" ? (
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-              {/* TODO: delete this button 
-              <button
-                onClick={async () => {
-                  const userid = await fetchUserIdFromDatabase(
-                    user?.email as string
-                  );
-                  // console.log(await selectedFile?.arrayBuffer());
-                  // const buffer = await selectedFile?.arrayBuffer();
-                  let eventImageURL = "";
-                  if (selectedFile) {
-                    eventImageURL = await uploadImage(userid, selectedFile);
-                  }
-                  console.log(eventImageURL);
-                }}
-              >
-                aasdf
-              </button>*/}
               <div className="order-1 sm:order-2">
                 <Button loading={isPending} disabled={isPending} type="submit">
                   Create
