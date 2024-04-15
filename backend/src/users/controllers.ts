@@ -12,7 +12,7 @@ import admin from "firebase-admin";
 import prisma from "../../client";
 import { setVolunteerCustomClaims } from "../middleware/auth";
 import userController from "../users/controllers";
-import { sendEmail } from "../utils/helpers";
+import { sendEmail, replaceInText, replaceUserInputs } from "../utils/helpers";
 
 import fs from "fs"; // importing built-in file system
 
@@ -21,28 +21,12 @@ import fs from "fs"; // importing built-in file system
  * Creates an object for each html file to return a string.
  */
 const utf8: BufferEncoding = "utf8";
-const stringRegUpdate: string = fs.readFileSync(
-  "./src/emails/Registration_Update.html",
+const stringEventUpdate: string = fs.readFileSync(
+  "./src/emails/Event_Update.html",
   utf8
 );
-const stringCertApprove: string = fs.readFileSync(
-  "./src/emails/Certificate_Approval.html",
-  utf8
-);
-const stringBlacklist: string = fs.readFileSync(
-  "./src/emails/Blacklisted.html",
-  utf8
-);
-const stringVolunSuper: string = fs.readFileSync(
-  "./src/emails/Volunteer_Supervisor.html",
-  utf8
-);
-const stringSuperAdmin: string = fs.readFileSync(
-  "./src/emails/Supervisor_Admin.html",
-  utf8
-);
-const stringAttendConfirm: string = fs.readFileSync(
-  "./src/emails/Attendance_Confirmation.html",
+const stringUserUpdate: string = fs.readFileSync(
+  "./src/emails/User_Update.html",
   utf8
 );
 
@@ -51,12 +35,8 @@ const stringAttendConfirm: string = fs.readFileSync(
  * Creates an object for each html file to return a string.
  */
 
-const htmlRegUpdate = "./src/emails/Registration_Update.html";
-const htmlCertApprove = "./src/emails/Certificate_Approval.html";
-const htmlBlacklist = "./src/emails/Blacklisted.html";
-const htmlVolunSuper = "./src/emails/Volunteer_Supervisor.html";
-const htmlSuperAdmin = "./src/emails/Supervisor_Admin.html";
-const htmlAttendConfirm = "./src/emails/Attendance_Confirmation.html";
+const htmlEventUpdate = "./src/emails/Event_Update.html";
+const htmlUserUpdate = "./src/emails/User_Approval.html";
 
 /**
  * Creates a new user
@@ -563,31 +543,13 @@ const editStatus = async (userId: string, status: string) => {
   const user = await userController.getUserProfile(userId);
   var userEmail = user?.email as string;
   var userName = user?.profile?.firstName as string;
-
-  function replaceInText(
-    originalString: string,
-    placeholder: string,
-    replacement: string
-  ) {
-    const regex = new RegExp("\\[" + placeholder + "\\]", "g");
-    return originalString.replace(regex, replacement);
-  }
-
-  // sets the email message
-  // const emailHtml = "<b>htmlRegCancel</b>";
-  const emailHtml = "<b>email here, EVENT NAME...</b>";
-
-  // function replaceInputs() {
-  //   // checks emailHTML string, finds instances of EVENT NAME and replaces it with ${event.name}
-  //   // change path instead to the html file with the replaced "variables" given eventid or userid
-  //   return replaceInText(stringBlacklist, "USER NAME", userName);
-  // }
+  var textBody = "Unfortunately, you have been blacklisted.";
 
   // sets the email message
   // const emailHtml = "<b>htmlRegCancel</b>";
   if (process.env.NODE_ENV != "test") {
     if (user?.status === "INACTIVE") {
-      const updatedHtml = replaceInText(stringBlacklist, "USER NAME", userName);
+      const updatedHtml = replaceUserInputs(stringUserUpdate, userName, textBody);
       await sendEmail(userEmail, "Your email subject", updatedHtml);
     }
   }
@@ -613,33 +575,15 @@ const editRole = async (userId: string, role: string) => {
   const prevUserRole = user?.role;
   var userEmail = user?.email as string;
   var userName = user?.profile?.firstName as string;
-
-  function replaceInText(
-    originalString: string,
-    placeholder: string,
-    replacement: string
-  ) {
-    const regex = new RegExp("\\[" + placeholder + "\\]", "g");
-    return originalString.replace(regex, replacement);
-  }
-
-  // sets the email message
-  // const emailHtml = "<b>htmlRegCancel</b>";
-  const emailHtml = "<b>email here, EVENT NAME...</b>";
-
-  // function replaceInputs() {
-  //   // checks emailHTML string, finds instances of EVENT NAME and replaces it with ${event.name}
-  //   // change path instead to the html file with the replaced "variables" given eventid or userid
-  //   return replaceInText(stringSuperAdmin, "USER NAME", userName);
-  //   return replaceInText(stringVolunSuper, "USER NAME", userName);
-  // }
+  var textBodySA = "Your role has changed from supervisor to admin.";
+  var textBodyVS = "Your role has changed from volunteer to supervisor.";
 
   if (process.env.NODE_ENV != "test") {
     if (prevUserRole === "SUPERVISOR" && role === "ADMIN") {
-      const updatedHtml = replaceInText(stringSuperAdmin, "USER NAME", userName);
+      const updatedHtml = replaceUserInputs(stringUserUpdate, userName, textBodySA);
       await sendEmail(userEmail, "Your email subject", updatedHtml);
     } else if (prevUserRole === "VOLUNTEER" && role === "SUPERVISOR") {
-      const updatedHtml = replaceInText(stringVolunSuper, "USER NAME", userName);
+      const updatedHtml = replaceUserInputs(stringUserUpdate, userName, textBodyVS);
       await sendEmail(userEmail, "Your email subject", updatedHtml);
     }
   }

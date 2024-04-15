@@ -10,7 +10,7 @@ import {
 import { EventDTO } from "./views";
 import userController from "../users/controllers";
 import prisma from "../../client";
-import { sendEmail } from "../utils/helpers";
+import { sendEmail, replaceInText, replaceEventInputs } from "../utils/helpers";
 
 import fs from "fs"; // importing built-in file system
 
@@ -19,42 +19,24 @@ import fs from "fs"; // importing built-in file system
  * Creates an object for each html file to return a string.
  */
 const utf8: BufferEncoding = "utf8";
-const stringRegUpdate: string = fs.readFileSync(
-  "./src/emails/Registration_Update.html",
+const stringEventUpdate: string = fs.readFileSync(
+  "./src/emails/Event_Update.html",
   utf8
 );
-const stringCertApprove: string = fs.readFileSync(
-  "./src/emails/Certificate_Approval.html",
+const stringUserUpdate: string = fs.readFileSync(
+  "./src/emails/User_Update.html",
   utf8
 );
-const stringBlacklist: string = fs.readFileSync(
-  "./src/emails/Blacklisted.html",
-  utf8
-);
-const stringVolunSuper: string = fs.readFileSync(
-  "./src/emails/Volunteer_Supervisor.html",
-  utf8
-);
-const stringSuperAdmin: string = fs.readFileSync(
-  "./src/emails/Supervisor_Admin.html",
-  utf8
-);
-const stringAttendConfirm: string = fs.readFileSync(
-  "./src/emails/Attendance_Confirmation.html",
-  utf8
-);
+
 
 /**
  * Creates an object utf8 that can encode the buffer and convert to string.
  * Creates an object for each html file to return a string.
  */
 
-const htmlRegUpdate = "./src/emails/Registration_Update.html";
+const htmlEventUpdate = "./src/emails/Registration_Update.html";
 const htmlCertApprove = "./src/emails/Certificate_Approval.html";
-const htmlBlacklist = "./src/emails/Blacklisted.html";
-const htmlVolunSuper = "./src/emails/Volunteer_Supervisor.html";
-const htmlSuperAdmin = "./src/emails/Supervisor_Admin.html";
-const htmlAttendConfirm = "./src/emails/Attendance_Confirmation.html";
+const htmlUserUpdate = "./src/emails/User_Update.html";
 
 /**
  * Creates a new event and assign owner to it.
@@ -361,40 +343,11 @@ const addAttendee = async (eventID: string, userID: string) => {
   var eventLocation = event?.location as string;
   var eventDateTimeUnknown = event?.startDate as unknown;
   var eventDateTimeString = eventDateTimeUnknown as string;
+  var textBody = "Your registration was successful!";
 
-  function replaceInText(
-    originalString: string,
-    placeholder: string,
-    replacement: string
-  ) {
-    const regex = new RegExp("\\[" + placeholder + "\\]", "g");
-    return originalString.replace(regex, replacement);
-  }
-
-  // sets the email message
-  // const emailHtml = "<b>email here, EVENT NAME...</b>";
-
-  function replaceInputs(originalHtml: string) {
-    // checks emailHTML string, finds instances of EVENT NAME and replaces it with ${event.name}
-    // change path instead to the html file with the replaced "variables" given eventid or userid
-    return replaceInText(
-      replaceInText(
-        replaceInText(
-          replaceInText(
-            replaceInText(originalHtml, "EVENT NAME", eventName),
-              "TEXT BODY", "Your registration was successful!"
-          ),
-          "USER NAME", userName
-        ),
-        "EVENT DATETIME", eventDateTimeString
-      ),
-    "EVENT LOCATION", eventLocation
-    );
-  }
-  
   if (process.env.NODE_ENV != "test") {
     // creates updated html path with the changed inputs
-    const updatedHtml = replaceInputs(stringRegUpdate);
+    const updatedHtml = replaceEventInputs(stringEventUpdate, eventName, userName, eventDateTimeString, eventLocation, textBody);
     await sendEmail(userEmail, "Your email subject", updatedHtml);
   }
   return await prisma.eventEnrollment.create({
@@ -433,40 +386,11 @@ const deleteAttendee = async (
   var eventLocation = event?.location as string;
   var eventDateTimeUnknown = event?.startDate as unknown;
   var eventDateTimeString = eventDateTimeUnknown as string;
+  var textBody = "Your event cancellation was successful."
 
-  function replaceInText(
-    originalString: string,
-    placeholder: string,
-    replacement: string
-  ) {
-    const regex = new RegExp("\\[" + placeholder + "\\]", "g");
-    return originalString.replace(regex, replacement);
-  }
-
-  // sets the email message
-  // const emailHtml = "<b>email here, EVENT NAME...</b>";
-
-  function replaceInputs(originalHtml: string) {
-    // checks emailHTML string, finds instances of EVENT NAME and replaces it with ${event.name}
-    // change path instead to the html file with the replaced "variables" given eventid or userid
-    return replaceInText(
-      replaceInText(
-        replaceInText(
-          replaceInText(
-            replaceInText(originalHtml, "EVENT NAME", eventName),
-              "TEXT BODY", "Your event cancellation was successful."
-          ),
-          "USER NAME", userName
-        ),
-        "EVENT DATETIME", eventDateTimeString
-      ),
-    "EVENT LOCATION", eventLocation
-    );
-  }
-  
   if (process.env.NODE_ENV != "test") {
     // creates updated html path with the changed inputs
-    const updatedHtml = replaceInputs(stringRegUpdate);
+    const updatedHtml = replaceEventInputs(stringEventUpdate, eventName, userName, eventDateTimeString, eventLocation, textBody);
     await sendEmail(userEmail, "Your email subject", updatedHtml);
   }
 
@@ -534,38 +458,10 @@ const confirmUser = async (eventID: string, userID: string) => {
   var eventLocation = event?.location as string;
   var eventDateTimeUnknown = event?.startDate as unknown;
   var eventDateTimeString = eventDateTimeUnknown as string;
-
-  function replaceInText(
-    originalString: string,
-    placeholder: string,
-    replacement: string
-  ) {
-    //const safePlaceholder = placeholder.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-    const regex = new RegExp("\\[" + placeholder + "\\]", "g");
-    return originalString.replace(regex, replacement);
-  }
-
-  // sets the email message
-  // const emailHtml = "<b>htmlRegCancel</b>";
-  const emailHtml = "<b>email here, EVENT NAME...</b>";
-
-  function replaceInputs(originalHtml: string) {
-    // checks emailHTML string, finds instances of EVENT NAME and replaces it with ${event.name}
-    // change path instead to the html file with the replaced "variables" given eventid or userid
-    return replaceInText(
-      replaceInText(
-        replaceInText(
-          replaceInText(originalHtml, "EVENT NAME", eventName),
-          "USER NAME", userName
-        ),
-        "EVENT DATETIME", eventDateTimeString
-      ),
-    "EVENT LOCATION", eventLocation
-    );
-  }
+  var textBody = "Your attendance at the following event has been confirmed!"
 
   if (process.env.NODE_ENV != "test") {
-    const updatedHtml = replaceInputs(stringAttendConfirm);
+    const updatedHtml = replaceEventInputs(stringEventUpdate, eventName, userName, eventDateTimeString, eventLocation, textBody);
     await sendEmail(userEmail, "Your email subject", updatedHtml);
   }
 
