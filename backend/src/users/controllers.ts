@@ -419,14 +419,25 @@ const getRegisteredEvents = async (userID: string, eventID: string) => {
  * @returns promise with Int or error
  */
 const getHours = async (userId: string) => {
-  return prisma.user.findUnique({
+  const enrollments = await prisma.eventEnrollment.findMany({
     where: {
-      id: userId,
+      userId: userId,
+      attendeeStatus: "CHECKED_OUT",
     },
-    select: {
-      hours: true,
+    include: {
+      event: true,
     },
   });
+
+  // Sum total hours
+  let totalTime = 0;
+  for (const enrollment of enrollments) {
+    const eventDuration =
+      enrollment.event.endDate.getTime() - enrollment.event.startDate.getTime();
+    totalTime += eventDuration;
+  }
+  const hours = totalTime / (1000 * 60 * 60);
+  return hours;
 };
 
 /**

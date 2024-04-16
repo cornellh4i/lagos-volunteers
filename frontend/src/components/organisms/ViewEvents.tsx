@@ -405,7 +405,17 @@ const PastEvents = () => {
   // if (isError) return <Error />;
 
   // TODO: Replace constants with actual values
-  const hours = 36;
+  /** Tanstack query for fetching the user's total hours */
+  const hoursQuery = useQuery({
+    queryKey: ["userHours", userid],
+    queryFn: async () => {
+      const userid = await fetchUserIdFromDatabase(user?.email as string);
+      setUserid(userid);
+      const { data: dataHours } = await api.get(`/users/${userid}/hours`);
+      return dataHours["data"];
+    },
+  });
+  let hours = hoursQuery.data;
   const REFERENCE_HOURS = 80;
   const CERTIFICATE_HOURS = 120;
 
