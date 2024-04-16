@@ -31,14 +31,6 @@ const stringUserUpdate: string = fs.readFileSync(
 );
 
 /**
- * Creates an object utf8 that can encode the buffer and convert to string.
- * Creates an object for each html file to return a string.
- */
-
-const htmlEventUpdate = "./src/emails/Event_Update.html";
-const htmlUserUpdate = "./src/emails/User_Approval.html";
-
-/**
  * Creates a new user
  * Parameters include - all types are of prisma types declared in the schema:
  * @param user : User (includes information such as email etc)
@@ -543,7 +535,7 @@ const editStatus = async (userId: string, status: string) => {
   const user = await userController.getUserProfile(userId);
   var userEmail = user?.email as string;
   var userName = user?.profile?.firstName as string;
-  var textBody = "Unfortunately, you have been blacklisted.";
+  var textBody = "You have been blacklisted.";
 
   // sets the email message
   // const emailHtml = "<b>htmlRegCancel</b>";
@@ -554,7 +546,7 @@ const editStatus = async (userId: string, status: string) => {
         userName,
         textBody
       );
-      await sendEmail(userEmail, "Your email subject", updatedHtml);
+      await sendEmail(userEmail, "You have been blacklisted.", updatedHtml);
     }
   }
 
@@ -596,7 +588,7 @@ const editRole = async (userId: string, role: string) => {
         userName,
         textBodyVS
       );
-      await sendEmail(userEmail, "Your email subject", updatedHtml);
+      await sendEmail(userEmail, "Your role has changed.", updatedHtml);
     }
   }
   return prisma.user.update({

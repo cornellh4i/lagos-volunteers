@@ -29,15 +29,6 @@ const stringUserUpdate: string = fs.readFileSync(
 );
 
 /**
- * Creates an object utf8 that can encode the buffer and convert to string.
- * Creates an object for each html file to return a string.
- */
-
-const htmlEventUpdate = "./src/emails/Registration_Update.html";
-const htmlCertApprove = "./src/emails/Certificate_Approval.html";
-const htmlUserUpdate = "./src/emails/User_Update.html";
-
-/**
  * Creates a new event and assign owner to it.
  * @param eventDTO contains the ownerID and the event body
  * @returns promise with event or error.
@@ -341,7 +332,7 @@ const addAttendee = async (eventID: string, userID: string) => {
   var eventLocation = event?.location as string;
   var eventDateTimeUnknown = event?.startDate as unknown;
   var eventDateTimeString = eventDateTimeUnknown as string;
-  var textBody = "Your registration was successful!";
+  var textBody = "Your registration was successful.";
 
   if (process.env.NODE_ENV != "test") {
     // creates updated html path with the changed inputs
@@ -353,7 +344,11 @@ const addAttendee = async (eventID: string, userID: string) => {
       eventLocation,
       textBody
     );
-    await sendEmail(userEmail, "Your email subject", updatedHtml);
+    await sendEmail(
+      userEmail,
+      "Your registration was successful.",
+      updatedHtml
+    );
   }
   return await prisma.eventEnrollment.create({
     data: {
@@ -403,7 +398,11 @@ const deleteAttendee = async (
       eventLocation,
       textBody
     );
-    await sendEmail(userEmail, "Your email subject", updatedHtml);
+    await sendEmail(
+      userEmail,
+      "Your event cancellation was successful.",
+      updatedHtml
+    );
   }
 
   // update db
@@ -470,7 +469,7 @@ const confirmUser = async (eventID: string, userID: string) => {
   var eventLocation = event?.location as string;
   var eventDateTimeUnknown = event?.startDate as unknown;
   var eventDateTimeString = eventDateTimeUnknown as string;
-  var textBody = "Your attendance at the following event has been confirmed!";
+  var textBody = "Your attendance at the following event has been confirmed.";
 
   if (process.env.NODE_ENV != "test") {
     const updatedHtml = replaceEventInputs(
@@ -481,7 +480,11 @@ const confirmUser = async (eventID: string, userID: string) => {
       eventLocation,
       textBody
     );
-    await sendEmail(userEmail, "Your email subject", updatedHtml);
+    await sendEmail(
+      userEmail,
+      "Your attendance has been confirmed",
+      updatedHtml
+    );
   }
 
   return await prisma.eventEnrollment.update({
