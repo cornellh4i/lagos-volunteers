@@ -711,6 +711,8 @@ const CheckedOut = () => {
     <>
       <p>
         Volunteers are <b>checked out</b> when they leave the volunteer event.
+        Only volunteers listed in this category have their hours tracked for the
+        event.
       </p>
       <AttendeesTable
         status="CHECKED_OUT"
@@ -825,7 +827,8 @@ const RegistrationCanceled = () => {
     <>
       <p>
         Volunteers are listed here when they have canceled their registration
-        and will no longer be showing up to the event.
+        and will no longer be showing up to the event. Volunteers listed here do
+        not count towards the volunteer cap.
       </p>
       <AttendeesTable
         status="CANCELED"
@@ -940,7 +943,8 @@ const RegistrationRemoved = () => {
     <>
       <p>
         Volunteers are listed here when their registration is removed manually
-        by a supervisor.
+        by a supervisor. Volunteers listed here do not count towards the
+        volunteer cap.
       </p>
       <AttendeesTable
         status="REMOVED"
