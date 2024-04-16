@@ -5,7 +5,7 @@ import {
   Event,
   EventEnrollment,
   Prisma,
-  EnrollmentStatus
+  EnrollmentStatus,
 } from "@prisma/client";
 import { EventDTO } from "./views";
 import userController from "../users/controllers";
@@ -27,7 +27,6 @@ const stringUserUpdate: string = fs.readFileSync(
   "./src/emails/User_Update.html",
   utf8
 );
-
 
 /**
  * Creates an object utf8 that can encode the buffer and convert to string.
@@ -312,7 +311,6 @@ const updateEnrollmentStatus = async (
   eventID: string,
   userID: string,
   newStatus: EnrollmentStatus
-
 ) => {
   return await prisma.eventEnrollment.update({
     where: {
@@ -347,7 +345,14 @@ const addAttendee = async (eventID: string, userID: string) => {
 
   if (process.env.NODE_ENV != "test") {
     // creates updated html path with the changed inputs
-    const updatedHtml = replaceEventInputs(stringEventUpdate, eventName, userName, eventDateTimeString, eventLocation, textBody);
+    const updatedHtml = replaceEventInputs(
+      stringEventUpdate,
+      eventName,
+      userName,
+      eventDateTimeString,
+      eventLocation,
+      textBody
+    );
     await sendEmail(userEmail, "Your email subject", updatedHtml);
   }
   return await prisma.eventEnrollment.create({
@@ -386,11 +391,18 @@ const deleteAttendee = async (
   var eventLocation = event?.location as string;
   var eventDateTimeUnknown = event?.startDate as unknown;
   var eventDateTimeString = eventDateTimeUnknown as string;
-  var textBody = "Your event cancellation was successful."
+  var textBody = "Your event cancellation was successful.";
 
   if (process.env.NODE_ENV != "test") {
     // creates updated html path with the changed inputs
-    const updatedHtml = replaceEventInputs(stringEventUpdate, eventName, userName, eventDateTimeString, eventLocation, textBody);
+    const updatedHtml = replaceEventInputs(
+      stringEventUpdate,
+      eventName,
+      userName,
+      eventDateTimeString,
+      eventLocation,
+      textBody
+    );
     await sendEmail(userEmail, "Your email subject", updatedHtml);
   }
 
@@ -458,10 +470,17 @@ const confirmUser = async (eventID: string, userID: string) => {
   var eventLocation = event?.location as string;
   var eventDateTimeUnknown = event?.startDate as unknown;
   var eventDateTimeString = eventDateTimeUnknown as string;
-  var textBody = "Your attendance at the following event has been confirmed!"
+  var textBody = "Your attendance at the following event has been confirmed!";
 
   if (process.env.NODE_ENV != "test") {
-    const updatedHtml = replaceEventInputs(stringEventUpdate, eventName, userName, eventDateTimeString, eventLocation, textBody);
+    const updatedHtml = replaceEventInputs(
+      stringEventUpdate,
+      eventName,
+      userName,
+      eventDateTimeString,
+      eventLocation,
+      textBody
+    );
     await sendEmail(userEmail, "Your email subject", updatedHtml);
   }
 

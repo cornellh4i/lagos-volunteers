@@ -1,5 +1,5 @@
 import { Request, Response, query } from "express";
-import { Prisma, userRole, UserStatus} from "@prisma/client";
+import { Prisma, userRole, UserStatus } from "@prisma/client";
 import {
   User,
   Profile,
@@ -549,7 +549,11 @@ const editStatus = async (userId: string, status: string) => {
   // const emailHtml = "<b>htmlRegCancel</b>";
   if (process.env.NODE_ENV != "test") {
     if (user?.status === "INACTIVE") {
-      const updatedHtml = replaceUserInputs(stringUserUpdate, userName, textBody);
+      const updatedHtml = replaceUserInputs(
+        stringUserUpdate,
+        userName,
+        textBody
+      );
       await sendEmail(userEmail, "Your email subject", updatedHtml);
     }
   }
@@ -580,10 +584,18 @@ const editRole = async (userId: string, role: string) => {
 
   if (process.env.NODE_ENV != "test") {
     if (prevUserRole === "SUPERVISOR" && role === "ADMIN") {
-      const updatedHtml = replaceUserInputs(stringUserUpdate, userName, textBodySA);
+      const updatedHtml = replaceUserInputs(
+        stringUserUpdate,
+        userName,
+        textBodySA
+      );
       await sendEmail(userEmail, "Your email subject", updatedHtml);
     } else if (prevUserRole === "VOLUNTEER" && role === "SUPERVISOR") {
-      const updatedHtml = replaceUserInputs(stringUserUpdate, userName, textBodyVS);
+      const updatedHtml = replaceUserInputs(
+        stringUserUpdate,
+        userName,
+        textBodyVS
+      );
       await sendEmail(userEmail, "Your email subject", updatedHtml);
     }
   }

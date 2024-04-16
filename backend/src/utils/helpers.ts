@@ -176,11 +176,11 @@ export const replaceEventInputs = (
  * @returns new html string with changed values
  */
 export const replaceUserInputs = (
-  originalHtml: string, 
-  userName: string, 
+  originalHtml: string,
+  userName: string,
   textBody: string
 ) => {
   let tmp1 = replaceInText(originalHtml, "USER NAME", userName);
   let tmp2 = replaceInText(tmp1, "TEXT BODY", textBody);
   return tmp2;
-}
+};
