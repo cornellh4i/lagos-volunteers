@@ -182,9 +182,12 @@ export const formatRoleOrStatus = (str: string) => {
  * @param image           - The image file to upload
  * @returns The string URL to the event.
  */
-export const uploadImage = async (userID: string | null, image: File) => {
+export const uploadImageToFirebase = async (
+  userID: string | null,
+  image: File
+) => {
   if (!userID) {
-    console.error("No eventId provided");
+    console.error("No userID provided");
     return "";
   }
 
@@ -198,22 +201,11 @@ export const uploadImage = async (userID: string | null, image: File) => {
   // Retrieve the download URL
   try {
     // Wait for the upload to complete and retrieve the download URL
-    await uploadTask.then(); // Ensures the upload completes before proceeding
+    await uploadTask; // Ensures the upload completes before proceeding
     const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
-    console.log("File available at", downloadURL);
     return downloadURL;
   } catch (error) {
     console.error("Upload failed:", error);
     return "";
   }
-};
-
-/**
- * This functions performs a search in the DB based on the eventid.
- * @param eventid is eventid
- * @returns image URL of previous save of this event
- */
-export const fetchImageURLFromDB = async (eventid: string) => {
-  const { data } = await api.get(`/events/${eventid}`);
-  return data["data"]["imageURL"];
 };

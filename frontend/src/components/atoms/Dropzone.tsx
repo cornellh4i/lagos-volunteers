@@ -17,7 +17,6 @@ const Dropzone = ({
   setSelectedFile,
   label,
 }: DropzoneProps) => {
-  // const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const allowedFileTypes = ["image/jpg", "image/jpeg", "image/png"];
   const maxFileSize = 50 * 1024 * 1024; // 50 MB
 
