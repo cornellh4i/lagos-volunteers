@@ -91,7 +91,7 @@ const ProfileForm = ({ userDetails }: ProfileFormProps) => {
       oldPassword: "",
       newPassword: "",
       confirmNewPassword: "",
-      emailNotifications: false,
+      emailNotifications: true,
     },
   });
 
@@ -100,6 +100,7 @@ const ProfileForm = ({ userDetails }: ProfileFormProps) => {
   // TODO: Implement this
   const [checked, setChecked] = useState(false);
   const handleCheckbox = () => {
+    setChecked ((checked) => !checked);
     setEmailNotifications((prev) => !prev); 
   };
 
