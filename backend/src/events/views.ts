@@ -14,15 +14,17 @@ import { EventMode, EventStatus, Prisma } from "@prisma/client";
 
 const eventRouter = Router();
 
-// No provision for auth in test environment for now
-// if (process.env.NODE_ENV !== "test") {
-//   eventRouter.use(auth as RequestHandler);
-// }
 let useAuth: RequestHandler;
+let useAdminAuth: RequestHandler;
+let useSuperAuth: RequestHandler;
 
 process.env.NODE_ENV === "test"
-  ? (useAuth = NoAuth as RequestHandler)
-  : (useAuth = auth as RequestHandler);
+  ? ((useAuth = NoAuth as RequestHandler),
+    (useAdminAuth = authIfAdmin as RequestHandler),
+    (useSuperAuth = authIfSupervisor as RequestHandler))
+  : ((useAuth = auth as RequestHandler),
+    (useAdminAuth = authIfAdmin as RequestHandler),
+    (useSuperAuth = authIfSupervisor as RequestHandler));
 
 export type EventDTO = {
   userID: string;
@@ -42,7 +44,7 @@ export type EventDTO = {
 
 eventRouter.post(
   "/",
-  (authIfAdmin as RequestHandler) || (authIfSupervisor as RequestHandler),
+  useAdminAuth || useSuperAuth,
   async (req: Request, res: Response) => {
     // #swagger.tags = ['Events']
     const eventDTO: EventDTO = req.body;
@@ -53,7 +55,7 @@ eventRouter.post(
 
 eventRouter.put(
   "/:eventid",
-  (authIfAdmin as RequestHandler) || (authIfSupervisor as RequestHandler),
+  useAdminAuth || useSuperAuth,
   async (req: Request, res: Response) => {
     // #swagger.tags = ['Events']
     attempt(res, 200, () =>
@@ -65,7 +67,7 @@ eventRouter.put(
 
 eventRouter.delete(
   "/:eventid",
-  (authIfAdmin as RequestHandler) || (authIfSupervisor as RequestHandler),
+  useAuth,
   async (req: Request, res: Response) => {
     // #swagger.tags = ['Events']
     attempt(res, 200, () => eventController.deleteEvent(req.params.eventid));
@@ -73,83 +75,53 @@ eventRouter.delete(
   }
 );
 
-eventRouter.get(
-  "/",
-  (authIfAdmin as RequestHandler) || (authIfSupervisor as RequestHandler),
-  async (req: Request, res: Response) => {
-    // #swagger.tags = ['Events']
-    const filter = {
-      date: req.query.date as string,
-      ownerId: req.query.ownerid as string,
-      userId: req.query.userid as string,
-    };
+eventRouter.get("/", useAuth, async (req: Request, res: Response) => {
+  // #swagger.tags = ['Events']
+  const filter = {
+    date: req.query.date as string,
+    ownerId: req.query.ownerid as string,
+    userId: req.query.userid as string,
+  };
 
-    const sortQuery = req.query.sort as string;
-    const querySplit = sortQuery ? sortQuery.split(":") : ["default", "asc"];
-    const key = querySplit[0];
-    const order = querySplit[1] as Prisma.SortOrder;
-    const sort = {
-      key: key,
-      order: order,
-    };
+  const sortQuery = req.query.sort as string;
+  const querySplit = sortQuery ? sortQuery.split(":") : ["default", "asc"];
+  const key = querySplit[0];
+  const order = querySplit[1] as Prisma.SortOrder;
+  const sort = {
+    key: key,
+    order: order,
+  };
 
-    const pagination = {
-      after: req.query.after as string,
-      limit: req.query.limit as string,
-    };
+  const pagination = {
+    after: req.query.after as string,
+    limit: req.query.limit as string,
+  };
 
-    attempt(res, 200, () =>
-      eventController.getEvents(filter, sort, pagination)
-    );
-  }
-);
+  attempt(res, 200, () => eventController.getEvents(filter, sort, pagination));
+});
 
-eventRouter.get(
-  "/upcoming",
-  (authIfAdmin as RequestHandler) ||
-    (authIfSupervisor as RequestHandler) ||
-    (authIfVolunteer as RequestHandler),
-  async (req: Request, res: Response) => {
-    // #swagger.tags = ['Events']
-    attempt(res, 200, eventController.getUpcomingEvents);
-  }
-);
+eventRouter.get("/upcoming", useAuth, async (req: Request, res: Response) => {
+  // #swagger.tags = ['Events']
+  attempt(res, 200, eventController.getUpcomingEvents);
+});
 
-eventRouter.get(
-  "/current",
-  (authIfAdmin as RequestHandler) ||
-    (authIfSupervisor as RequestHandler) ||
-    (authIfVolunteer as RequestHandler),
-  async (req: Request, res: Response) => {
-    // #swagger.tags = ['Events']
-    attempt(res, 200, eventController.getCurrentEvents);
-  }
-);
+eventRouter.get("/current", useAuth, async (req: Request, res: Response) => {
+  // #swagger.tags = ['Events']
+  attempt(res, 200, eventController.getCurrentEvents);
+});
 
-eventRouter.get(
-  "/past",
-  (authIfAdmin as RequestHandler) ||
-    (authIfSupervisor as RequestHandler) ||
-    (authIfVolunteer as RequestHandler),
-  async (req: Request, res: Response) => {
-    // #swagger.tags = ['Events']
-    attempt(res, 200, eventController.getPastEvents);
-  }
-);
+eventRouter.get("/past", useAuth, async (req: Request, res: Response) => {
+  // #swagger.tags = ['Events']
+  attempt(res, 200, eventController.getPastEvents);
+});
 
-eventRouter.get(
-  "/:eventid",
-  (authIfAdmin as RequestHandler) ||
-    (authIfSupervisor as RequestHandler) ||
-    (authIfVolunteer as RequestHandler),
-  async (req: Request, res: Response) => {
-    attempt(res, 200, () => eventController.getEvent(req.params.eventid));
-  }
-);
+eventRouter.get("/:eventid", useAuth, async (req: Request, res: Response) => {
+  attempt(res, 200, () => eventController.getEvent(req.params.eventid));
+});
 
 eventRouter.get(
   "/:eventid/attendees",
-  (authIfAdmin as RequestHandler) || (authIfSupervisor as RequestHandler),
+  useAuth,
   async (req: Request, res: Response) => {
     // #swagger.tags = ['Events']
     attempt(res, 200, () =>
@@ -163,7 +135,7 @@ eventRouter.get(
 
 eventRouter.post(
   "/:eventid/attendees",
-  (authIfAdmin as RequestHandler) || (authIfSupervisor as RequestHandler),
+  useAdminAuth || useSuperAuth,
   async (req: Request, res: Response) => {
     // #swagger.tags = ['Events']
     const { attendeeid } = req.body;
@@ -176,7 +148,7 @@ eventRouter.post(
 
 eventRouter.patch(
   "/:eventid/attendees/:userid/attendee-status",
-  (authIfAdmin as RequestHandler) || (authIfSupervisor as RequestHandler),
+  useAdminAuth || useSuperAuth,
   async (req: Request, res: Response) => {
     // #swagger.tags = ['Events']
     const { attendeeStatus } = req.body;
@@ -192,7 +164,7 @@ eventRouter.patch(
 
 eventRouter.put(
   "/:eventid/attendees",
-  (authIfAdmin as RequestHandler) || (authIfSupervisor as RequestHandler),
+  useAdminAuth || useSuperAuth,
   async (req: Request, res: Response) => {
     // #swagger.tags = ['Events']
     const { attendeeid, cancelationMessage } = req.body;
@@ -209,7 +181,7 @@ eventRouter.put(
 
 eventRouter.patch(
   "/:eventid/status",
-  (authIfAdmin as RequestHandler) || (authIfSupervisor as RequestHandler),
+  useAdminAuth || useSuperAuth,
   async (req: Request, res: Response) => {
     // #swagger.tags = ['Events']
     const { status } = req.body;
@@ -222,7 +194,7 @@ eventRouter.patch(
 
 eventRouter.patch(
   "/:eventid/owner",
-  (authIfAdmin as RequestHandler) || (authIfSupervisor as RequestHandler),
+  useAdminAuth || useSuperAuth,
   async (req: Request, res: Response) => {
     // #swagger.tags = ['Events']
     const { ownerid } = req.body;
@@ -234,7 +206,7 @@ eventRouter.patch(
 
 eventRouter.patch(
   "/:eventid/attendees/:attendeeid/confirm",
-  (authIfAdmin as RequestHandler) || (authIfSupervisor as RequestHandler),
+  useAdminAuth || useSuperAuth,
   async (req: Request, res: Response) => {
     // #swagger.tags = ['Events']
     attempt(res, 200, () =>

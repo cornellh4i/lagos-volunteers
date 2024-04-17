@@ -15,139 +15,129 @@ import * as firebase from "firebase-admin";
 import { attempt, socketNotify } from "../utils/helpers";
 
 let useAuth: RequestHandler;
+let useAdminAuth: RequestHandler;
+let useSuperAuth: RequestHandler;
 
 process.env.NODE_ENV === "test"
-  ? (useAuth = NoAuth as RequestHandler)
-  : (useAuth = auth as RequestHandler);
+  ? ((useAuth = NoAuth as RequestHandler),
+    (useAdminAuth = authIfAdmin as RequestHandler),
+    (useSuperAuth = authIfSupervisor as RequestHandler))
+  : ((useAuth = auth as RequestHandler),
+    (useAdminAuth = authIfAdmin as RequestHandler),
+    (useSuperAuth = authIfSupervisor as RequestHandler));
 
-userRouter.post(
-  "/",
-  authIfAdmin as RequestHandler,
-  async (req: Request, res: Response) => {
-    // #swagger.tags = ['Users']
-    socketNotify("/users");
-    let user;
-    const { password, ...rest } = req.body;
-    try {
-      // Create user in local database
-      user = await userController.createUser(
-        rest,
-        rest.profile,
-        rest.preferences,
-        rest.permissions
-      );
-
-      // If local user doesn't exist, throw error
-      if (!user) {
-        throw Error("Failed to create local user");
-      }
-
-      // If test environment, return user without firebase auth
-      else if (process.env.NODE_ENV === "test") {
-        return res.status(201).send({ success: true, data: user });
-      }
-
-      // Otherwise, create user in Firebase
-      else {
-        const fbUser = await firebase.auth().createUser({
-          uid: user.id,
-          email: rest.email,
-          password: password,
-        });
-        if (fbUser) {
-          await firebase.auth().setCustomUserClaims(fbUser.uid, {
-            admin: false,
-            supervisor: false,
-            volunteer: true,
-          });
-          return res.status(200).send({ success: true, user: user });
-        }
-      }
-    } catch (e: any) {
-      // If user exists in local database but not in Firebase, delete user
-      if (user) {
-        try {
-          await userController.deleteUser(user.id);
-        } catch (e: any) {
-          return res.status(500).send({ success: false, error: e.message });
-        }
-      }
-      return res.status(500).send({ success: false, error: e.message });
-    }
-  }
-);
-
-userRouter.delete(
-  "/:userid",
-  authIfAdmin as RequestHandler,
-  async (req: Request, res: Response) => {
-    // #swagger.tags = ['Users']
-    attempt(res, 200, () => userController.deleteUser(req.params.userid));
-    socketNotify("/users");
-  }
-);
-
-userRouter.put(
-  "/:userid",
-  authIfAdmin as RequestHandler,
-  async (req: Request, res: Response) => {
-    // #swagger.tags = ['Users']
-
-    // Do API call
-    attempt(res, 200, () =>
-      userController.updateUser(req.params.userid, req.body)
+userRouter.post("/", useAdminAuth, async (req: Request, res: Response) => {
+  // #swagger.tags = ['Users']
+  socketNotify("/users");
+  let user;
+  const { password, ...rest } = req.body;
+  try {
+    // Create user in local database
+    user = await userController.createUser(
+      rest,
+      rest.profile,
+      rest.preferences,
+      rest.permissions
     );
-    socketNotify(`/users/${req.params.userid}`);
+
+    // If local user doesn't exist, throw error
+    if (!user) {
+      throw Error("Failed to create local user");
+    }
+
+    // If test environment, return user without firebase auth
+    else if (process.env.NODE_ENV === "test") {
+      return res.status(201).send({ success: true, data: user });
+    }
+
+    // Otherwise, create user in Firebase
+    else {
+      const fbUser = await firebase.auth().createUser({
+        uid: user.id,
+        email: rest.email,
+        password: password,
+      });
+      if (fbUser) {
+        await firebase.auth().setCustomUserClaims(fbUser.uid, {
+          admin: false,
+          supervisor: false,
+          volunteer: true,
+        });
+        return res.status(200).send({ success: true, user: user });
+      }
+    }
+  } catch (e: any) {
+    // If user exists in local database but not in Firebase, delete user
+    if (user) {
+      try {
+        await userController.deleteUser(user.id);
+      } catch (e: any) {
+        return res.status(500).send({ success: false, error: e.message });
+      }
+    }
+    return res.status(500).send({ success: false, error: e.message });
   }
-);
+});
+
+userRouter.delete("/:userid", useAuth, async (req: Request, res: Response) => {
+  // #swagger.tags = ['Users']
+  attempt(res, 200, () => userController.deleteUser(req.params.userid));
+  socketNotify("/users");
+});
+
+userRouter.put("/:userid", useAuth, async (req: Request, res: Response) => {
+  // #swagger.tags = ['Users']
+
+  // Do API call
+  attempt(res, 200, () =>
+    userController.updateUser(req.params.userid, req.body)
+  );
+  socketNotify(`/users/${req.params.userid}`);
+});
 
 userRouter.get(
   "/count",
-  (authIfAdmin as RequestHandler) || (authIfSupervisor as RequestHandler),
+  useAdminAuth || useSuperAuth,
   async (req: Request, res: Response) => {
     // #swagger.tags = ['Users']
     attempt(res, 200, userController.getCountUsers);
   }
 );
 
-userRouter.get(
-  "/",
-  (authIfAdmin as RequestHandler) || (authIfSupervisor as RequestHandler),
-  async (req: Request, res: Response) => {
-    // #swagger.tags = ['Users']
-    const filter = {
-      firstName: req.query.firstName as string,
-      lastName: req.query.lastName as string,
-      nickname: req.query.nickname as string,
-      email: req.query.email as string,
-      role: req.query.role as userRole,
-      hours: req.query.hours ? parseInt(req.query.hours as string) : undefined,
-      status: req.query.status as UserStatus,
-      eventId: req.query.eventId as string,
-      attendeeStatus: req.query.attendeeStatus as EnrollmentStatus,
-    };
+userRouter.get("/", useAuth, async (req: Request, res: Response) => {
+  // #swagger.tags = ['Users']
+  const filter = {
+    firstName: req.query.firstName as string,
+    lastName: req.query.lastName as string,
+    nickname: req.query.nickname as string,
+    email: req.query.email as string,
+    role: req.query.role as userRole,
+    hours: req.query.hours ? parseInt(req.query.hours as string) : undefined,
+    status: req.query.status as UserStatus,
+    eventId: req.query.eventId as string,
+    attendeeStatus: req.query.attendeeStatus as EnrollmentStatus,
+  };
 
-    const sortQuery = req.query.sort as string;
-    const querySplit = sortQuery ? sortQuery.split(":") : ["default", "asc"];
-    const key = querySplit[0];
-    const order = querySplit[1] as Prisma.SortOrder;
-    const sort = {
-      key: key,
-      order: order,
-    };
+  const sortQuery = req.query.sort as string;
+  const querySplit = sortQuery ? sortQuery.split(":") : ["default", "asc"];
+  const key = querySplit[0];
+  const order = querySplit[1] as Prisma.SortOrder;
+  const sort = {
+    key: key,
+    order: order,
+  };
 
-    const pagination = {
-      after: req.query.after as string,
-      limit: req.query.limit as string,
-    };
+  const pagination = {
+    after: req.query.after as string,
+    limit: req.query.limit as string,
+  };
 
-    attempt(res, 200, () => userController.getUsers(filter, sort, pagination));
-  }
-);
+  attempt(res, 200, () => userController.getUsers(filter, sort, pagination));
+});
 
 userRouter.get(
   "/pagination",
-  (authIfAdmin as RequestHandler) || (authIfSupervisor as RequestHandler),
+  useAdminAuth || useSuperAuth,
   async (req: Request, res: Response) => {
     // #swagger.tags = ['Users']
     attempt(res, 200, () => userController.getUsersPaginated(req));
@@ -156,7 +146,7 @@ userRouter.get(
 
 userRouter.get(
   "/search",
-  (authIfAdmin as RequestHandler) || (authIfSupervisor as RequestHandler),
+  useAdminAuth || useSuperAuth,
   async (req: Request, res: Response) => {
     // #swagger.tags = ['Users']
     const { email, firstName, lastName, role, status, hours, nickname } =
@@ -178,7 +168,7 @@ userRouter.get(
 
 userRouter.get(
   "/sorting",
-  (authIfAdmin as RequestHandler) || (authIfSupervisor as RequestHandler),
+  useAdminAuth || useSuperAuth,
   async (req: Request, res: Response) => {
     // #swagger.tags = ['Users']
     attempt(res, 200, () => userController.getUsersSorted(req));
@@ -187,7 +177,7 @@ userRouter.get(
 
 userRouter.get(
   "/:userid/profile",
-  (authIfAdmin as RequestHandler) || (authIfSupervisor as RequestHandler),
+  useAuth,
   async (req: Request, res: Response) => {
     // #swagger.tags = ['Users']
     attempt(res, 200, () => userController.getUserProfile(req.params.userid));
@@ -196,7 +186,7 @@ userRouter.get(
 
 userRouter.get(
   "/:userid/role",
-  (authIfAdmin as RequestHandler) || (authIfSupervisor as RequestHandler),
+  useAuth,
   async (req: Request, res: Response) => {
     // #swagger.tags = ['Users']
     attempt(res, 200, () => userController.getUserRole(req.params.userid));
@@ -205,7 +195,7 @@ userRouter.get(
 
 userRouter.get(
   "/:userid/preferences",
-  (authIfAdmin as RequestHandler) || (authIfSupervisor as RequestHandler),
+  useAuth,
   async (req: Request, res: Response) => {
     // #swagger.tags = ['Users']
     attempt(res, 200, () =>
@@ -214,18 +204,14 @@ userRouter.get(
   }
 );
 
-userRouter.get(
-  "/:userid",
-  (authIfAdmin as RequestHandler) || (authIfSupervisor as RequestHandler),
-  async (req: Request, res: Response) => {
-    // #swagger.tags = ['Users']
-    attempt(res, 200, () => userController.getUserByID(req.params.userid));
-  }
-);
+userRouter.get("/:userid", useAuth, async (req: Request, res: Response) => {
+  // #swagger.tags = ['Users']
+  attempt(res, 200, () => userController.getUserByID(req.params.userid));
+});
 
 userRouter.get(
   "/:userid/created",
-  (authIfAdmin as RequestHandler) || (authIfSupervisor as RequestHandler),
+  useAuth,
   async (req: Request, res: Response) => {
     // #swagger.tags = ['Users']
     attempt(res, 200, () => userController.getCreatedEvents(req.params.userid));
@@ -234,7 +220,7 @@ userRouter.get(
 
 userRouter.get(
   "/:userid/registered",
-  (authIfAdmin as RequestHandler) || (authIfSupervisor as RequestHandler),
+  useAuth,
   async (req: Request, res: Response) => {
     // #swagger.tags = ['Users']
     attempt(res, 200, () =>
@@ -248,7 +234,7 @@ userRouter.get(
 
 userRouter.get(
   "/:userid/hours",
-  (authIfAdmin as RequestHandler) || (authIfSupervisor as RequestHandler),
+  useAuth,
   async (req: Request, res: Response) => {
     // #swagger.tags = ['Users']
     attempt(res, 200, () => userController.getHours(req.params.userid));
@@ -257,7 +243,7 @@ userRouter.get(
 
 userRouter.put(
   "/:userid/profile",
-  authIfAdmin as RequestHandler,
+  useAuth,
   async (req: Request, res: Response) => {
     // #swagger.tags = ['Users']
     attempt(res, 200, () =>
@@ -269,7 +255,7 @@ userRouter.put(
 
 userRouter.put(
   "/:userid/preferences",
-  authIfAdmin as RequestHandler,
+  useAuth,
   async (req: Request, res: Response) => {
     // #swagger.tags = ['Users']
     attempt(res, 200, () =>
@@ -281,7 +267,7 @@ userRouter.put(
 
 userRouter.patch(
   "/:userid/status",
-  authIfAdmin as RequestHandler,
+  useAdminAuth,
   async (req: Request, res: Response) => {
     // #swagger.tags = ['Users']
     const { status } = req.body;
@@ -294,7 +280,7 @@ userRouter.patch(
 
 userRouter.patch(
   "/:userid/role",
-  authIfAdmin as RequestHandler,
+  useAdminAuth,
   async (req: Request, res: Response) => {
     // #swagger.tags = ['Users']
     const { role } = req.body;
@@ -328,7 +314,7 @@ userRouter.patch(
 
 userRouter.patch(
   "/:userid/hours",
-  (authIfAdmin as RequestHandler) || (authIfSupervisor as RequestHandler),
+  useAdminAuth || useSuperAuth,
   async (req: Request, res: Response) => {
     // #swagger.tags = ['Users']
     const { hours } = req.body;
