@@ -46,6 +46,8 @@ const ProfileForm = ({ userDetails }: ProfileFormProps) => {
   /** State variables for the notification popups */
   const [successNotificationOpen, setSuccessNotificationOpen] = useState(false);
   const [errorNotificationOpen, setErrorNotificationOpen] = useState(false);
+  const [emailNotifications, setEmailNotifications] = useState(false);
+
 
   /** Handles form errors */
   const [errorMessage, setErrorMessage] = React.useState<string>("");
@@ -98,7 +100,7 @@ const ProfileForm = ({ userDetails }: ProfileFormProps) => {
   // TODO: Implement this
   const [checked, setChecked] = useState(false);
   const handleCheckbox = () => {
-    setChecked((checked) => !checked);
+    setEmailNotifications((prev) => !prev); 
   };
 
   /** Tanstack query mutation to reauthenticate the user session */
@@ -143,6 +145,7 @@ const ProfileForm = ({ userDetails }: ProfileFormProps) => {
   /** Handles form submit */
   const handleChanges: SubmitHandler<FormValues> = async (data) => {
     try {
+      data.emailNotifications = emailNotifications;
       await ReAuthenticateUserSession.mutateAsync(data);
       await updateUserPasswordInFirebase.mutateAsync(data);
       await updateProfileInDB.mutateAsync(data);
