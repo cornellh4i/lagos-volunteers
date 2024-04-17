@@ -64,7 +64,7 @@ type FormValues = {
   endTime: Date;
 };
 
-interface ManageAttendeesProps {}
+interface ManageAttendeesProps { }
 
 const AttendeesTable = ({
   status,
@@ -214,12 +214,12 @@ const ModalBody = ({
   } = useForm<FormValues>(
     eventDetails
       ? {
-          defaultValues: {
-            startDate: eventDetails.startDate,
-            startTime: eventDetails.startTime,
-            endTime: eventDetails.endTime,
-          },
-        }
+        defaultValues: {
+          startDate: eventDetails.startDate,
+          startTime: eventDetails.startTime,
+          endTime: eventDetails.endTime,
+        },
+      }
       : {}
   );
 
@@ -401,7 +401,7 @@ const Pending = () => {
       });
     }
   };
-
+  //first commit
   /** Tanstack query to fetch attendees data */
   const {
     data: pendingData,
@@ -562,8 +562,7 @@ const CheckedIn = () => {
     queryKey: ["event", eventid, paginationModel.page, "checked_in"],
     queryFn: async () => {
       const { data } = await api.get(
-        `/users?eventId=${eventid}&attendeeStatus=${"CHECKED_IN"}&limit=${
-          paginationModel.pageSize
+        `/users?eventId=${eventid}&attendeeStatus=${"CHECKED_IN"}&limit=${paginationModel.pageSize
         }`
       );
       return data["data"];
@@ -677,8 +676,7 @@ const CheckedOut = () => {
     queryKey: ["event", eventid, paginationModel.page, "checked_out"],
     queryFn: async () => {
       const { data } = await api.get(
-        `/users?eventId=${eventid}&attendeeStatus=${"CHECKED_OUT"}&limit=${
-          paginationModel.pageSize
+        `/users?eventId=${eventid}&attendeeStatus=${"CHECKED_OUT"}&limit=${paginationModel.pageSize
         }`
       );
       return data["data"];
@@ -791,8 +789,7 @@ const RegistrationCanceled = () => {
     queryKey: ["event", eventid, paginationModel.page, "canceled"],
     queryFn: async () => {
       const { data } = await api.get(
-        `/users?eventId=${eventid}&attendeeStatus=${"CANCELED"}&limit=${
-          paginationModel.pageSize
+        `/users?eventId=${eventid}&attendeeStatus=${"CANCELED"}&limit=${paginationModel.pageSize
         }`
       );
       return data["data"];
@@ -906,8 +903,7 @@ const RegistrationRemoved = () => {
     queryKey: ["event", eventid, paginationModel.page, "removed"],
     queryFn: async () => {
       const { data } = await api.get(
-        `/users?eventId=${eventid}&attendeeStatus=${"REMOVED"}&limit=${
-          paginationModel.pageSize
+        `/users?eventId=${eventid}&attendeeStatus=${"REMOVED"}&limit=${paginationModel.pageSize
         }`
       );
       return data["data"];
@@ -955,7 +951,7 @@ const RegistrationRemoved = () => {
 };
 
 /** A ManageAttendees component */
-const ManageAttendees = ({}: ManageAttendeesProps) => {
+const ManageAttendees = ({ }: ManageAttendeesProps) => {
   const router = useRouter();
   const eventid = router.query.eventid as string;
 
