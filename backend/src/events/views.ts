@@ -121,7 +121,8 @@ eventRouter.patch(
         req.params.userid,
         attendeeStatus
       )
-    ); socketNotify(`/events/${req.params.eventid}`)
+    ); 
+    socketNotify(`/events/${req.params.eventid}`);
   }
 );
 

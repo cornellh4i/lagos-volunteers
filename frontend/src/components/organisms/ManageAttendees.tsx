@@ -88,7 +88,6 @@ const AttendeesTable = ({
     lastMessage,
     readyState,
   } = useWebSocket(socketUrl, {
-    onOpen: () => console.log('WebSocket connection opened'),
     shouldReconnect: () => true,
   });
 
@@ -113,7 +112,6 @@ const AttendeesTable = ({
   //Handle new websocket messages
 
   if (lastMessage && lastMessage.data == `{"resource":"/events/${eventId}","message":"The resource has been updated!"}`) {
-    console.log("Change made to this event received")
     queryClient.invalidateQueries({ queryKey: ['event', eventId] });
   };
   
@@ -463,7 +461,6 @@ const Pending = () => {
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     // Prevent page refresh
     event.preventDefault();
-    //sendMessage("helo there lao");
     // Set search query
     setSearchQuery(value);
   };
