@@ -229,10 +229,10 @@ const getUsers = async (
       profile: true,
       events: eventId
         ? {
-            where: {
-              eventId: eventId,
-            },
-          }
+          where: {
+            eventId: eventId,
+          },
+        }
         : {},
     },
     orderBy: sortDict[sort.key],
@@ -257,26 +257,26 @@ const getUsersPaginated = async (req: Request) => {
   // if no after is supplied make the request independent of that paramter
   return query.after === undefined
     ? prisma.user.findMany({
-        take: query.limit ? parseInt(query.limit as string) : 10,
-        orderBy: {
-          id: "asc",
-        },
-        include: {
-          profile: true,
-        },
-      })
+      take: query.limit ? parseInt(query.limit as string) : 10,
+      orderBy: {
+        id: "asc",
+      },
+      include: {
+        profile: true,
+      },
+    })
     : prisma.user.findMany({
-        take: query.limit ? parseInt(query.limit as string) : 10,
-        cursor: {
-          id: query.after ? (query.after as string) : undefined,
-        },
-        orderBy: {
-          id: "asc",
-        },
-        include: {
-          profile: true,
-        },
-      });
+      take: query.limit ? parseInt(query.limit as string) : 10,
+      cursor: {
+        id: query.after ? (query.after as string) : undefined,
+      },
+      orderBy: {
+        id: "asc",
+      },
+      include: {
+        profile: true,
+      },
+    });
 };
 
 /**

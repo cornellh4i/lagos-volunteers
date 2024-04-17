@@ -402,6 +402,7 @@ const Pending = () => {
     }
   };
   //first commit
+  //second commit
   /** Tanstack query to fetch attendees data */
   const {
     data: pendingData,
