@@ -394,20 +394,12 @@ const EventForm = ({
             })}
           />
         </div>
-        <Controller
-          name="imageURL"
-          control={control}
-          rules={{ required: { value: true, message: "Required" } }}
-          render={({ field }) => (
-            <Dropzone
-              setError={setDropzoneError}
-              label="Event Image"
-              selectedFile={selectedFile}
-              setSelectedFile={setSelectedFile}
-              {...field}
-              defaultValue={eventDetails?.imageURL}
-            />
-          )}
+        <Dropzone
+          setError={setDropzoneError}
+          label="Event Image"
+          selectedFile={selectedFile}
+          setSelectedFile={setSelectedFile}
+          defaultValue={eventDetails?.imageURL}
         />
 
         {/* <TextCopy
