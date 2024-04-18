@@ -81,7 +81,7 @@ const Active = () => {
       email: user.email,
       role: formatRoleOrStatus(user.role),
       date: new Date(user.createdAt),
-      hours: user.hours, // TODO: properly calculate hours
+      hours: user.totalHours, // TODO: properly calculate hours
     });
   });
   const totalNumberOfPages = Math.ceil(
@@ -262,7 +262,7 @@ const Blacklisted = () => {
       email: user.email,
       role: formatRoleOrStatus(user.role),
       date: new Date(user.createdAt),
-      hours: user.hours, // TODO: properly calculate hours
+      hours: user.totalHours, // TODO: properly calculate hours
     });
   });
   const totalNumberOfPages = Math.ceil(

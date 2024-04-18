@@ -221,6 +221,7 @@ const getUsers = async (
     },
   });
 
+  // Query result
   const queryResult = await prisma.user.findMany({
     where: {
       AND: [whereDict],
@@ -240,11 +241,23 @@ const getUsers = async (
     skip: skip,
     cursor: cursor,
   });
+
+  // Get hours for each user
+  const newQueryResult: any = queryResult;
+  for (let i = 0; i < queryResult.length; i++) {
+    const user = queryResult[i];
+    const hours = await getHours(user.id);
+    newQueryResult[i].totalHours = hours;
+  }
+
+  // Metadata
   const lastPostInResults = take
     ? queryResult[take - 1]
     : queryResult[queryResult.length - 1];
   const myCursor = lastPostInResults ? lastPostInResults.id : undefined;
-  return { result: queryResult, cursor: myCursor, totalItems: totalRecords };
+
+  // Return result
+  return { result: newQueryResult, cursor: myCursor, totalItems: totalRecords };
 };
 
 /**
