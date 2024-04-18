@@ -240,7 +240,8 @@ const EventForm = ({
       <Snackbar
         variety="error"
         open={errorNotificationOpen}
-        onClose={() => setErrorNotificationOpen(false)}>
+        onClose={() => setErrorNotificationOpen(false)}
+      >
         Error: {errorMessage}
       </Snackbar>
 
@@ -250,7 +251,8 @@ const EventForm = ({
             ? handleSubmit(handleCreateEvent)
             : handleSubmit(handleEditEvent)
         }
-        className="space-y-4">
+        className="space-y-4"
+      >
         <div className="font-bold text-3xl">
           {eventType == "create" ? "Create Event" : "Edit Event"}
         </div>
@@ -321,7 +323,8 @@ const EventForm = ({
               defaultValue={
                 eventDetails?.mode === "VIRTUAL" ? "Virtual" : "In_Person"
               }
-              sx={{ borderRadius: 2, borderColor: "primary.main" }}>
+              sx={{ borderRadius: 2, borderColor: "primary.main" }}
+            >
               <FormControlLabel
                 value="Virtual"
                 control={<Radio />}
@@ -444,7 +447,8 @@ const EventForm = ({
                 <Button
                   type="submit"
                   loading={editEventPending}
-                  disabled={editEventPending}>
+                  disabled={editEventPending}
+                >
                   Save changes
                 </Button>
               </div>
