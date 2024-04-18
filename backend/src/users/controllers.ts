@@ -1,10 +1,34 @@
 import { Request, Response, query } from "express";
 import { Prisma, userRole, UserStatus } from "@prisma/client";
-import { User, Profile, Permission, UserPreferences } from "@prisma/client";
+import {
+  User,
+  Profile,
+  Permission,
+  UserPreferences,
+  EnrollmentStatus,
+} from "@prisma/client";
 import admin from "firebase-admin";
 // We are using one connection to prisma client to prevent multiple connections
 import prisma from "../../client";
 import { setVolunteerCustomClaims } from "../middleware/auth";
+import userController from "../users/controllers";
+import { sendEmail, replaceInText, replaceUserInputs } from "../utils/helpers";
+
+import fs from "fs"; // importing built-in file system
+
+/**
+ * Creates an object utf8 that can encode the buffer and convert to string.
+ * Creates an object for each html file to return a string.
+ */
+const utf8: BufferEncoding = "utf8";
+const stringEventUpdate: string = fs.readFileSync(
+  "./src/emails/Event_Update.html",
+  utf8
+);
+const stringUserUpdate: string = fs.readFileSync(
+  "./src/emails/User_Update.html",
+  utf8
+);
 
 /**
  * Creates a new user
@@ -85,6 +109,7 @@ const getUsers = async (
     hours?: number;
     status?: UserStatus;
     eventId?: string;
+    attendeeStatus?: EnrollmentStatus;
   },
   sort: {
     key: string;
@@ -144,10 +169,12 @@ const getUsers = async (
 
   // Handles GET /events?eventid=asdf
   const eventId = filter.eventId;
+  const attendeeStatus = filter.attendeeStatus;
   let events: { [key: string]: any } = {};
-  if (eventId) {
+  if (eventId && attendeeStatus) {
     events = {
       some: {
+        attendeeStatus: attendeeStatus,
         eventId: eventId,
       },
     };
@@ -156,7 +183,11 @@ const getUsers = async (
   // Handles all other filtering
   let whereDict = {
     events: events,
-    email: Array.isArray(filter.email) ? { in: filter.email } : filter.email,
+    // email: Array.isArray(filter.email) ? { in: filter.email } : filter.email,
+    email: {
+      contains: filter.email,
+      mode: Prisma.QueryMode.insensitive,
+    },
     role: {
       equals: filter.role,
     },
@@ -165,9 +196,13 @@ const getUsers = async (
       equals: filter.status,
     },
     profile: {
-      firstName: Array.isArray(filter.firstName)
-        ? { in: filter.firstName }
-        : filter.firstName,
+      // firstName: Array.isArray(filter.firstName)
+      //   ? { in: filter.firstName }
+      //   : filter.firstName,
+      firstName: {
+        contains: filter.firstName,
+        mode: Prisma.QueryMode.insensitive,
+      },
       lastName: Array.isArray(filter.lastName)
         ? { in: filter.lastName }
         : filter.lastName,
@@ -192,7 +227,13 @@ const getUsers = async (
     },
     include: {
       profile: true,
-      events: eventId ? true : false,
+      events: eventId
+        ? {
+            where: {
+              eventId: eventId,
+            },
+          }
+        : {},
     },
     orderBy: sortDict[sort.key],
     take: take,
@@ -304,6 +345,9 @@ const getUserByID = async (userID: string) => {
   return prisma.user.findUnique({
     where: {
       id: userID,
+    },
+    include: {
+      profile: true,
     },
   });
 };
@@ -487,6 +531,25 @@ const editPreferences = async (
  * @returns promise with user or error
  */
 const editStatus = async (userId: string, status: string) => {
+  // grabs the user and their email for SendGrid functionality
+  const user = await userController.getUserProfile(userId);
+  var userEmail = user?.email as string;
+  var userName = user?.profile?.firstName as string;
+  var textBody = "You have been blacklisted.";
+
+  // sets the email message
+  // const emailHtml = "<b>htmlRegCancel</b>";
+  if (process.env.NODE_ENV != "test") {
+    if (user?.status === "INACTIVE") {
+      const updatedHtml = replaceUserInputs(
+        stringUserUpdate,
+        userName,
+        textBody
+      );
+      await sendEmail(userEmail, "You have been blacklisted.", updatedHtml);
+    }
+  }
+
   return prisma.user.update({
     where: {
       id: userId,
@@ -504,6 +567,30 @@ const editStatus = async (userId: string, status: string) => {
  * @returns promise with user or error
  */
 const editRole = async (userId: string, role: string) => {
+  const user = await userController.getUserProfile(userId);
+  const prevUserRole = user?.role;
+  var userEmail = user?.email as string;
+  var userName = user?.profile?.firstName as string;
+  var textBodySA = "Your role has changed from supervisor to admin.";
+  var textBodyVS = "Your role has changed from volunteer to supervisor.";
+
+  if (process.env.NODE_ENV != "test") {
+    if (prevUserRole === "SUPERVISOR" && role === "ADMIN") {
+      const updatedHtml = replaceUserInputs(
+        stringUserUpdate,
+        userName,
+        textBodySA
+      );
+      await sendEmail(userEmail, "Your email subject", updatedHtml);
+    } else if (prevUserRole === "VOLUNTEER" && role === "SUPERVISOR") {
+      const updatedHtml = replaceUserInputs(
+        stringUserUpdate,
+        userName,
+        textBodyVS
+      );
+      await sendEmail(userEmail, "Your role has changed.", updatedHtml);
+    }
+  }
   return prisma.user.update({
     where: {
       id: userId,
@@ -610,4 +697,5 @@ export default {
   editRole,
   editHours,
   getUsersSorted,
+  sendEmail,
 };

@@ -407,14 +407,14 @@ const EventForm = ({
           )}
         />
 
-        <TextCopy
+        {/* <TextCopy
           label="RSVP Link Image"
           text={
             eventType == "edit"
               ? `www.lagos/event/${eventId}/register`
               : `www.lagos/event/register`
           }
-        />
+        /> */}
         <div>
           {eventType == "create" ? (
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">

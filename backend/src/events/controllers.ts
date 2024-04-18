@@ -5,12 +5,28 @@ import {
   Event,
   EventEnrollment,
   Prisma,
+  EnrollmentStatus,
 } from "@prisma/client";
 import { EventDTO } from "./views";
 import userController from "../users/controllers";
 import prisma from "../../client";
-import sgMail from "@sendgrid/mail";
-import { readFile } from "fs/promises";
+import { sendEmail, replaceInText, replaceEventInputs } from "../utils/helpers";
+
+import fs from "fs"; // importing built-in file system
+
+/**
+ * Creates an object utf8 that can encode the buffer and convert to string.
+ * Creates an object for each html file to return a string.
+ */
+const utf8: BufferEncoding = "utf8";
+const stringEventUpdate: string = fs.readFileSync(
+  "./src/emails/Event_Update.html",
+  utf8
+);
+const stringUserUpdate: string = fs.readFileSync(
+  "./src/emails/User_Update.html",
+  utf8
+);
 
 /**
  * Creates a new event and assign owner to it.
@@ -243,6 +259,7 @@ const getEvent = async (eventID: string) => {
         },
       },
       tags: true,
+      attendees: true,
     },
   });
 };
@@ -281,6 +298,24 @@ const getAttendees = async (eventID: string, userID: string) => {
   });
 };
 
+const updateEnrollmentStatus = async (
+  eventID: string,
+  userID: string,
+  newStatus: EnrollmentStatus
+) => {
+  return await prisma.eventEnrollment.update({
+    where: {
+      userId_eventId: {
+        userId: userID,
+        eventId: eventID,
+      },
+    },
+    data: {
+      attendeeStatus: newStatus,
+    },
+  });
+};
+
 /**
  * Adds specified user to an event
  * @param eventID (String)
@@ -288,15 +323,32 @@ const getAttendees = async (eventID: string, userID: string) => {
  * @returns promise with user or error
  */
 const addAttendee = async (eventID: string, userID: string) => {
-  // grabs the user and their email for SendGrid fucntionality
-  const user = await userController.getUserByID(userID);
+  // grabs the user and their email for SendGrid functionality
+  const user = await userController.getUserProfile(userID);
   const userEmail = user?.email as string;
+  var userName = user?.profile?.firstName as string;
+  const event = await getEvent(eventID);
+  var eventName = event?.name as string;
+  var eventLocation = event?.location as string;
+  var eventDateTimeUnknown = event?.startDate as unknown;
+  var eventDateTimeString = eventDateTimeUnknown as string;
+  var textBody = "Your registration was successful.";
 
-  const subject = "Your email subject here";
-  const path = "./src/emails/test2.html";
-
-  if (process.env.NODE_ENV !== "test") {
-    await sendEmail(userEmail, subject, path);
+  if (process.env.NODE_ENV != "test") {
+    // creates updated html path with the changed inputs
+    const updatedHtml = replaceEventInputs(
+      stringEventUpdate,
+      eventName,
+      userName,
+      eventDateTimeString,
+      eventLocation,
+      textBody
+    );
+    await sendEmail(
+      userEmail,
+      "Your registration was successful.",
+      updatedHtml
+    );
   }
   return await prisma.eventEnrollment.create({
     data: {
@@ -315,34 +367,6 @@ const addAttendee = async (eventID: string, userID: string) => {
 };
 
 /**
- * Sends an email to the specified address
- * @param email is the email address to send to
- * @param subject is the email subject
- * @param path is the path of the email template
- */
-const sendEmail = async (email: string, subject: string, path: string) => {
-  try {
-    // Loads an email template
-    const html = await readFile(path, "utf-8");
-    console.log("File content:", html);
-
-    // Create an email message
-    const msg = {
-      to: email, // Recipient's email address
-      from: "lagosfoodbankdev@gmail.com", // Sender's email address
-      subject: subject, // Email subject
-      html: html, // HTML body content
-    };
-
-    // Send the email
-    await sgMail.send(msg);
-    console.log("Email sent successfully!");
-  } catch (err) {
-    console.error("Error sending email:", err);
-  }
-};
-
-/**
  * Remove the specified user from the event
  * @param eventID (String)
  * @param userID (String) id of user to add to event
@@ -353,14 +377,32 @@ const deleteAttendee = async (
   userID: string,
   cancelationMessage: string
 ) => {
-  // grabs the user and their email for SendGrid fucntionality
-  const user = await userController.getUserByID(userID);
+  // grabs the user and their email for SendGrid functionality
+  const user = await userController.getUserProfile(userID);
   var userEmail = user?.email as string;
+  var userName = user?.profile?.firstName as string;
+  const event = await getEvent(eventID);
+  var eventName = event?.name as string;
+  var eventLocation = event?.location as string;
+  var eventDateTimeUnknown = event?.startDate as unknown;
+  var eventDateTimeString = eventDateTimeUnknown as string;
+  var textBody = "Your event cancellation was successful.";
 
-  // sets the email message
-  const emailHtml = "USER REMOVED FROM THIS EVENT";
   if (process.env.NODE_ENV != "test") {
-    await sendEmail(userEmail, "Your email subject", emailHtml);
+    // creates updated html path with the changed inputs
+    const updatedHtml = replaceEventInputs(
+      stringEventUpdate,
+      eventName,
+      userName,
+      eventDateTimeString,
+      eventLocation,
+      textBody
+    );
+    await sendEmail(
+      userEmail,
+      "Your event cancellation was successful.",
+      updatedHtml
+    );
   }
 
   // update db
@@ -419,6 +461,32 @@ const updateEventOwner = async (eventID: string, ownerID: string) => {
  * @returns promise with event or error
  */
 const confirmUser = async (eventID: string, userID: string) => {
+  const user = await userController.getUserProfile(userID);
+  var userEmail = user?.email as string;
+  var userName = user?.profile?.firstName as string;
+  const event = await getEvent(eventID);
+  var eventName = event?.name as string;
+  var eventLocation = event?.location as string;
+  var eventDateTimeUnknown = event?.startDate as unknown;
+  var eventDateTimeString = eventDateTimeUnknown as string;
+  var textBody = "Your attendance at the following event has been confirmed.";
+
+  if (process.env.NODE_ENV != "test") {
+    const updatedHtml = replaceEventInputs(
+      stringEventUpdate,
+      eventName,
+      userName,
+      eventDateTimeString,
+      eventLocation,
+      textBody
+    );
+    await sendEmail(
+      userEmail,
+      "Your attendance has been confirmed",
+      updatedHtml
+    );
+  }
+
   return await prisma.eventEnrollment.update({
     where: {
       userId_eventId: {
@@ -447,4 +515,5 @@ export default {
   updateEventStatus,
   updateEventOwner,
   confirmUser,
+  updateEnrollmentStatus,
 };

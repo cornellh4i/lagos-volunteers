@@ -159,7 +159,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         /^\/events\/[a-zA-Z0-9_-]+\/(attendees|edit)|\/events\/create$/;
 
       const regexMatcherforAdminPaths =
-        /^\/users\/([a-zA-Z0-9_-]+)\/(manage|view)$/
+        /^\/users\/([a-zA-Z0-9_-]+)\/(manage|view)$/;
       // check auth state
       if (user) {
         const { claims } = await user.getIdTokenResult();
@@ -172,9 +172,17 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       }
 
       if (!user && !publicPaths.includes(path) && !isResetPage(path)) {
+        sessionStorage.setItem("redirectPath", path);
         router.replace("/login");
       } else if (user && user.emailVerified && authPaths.includes(path)) {
-        router.replace("/events/view");
+        const redirectPath = sessionStorage.getItem("redirectPath");
+        if (redirectPath) {
+          router
+            .replace(redirectPath)
+            .then(() => sessionStorage.removeItem("redirectPath"));
+        } else {
+          router.replace("/events/view");
+        }
       } else if (
         user &&
         user.emailVerified &&

@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Snackbar } from "@mui/material";
 import FileCopyIcon from "@mui/icons-material/FileCopy";
 import IconButton from "@mui/material/IconButton";
+import IconTextHeader from "./IconTextHeader";
 
 interface TextCopyProps {
   label: string;
@@ -20,23 +21,46 @@ const TextCopy = ({ label, text }: TextCopyProps) => {
   };
 
   return (
-    <div className="overflow-auto">
-      <div className="flow-root">
-        <div className="pt-3 float-left">{label}:</div>
-        <div className="float-right">
-          <IconButton onClick={handleClick}>
-            <FileCopyIcon />
-          </IconButton>
-          <Snackbar
-            open={open}
-            onClose={() => setOpen(false)}
-            autoHideDuration={2000}
-            message="Copied to clipboard"
-          />
+    <>
+      <Snackbar
+        open={open}
+        onClose={() => setOpen(false)}
+        autoHideDuration={2000}
+        message="Copied to clipboard"
+      />
+      <div className="flex overflow-auto">
+        <div className="flex items-center pr-2">
+          <div className="flex items-center justify-center w-12 h-12 bg-primary-100 rounded-lg text-gray-700">
+            <IconButton onClick={handleClick}>
+              <FileCopyIcon />
+            </IconButton>
+          </div>
+        </div>
+        <div className="flex items-center truncate">
+          <div className="flex-col">
+            <div className="font-semibold">{label}</div>
+            <div>{text}</div>
+          </div>
         </div>
       </div>
-      <div>{text}</div>
-    </div>
+    </>
+    // <div className="overflow-auto">
+    //   <div className="flow-root">
+    //     <div className="pt-3 float-left">{label}:</div>
+    //     <div className="float-right">
+    //       <IconButton onClick={handleClick}>
+    //         <FileCopyIcon />
+    //       </IconButton>
+    //       <Snackbar
+    //         open={open}
+    //         onClose={() => setOpen(false)}
+    //         autoHideDuration={2000}
+    //         message="Copied to clipboard"
+    //       />
+    //     </div>
+    //   </div>
+    //   <div>{text}</div>
+    // </div>
   );
 };
 

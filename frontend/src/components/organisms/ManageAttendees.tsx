@@ -12,7 +12,12 @@ import Select from "../atoms/Select";
 import DatePicker from "../atoms/DatePicker";
 import TimePicker from "../atoms/TimePicker";
 import Snackbar from "../atoms/Snackbar";
-import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
+import {
+  useQuery,
+  useQueryClient,
+  useMutation,
+  QueryClient,
+} from "@tanstack/react-query";
 import { convertToISO, fetchUserIdFromDatabase } from "@/utils/helpers";
 import { useAuth } from "@/utils/AuthContext";
 import router from "next/router";
@@ -29,21 +34,28 @@ import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
 import PersonIcon from "@mui/icons-material/Person";
 import EditIcon from "@mui/icons-material/Edit";
 import TextCopy from "../atoms/TextCopy";
+import { formatDateTimeToUI, formatDateTimeRange } from "@/utils/helpers";
+import { EventData } from "@/utils/types";
+import { FileCopy } from "@mui/icons-material";
+import { BASE_URL_CLIENT } from "@/utils/constants";
+
+//Initial push
 
 type attendeeData = {
   id: number;
-  status: "pending" | "checked in" | "checked out" | "removed" | "canceled";
+  status: "PENDING" | "CHECKED_IN" | "CHECKED_OUT" | "REMOVED" | "CANCELED";
   name: string;
   email: string;
   phone: string;
 };
 
 interface attendeeTableProps {
-  status: "pending" | "checked in" | "checked out" | "removed" | "canceled";
-  rows: attendeeData[];
+  status: "PENDING" | "CHECKED_IN" | "CHECKED_OUT" | "REMOVED" | "CANCELED";
+  rows?: attendeeData[];
   totalNumberofData: number;
   paginationModel: GridPaginationModel;
   setPaginationModel: React.Dispatch<React.SetStateAction<GridPaginationModel>>;
+  eventId: string;
 }
 
 type FormValues = {
@@ -54,97 +66,120 @@ type FormValues = {
 
 interface ManageAttendeesProps {}
 
-const eventColumns: GridColDef[] = [
-  {
-    field: "name",
-    headerName: "Name",
-    minWidth: 200,
-    flex: 2,
-    renderHeader: (params) => (
-      <div style={{ fontWeight: "bold" }}>{params.colDef.headerName}</div>
-    ),
-  },
-  {
-    field: "email",
-    headerName: "Email",
-    minWidth: 200,
-    flex: 0.5,
-    renderHeader: (params) => (
-      <div style={{ fontWeight: "bold" }}>{params.colDef.headerName}</div>
-    ),
-  },
-  {
-    field: "phone",
-    headerName: "Phone number",
-    minWidth: 200,
-    flex: 0.5,
-    renderHeader: (params) => (
-      <div style={{ fontWeight: "bold" }}>{params.colDef.headerName}</div>
-    ),
-  },
-  {
-    field: "status",
-    headerName: "Status",
-    minWidth: 175,
-    flex: 0.5,
-    renderHeader: (params) => (
-      <div style={{ fontWeight: "bold" }}>{params.colDef.headerName}</div>
-    ),
-    renderCell: () => (
-      <div className="w-full">
-        <Select
-          size="small"
-          value="PENDING"
-          onChange={(event: any) => console.log(event.target.value)}
-        >
-          <MenuItem value="CHECKED IN">Checked in</MenuItem>
-          <MenuItem value="CHECKED OUT">Checked out</MenuItem>
-          <MenuItem value="PENDING">Pending</MenuItem>
-          <MenuItem value="REMOVED">Removed</MenuItem>
-        </Select>
-      </div>
-    ),
-  },
-];
-
 const AttendeesTable = ({
   status,
   setPaginationModel,
   paginationModel,
   rows,
   totalNumberofData,
+  eventId,
 }: attendeeTableProps) => {
-  /** Search bar */
-  const [value, setValue] = React.useState("");
-  const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
-    setValue(event.target.value);
-  };
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
-    // Prevent page refresh
-    event.preventDefault();
+  const queryClient = useQueryClient();
 
-    // Actual function
-    console.log(value);
+  const { mutateAsync, isPending, isError, isSuccess } = useMutation({
+    mutationFn: async (variables: { userId: string; newValue: string }) => {
+      const { userId, newValue } = variables;
+      const { response } = await api.patch(
+        `/events/${eventId}/attendees/${userId}/attendee-status`,
+        {
+          attendeeStatus: newValue, // Only update the status field
+        }
+      );
+      return response;
+    },
+    retry: false,
+    onSuccess: () => {
+      console.log("success");
+      queryClient.invalidateQueries({ queryKey: ["event", eventId] });
+    },
+  });
+
+  const handleStatusChange = async (userId: string, newValue: string) => {
+    if (!eventId) {
+      console.error("Event ID not found in URL");
+      return;
+    }
+
+    try {
+      await mutateAsync({ userId, newValue });
+    } catch (error) {
+      console.error("Error updating user status:", error);
+    }
   };
+
+  const eventColumns: GridColDef[] = [
+    {
+      field: "name",
+      headerName: "Name",
+      minWidth: 200,
+      flex: 2,
+      renderHeader: (params) => (
+        <div style={{ fontWeight: "bold" }}>{params.colDef.headerName}</div>
+      ),
+    },
+    {
+      field: "email",
+      headerName: "Email",
+      minWidth: 200,
+      flex: 0.5,
+      renderHeader: (params) => (
+        <div style={{ fontWeight: "bold" }}>{params.colDef.headerName}</div>
+      ),
+    },
+    {
+      field: "phone",
+      headerName: "Phone number",
+      minWidth: 200,
+      flex: 0.5,
+      renderHeader: (params) => (
+        <div style={{ fontWeight: "bold" }}>{params.colDef.headerName}</div>
+      ),
+    },
+    {
+      field: "status",
+      headerName: "Status",
+      minWidth: 175,
+      flex: 0.5,
+      renderHeader: (params) => (
+        <div style={{ fontWeight: "bold" }}>{params.colDef.headerName}</div>
+      ),
+      renderCell: (params) => (
+        <div className="w-full">
+          <Select
+            size="small"
+            value={params.row.status}
+            onChange={(event: any) =>
+              handleStatusChange(params.row.id, event.target.value)
+            }
+          >
+            <MenuItem value="PENDING">Pending</MenuItem>
+            <MenuItem value="CHECKED_IN">Check in</MenuItem>
+            <MenuItem value="CHECKED_OUT">Check out</MenuItem>
+            <MenuItem value="REMOVED">Remove</MenuItem>
+          </Select>
+        </div>
+      ),
+    },
+  ];
+
+  // const filteredRows = rows.filter((attendee: attendeeData) => attendee.status === status);
 
   return (
     <>
-      <div className="pb-5 w-full sm:w-[600px]">
-        <SearchBar
-          placeholder="Search member by name, email"
-          value={value}
-          onChange={handleChange}
-          onClick={handleSubmit}
-        />
-      </div>
       <Card size="table">
-        <Table
-          columns={eventColumns}
-          rows={rows}
-          setPaginationModel={setPaginationModel}
-          dataSetLength={totalNumberofData}
-          paginationModel={paginationModel}
-        />
+        {!rows || rows.length === 0 ? (
+          <div className="p-10">
+            <div className="text-center">There are no attendees</div>
+          </div>
+        ) : (
+          <Table
+            columns={eventColumns}
+            rows={rows}
+            setPaginationModel={setPaginationModel}
+            dataSetLength={totalNumberofData}
+            paginationModel={paginationModel}
+          />
+        )}
       </Card>
     </>
   );
@@ -310,12 +345,207 @@ const ModalBody = ({
   );
 };
 
-/** A ManageAttendees component */
-const ManageAttendees = ({}: ManageAttendeesProps) => {
+const Pending = () => {
   const router = useRouter();
   const eventid = router.query.eventid as string;
 
-  // TODO: For now -> we use the same state for all four tables
+  const [paginationModel, setPaginationModel] =
+    React.useState<GridPaginationModel>({
+      page: 0,
+      pageSize: 10,
+    });
+
+  /** Process attendees data */
+  const processAttendeesData = (data: any, paginationModel: any) => {
+    if (!data) return null;
+
+    const attendees = data.result;
+    const attendeeList = attendees.map((attendee: any) => ({
+      id: attendee.id,
+      status: attendee.events[0].attendeeStatus,
+      name: `${attendee.profile?.firstName} ${attendee.profile?.lastName}`,
+      email: attendee.email,
+      phone: attendee.profile?.phoneNumber || "123-456-7890", // TODO: Change to actual phone number
+    }));
+
+    const totalNumberofData = data.totalItems || 0;
+    const cursor = data.cursor || "";
+    const totalNumberOfPages = Math.ceil(
+      totalNumberofData / paginationModel.pageSize
+    );
+
+    return { attendeeList, totalNumberofData, cursor, totalNumberOfPages };
+  };
+
+  /** Process each query result */
+  const queryClient = useQueryClient();
+  // Prefetch logic for each query result
+  const prefetchNextPage = (
+    eventid: any,
+    paginationModel: any,
+    status: any,
+    page: any,
+    totalNumberOfPages: any,
+    cursor: any
+  ) => {
+    if (page < totalNumberOfPages) {
+      queryClient.prefetchQuery({
+        queryKey: ["event", eventid, page + 1],
+        queryFn: async () => {
+          const { data } = await api.get(
+            `/users?eventId=${eventid}&attendeeStatus=${status}&limit=${paginationModel.pageSize}&after=${cursor}`
+          );
+          return data["data"];
+        },
+        staleTime: Infinity,
+      });
+    }
+  };
+
+  /** Tanstack query to fetch attendees data */
+  const {
+    data: pendingData,
+    isPending: pendingIsPending,
+    isError: pendingIsError,
+    isPlaceholderData: pendingIsPlaceholderData,
+    refetch,
+  } = useQuery({
+    queryKey: ["event", eventid, paginationModel.page, "pending"],
+    queryFn: async () => {
+      if (searchQuery) {
+        const { data } = await api.get(
+          `/users?eventId=${eventid}&attendeeStatus=PENDING&email=${searchQuery}&limit=${paginationModel.pageSize}`
+        );
+        return data["data"];
+      } else {
+        const { data } = await api.get(
+          `/users?eventId=${eventid}&attendeeStatus=PENDING&limit=${paginationModel.pageSize}`
+        );
+        return data["data"];
+      }
+    },
+    staleTime: Infinity,
+  });
+  const processedPendingData = processAttendeesData(
+    pendingData,
+    paginationModel
+  );
+
+  /** Search bar */
+  const [searchQuery, setSearchQuery] = React.useState("");
+  const [value, setValue] = React.useState("");
+  const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
+    setValue(event.target.value);
+  };
+  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+    // Prevent page refresh
+    event.preventDefault();
+
+    // Set search query
+    setSearchQuery(value);
+  };
+
+  useEffect(() => {
+    if (!pendingIsPlaceholderData) {
+      prefetchNextPage(
+        eventid,
+        paginationModel,
+        "PENDING",
+        paginationModel.page,
+        processedPendingData?.totalNumberOfPages,
+        processedPendingData?.cursor
+      );
+    }
+  }, [
+    pendingIsPlaceholderData,
+    processedPendingData?.totalNumberOfPages,
+    processedPendingData?.cursor,
+  ]);
+
+  // Update row data when search query changes
+  useEffect(() => {
+    refetch();
+  }, [searchQuery]);
+
+  // if (pendingIsPending) return <Loading />;
+
+  return (
+    <>
+      <p>
+        Volunteers are <b>pending</b> when they have registered for an event but
+        have not been checked in by a supervisor.
+      </p>
+      <div className="pb-5 w-full sm:w-[600px]">
+        <SearchBar
+          placeholder="Search member by email"
+          value={value}
+          onChange={handleChange}
+          onSubmit={handleSubmit}
+        />
+      </div>
+      <AttendeesTable
+        status="PENDING"
+        paginationModel={paginationModel}
+        setPaginationModel={setPaginationModel}
+        rows={processedPendingData?.attendeeList}
+        totalNumberofData={processedPendingData?.totalNumberofData}
+        eventId={eventid}
+      />
+    </>
+  );
+};
+
+const CheckedIn = () => {
+  const router = useRouter();
+  const eventid = router.query.eventid as string;
+
+  /** Process attendees data */
+  const processAttendeesData = (data: any, paginationModel: any) => {
+    if (!data) return null;
+
+    const attendees = data.result;
+    const attendeeList = attendees.map((attendee: any) => ({
+      id: attendee.id,
+      status: attendee.events[0].attendeeStatus,
+      name: `${attendee.profile?.firstName} ${attendee.profile?.lastName}`,
+      email: attendee.email,
+      phone: attendee.profile?.phoneNumber || "123-456-7890", // TODO: Change to actual phone number
+    }));
+
+    const totalNumberofData = data.totalItems || 0;
+    const cursor = data.cursor || "";
+    const totalNumberOfPages = Math.ceil(
+      totalNumberofData / paginationModel.pageSize
+    );
+
+    return { attendeeList, totalNumberofData, cursor, totalNumberOfPages };
+  };
+
+  /** Process each query result */
+  const queryClient = useQueryClient();
+  // Prefetch logic for each query result
+  const prefetchNextPage = (
+    eventid: any,
+    paginationModel: any,
+    status: any,
+    page: any,
+    totalNumberOfPages: any,
+    cursor: any
+  ) => {
+    if (page < totalNumberOfPages) {
+      queryClient.prefetchQuery({
+        queryKey: ["event", eventid, page + 1],
+        queryFn: async () => {
+          const { data } = await api.get(
+            `/users?eventId=${eventid}&attendeeStatus=${status}&limit=${paginationModel.pageSize}&after=${cursor}`
+          );
+          return data["data"];
+        },
+        staleTime: Infinity,
+      });
+    }
+  };
+
   const [paginationModel, setPaginationModel] =
     React.useState<GridPaginationModel>({
       page: 0,
@@ -323,114 +553,532 @@ const ManageAttendees = ({}: ManageAttendeesProps) => {
     });
 
   /** Tanstack query to fetch attendees data */
-  const { data, isPending, isError, isPlaceholderData } = useQuery({
-    queryKey: ["event", eventid, paginationModel.page],
+  const {
+    data: checkedInData,
+    isPending: checkedInIsPending,
+    isError: checkedInIsError,
+    isPlaceholderData: checkedInIsPlaceholderData,
+  } = useQuery({
+    queryKey: ["event", eventid, paginationModel.page, "checked_in"],
     queryFn: async () => {
-      // TODO: Double check endpoint
-      // It currently returns list of ALL users, not just attendees for a specific event
       const { data } = await api.get(
-        `/users?eventid=${eventid}&limit=${paginationModel.pageSize}`
+        `/users?eventId=${eventid}&attendeeStatus=${"CHECKED_IN"}&limit=${
+          paginationModel.pageSize
+        }`
       );
       return data["data"];
     },
     staleTime: Infinity,
   });
+  const processedCheckedInData = processAttendeesData(
+    checkedInData,
+    paginationModel
+  );
+  useEffect(() => {
+    if (!checkedInIsPlaceholderData) {
+      prefetchNextPage(
+        eventid,
+        paginationModel,
+        "CHECKED_IN",
+        paginationModel.page,
+        processedCheckedInData?.totalNumberOfPages,
+        processedCheckedInData?.cursor
+      );
+    }
+  }, [
+    checkedInIsPlaceholderData,
+    processedCheckedInData?.totalNumberOfPages,
+    processedCheckedInData?.cursor,
+  ]);
 
-  // Set attendees list, total entries, and total pages
-  let attendeeList: attendeeData[] = [];
-  data?.result.map((attendee: any) => {
-    attendeeList.push({
+  // if (checkedInIsPending) return <Loading />;
+  return (
+    <>
+      <p>
+        Volunteers are <b>checked in</b> when they arrive at the volunteer
+        event.
+      </p>
+      <AttendeesTable
+        status="CHECKED_IN"
+        paginationModel={paginationModel}
+        setPaginationModel={setPaginationModel}
+        rows={processedCheckedInData?.attendeeList}
+        totalNumberofData={processedCheckedInData?.totalNumberofData}
+        eventId={eventid}
+      />
+    </>
+  );
+};
+
+const CheckedOut = () => {
+  const router = useRouter();
+  const eventid = router.query.eventid as string;
+
+  /** Process attendees data */
+  const processAttendeesData = (data: any, paginationModel: any) => {
+    if (!data) return null;
+
+    const attendees = data.result;
+    const attendeeList = attendees.map((attendee: any) => ({
       id: attendee.id,
-      status: attendee.status,
+      status: attendee.events[0].attendeeStatus,
       name: `${attendee.profile?.firstName} ${attendee.profile?.lastName}`,
       email: attendee.email,
       phone: attendee.profile?.phoneNumber || "123-456-7890", // TODO: Change to actual phone number
-    });
-  });
-  const totalNumberofData = data?.totalItems;
-  let cursor = data?.cursor ? data?.cursor : "";
-  const totalNumberOfPages = Math.ceil(
-    totalNumberofData / paginationModel.pageSize
-  );
+    }));
 
-  // Prefetch the next page
+    const totalNumberofData = data.totalItems || 0;
+    const cursor = data.cursor || "";
+    const totalNumberOfPages = Math.ceil(
+      totalNumberofData / paginationModel.pageSize
+    );
+
+    return { attendeeList, totalNumberofData, cursor, totalNumberOfPages };
+  };
+
+  /** Process each query result */
   const queryClient = useQueryClient();
-  useEffect(() => {
-    if (!isPlaceholderData && paginationModel.page < totalNumberOfPages) {
+  // Prefetch logic for each query result
+  const prefetchNextPage = (
+    eventid: any,
+    paginationModel: any,
+    status: any,
+    page: any,
+    totalNumberOfPages: any,
+    cursor: any
+  ) => {
+    if (page < totalNumberOfPages) {
       queryClient.prefetchQuery({
-        queryKey: ["event", eventid, paginationModel.page + 1],
+        queryKey: ["event", eventid, page + 1],
         queryFn: async () => {
           const { data } = await api.get(
-            `/users?eventid=${eventid}&limit=${paginationModel.pageSize}&after=${cursor}`
+            `/users?eventId=${eventid}&attendeeStatus=${status}&limit=${paginationModel.pageSize}&after=${cursor}`
           );
           return data["data"];
         },
         staleTime: Infinity,
       });
     }
-  }, [data, queryClient, cursor, totalNumberofData, paginationModel.page]);
+  };
+
+  const [paginationModel, setPaginationModel] =
+    React.useState<GridPaginationModel>({
+      page: 0,
+      pageSize: 10,
+    });
+
+  /** Tanstack query to fetch attendees data */
+  const {
+    data: checkedOutData,
+    isPending: checkedOutIsPending,
+    isError: checkedOutIsError,
+    isPlaceholderData: checkedOutIsPlaceholderData,
+  } = useQuery({
+    queryKey: ["event", eventid, paginationModel.page, "checked_out"],
+    queryFn: async () => {
+      const { data } = await api.get(
+        `/users?eventId=${eventid}&attendeeStatus=${"CHECKED_OUT"}&limit=${
+          paginationModel.pageSize
+        }`
+      );
+      return data["data"];
+    },
+    staleTime: Infinity,
+  });
+  const processedCheckedOutData = processAttendeesData(
+    checkedOutData,
+    paginationModel
+  );
+  useEffect(() => {
+    if (!checkedOutIsPlaceholderData) {
+      prefetchNextPage(
+        eventid,
+        paginationModel,
+        "CHECKED_OUT",
+        paginationModel.page,
+        processedCheckedOutData?.totalNumberOfPages,
+        processedCheckedOutData?.cursor
+      );
+    }
+  }, [
+    checkedOutIsPlaceholderData,
+    processedCheckedOutData?.totalNumberOfPages,
+    processedCheckedOutData?.cursor,
+  ]);
+
+  // if (checkedOutIsPending) return <Loading />;
+  return (
+    <>
+      <p>
+        Volunteers are <b>checked out</b> when they leave the volunteer event.
+      </p>
+      <AttendeesTable
+        status="CHECKED_OUT"
+        paginationModel={paginationModel}
+        setPaginationModel={setPaginationModel}
+        rows={processedCheckedOutData?.attendeeList}
+        totalNumberofData={processedCheckedOutData?.totalNumberofData}
+        eventId={eventid}
+      />
+    </>
+  );
+};
+
+const RegistrationCanceled = () => {
+  const router = useRouter();
+  const eventid = router.query.eventid as string;
+
+  /** Process attendees data */
+  const processAttendeesData = (data: any, paginationModel: any) => {
+    if (!data) return null;
+
+    const attendees = data.result;
+    const attendeeList = attendees.map((attendee: any) => ({
+      id: attendee.id,
+      status: attendee.events[0].attendeeStatus,
+      name: `${attendee.profile?.firstName} ${attendee.profile?.lastName}`,
+      email: attendee.email,
+      phone: attendee.profile?.phoneNumber || "123-456-7890", // TODO: Change to actual phone number
+    }));
+
+    const totalNumberofData = data.totalItems || 0;
+    const cursor = data.cursor || "";
+    const totalNumberOfPages = Math.ceil(
+      totalNumberofData / paginationModel.pageSize
+    );
+
+    return { attendeeList, totalNumberofData, cursor, totalNumberOfPages };
+  };
+
+  /** Process each query result */
+  const queryClient = useQueryClient();
+  // Prefetch logic for each query result
+  const prefetchNextPage = (
+    eventid: any,
+    paginationModel: any,
+    status: any,
+    page: any,
+    totalNumberOfPages: any,
+    cursor: any
+  ) => {
+    if (page < totalNumberOfPages) {
+      queryClient.prefetchQuery({
+        queryKey: ["event", eventid, page + 1],
+        queryFn: async () => {
+          const { data } = await api.get(
+            `/users?eventId=${eventid}&attendeeStatus=${status}&limit=${paginationModel.pageSize}&after=${cursor}`
+          );
+          return data["data"];
+        },
+        staleTime: Infinity,
+      });
+    }
+  };
+
+  const [paginationModel, setPaginationModel] =
+    React.useState<GridPaginationModel>({
+      page: 0,
+      pageSize: 10,
+    });
+
+  /** Tanstack query to fetch attendees data */
+  const {
+    data: canceledData,
+    isPending: canceledIsPending,
+    isError: canceledIsError,
+    isPlaceholderData: canceledIsPlaceholderData,
+  } = useQuery({
+    queryKey: ["event", eventid, paginationModel.page, "canceled"],
+    queryFn: async () => {
+      const { data } = await api.get(
+        `/users?eventId=${eventid}&attendeeStatus=${"CANCELED"}&limit=${
+          paginationModel.pageSize
+        }`
+      );
+      return data["data"];
+    },
+    staleTime: Infinity,
+  });
+  const processedCanceledData = processAttendeesData(
+    canceledData,
+    paginationModel
+  );
+  useEffect(() => {
+    if (!canceledIsPlaceholderData) {
+      prefetchNextPage(
+        eventid,
+        paginationModel,
+        "CANCELED",
+        paginationModel.page,
+        processedCanceledData?.totalNumberOfPages,
+        processedCanceledData?.cursor
+      );
+    }
+  }, [
+    canceledIsPlaceholderData,
+    processedCanceledData?.totalNumberOfPages,
+    processedCanceledData?.cursor,
+  ]);
+
+  // if (canceledIsPending) return <Loading />;
+  return (
+    <>
+      <p>
+        Volunteers are listed here when they have canceled their registration
+        and will no longer be showing up to the event.
+      </p>
+      <AttendeesTable
+        status="CANCELED"
+        paginationModel={paginationModel}
+        setPaginationModel={setPaginationModel}
+        rows={processedCanceledData?.attendeeList}
+        totalNumberofData={processedCanceledData?.totalNumberofData}
+        eventId={eventid}
+      />
+    </>
+  );
+};
+
+const RegistrationRemoved = () => {
+  const router = useRouter();
+  const eventid = router.query.eventid as string;
+
+  /** Process attendees data */
+  const processAttendeesData = (data: any, paginationModel: any) => {
+    if (!data) return null;
+
+    const attendees = data.result;
+    const attendeeList = attendees.map((attendee: any) => ({
+      id: attendee.id,
+      status: attendee.events[0].attendeeStatus,
+      name: `${attendee.profile?.firstName} ${attendee.profile?.lastName}`,
+      email: attendee.email,
+      phone: attendee.profile?.phoneNumber || "123-456-7890", // TODO: Change to actual phone number
+    }));
+
+    const totalNumberofData = data.totalItems || 0;
+    const cursor = data.cursor || "";
+    const totalNumberOfPages = Math.ceil(
+      totalNumberofData / paginationModel.pageSize
+    );
+
+    return { attendeeList, totalNumberofData, cursor, totalNumberOfPages };
+  };
+
+  /** Process each query result */
+  const queryClient = useQueryClient();
+  // Prefetch logic for each query result
+  const prefetchNextPage = (
+    eventid: any,
+    paginationModel: any,
+    status: any,
+    page: any,
+    totalNumberOfPages: any,
+    cursor: any
+  ) => {
+    if (page < totalNumberOfPages) {
+      queryClient.prefetchQuery({
+        queryKey: ["event", eventid, page + 1],
+        queryFn: async () => {
+          const { data } = await api.get(
+            `/users?eventId=${eventid}&attendeeStatus=${status}&limit=${paginationModel.pageSize}&after=${cursor}`
+          );
+          return data["data"];
+        },
+        staleTime: Infinity,
+      });
+    }
+  };
+
+  const [paginationModel, setPaginationModel] =
+    React.useState<GridPaginationModel>({
+      page: 0,
+      pageSize: 10,
+    });
+
+  /** Tanstack query to fetch attendees data */
+  const {
+    data: removedData,
+    isPending: removedIsPending,
+    isError: removedIsError,
+    isPlaceholderData: removedIsPlaceholderData,
+  } = useQuery({
+    queryKey: ["event", eventid, paginationModel.page, "removed"],
+    queryFn: async () => {
+      const { data } = await api.get(
+        `/users?eventId=${eventid}&attendeeStatus=${"REMOVED"}&limit=${
+          paginationModel.pageSize
+        }`
+      );
+      return data["data"];
+    },
+    staleTime: Infinity,
+  });
+  const processedRemovedData = processAttendeesData(
+    removedData,
+    paginationModel
+  );
+  useEffect(() => {
+    if (!removedIsPlaceholderData) {
+      prefetchNextPage(
+        eventid,
+        paginationModel,
+        "REMOVED",
+        paginationModel.page,
+        processedRemovedData?.totalNumberOfPages,
+        processedRemovedData?.cursor
+      );
+    }
+  }, [
+    removedIsPlaceholderData,
+    processedRemovedData?.totalNumberOfPages,
+    processedRemovedData?.cursor,
+  ]);
+
+  // if (removedIsPending) return <Loading />;
+  return (
+    <>
+      <p>
+        Volunteers are listed here when their registration is removed manually
+        by a supervisor.
+      </p>
+      <AttendeesTable
+        status="REMOVED"
+        paginationModel={paginationModel}
+        setPaginationModel={setPaginationModel}
+        rows={processedRemovedData?.attendeeList}
+        totalNumberofData={processedRemovedData?.totalNumberofData}
+        eventId={eventid}
+      />
+    </>
+  );
+};
+
+/** A ManageAttendees component */
+const ManageAttendees = ({}: ManageAttendeesProps) => {
+  const router = useRouter();
+  const eventid = router.query.eventid as string;
+
+  const { user, role } = useAuth();
+  const [userid, setUserid] = React.useState("");
+
+  /** Tanstack query to fetch and update the event details */
+  const { data, isLoading, isError, error } = useQuery({
+    queryKey: ["event", eventid],
+    queryFn: async () => {
+      const userid = await fetchUserIdFromDatabase(user?.email as string);
+      setUserid(userid);
+      const { data } = await api.get(
+        `/users/${userid}/registered?eventid=${eventid}`
+      );
+      return data["data"];
+    },
+  });
+
+  let eventData = data?.eventDetails || {};
+  let eventAttendance = data?.attendance;
+
+  /** If the user canceled their event registration */
+  const userHasCanceledAttendance =
+    eventAttendance && eventAttendance["canceled"];
+
+  /** Set event details */
+  const {
+    eventid: idtmp, // TODO: remove this line
+    location,
+    datetime,
+    capacity,
+    image_src,
+    tags,
+    supervisors,
+    description,
+    name,
+  }: EventData = {
+    eventid: eventData.id,
+    location: eventData.location,
+    datetime: formatDateTimeRange(eventData.startDate, eventData.endDate),
+    capacity: eventData.capacity,
+    image_src: eventData.imageURL,
+    tags: eventData.tags,
+    supervisors: [
+      `${eventData.owner?.profile?.firstName} ${eventData.owner?.profile?.lastName}`,
+    ],
+    description: eventData.description,
+    name: eventData.name,
+  };
+
+  const dateHeader = formatDateTimeToUI(datetime);
+
+  // /** Process attendees data */
+  // const processAttendeesData = (data: any, paginationModel: any) => {
+  //   if (!data) return null;
+
+  //   const attendees = data.result;
+  //   const attendeeList = attendees.map((attendee: any) => ({
+  //     id: attendee.id,
+  //     status: attendee.events[0].attendeeStatus,
+  //     name: `${attendee.profile?.firstName} ${attendee.profile?.lastName}`,
+  //     email: attendee.email,
+  //     phone: attendee.profile?.phoneNumber || "123-456-7890", // TODO: Change to actual phone number
+  //   }));
+
+  //   const totalNumberofData = data.totalItems || 0;
+  //   const cursor = data.cursor || "";
+  //   const totalNumberOfPages = Math.ceil(
+  //     totalNumberofData / paginationModel.pageSize
+  //   );
+
+  //   return { attendeeList, totalNumberofData, cursor, totalNumberOfPages };
+  // };
+
+  // /** Process each query result */
+  // const queryClient = useQueryClient();
+  // // Prefetch logic for each query result
+  // const prefetchNextPage = (
+  //   eventid: any,
+  //   paginationModel: any,
+  //   status: any,
+  //   page: any,
+  //   totalNumberOfPages: any,
+  //   cursor: any
+  // ) => {
+  //   if (page < totalNumberOfPages) {
+  //     queryClient.prefetchQuery({
+  //       queryKey: ["event", eventid, page + 1],
+  //       queryFn: async () => {
+  //         const { data } = await api.get(
+  //           `/users?eventId=${eventid}&attendeeStatus=${status}&limit=${paginationModel.pageSize}&after=${cursor}`
+  //         );
+  //         return data["data"];
+  //       },
+  //       staleTime: Infinity,
+  //     });
+  //   }
+  // };
+
+  // Call prefetch for each query result
 
   /** Attendees list tabs */
   const tabs = [
     {
       label: "Pending",
-      panel: (
-        <AttendeesTable
-          status="pending"
-          paginationModel={paginationModel}
-          setPaginationModel={setPaginationModel}
-          rows={attendeeList}
-          totalNumberofData={totalNumberofData}
-        />
-      ),
+      panel: <Pending />,
     },
     {
       label: "Checked in",
-      panel: (
-        <AttendeesTable
-          status="checked in"
-          paginationModel={paginationModel}
-          setPaginationModel={setPaginationModel}
-          rows={attendeeList}
-          totalNumberofData={totalNumberofData}
-        />
-      ),
+      panel: <CheckedIn />,
     },
     {
       label: "Checked out",
-      panel: (
-        <AttendeesTable
-          status="checked out"
-          paginationModel={paginationModel}
-          setPaginationModel={setPaginationModel}
-          rows={attendeeList}
-          totalNumberofData={totalNumberofData}
-        />
-      ),
+      panel: <CheckedOut />,
+    },
+    {
+      label: "Registration canceled",
+      panel: <RegistrationCanceled />,
     },
     {
       label: "Registration removed",
-      panel: (
-        <AttendeesTable
-          status="removed"
-          paginationModel={paginationModel}
-          setPaginationModel={setPaginationModel}
-          rows={attendeeList}
-          totalNumberofData={totalNumberofData}
-        />
-      ),
-    },
-    {
-      label: "Canceled registration",
-      panel: (
-        <AttendeesTable
-          status="canceled"
-          paginationModel={paginationModel}
-          setPaginationModel={setPaginationModel}
-          rows={attendeeList}
-          totalNumberofData={totalNumberofData}
-        />
-      ),
+      panel: <RegistrationRemoved />,
     },
   ];
 
@@ -449,7 +1097,6 @@ const ManageAttendees = ({}: ManageAttendeesProps) => {
   const [errorMessage, setErrorMessage] = useState<string>("");
 
   /** Loading screen */
-  if (isPending) return <Loading />;
 
   return (
     <>
@@ -478,7 +1125,7 @@ const ManageAttendees = ({}: ManageAttendeesProps) => {
 
       {/* Manage event */}
       <div className="flex flex-col sm:flex-row sm:justify-between pb-6 sm:pb-4">
-        <div className="font-semibold text-3xl mb-6">Malta Outreach</div>
+        <div className="font-semibold text-3xl mb-6">{name}</div>
         <div className="flex flex-col sm:flex-row gap-4">
           <Link href={`/events/${eventid}/edit`}>
             <Button icon={<EditIcon />}>Edit event</Button>
@@ -493,26 +1140,28 @@ const ManageAttendees = ({}: ManageAttendeesProps) => {
       </div>
       <div className="font-semibold text-2xl mb-6">Event Recap</div>
       <div>
-        <div className="mt-5" />
         <div className="grid gap-2 xl:gap-6 xl:grid-cols-2">
           <IconTextHeader
             icon={<CalendarTodayIcon />}
-            header={<>header</>}
-            body={<>body</>}
+            header={<>{dateHeader[0]}</>}
+            body={<>{dateHeader[1]}</>}
           />
-          <IconTextHeader icon={<FmdGoodIcon />} header={<>location</>} />
+          <IconTextHeader icon={<FmdGoodIcon />} header={<>{location}</>} />
           <IconTextHeader
             icon={<PersonIcon />}
-            header={<>header</>}
+            header={<>{supervisors[0]}</>}
             body={<>Supervisor</>}
           />
           <IconTextHeader
             icon={<GroupsIcon />}
-            header={<>(capacity) volunteers needed</>}
+            header={<>{capacity} volunteers needed</>}
+          />
+          <TextCopy
+            label="RSVP Link"
+            text={`${BASE_URL_CLIENT}/events/${eventid}/register`}
           />
         </div>
       </div>
-      <br />
       <div className="font-semibold text-2xl mt-6 mb-6">Manage Volunteers</div>
       <TabContainer fullWidth tabs={tabs} />
     </>
