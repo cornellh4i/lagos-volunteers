@@ -118,6 +118,9 @@ const getUsers = async (
   pagination: {
     after: string;
     limit: string;
+  },
+  include: {
+    hours: boolean;
   }
 ) => {
   /* SORTING */
@@ -242,12 +245,15 @@ const getUsers = async (
     cursor: cursor,
   });
 
-  // Get hours for each user
+  // Get hours for each user if hours should be included
   const newQueryResult: any = queryResult;
-  for (let i = 0; i < queryResult.length; i++) {
-    const user = queryResult[i];
-    const hours = await getHours(user.id);
-    newQueryResult[i].totalHours = hours;
+
+  if (include.hours) {
+    for (let i = 0; i < queryResult.length; i++) {
+      const user = queryResult[i];
+      const hours = await getHours(user.id);
+      newQueryResult[i].totalHours = hours;
+    }
   }
 
   // Metadata

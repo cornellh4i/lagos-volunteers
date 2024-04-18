@@ -49,12 +49,12 @@ const Active = () => {
   const fetchUsersBatch = async (cursor?: string, searchQuery?: string) => {
     if (searchQuery) {
       const { data } = await api.get(
-        `/users?email=${searchQuery}&status=ACTIVE&limit=${paginationModel.pageSize}&after=${cursor}`
+        `/users?email=${searchQuery}&status=ACTIVE&limit=${paginationModel.pageSize}&after=${cursor}&include=hours`
       );
       return data;
     } else {
       const { data } = await api.get(
-        `/users?status=ACTIVE&limit=${paginationModel.pageSize}&after=${cursor}`
+        `/users?status=ACTIVE&limit=${paginationModel.pageSize}&after=${cursor}&include=hours`
       );
       return data;
     }
@@ -230,12 +230,12 @@ const Blacklisted = () => {
   const fetchUsersBatch = async (cursor?: string, searchQuery?: string) => {
     if (searchQuery) {
       const { data } = await api.get(
-        `/users?email=${searchQuery}&status=INACTIVE&limit=${paginationModel.pageSize}&after=${cursor}`
+        `/users?email=${searchQuery}&status=INACTIVE&limit=${paginationModel.pageSize}&after=${cursor}&include=hours`
       );
       return data;
     } else {
       const { data } = await api.get(
-        `/users?status=INACTIVE&limit=${paginationModel.pageSize}&after=${cursor}`
+        `/users?status=INACTIVE&limit=${paginationModel.pageSize}&after=${cursor}&include=hours`
       );
       return data;
     }

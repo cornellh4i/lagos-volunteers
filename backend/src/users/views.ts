@@ -124,7 +124,13 @@ userRouter.get("/", useAuth, async (req: Request, res: Response) => {
     limit: req.query.limit as string,
   };
 
-  attempt(res, 200, () => userController.getUsers(filter, sort, pagination));
+  const include = {
+    hours: req.query.include === "hours" ? true : false,
+  };
+
+  attempt(res, 200, () =>
+    userController.getUsers(filter, sort, pagination, include)
+  );
 });
 
 userRouter.get("/pagination", useAuth, async (req: Request, res: Response) => {
