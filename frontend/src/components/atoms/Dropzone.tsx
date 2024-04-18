@@ -5,6 +5,7 @@ interface DropzoneProps {
   selectedFile: File | null;
   setSelectedFile: React.Dispatch<React.SetStateAction<File | null>>;
   label?: string;
+  [key: string]: any;
 }
 
 /**
@@ -16,6 +17,7 @@ const Dropzone = ({
   selectedFile,
   setSelectedFile,
   label,
+  ...props
 }: DropzoneProps) => {
   const allowedFileTypes = ["image/jpg", "image/jpeg", "image/png"];
   const maxFileSize = 50 * 1024 * 1024; // 50 MB
@@ -51,13 +53,18 @@ const Dropzone = ({
           <div className="flex flex-col items-center justify-center pt-5 pb-6">
             {selectedFile === null ? (
               <>
-                <p className="mb-2 text-sm text-gray-500 dark:text-gray-400">
-                  <span className="font-semibold">Click to upload</span> or drag
-                  and drop
-                </p>
-                <p className="text-xs text-gray-500 dark:text-gray-400">
-                  PNG or JPG (MAX. 50 MB)
-                </p>
+                <div className="flex items-center">
+                  <img src={props.defaultValue} className="max-h-20 mr-4" />
+                  <div>
+                    <p className="mb-2 text-sm text-gray-500 dark:text-gray-400">
+                      <span className="font-semibold">Click to upload</span> or
+                      drag and drop
+                    </p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">
+                      PNG or JPG (MAX. 50 MB)
+                    </p>
+                  </div>
+                </div>
               </>
             ) : (
               <>
