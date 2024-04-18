@@ -1,4 +1,10 @@
-import React, { ChangeEvent, FormEvent, useEffect, useRef, useState } from "react";
+import React, {
+  ChangeEvent,
+  FormEvent,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import TabContainer from "@/components/molecules/TabContainer";
 import { GridColDef, GridPaginationModel } from "@mui/x-data-grid";
 import Table from "@/components/molecules/Table";
@@ -41,7 +47,6 @@ import { BASE_URL_CLIENT } from "@/utils/constants";
 import useWebSocket from "react-use-websocket";
 import { BASE_WEBSOCKETS_URL } from "@/utils/constants";
 
-
 //Initial push
 
 type attendeeData = {
@@ -83,11 +88,7 @@ const AttendeesTable = ({
   const socketUrl = BASE_WEBSOCKETS_URL as string;
 
   // Use the useWebSocket hook
-  const {
-    sendMessage,
-    lastMessage,
-    readyState,
-  } = useWebSocket(socketUrl, {
+  const { sendMessage, lastMessage, readyState } = useWebSocket(socketUrl, {
     shouldReconnect: () => true,
   });
 
@@ -105,16 +106,19 @@ const AttendeesTable = ({
     },
     retry: false,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['event', eventId] });
+      queryClient.invalidateQueries({ queryKey: ["event", eventId] });
     },
   });
 
   //Handle new websocket messages
 
-  if (lastMessage && lastMessage.data == `{"resource":"/events/${eventId}","message":"The resource has been updated!"}`) {
-    queryClient.invalidateQueries({ queryKey: ['event', eventId] });
-  };
-  
+  if (
+    lastMessage &&
+    lastMessage.data ==
+      `{"resource":"/events/${eventId}","message":"The resource has been updated!"}`
+  ) {
+    queryClient.invalidateQueries({ queryKey: ["event", eventId] });
+  }
 
   const handleStatusChange = async (userId: string, newValue: string) => {
     if (!eventId) {
@@ -183,7 +187,6 @@ const AttendeesTable = ({
       ),
     },
   ];
-
 
   return (
     <>
