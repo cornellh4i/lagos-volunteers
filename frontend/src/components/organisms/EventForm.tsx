@@ -17,7 +17,11 @@ import { Typography } from "@mui/material";
 import { useAuth } from "@/utils/AuthContext";
 import router from "next/router";
 import Snackbar from "../atoms/Snackbar";
-import { convertToISO, fetchUserIdFromDatabase } from "@/utils/helpers";
+import {
+  convertToISO,
+  fetchUserIdFromDatabase,
+  uploadImageToFirebase,
+} from "@/utils/helpers";
 import { api } from "@/utils/api";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import Dropzone from "../atoms/Dropzone";
@@ -39,7 +43,7 @@ type FormValues = {
   location: string;
   volunteerSignUpCap: string;
   eventDescription: string;
-  eventImage: string;
+  imageURL: string;
   rsvpLinkImage: string;
   startDate: Date;
   startTime: Date;
@@ -64,6 +68,9 @@ const EventForm = ({
     setMarkdown(value);
     setValue("eventDescription", value);
   };
+
+  /** Dropzone file */
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
   /** Dropzone errors */
   const [dropzoneError, setDropzoneError] = useState("");
@@ -100,7 +107,7 @@ const EventForm = ({
             location: eventDetails.location,
             volunteerSignUpCap: eventDetails.volunteerSignUpCap,
             eventDescription: eventDetails.eventDescription,
-            eventImage: eventDetails.eventImage,
+            imageURL: eventDetails.imageURL,
             rsvpLinkImage: eventDetails.rsvpLinkImage,
             startDate: eventDetails.startDate,
             startTime: eventDetails.startTime,
@@ -127,6 +134,7 @@ const EventForm = ({
         location,
         volunteerSignUpCap,
         eventDescription,
+        imageURL,
         startDate,
         startTime,
         endTime,
@@ -134,12 +142,18 @@ const EventForm = ({
       const userid = await fetchUserIdFromDatabase(user?.email as string);
       const startDateTime = convertToISO(startTime, startDate);
       const endDateTime = convertToISO(endTime, startDate);
+      let newImageURL = null;
+      if (selectedFile) {
+        newImageURL = await uploadImageToFirebase(userid, selectedFile);
+      }
+
       const { response } = await api.post("/events", {
         userID: `${userid}`,
         event: {
           name: `${eventName}`,
           location: status === 0 ? "VIRTUAL" : `${location}`,
           description: `${eventDescription}`,
+          imageURL: newImageURL,
           startDate: startDateTime,
           endDate: endDateTime,
           capacity: +volunteerSignUpCap,
@@ -165,16 +179,24 @@ const EventForm = ({
           location,
           volunteerSignUpCap,
           eventDescription,
+          imageURL,
           startDate,
           startTime,
           endTime,
         } = data;
+        const userid = await fetchUserIdFromDatabase(user?.email as string);
         const startDateTime = convertToISO(startTime, startDate);
         const endDateTime = convertToISO(endTime, startDate);
+        let newImageURL = imageURL;
+        if (selectedFile) {
+          newImageURL = await uploadImageToFirebase(userid, selectedFile); // Update URL if there is any.
+        }
+
         const { response } = await api.put(`/events/${eventId}`, {
           name: `${eventName}`,
           location: status === 0 ? "VIRTUAL" : `${location}`,
           description: `${eventDescription}`,
+          imageURL: newImageURL,
           startDate: startDateTime,
           endDate: endDateTime,
           capacity: +volunteerSignUpCap,
@@ -372,7 +394,14 @@ const EventForm = ({
             })}
           />
         </div>
-        <Dropzone setError={setDropzoneError} label="Event Image" />
+        <Dropzone
+          setError={setDropzoneError}
+          label="Event Image"
+          selectedFile={selectedFile}
+          setSelectedFile={setSelectedFile}
+          defaultValue={eventDetails?.imageURL}
+        />
+
         {/* <TextCopy
           label="RSVP Link Image"
           text={

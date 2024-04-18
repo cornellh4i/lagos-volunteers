@@ -63,7 +63,7 @@ const UpcomingEvents = () => {
           endDate: event["endDate"],
           role: "Supervisor",
           hours: eventHours(event["startDate"], event["endDate"]),
-          img_src: event["imageURL"],
+          imageURL: event["imageURL"],
         };
       }
     ) || [];

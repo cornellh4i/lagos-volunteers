@@ -2,15 +2,23 @@ import React, { useState } from "react";
 
 interface DropzoneProps {
   setError: React.Dispatch<React.SetStateAction<string>>;
+  selectedFile: File | null;
+  setSelectedFile: React.Dispatch<React.SetStateAction<File | null>>;
   label?: string;
+  [key: string]: any;
 }
 
 /**
  * Dropzone component that allows uploading files. Requires a setState to be
  * passed in to handle file upload errors.
  */
-const Dropzone = ({ setError, label }: DropzoneProps) => {
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+const Dropzone = ({
+  setError,
+  selectedFile,
+  setSelectedFile,
+  label,
+  ...props
+}: DropzoneProps) => {
   const allowedFileTypes = ["image/jpg", "image/jpeg", "image/png"];
   const maxFileSize = 50 * 1024 * 1024; // 50 MB
 
