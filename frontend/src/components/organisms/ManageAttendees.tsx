@@ -1,4 +1,10 @@
-import React, { ChangeEvent, FormEvent, useEffect, useState } from "react";
+import React, {
+  ChangeEvent,
+  FormEvent,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import TabContainer from "@/components/molecules/TabContainer";
 import { GridColDef, GridPaginationModel } from "@mui/x-data-grid";
 import Table from "@/components/molecules/Table";
@@ -38,6 +44,8 @@ import { formatDateTimeToUI, formatDateTimeRange } from "@/utils/helpers";
 import { EventData } from "@/utils/types";
 import { FileCopy } from "@mui/icons-material";
 import { BASE_URL_CLIENT } from "@/utils/constants";
+import useWebSocket from "react-use-websocket";
+import { BASE_WEBSOCKETS_URL } from "@/utils/constants";
 
 //Initial push
 
@@ -76,6 +84,15 @@ const AttendeesTable = ({
 }: attendeeTableProps) => {
   const queryClient = useQueryClient();
 
+  // Define the WebSocket URL
+  const socketUrl = BASE_WEBSOCKETS_URL as string;
+
+  // Use the useWebSocket hook
+  const { sendMessage, lastMessage, readyState } = useWebSocket(socketUrl, {
+    shouldReconnect: () => true,
+  });
+
+  // Define mutation function
   const { mutateAsync, isPending, isError, isSuccess } = useMutation({
     mutationFn: async (variables: { userId: string; newValue: string }) => {
       const { userId, newValue } = variables;
@@ -89,10 +106,19 @@ const AttendeesTable = ({
     },
     retry: false,
     onSuccess: () => {
-      console.log("success");
       queryClient.invalidateQueries({ queryKey: ["event", eventId] });
     },
   });
+
+  //Handle new websocket messages
+
+  if (
+    lastMessage &&
+    lastMessage.data ==
+      `{"resource":"/events/${eventId}","message":"The resource has been updated!"}`
+  ) {
+    queryClient.invalidateQueries({ queryKey: ["event", eventId] });
+  }
 
   const handleStatusChange = async (userId: string, newValue: string) => {
     if (!eventId) {
@@ -161,8 +187,6 @@ const AttendeesTable = ({
       ),
     },
   ];
-
-  // const filteredRows = rows.filter((attendee: attendeeData) => attendee.status === status);
 
   return (
     <>
@@ -440,7 +464,6 @@ const Pending = () => {
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     // Prevent page refresh
     event.preventDefault();
-
     // Set search query
     setSearchQuery(value);
   };
