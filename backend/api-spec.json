@@ -124,6 +124,16 @@
             "type": "string"
           },
           {
+            "name": "attendeeStatus",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "emailOrName",
+            "in": "query",
+            "type": "string"
+          },
+          {
             "name": "sort",
             "in": "query",
             "type": "string"
@@ -785,8 +795,8 @@
         }
       }
     },
-    "/events/{eventid}/users/{userid}": {
-      "put": {
+    "/events/{eventid}/attendees/{userid}/attendee-status": {
+      "patch": {
         "tags": [
           "Events"
         ],
@@ -810,7 +820,7 @@
             "schema": {
               "type": "object",
               "properties": {
-                "status": {
+                "attendeeStatus": {
                   "example": "any"
                 }
               }

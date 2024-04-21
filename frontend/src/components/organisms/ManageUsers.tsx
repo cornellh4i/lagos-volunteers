@@ -13,7 +13,7 @@ import Loading from "@/components/molecules/Loading";
 import Card from "../molecules/Card";
 import { formatRoleOrStatus } from "@/utils/helpers";
 
-interface ManageUsersProps {}
+interface ManageUsersProps { }
 
 type ActiveProps = {
   initalRowData: Object[];
@@ -49,7 +49,7 @@ const Active = () => {
   const fetchUsersBatch = async (cursor?: string, searchQuery?: string) => {
     if (searchQuery) {
       const { data } = await api.get(
-        `/users?email=${searchQuery}&limit=${paginationModel.pageSize}&after=${cursor}`
+        `/users?emailOrName=${searchQuery}&limit=${paginationModel.pageSize}&after=${cursor}`
       );
       return data;
     } else {
@@ -215,7 +215,7 @@ const Active = () => {
 };
 
 /** A ManageUsers component */
-const ManageUsers = ({}: ManageUsersProps) => {
+const ManageUsers = ({ }: ManageUsersProps) => {
   const tabs = [
     {
       label: "Active",

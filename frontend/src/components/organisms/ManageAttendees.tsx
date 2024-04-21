@@ -415,7 +415,7 @@ const Pending = () => {
     queryFn: async () => {
       if (searchQuery) {
         const { data } = await api.get(
-          `/users?eventId=${eventid}&attendeeStatus=PENDING&email=${searchQuery}&limit=${paginationModel.pageSize}`
+          `/users?eventId=${eventid}&attendeeStatus=PENDING&emailOrName=${searchQuery}&limit=${paginationModel.pageSize}`
         );
         return data["data"];
       } else {

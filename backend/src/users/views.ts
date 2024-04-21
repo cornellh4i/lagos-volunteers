@@ -108,6 +108,7 @@ userRouter.get("/", useAuth, async (req: Request, res: Response) => {
     status: req.query.status as UserStatus,
     eventId: req.query.eventId as string,
     attendeeStatus: req.query.attendeeStatus as EnrollmentStatus,
+    emailOrName: req.query.emailOrName as string,
   };
 
   const sortQuery = req.query.sort as string;

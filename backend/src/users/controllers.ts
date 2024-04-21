@@ -110,6 +110,7 @@ const getUsers = async (
     status?: UserStatus;
     eventId?: string;
     attendeeStatus?: EnrollmentStatus;
+    emailOrName?: string;
   },
   sort: {
     key: string;
@@ -179,7 +180,16 @@ const getUsers = async (
       },
     };
   }
-
+  // let emailOrNameArr = []
+  // if (filter.emailOrName) {
+  //   if (filter.emailOrName.includes(" ")) {
+  //     const [firstName, lastName] = filter.emailOrName.split(" ");
+  //     emailOrNameArr.push(firstName)
+  //     emailOrNameArr.push(lastName)
+  //   } else {
+  //     emailOrNameArr.push(filter.emailOrName)
+  //   }
+  // }
   // Handles all other filtering
   let whereDict = {
     events: events,
@@ -203,14 +213,42 @@ const getUsers = async (
         contains: filter.firstName,
         mode: Prisma.QueryMode.insensitive,
       },
-      lastName: Array.isArray(filter.lastName)
-        ? { in: filter.lastName }
-        : filter.lastName,
+      lastName: {
+        contains: filter.lastName,
+        mode: Prisma.QueryMode.insensitive,
+      },
+      // lastName: Array.isArray(filter.lastName || filter.email)
+      //   ? { in: filter.lastName }
+      //   : filter.lastName,
       nickname: Array.isArray(filter.nickname)
         ? { in: filter.nickname }
         : filter.nickname,
     },
   };
+
+  let whereDictOr = [{
+    profile: {
+      firstName: {
+        contains: filter.emailOrName, // Search by email or name
+        mode: Prisma.QueryMode.insensitive,
+      },
+    },
+  },
+  {
+    profile: {
+      lastName: {
+        contains: filter.emailOrName, // Search by email or name
+        mode: Prisma.QueryMode.insensitive,
+      },
+    },
+  }, {
+    email: {
+      contains: filter.emailOrName, // Search by email or name
+      mode: Prisma.QueryMode.insensitive,
+    },
+  },
+  ]
+
 
   /* RESULT */
 
@@ -223,7 +261,7 @@ const getUsers = async (
 
   const queryResult = await prisma.user.findMany({
     where: {
-      AND: [whereDict],
+      OR: whereDictOr,
     },
     include: {
       profile: true,
