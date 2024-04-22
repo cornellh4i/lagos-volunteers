@@ -26,6 +26,7 @@ import { api } from "@/utils/api";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import Dropzone from "../atoms/Dropzone";
 import dynamic from "next/dynamic";
+import Alert from "../atoms/Alert";
 
 const EditorComp = dynamic(() => import("@/components/atoms/Editor"), {
   ssr: false,
@@ -45,9 +46,9 @@ type FormValues = {
   eventDescription: string;
   imageURL: string;
   rsvpLinkImage: string;
-  startDate: Date;
-  startTime: Date;
-  endTime: Date;
+  startDate: string;
+  startTime: string;
+  endTime: string;
   mode: string;
 };
 
@@ -234,6 +235,12 @@ const EventForm = ({
     }
   };
 
+  /** Edit event "Save changes" button should be disabled if event is in the past */
+  const currentDate = new Date();
+  const disableEditEvent = eventDetails
+    ? new Date(eventDetails?.startDate) < currentDate
+    : false;
+
   return (
     <>
       {/* Error component */}
@@ -256,6 +263,15 @@ const EventForm = ({
         <div className="font-bold text-3xl">
           {eventType == "create" ? "Create Event" : "Edit Event"}
         </div>
+
+        {/* Alert for when the event cannot be edited because it's in the past */}
+        {eventType == "edit" && disableEditEvent && (
+          <Alert variety="error">
+            This event is in the past, so you are not able to make changes to
+            the event.
+          </Alert>
+        )}
+
         <div className="grid grid-cols-1 col-span-2">
           <TextField
             label="Event Name"
@@ -433,13 +449,15 @@ const EventForm = ({
               </div>
               {/* TODO: Add functionality */}
               <div className="sm:col-start-7 sm:col-span-3">
-                <Button variety="error">Cancel event</Button>
+                <Button disabled={disableEditEvent} variety="error">
+                  Cancel event
+                </Button>
               </div>
               <div className="order-first sm:order-last sm:col-start-10 sm:col-span-3">
                 <Button
                   type="submit"
                   loading={editEventPending}
-                  disabled={editEventPending}
+                  disabled={editEventPending || disableEditEvent}
                 >
                   Save changes
                 </Button>

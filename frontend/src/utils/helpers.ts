@@ -75,7 +75,7 @@ export const formatDateString = (dateString: string) => {
  * @param inputDate is the inputDate
  * @returns the ISO string
  */
-export const convertToISO = (inputTime: Date, inputDate: Date) => {
+export const convertToISO = (inputTime: string, inputDate: string) => {
   const date = format(new Date(inputDate), "yyyy-MM-dd");
   const time = format(new Date(inputTime), "HH:mm:ss");
 
