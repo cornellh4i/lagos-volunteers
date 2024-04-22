@@ -11,6 +11,24 @@ import admin from "firebase-admin";
 // We are using one connection to prisma client to prevent multiple connections
 import prisma from "../../client";
 import { setVolunteerCustomClaims } from "../middleware/auth";
+import userController from "../users/controllers";
+import { sendEmail, replaceInText, replaceUserInputs } from "../utils/helpers";
+
+import fs from "fs"; // importing built-in file system
+
+/**
+ * Creates an object utf8 that can encode the buffer and convert to string.
+ * Creates an object for each html file to return a string.
+ */
+const utf8: BufferEncoding = "utf8";
+const stringEventUpdate: string = fs.readFileSync(
+  "./src/emails/Event_Update.html",
+  utf8
+);
+const stringUserUpdate: string = fs.readFileSync(
+  "./src/emails/User_Update.html",
+  utf8
+);
 
 /**
  * Creates a new user
@@ -100,6 +118,9 @@ const getUsers = async (
   pagination: {
     after: string;
     limit: string;
+  },
+  include: {
+    hours: boolean;
   }
 ) => {
   /* SORTING */
@@ -203,6 +224,7 @@ const getUsers = async (
     },
   });
 
+  // Query result
   const queryResult = await prisma.user.findMany({
     where: {
       AND: [whereDict],
@@ -222,11 +244,26 @@ const getUsers = async (
     skip: skip,
     cursor: cursor,
   });
+
+  // Get hours for each user if hours should be included
+  const newQueryResult: any = queryResult;
+
+  if (include.hours) {
+    for (let i = 0; i < queryResult.length; i++) {
+      const user = queryResult[i];
+      const hours = await getHours(user.id);
+      newQueryResult[i].totalHours = hours;
+    }
+  }
+
+  // Metadata
   const lastPostInResults = take
     ? queryResult[take - 1]
     : queryResult[queryResult.length - 1];
   const myCursor = lastPostInResults ? lastPostInResults.id : undefined;
-  return { result: queryResult, cursor: myCursor, totalItems: totalRecords };
+
+  // Return result
+  return { result: newQueryResult, cursor: myCursor, totalItems: totalRecords };
 };
 
 /**
@@ -401,14 +438,25 @@ const getRegisteredEvents = async (userID: string, eventID: string) => {
  * @returns promise with Int or error
  */
 const getHours = async (userId: string) => {
-  return prisma.user.findUnique({
+  const enrollments = await prisma.eventEnrollment.findMany({
     where: {
-      id: userId,
+      userId: userId,
+      attendeeStatus: "CHECKED_OUT",
     },
-    select: {
-      hours: true,
+    include: {
+      event: true,
     },
   });
+
+  // Sum total hours
+  let totalTime = 0;
+  for (const enrollment of enrollments) {
+    const eventDuration =
+      enrollment.event.endDate.getTime() - enrollment.event.startDate.getTime();
+    totalTime += eventDuration;
+  }
+  const hours = totalTime / (1000 * 60 * 60);
+  return hours;
 };
 
 /**
@@ -513,6 +561,25 @@ const editPreferences = async (
  * @returns promise with user or error
  */
 const editStatus = async (userId: string, status: string) => {
+  // grabs the user and their email for SendGrid functionality
+  const user = await userController.getUserProfile(userId);
+  var userEmail = user?.email as string;
+  var userName = user?.profile?.firstName as string;
+  var textBody = "You have been blacklisted.";
+
+  // sets the email message
+  // const emailHtml = "<b>htmlRegCancel</b>";
+  if (process.env.NODE_ENV != "test") {
+    if (user?.status === "INACTIVE") {
+      const updatedHtml = replaceUserInputs(
+        stringUserUpdate,
+        userName,
+        textBody
+      );
+      await sendEmail(userEmail, "You have been blacklisted.", updatedHtml);
+    }
+  }
+
   return prisma.user.update({
     where: {
       id: userId,
@@ -530,6 +597,30 @@ const editStatus = async (userId: string, status: string) => {
  * @returns promise with user or error
  */
 const editRole = async (userId: string, role: string) => {
+  const user = await userController.getUserProfile(userId);
+  const prevUserRole = user?.role;
+  var userEmail = user?.email as string;
+  var userName = user?.profile?.firstName as string;
+  var textBodySA = "Your role has changed from supervisor to admin.";
+  var textBodyVS = "Your role has changed from volunteer to supervisor.";
+
+  if (process.env.NODE_ENV != "test") {
+    if (prevUserRole === "SUPERVISOR" && role === "ADMIN") {
+      const updatedHtml = replaceUserInputs(
+        stringUserUpdate,
+        userName,
+        textBodySA
+      );
+      await sendEmail(userEmail, "Your email subject", updatedHtml);
+    } else if (prevUserRole === "VOLUNTEER" && role === "SUPERVISOR") {
+      const updatedHtml = replaceUserInputs(
+        stringUserUpdate,
+        userName,
+        textBodyVS
+      );
+      await sendEmail(userEmail, "Your role has changed.", updatedHtml);
+    }
+  }
   return prisma.user.update({
     where: {
       id: userId,
@@ -636,4 +727,5 @@ export default {
   editRole,
   editHours,
   getUsersSorted,
+  sendEmail,
 };

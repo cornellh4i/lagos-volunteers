@@ -159,6 +159,7 @@ eventRouter.patch(
         attendeeStatus
       )
     );
+    socketNotify(`/events/${req.params.eventid}`);
   }
 );
 
