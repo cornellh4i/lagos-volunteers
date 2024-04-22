@@ -118,6 +118,9 @@ const getUsers = async (
   pagination: {
     after: string;
     limit: string;
+  },
+  include: {
+    hours: boolean;
   }
 ) => {
   /* SORTING */
@@ -221,6 +224,7 @@ const getUsers = async (
     },
   });
 
+  // Query result
   const queryResult = await prisma.user.findMany({
     where: {
       AND: [whereDict],
@@ -240,11 +244,26 @@ const getUsers = async (
     skip: skip,
     cursor: cursor,
   });
+
+  // Get hours for each user if hours should be included
+  const newQueryResult: any = queryResult;
+
+  if (include.hours) {
+    for (let i = 0; i < queryResult.length; i++) {
+      const user = queryResult[i];
+      const hours = await getHours(user.id);
+      newQueryResult[i].totalHours = hours;
+    }
+  }
+
+  // Metadata
   const lastPostInResults = take
     ? queryResult[take - 1]
     : queryResult[queryResult.length - 1];
   const myCursor = lastPostInResults ? lastPostInResults.id : undefined;
-  return { result: queryResult, cursor: myCursor, totalItems: totalRecords };
+
+  // Return result
+  return { result: newQueryResult, cursor: myCursor, totalItems: totalRecords };
 };
 
 /**
@@ -419,14 +438,25 @@ const getRegisteredEvents = async (userID: string, eventID: string) => {
  * @returns promise with Int or error
  */
 const getHours = async (userId: string) => {
-  return prisma.user.findUnique({
+  const enrollments = await prisma.eventEnrollment.findMany({
     where: {
-      id: userId,
+      userId: userId,
+      attendeeStatus: "CHECKED_OUT",
     },
-    select: {
-      hours: true,
+    include: {
+      event: true,
     },
   });
+
+  // Sum total hours
+  let totalTime = 0;
+  for (const enrollment of enrollments) {
+    const eventDuration =
+      enrollment.event.endDate.getTime() - enrollment.event.startDate.getTime();
+    totalTime += eventDuration;
+  }
+  const hours = totalTime / (1000 * 60 * 60);
+  return hours;
 };
 
 /**

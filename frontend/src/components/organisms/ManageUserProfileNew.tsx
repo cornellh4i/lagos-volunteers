@@ -125,6 +125,16 @@ const ManageUserProfileNew = () => {
   const REFERENCE_HOURS = 80;
   const CERTIFICATE_HOURS = 120;
 
+  /** Tanstack query for fetching the user's total hours */
+  const hoursQuery = useQuery({
+    queryKey: ["userHours", userid],
+    queryFn: async () => {
+      const { data: dataHours } = await api.get(`/users/${userid}/hours`);
+      return dataHours["data"];
+    },
+  });
+  let hours = hoursQuery.data;
+
   /** Tanstack query for fetching the user profile data */
   const {
     data: userProfileDetailsQuery,
@@ -143,7 +153,7 @@ const ManageUserProfileNew = () => {
     email,
     joinDate,
     userId,
-    hours,
+    hours: fakeHours,
     status,
     imgSrc,
     phoneNumber,
@@ -381,20 +391,20 @@ const ManageUserProfileNew = () => {
         <Card>
           <LinearProgress value={100 * (hours / REFERENCE_HOURS)} />
           <h3 className="mb-2 mt-4">Reference Hour Tracker</h3>
-          <div className="mb-4">
+          <div>
             {hours} / {REFERENCE_HOURS} hours complete
           </div>
-          <Button>Approve Reference Request</Button>
+          {/* <Button>Approve Reference Request</Button> */}
         </Card>
         <Card>
           <LinearProgress value={100 * (hours / CERTIFICATE_HOURS)} />
           <h3 className="mb-2 mt-4">Certificate Hour Tracker</h3>
-          <div className="mb-4">
+          <div>
             {hours} / {CERTIFICATE_HOURS} hours complete
           </div>
-          <Button disabled={hours !== CERTIFICATE_HOURS}>
+          {/* <Button disabled={hours !== CERTIFICATE_HOURS}>
             Approve Certificate Request
-          </Button>
+          </Button> */}
         </Card>
       </div>
       <h3>Event History</h3>
