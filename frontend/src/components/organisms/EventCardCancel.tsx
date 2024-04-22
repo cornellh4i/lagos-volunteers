@@ -14,6 +14,7 @@ import { useForm, SubmitHandler } from "react-hook-form";
 interface EventCardCancelProps {
   attendeeId: string;
   eventId: string;
+  date: Date;
 }
 
 interface modalProps {
@@ -58,7 +59,11 @@ const ModalBody = ({ handleClose, mutateFn }: modalProps) => {
   );
 };
 
-const EventCardCancel = ({ eventId, attendeeId }: EventCardCancelProps) => {
+const EventCardCancel = ({
+  eventId,
+  attendeeId,
+  date,
+}: EventCardCancelProps) => {
   const { user } = useAuth();
   const queryClient = useQueryClient();
 
@@ -110,6 +115,10 @@ const EventCardCancel = ({ eventId, attendeeId }: EventCardCancelProps) => {
     setOpen(!open);
   };
 
+  /** Register button should be disabled if event is in the past */
+  const currentDate = new Date();
+  const disableCancelEvent = date < currentDate;
+
   return (
     <>
       <Modal
@@ -121,7 +130,9 @@ const EventCardCancel = ({ eventId, attendeeId }: EventCardCancelProps) => {
       <Card>
         <div className="font-semibold text-2xl">You're registered</div>
         <div className="mt-5" />
-        <div className="font-semibold text-lg">No longer able to attend?</div>
+        <div className="font-semibold text-lg mb-2">
+          No longer able to attend?
+        </div>
         <IconText icon={<AccessTimeFilledIcon />}>
           {/* TODO: Update how many hours left */}
           <div>4 hours left to cancel registration</div>
@@ -142,12 +153,17 @@ const EventCardCancel = ({ eventId, attendeeId }: EventCardCancelProps) => {
             {...register("cancelReason", {
               required: { value: true, message: "Required" },
             })}
+            disabled={disableCancelEvent}
             onChange={(e: any) => setCancelationMessage(e.target.value)}
           />
           <div className="mt-3" />
-          <Button type="submit" variety="error">
-            Cancel registration
-          </Button>
+          {disableCancelEvent ? (
+            <Button disabled>The event has concluded.</Button>
+          ) : (
+            <Button type="submit" variety="error">
+              Cancel registration
+            </Button>
+          )}
         </form>
       </Card>
     </>
