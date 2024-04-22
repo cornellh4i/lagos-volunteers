@@ -13,7 +13,7 @@ import RadioGroup from "@mui/material/RadioGroup";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import FormControl from "@mui/material/FormControl";
 import LocationPicker from "../atoms/LocationPicker";
-import { Typography } from "@mui/material";
+import { Typography, Box } from "@mui/material";
 import { useAuth } from "@/utils/AuthContext";
 import router from "next/router";
 import Snackbar from "../atoms/Snackbar";
@@ -22,6 +22,7 @@ import { api } from "@/utils/api";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import Dropzone from "../atoms/Dropzone";
 import dynamic from "next/dynamic";
+import Modal from "../molecules/Modal";
 
 const EditorComp = dynamic(() => import("@/components/atoms/Editor"), {
   ssr: false,
@@ -83,6 +84,10 @@ const EventForm = ({
     setStatus(status);
   };
 
+  type modalBodyProps = {
+    handleClose: () => void;
+  };
+
   /** React hook form */
   const {
     register,
@@ -112,6 +117,15 @@ const EventForm = ({
 
   /** Handles form errors for time and date validation */
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
+  /** Handles for cancelling an event */
+  const [open, setOpen] = useState(false);
+  const handleOpen = () => setOpen(true);
+  const handleClose = () => setOpen(false);
+
+  /** Handles for graying out buttons */
+  /** USE STATE WILL REFRESH EVERY TIME - Need a way to access event status itself */
+  const [canceled, setCanceled] = useState(false);
 
   /** Tanstack mutation for creating a new event */
   const {
@@ -192,10 +206,30 @@ const EventForm = ({
       },
     });
 
+  /** Tanstack mutation for canceling an event */
+  const { mutateAsync: handleCancelEventAsync, isPending: cancelEventPending } =
+    useMutation({
+      mutationFn: async () => {
+        const { response } = await api.patch(`/events/${eventId}/status`, {
+          status: "CANCELED",
+        });
+        return response;
+      },
+      retry: false,
+      onSuccess: () => {
+        queryClient.invalidateQueries({
+          queryKey: ["event", eventId],
+        });
+        localStorage.setItem("eventEdited", "true");
+        router.push("/events/view");
+      },
+    });
+
   /** Helper for handling creating events */
   const handleCreateEvent: SubmitHandler<FormValues> = async (data) => {
     try {
       await handleCreateNewEvent(data);
+      setCanceled(true);
     } catch (error) {
       setErrorNotificationOpen(true);
       setErrorMessage("We were unable to create this event. Please try again");
@@ -212,8 +246,46 @@ const EventForm = ({
     }
   };
 
+  /** Helper for handling canceling events */
+  const handleCancelEvent = async () => {
+    try {
+      await handleCancelEventAsync();
+    } catch (error) {
+      setErrorNotificationOpen(true);
+      setErrorMessage("We were unable to cancel this event. Please try again");
+    }
+  };
+
+  /** Confirmation modal for canceling an event */
+  const ModalBody = ({ handleClose }: modalBodyProps) => {
+    return (
+      <div>
+        <Box sx={{ textAlign: "center", marginBottom: 3 }}>
+          Are you sure you want to cancel this event?
+        </Box>
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <div className="order-1 sm:order-2">
+            <Button variety="error" onClick={handleCancelEvent}>
+              Yes, cancel
+            </Button>
+          </div>
+          <div className="order-2 sm:order-1">
+            <Button variety="secondary" onClick={handleClose}>
+              Go Back
+            </Button>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   return (
     <>
+      <Modal
+        open={open}
+        handleClose={handleClose}
+        children={<ModalBody handleClose={handleClose} />}
+      />
       {/* Error component */}
       <Snackbar
         variety="error"
@@ -404,13 +476,19 @@ const EventForm = ({
               </div>
               {/* TODO: Add functionality */}
               <div className="sm:col-start-7 sm:col-span-3">
-                <Button variety="error">Cancel event</Button>
+                <Button
+                  disabled={canceled}
+                  variety="error"
+                  onClick={handleOpen}
+                >
+                  Cancel event
+                </Button>
               </div>
               <div className="order-first sm:order-last sm:col-start-10 sm:col-span-3">
                 <Button
                   type="submit"
                   loading={editEventPending}
-                  disabled={editEventPending}
+                  disabled={editEventPending || canceled}
                 >
                   Save changes
                 </Button>
