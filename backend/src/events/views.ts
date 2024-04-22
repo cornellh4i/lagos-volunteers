@@ -135,7 +135,7 @@ eventRouter.get(
 
 eventRouter.post(
   "/:eventid/attendees",
-  useAdminAuth || useSupervisorAuth,
+  useAuth,
   async (req: Request, res: Response) => {
     // #swagger.tags = ['Events']
     const { attendeeid } = req.body;

@@ -26,58 +26,62 @@ process.env.NODE_ENV === "test"
     (useAdminAuth = authIfAdmin as RequestHandler),
     (useSupervisorAuth = authIfSupervisor as RequestHandler));
 
-userRouter.post("/", useAuth, async (req: Request, res: Response) => {
-  // #swagger.tags = ['Users']
-  socketNotify("/users");
-  let user;
-  const { password, ...rest } = req.body;
-  try {
-    // Create user in local database
-    user = await userController.createUser(
-      rest,
-      rest.profile,
-      rest.preferences,
-      rest.permissions
-    );
+userRouter.post(
+  "/",
+  NoAuth as RequestHandler,
+  async (req: Request, res: Response) => {
+    // #swagger.tags = ['Users']
+    socketNotify("/users");
+    let user;
+    const { password, ...rest } = req.body;
+    try {
+      // Create user in local database
+      user = await userController.createUser(
+        rest,
+        rest.profile,
+        rest.preferences,
+        rest.permissions
+      );
 
-    // If local user doesn't exist, throw error
-    if (!user) {
-      throw Error("Failed to create local user");
-    }
+      // If local user doesn't exist, throw error
+      if (!user) {
+        throw Error("Failed to create local user");
+      }
 
-    // If test environment, return user without firebase auth
-    else if (process.env.NODE_ENV === "test") {
-      return res.status(201).send({ success: true, data: user });
-    }
+      // If test environment, return user without firebase auth
+      else if (process.env.NODE_ENV === "test") {
+        return res.status(201).send({ success: true, data: user });
+      }
 
-    // Otherwise, create user in Firebase
-    else {
-      const fbUser = await firebase.auth().createUser({
-        uid: user.id,
-        email: rest.email,
-        password: password,
-      });
-      if (fbUser) {
-        await firebase.auth().setCustomUserClaims(fbUser.uid, {
-          admin: false,
-          supervisor: false,
-          volunteer: true,
+      // Otherwise, create user in Firebase
+      else {
+        const fbUser = await firebase.auth().createUser({
+          uid: user.id,
+          email: rest.email,
+          password: password,
         });
-        return res.status(200).send({ success: true, user: user });
+        if (fbUser) {
+          await firebase.auth().setCustomUserClaims(fbUser.uid, {
+            admin: false,
+            supervisor: false,
+            volunteer: true,
+          });
+          return res.status(200).send({ success: true, user: user });
+        }
       }
-    }
-  } catch (e: any) {
-    // If user exists in local database but not in Firebase, delete user
-    if (user) {
-      try {
-        await userController.deleteUser(user.id);
-      } catch (e: any) {
-        return res.status(500).send({ success: false, error: e.message });
+    } catch (e: any) {
+      // If user exists in local database but not in Firebase, delete user
+      if (user) {
+        try {
+          await userController.deleteUser(user.id);
+        } catch (e: any) {
+          return res.status(500).send({ success: false, error: e.message });
+        }
       }
+      return res.status(500).send({ success: false, error: e.message });
     }
-    return res.status(500).send({ success: false, error: e.message });
   }
-});
+);
 
 userRouter.delete("/:userid", useAuth, async (req: Request, res: Response) => {
   // #swagger.tags = ['Users']

@@ -17,6 +17,7 @@ process.env.NODE_ENV === "test"
     (useAdminAuth = authIfAdmin as RequestHandler))
   : ((useAuth = auth as RequestHandler),
     (useAdminAuth = authIfAdmin as RequestHandler));
+
 websiteRouter.get(
   "/download",
   useAdminAuth,
