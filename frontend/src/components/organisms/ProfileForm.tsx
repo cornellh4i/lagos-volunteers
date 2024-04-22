@@ -65,16 +65,14 @@ const ModalBody = ({ userDetails, handleClose }: ModalBodyProps) => {
   } = useForm<DeleteAccountFormValues>();
 
   //changeUserStatus handles deleting user from prisma and firebase
-  const { mutateAsync: changeUserStatus, error: changeUserStatusError } =
+  const { mutateAsync: deleteUserProfile, error: deleteUserProfileError } =
     useMutation({
       mutationFn: async () => {
         const { data } = await api.delete(`/users/${userDetails.id}`);
         return data;
       },
       retry: false,
-      onSuccess: () => {
-        console.log("DELETED");
-      },
+      onSuccess: () => {},
     });
 
   //Variables for signing out user
@@ -97,8 +95,12 @@ const ModalBody = ({ userDetails, handleClose }: ModalBodyProps) => {
    * and redirect them to login page
    */
   const handleDeleteAccount = async () => {
-    await changeUserStatus();
-    await handleSignOut();
+    try {
+      await deleteUserProfile();
+      await handleSignOut();
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   return (
@@ -261,17 +263,6 @@ const ProfileForm = ({ userDetails }: ProfileFormProps) => {
       setErrorMessage(error.message);
     }
   };
-
-  // const { mutateAsync: changeUserStatus } = useMutation({
-  //   mutationFn: async () => {
-  //     const { data } = await api.delete(`/users/${userid}`);
-  //     return data;
-  //   },
-  //   retry: false,
-  //   onSuccess: () => {
-  //     console.log("DELETED");
-  //   }
-  // });
 
   return (
     <>
