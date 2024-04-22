@@ -20,6 +20,9 @@ const CustomDatePicker = forwardRef(
     { label, error = "", value, ...props }: DatePickerProps,
     ref: Ref<HTMLInputElement>
   ) => {
+    const today = dayjs();
+    const tomorrow = dayjs().add(1, "day");
+
     return (
       <div>
         <div className="mb-1">{label}</div>
@@ -39,7 +42,7 @@ const CustomDatePicker = forwardRef(
             ref={ref}
             format="DD/MM/YYYY"
             defaultValue={value ? dayjs(value) : undefined}
-            disablePast={true}
+            minDate={tomorrow}
             {...props}
           />
         </LocalizationProvider>
