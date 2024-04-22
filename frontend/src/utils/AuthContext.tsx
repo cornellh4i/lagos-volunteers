@@ -175,14 +175,12 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         sessionStorage.setItem("redirectPath", path);
         router.replace("/login");
       } else if (user && user.emailVerified && authPaths.includes(path)) {
-        const redirectPath = sessionStorage.getItem("redirectPath");
-        if (redirectPath) {
-          router
-            .replace(redirectPath)
-            .then(() => sessionStorage.removeItem("redirectPath"));
-        } else {
-          router.replace("/events/view");
-        }
+        router.replace(
+          sessionStorage.getItem("redirectPath") || "/events/view"
+        );
+        router.events.on("routeChangeComplete", () => {
+          sessionStorage.removeItem("redirectPath");
+        });
       } else if (
         user &&
         user.emailVerified &&
