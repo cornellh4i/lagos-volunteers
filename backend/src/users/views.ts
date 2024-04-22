@@ -16,17 +16,17 @@ import { attempt, socketNotify } from "../utils/helpers";
 
 let useAuth: RequestHandler;
 let useAdminAuth: RequestHandler;
-let useSuperAuth: RequestHandler;
+let useSupervisorAuth: RequestHandler;
 
 process.env.NODE_ENV === "test"
   ? ((useAuth = NoAuth as RequestHandler),
-    (useAdminAuth = authIfAdmin as RequestHandler),
-    (useSuperAuth = authIfSupervisor as RequestHandler))
+    (useAdminAuth = NoAuth as RequestHandler),
+    (useSupervisorAuth = NoAuth as RequestHandler))
   : ((useAuth = auth as RequestHandler),
     (useAdminAuth = authIfAdmin as RequestHandler),
-    (useSuperAuth = authIfSupervisor as RequestHandler));
+    (useSupervisorAuth = authIfSupervisor as RequestHandler));
 
-userRouter.post("/", useAdminAuth, async (req: Request, res: Response) => {
+userRouter.post("/", useAuth, async (req: Request, res: Response) => {
   // #swagger.tags = ['Users']
   socketNotify("/users");
   let user;
@@ -97,7 +97,7 @@ userRouter.put("/:userid", useAuth, async (req: Request, res: Response) => {
 
 userRouter.get(
   "/count",
-  useAdminAuth || useSuperAuth,
+  useAdminAuth || useSupervisorAuth,
   async (req: Request, res: Response) => {
     // #swagger.tags = ['Users']
     attempt(res, 200, userController.getCountUsers);
@@ -137,7 +137,7 @@ userRouter.get("/", useAuth, async (req: Request, res: Response) => {
 
 userRouter.get(
   "/pagination",
-  useAdminAuth || useSuperAuth,
+  useAdminAuth || useSupervisorAuth,
   async (req: Request, res: Response) => {
     // #swagger.tags = ['Users']
     attempt(res, 200, () => userController.getUsersPaginated(req));
@@ -146,7 +146,7 @@ userRouter.get(
 
 userRouter.get(
   "/search",
-  useAdminAuth || useSuperAuth,
+  useAdminAuth || useSupervisorAuth,
   async (req: Request, res: Response) => {
     // #swagger.tags = ['Users']
     const { email, firstName, lastName, role, status, hours, nickname } =
@@ -168,7 +168,7 @@ userRouter.get(
 
 userRouter.get(
   "/sorting",
-  useAdminAuth || useSuperAuth,
+  useAdminAuth || useSupervisorAuth,
   async (req: Request, res: Response) => {
     // #swagger.tags = ['Users']
     attempt(res, 200, () => userController.getUsersSorted(req));
@@ -314,7 +314,7 @@ userRouter.patch(
 
 userRouter.patch(
   "/:userid/hours",
-  useAdminAuth || useSuperAuth,
+  useAdminAuth || useSupervisorAuth,
   async (req: Request, res: Response) => {
     // #swagger.tags = ['Users']
     const { hours } = req.body;

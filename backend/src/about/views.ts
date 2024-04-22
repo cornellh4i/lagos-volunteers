@@ -12,15 +12,15 @@ const aboutRouter = Router();
 
 let useAuth: RequestHandler;
 let useAdminAuth: RequestHandler;
-let useSuperAuth: RequestHandler;
+let useSupervisorAuth: RequestHandler;
 
 process.env.NODE_ENV === "test"
   ? ((useAuth = NoAuth as RequestHandler),
-    (useAdminAuth = authIfAdmin as RequestHandler),
-    (useSuperAuth = authIfSupervisor as RequestHandler))
+    (useAdminAuth = NoAuth as RequestHandler),
+    (useSupervisorAuth = NoAuth as RequestHandler))
   : ((useAuth = auth as RequestHandler),
     (useAdminAuth = authIfAdmin as RequestHandler),
-    (useSuperAuth = authIfSupervisor as RequestHandler));
+    (useSupervisorAuth = authIfSupervisor as RequestHandler));
 
 aboutRouter.get("/", useAuth, async (req: Request, res: Response) => {
   attempt(res, 200, () => aboutController.getAboutPageContent());

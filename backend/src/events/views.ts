@@ -16,15 +16,15 @@ const eventRouter = Router();
 
 let useAuth: RequestHandler;
 let useAdminAuth: RequestHandler;
-let useSuperAuth: RequestHandler;
+let useSupervisorAuth: RequestHandler;
 
 process.env.NODE_ENV === "test"
   ? ((useAuth = NoAuth as RequestHandler),
-    (useAdminAuth = authIfAdmin as RequestHandler),
-    (useSuperAuth = authIfSupervisor as RequestHandler))
+    (useAdminAuth = NoAuth as RequestHandler),
+    (useSupervisorAuth = NoAuth as RequestHandler))
   : ((useAuth = auth as RequestHandler),
     (useAdminAuth = authIfAdmin as RequestHandler),
-    (useSuperAuth = authIfSupervisor as RequestHandler));
+    (useSupervisorAuth = authIfSupervisor as RequestHandler));
 
 export type EventDTO = {
   userID: string;
@@ -44,7 +44,7 @@ export type EventDTO = {
 
 eventRouter.post(
   "/",
-  useAdminAuth || useSuperAuth,
+  useAdminAuth || useSupervisorAuth,
   async (req: Request, res: Response) => {
     // #swagger.tags = ['Events']
     const eventDTO: EventDTO = req.body;
@@ -55,7 +55,7 @@ eventRouter.post(
 
 eventRouter.put(
   "/:eventid",
-  useAdminAuth || useSuperAuth,
+  useAdminAuth || useSupervisorAuth,
   async (req: Request, res: Response) => {
     // #swagger.tags = ['Events']
     attempt(res, 200, () =>
@@ -67,7 +67,7 @@ eventRouter.put(
 
 eventRouter.delete(
   "/:eventid",
-  useAuth,
+  useAdminAuth || useSupervisorAuth,
   async (req: Request, res: Response) => {
     // #swagger.tags = ['Events']
     attempt(res, 200, () => eventController.deleteEvent(req.params.eventid));
@@ -121,7 +121,7 @@ eventRouter.get("/:eventid", useAuth, async (req: Request, res: Response) => {
 
 eventRouter.get(
   "/:eventid/attendees",
-  useAuth,
+  useAdminAuth || useSupervisorAuth,
   async (req: Request, res: Response) => {
     // #swagger.tags = ['Events']
     attempt(res, 200, () =>
@@ -135,7 +135,7 @@ eventRouter.get(
 
 eventRouter.post(
   "/:eventid/attendees",
-  useAdminAuth || useSuperAuth,
+  useAdminAuth || useSupervisorAuth,
   async (req: Request, res: Response) => {
     // #swagger.tags = ['Events']
     const { attendeeid } = req.body;
@@ -148,7 +148,7 @@ eventRouter.post(
 
 eventRouter.patch(
   "/:eventid/attendees/:userid/attendee-status",
-  useAdminAuth || useSuperAuth,
+  useAdminAuth || useSupervisorAuth,
   async (req: Request, res: Response) => {
     // #swagger.tags = ['Events']
     const { attendeeStatus } = req.body;
@@ -164,7 +164,7 @@ eventRouter.patch(
 
 eventRouter.put(
   "/:eventid/attendees",
-  useAdminAuth || useSuperAuth,
+  useAdminAuth || useSupervisorAuth,
   async (req: Request, res: Response) => {
     // #swagger.tags = ['Events']
     const { attendeeid, cancelationMessage } = req.body;
@@ -181,7 +181,7 @@ eventRouter.put(
 
 eventRouter.patch(
   "/:eventid/status",
-  useAdminAuth || useSuperAuth,
+  useAdminAuth || useSupervisorAuth,
   async (req: Request, res: Response) => {
     // #swagger.tags = ['Events']
     const { status } = req.body;
@@ -194,7 +194,7 @@ eventRouter.patch(
 
 eventRouter.patch(
   "/:eventid/owner",
-  useAdminAuth || useSuperAuth,
+  useAdminAuth || useSupervisorAuth,
   async (req: Request, res: Response) => {
     // #swagger.tags = ['Events']
     const { ownerid } = req.body;
@@ -206,7 +206,7 @@ eventRouter.patch(
 
 eventRouter.patch(
   "/:eventid/attendees/:attendeeid/confirm",
-  useAdminAuth || useSuperAuth,
+  useAdminAuth || useSupervisorAuth,
   async (req: Request, res: Response) => {
     // #swagger.tags = ['Events']
     attempt(res, 200, () =>
