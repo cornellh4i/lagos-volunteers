@@ -100,8 +100,8 @@ const ProfileForm = ({ userDetails }: ProfileFormProps) => {
   // TODO: Implement this
   const [checked, setChecked] = useState(false);
   const handleCheckbox = () => {
-    setChecked ((checked) => !checked);
-    setEmailNotifications((prev) => !prev); 
+  setChecked ((checked) => !checked);
+  setEmailNotifications((prev) => !prev); 
   };
 
   /** Tanstack query mutation to reauthenticate the user session */
@@ -143,13 +143,26 @@ const ProfileForm = ({ userDetails }: ProfileFormProps) => {
     retry: false,
   });
 
+   /** Tanstack query mutation to update the user profile */
+   const updatePreferencesInDB = useMutation({
+    mutationFn: async (data: any) => {
+      return api.put(`/users/${userDetails.id}/preferences`, {
+        sendEmailNotification: data.emailNotifications,
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["preferences"] });
+    },
+    retry: false,
+  });
+
   /** Handles form submit */
   const handleChanges: SubmitHandler<FormValues> = async (data) => {
     try {
-      data.emailNotifications = emailNotifications;
       await ReAuthenticateUserSession.mutateAsync(data);
       await updateUserPasswordInFirebase.mutateAsync(data);
       await updateProfileInDB.mutateAsync(data);
+      await updatePreferencesInDB.mutateAsync(data);
       setSuccessNotificationOpen(true);
     } catch (error: any) {
       setErrorNotificationOpen(true);
@@ -259,8 +272,9 @@ const ProfileForm = ({ userDetails }: ProfileFormProps) => {
           })}
         />
         <Checkbox
-          checked={checked}
+          checked={emailNotifications}
           onChange={handleCheckbox}
+          // {...register("emailNotifications")}
           label="Email notifications"
         />
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">

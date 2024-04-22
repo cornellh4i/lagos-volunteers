@@ -492,6 +492,7 @@ const getUserPreferences = async (userId: string) => {
   return prisma.user.findUnique({
     where: {
       id: userId,
+      // sendEmailNotification: emailNotifications,
     },
     include: {
       preferences: true,
@@ -507,7 +508,8 @@ const getUserPreferences = async (userId: string) => {
  */
 const editPreferences = async (
   userId: string,
-  preferences: UserPreferences
+  preferences: UserPreferences,
+  // emailNotifications: boolean
 ) => {
   return prisma.user.update({
     where: { id: userId },
@@ -515,6 +517,7 @@ const editPreferences = async (
       preferences: {
         update: {
           ...preferences,
+          // sendEmailNotification: emailNotifications,
         },
       },
     },
@@ -546,7 +549,10 @@ const editStatus = async (userId: string, status: string) => {
         userName,
         textBody
       );
-      await sendEmail(userEmail, "You have been blacklisted.", updatedHtml);
+      const userPreferences = await userController.getUserPreferences(userId);
+      if (userPreferences?.preferences?.sendEmailNotification == true) {
+        await sendEmail(userEmail, "You have been blacklisted.", updatedHtml);
+      }
     }
   }
 
@@ -575,20 +581,23 @@ const editRole = async (userId: string, role: string) => {
   var textBodyVS = "Your role has changed from volunteer to supervisor.";
 
   if (process.env.NODE_ENV != "test") {
-    if (prevUserRole === "SUPERVISOR" && role === "ADMIN") {
-      const updatedHtml = replaceUserInputs(
+    const userPreferences = await userController.getUserPreferences(userId);
+    if (userPreferences?.preferences?.sendEmailNotification == true) {
+      if (prevUserRole === "SUPERVISOR" && role === "ADMIN") {
+        const updatedHtml = replaceUserInputs(
         stringUserUpdate,
         userName,
         textBodySA
-      );
-      await sendEmail(userEmail, "Your email subject", updatedHtml);
-    } else if (prevUserRole === "VOLUNTEER" && role === "SUPERVISOR") {
-      const updatedHtml = replaceUserInputs(
+        );
+        await sendEmail(userEmail, "Your email subject", updatedHtml);
+      } else if (prevUserRole === "VOLUNTEER" && role === "SUPERVISOR") {
+        const updatedHtml = replaceUserInputs(
         stringUserUpdate,
         userName,
         textBodyVS
-      );
-      await sendEmail(userEmail, "Your role has changed.", updatedHtml);
+        );
+        await sendEmail(userEmail, "Your role has changed.", updatedHtml);
+      }
     }
   }
   return prisma.user.update({
