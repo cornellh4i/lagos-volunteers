@@ -11,6 +11,9 @@ import {
   useSignInWithGoogle,
 } from "react-firebase-hooks/auth";
 import Snackbar from "../atoms/Snackbar";
+import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
+import { api } from "@/utils/api";
+import { useMutation } from "@tanstack/react-query";
 
 export type FormValues = {
   email: string;
@@ -109,8 +112,67 @@ const LoginForm = () => {
   }, [signInErrors]);
 
   /** Sign in with Google */
-  const [signInWithGoogle, googleUser, googleLoading, googleError] =
-    useSignInWithGoogle(auth);
+
+  const handleGoogleLogin = async () => {
+    const provider = await new GoogleAuthProvider();
+    signInWithPopup(auth, provider)
+    .then((result) => {
+      // The signed-in user info.
+      const user = result.user;
+      // console.log("user", user);
+
+      const createUser = async () => {
+        const [firstName, lastName] = user?.displayName ? user?.displayName?.split(" ") : ["", ""]
+        const email = user?.email as string;
+        const userid = user?.uid as string;
+        const phoneNumber = user?.phoneNumber as string;
+        // Check if user exists in local database
+        const { response, data } = await api.get(`/users/${userid}`);
+
+        if (!data["data"]) {
+          // console.log("creating user");
+          await createLocalUserFromGoogle.mutateAsync({userid, firstName, lastName, email, phoneNumber});
+        } else {
+          // console.log("user already created");
+        }
+      }
+      createUser();
+
+    }).catch((error) => {
+      // Handle Errors here.
+      const errorCode = error.code;
+      const errorMessage = error.message;
+      // The email of the user's account used.
+      const email = error.customData.email;
+      // The AuthCredential type that was used.
+      const credential = GoogleAuthProvider.credentialFromError(error);
+      // ...
+    });
+  }
+
+  /** Tanstack query mutation to create a new user */
+  const createLocalUserFromGoogle = useMutation({
+    mutationFn: async (data: {userid: string, firstName: string, lastName: string, email: string, phoneNumber: string}) => {
+      const {userid, firstName, lastName, email} = data
+      const emailLowerCase = email.toLowerCase();
+      const post = {
+        id: userid,
+        email: emailLowerCase,
+        profile: {
+          firstName,
+          lastName,
+        },
+      };
+      const { response } = await api.post("/users/googleCreate", post, false);
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error);
+      }
+
+      return response;
+    },
+    retry: false,
+  });
 
   return (
     <>
@@ -175,11 +237,11 @@ const LoginForm = () => {
           </Link>
         </div>
         <Button
-          loading={googleLoading}
-          disabled={googleLoading}
+          // loading={googleLoading}
+          // disabled={googleLoading}
           variety="secondary"
           icon={<GoogleIcon />}
-          // onClick={() => handleGoogleLogin()}
+          onClick={handleGoogleLogin}
           type="submit"
         >
           Continue with Google

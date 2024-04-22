@@ -75,6 +75,47 @@ userRouter.post(
   }
 );
 
+userRouter.post(
+  "/googleCreate",
+  NoAuth as RequestHandler,
+  async (req: Request, res: Response) => {
+    // #swagger.tags = ['Users']
+    socketNotify("/users");
+    let user;
+    const { ...rest } = req.body;
+    try {
+      // Create user in local database
+      user = await userController.createUser(
+        rest,
+        rest.profile,
+        rest.preferences,
+        rest.permissions
+      );
+
+      // If local user doesn't exist, throw error
+      if (!user) {
+        throw Error("Failed to create local user");
+      }
+
+      // If test environment, return user without firebase auth
+      else if (process.env.NODE_ENV === "test") {
+        return res.status(201).send({ success: true, data: user });
+      }
+      
+    } catch (e: any) {
+      // If user exists in local database but not in Firebase, delete user
+      if (user) {
+        try {
+          await userController.deleteUser(user.id);
+        } catch (e: any) {
+          return res.status(500).send({ success: false, error: e.message });
+        }
+      }
+      return res.status(500).send({ success: false, error: e.message });
+    }
+  }
+);
+
 userRouter.delete("/:userid", useAuth, async (req: Request, res: Response) => {
   // #swagger.tags = ['Users']
   attempt(res, 200, () => userController.deleteUser(req.params.userid));
