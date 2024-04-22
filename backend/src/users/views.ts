@@ -154,27 +154,23 @@ userRouter.get(
   }
 );
 
-userRouter.get(
-  "/search",
-  useAdminAuth || useSupervisorAuth,
-  async (req: Request, res: Response) => {
-    // #swagger.tags = ['Users']
-    const { email, firstName, lastName, role, status, hours, nickname } =
-      req.body;
-    attempt(res, 200, () =>
-      userController.getSearchedUser(
-        req,
-        email,
-        firstName,
-        lastName,
-        role,
-        status,
-        hours,
-        nickname
-      )
-    );
-  }
-);
+userRouter.get("/search", useAuth, async (req: Request, res: Response) => {
+  // #swagger.tags = ['Users']
+  const { email, firstName, lastName, role, status, hours, nickname } =
+    req.body;
+  attempt(res, 200, () =>
+    userController.getSearchedUser(
+      req,
+      email,
+      firstName,
+      lastName,
+      role,
+      status,
+      hours,
+      nickname
+    )
+  );
+});
 
 userRouter.get(
   "/sorting",
