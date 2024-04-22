@@ -210,6 +210,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
       return () => {
         router.events.off("routeChangeStart", hideContent);
+        router.events.off("routeChangeComplete", () => sessionStorage.removeItem("redirectPath"));
       };
     });
     return unsubscribe;
