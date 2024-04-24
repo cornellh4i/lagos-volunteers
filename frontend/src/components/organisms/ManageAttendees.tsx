@@ -476,7 +476,7 @@ const TabComponent: React.FC<TabProps> = ({ queryString, statusVar, enumVar }) =
       </p>
       <div className="pb-5 w-full sm:w-[600px]">
         <SearchBar
-          placeholder="Search member by email"
+          placeholder="Search member by name or email"
           value={value}
           onChange={handleChange}
           onSubmit={handleSubmit}
