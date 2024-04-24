@@ -332,6 +332,7 @@ const getSearchedUser = async (
     },
     include: {
       profile: true,
+      preferences:true
     },
   });
 };
@@ -492,7 +493,6 @@ const getUserPreferences = async (userId: string) => {
   return prisma.user.findUnique({
     where: {
       id: userId,
-      // sendEmailNotification: emailNotifications,
     },
     include: {
       preferences: true,
@@ -509,7 +509,6 @@ const getUserPreferences = async (userId: string) => {
 const editPreferences = async (
   userId: string,
   preferences: UserPreferences,
-  // emailNotifications: boolean
 ) => {
   return prisma.user.update({
     where: { id: userId },
@@ -517,7 +516,6 @@ const editPreferences = async (
       preferences: {
         update: {
           ...preferences,
-          // sendEmailNotification: emailNotifications,
         },
       },
     },

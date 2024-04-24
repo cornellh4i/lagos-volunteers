@@ -34,6 +34,7 @@ type formData = {
   verified?: boolean;
   disciplinaryNotices?: number;
   imageUrl?: string;
+  sendEmailNotification: boolean;
 };
 
 interface ProfileFormProps {
@@ -46,7 +47,7 @@ const ProfileForm = ({ userDetails }: ProfileFormProps) => {
   /** State variables for the notification popups */
   const [successNotificationOpen, setSuccessNotificationOpen] = useState(false);
   const [errorNotificationOpen, setErrorNotificationOpen] = useState(false);
-  const [emailNotifications, setEmailNotifications] = useState(false);
+  const [emailNotifications, setEmailNotifications] = useState(userDetails.sendEmailNotification);
 
 
   /** Handles form errors */
@@ -91,18 +92,23 @@ const ProfileForm = ({ userDetails }: ProfileFormProps) => {
       oldPassword: "",
       newPassword: "",
       confirmNewPassword: "",
-      emailNotifications: true,
+      emailNotifications: userDetails.sendEmailNotification,
     },
   });
 
   /** Handles checkbox */
 
   // TODO: Implement this
-  const [checked, setChecked] = useState(false);
-  const handleCheckbox = () => {
-  setChecked ((checked) => !checked);
-  setEmailNotifications((prev) => !prev); 
-  };
+
+  // const [checked, setChecked] = useState(emailNotifications);
+  // const handleCheckbox = () => {
+  //   setChecked ((prev) => !prev);
+  //   // setEmailNotifications((prev) => !prev); 
+  // };
+
+const handleCheckbox = () => {
+  setEmailNotifications((prev) => !prev);;
+};
 
   /** Tanstack query mutation to reauthenticate the user session */
   const ReAuthenticateUserSession = useMutation({
@@ -147,7 +153,7 @@ const ProfileForm = ({ userDetails }: ProfileFormProps) => {
    const updatePreferencesInDB = useMutation({
     mutationFn: async (data: any) => {
       return api.put(`/users/${userDetails.id}/preferences`, {
-        sendEmailNotification: data.emailNotifications,
+        sendEmailNotification: emailNotifications,
       });
     },
     onSuccess: () => {
@@ -272,10 +278,11 @@ const ProfileForm = ({ userDetails }: ProfileFormProps) => {
           })}
         />
         <Checkbox
-          checked={emailNotifications}
           onChange={handleCheckbox}
           // {...register("emailNotifications")}
           label="Email notifications"
+          checked={emailNotifications}
+
         />
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <div className="order-1 sm:order-2">
