@@ -17,6 +17,9 @@ type FormValues = {
   lastName: string;
   phoneNumber: string;
   // preferredName: string;
+  oldPassword: string;
+  newPassword: string;
+  confirmNewPassword: string;
   emailNotifications: boolean;
 };
 
@@ -35,11 +38,11 @@ type formData = {
   imageUrl?: string;
 };
 
-interface ProfileFormProps {
+interface ChangePasswordFormProps {
   userDetails: formData;
 }
 
-const ProfileForm = ({ userDetails }: ProfileFormProps) => {
+const ChangePasswordForm = ({ userDetails }: ChangePasswordFormProps) => {
   const queryClient = useQueryClient();
 
   /** State variables for the notification popups for profile update */
@@ -57,6 +60,16 @@ const ProfileForm = ({ userDetails }: ProfileFormProps) => {
         return "User with this email has been disabled.";
       case "user-not-found":
         return "There is no user with this email address.";
+      case "wrong-password":
+        return "Old password is incorrect.";
+      case "weak-password":
+        return "Password must be at least 6 characters.";
+      case "invalid-password":
+        return "Invalid password.";
+      case "requires-recent-login":
+        return "Please reauthenticate to change your password.";
+      case "too-many-requests":
+        return "You have made too many requests to change your password. Please try again later.";
       default:
         return "Something went wrong. Please try again";
     }
@@ -76,6 +89,9 @@ const ProfileForm = ({ userDetails }: ProfileFormProps) => {
       lastName: userDetails.lastName,
       phoneNumber: userDetails.phoneNumber,
       // preferredName: userDetails.nickname,
+      oldPassword: "",
+      newPassword: "",
+      confirmNewPassword: "",
       emailNotifications: false,
     },
   });
@@ -131,7 +147,8 @@ const ProfileForm = ({ userDetails }: ProfileFormProps) => {
   /** Handles form submit for profile changes */
   const handleChanges: SubmitHandler<FormValues> = async (data) => {
     try {
-      await updateProfileInDB.mutateAsync(data);
+      await ReAuthenticateUserSession.mutateAsync(data);
+      await updateUserPasswordInFirebase.mutateAsync(data);
       setSuccessNotificationOpen(true);
     } catch (error: any) {
       setErrorNotificationOpen(true);
@@ -156,64 +173,60 @@ const ProfileForm = ({ userDetails }: ProfileFormProps) => {
         open={successNotificationOpen}
         onClose={() => setSuccessNotificationOpen(false)}
       >
-        Success: Profile update was successful!
+        Success: Password update was successful!
       </Snackbar>
 
       {/* Profile form */}
       <form onSubmit={handleSubmit(handleChanges)} className="space-y-4">
         <TextField
-          error={errors.firstName?.message}
-          label="First name"
-          {...register("firstName", {
+          type="password"
+          label="Old password"
+          error={errors.oldPassword?.message}
+          {...register("oldPassword", {
             required: { value: true, message: "Required" },
           })}
         />
         <TextField
-          error={errors.lastName?.message}
-          label="Last name"
-          {...register("lastName", {
+          type="password"
+          label="New password "
+          error={errors.newPassword?.message}
+          {...register("newPassword", {
             required: { value: true, message: "Required" },
+            minLength: {
+              value: 6,
+              message: "Password must be at least 6 characters",
+            },
+            // validate: {
+            //   hasUpper: (value) =>
+            //     /.*[A-Z].*/.test(value) ||
+            //     "Password must contain at least one uppercase letter",
+            //   hasLower: (value) =>
+            //     /.*[a-z].*/.test(value) ||
+            //     "Password must contain at least one lowercase letter",
+            //   hasNumber: (value) =>
+            //     /.*[0-9].*/.test(value) ||
+            //     "Password must contain at least one number",
+            //   hasSpecialChar: (value) =>
+            //     /.*[\W_].*/.test(value) ||
+            //     "Password must contain at least one special character",
+            // },
           })}
         />
         <TextField
-          error={errors.email?.message}
-          label="Email"
-          {...register("email", {
+          type="password"
+          error={errors.confirmNewPassword?.message}
+          label="Confirm password"
+          {...register("confirmNewPassword", {
             required: { value: true, message: "Required" },
-            pattern: {
-              value:
-                /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/,
-              message: "Invalid email address",
+            validate: {
+              matchPassword: (value) =>
+                value === watch("newPassword") || "Passwords do not match",
             },
           })}
-        />
-        <TextField
-          error={errors.phoneNumber?.message}
-          label="Phone number"
-          {...register("phoneNumber", {
-            required: { value: true, message: "Required" },
-            pattern: {
-              value:
-                /^\+?\d{1,4}?[-.\s]?\(?\d{1,3}?\)?[-.\s]?\d{1,4}[-.\s]?\d{1,4}[-.\s]?\d{1,9}$/,
-              message: "Invalid phone number",
-            },
-          })}
-        />
-        {/* <TextField
-          label="Preferred name"
-          error={errors.preferredName?.message}
-          {...register("preferredName", {
-            required: { value: true, message: "Required" },
-          })}
-        /> */}
-        <Checkbox
-          checked={checked}
-          onChange={handleCheckbox}
-          label="Email notifications"
         />
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <div className="order-1 sm:order-2">
-            <Button type="submit">Save changes</Button>
+            <Button type="submit">Change Password</Button>
           </div>
           <div className="order-2 sm:order-1">
             <Button
@@ -233,4 +246,4 @@ const ProfileForm = ({ userDetails }: ProfileFormProps) => {
   );
 };
 
-export default ProfileForm;
+export default ChangePasswordForm;
