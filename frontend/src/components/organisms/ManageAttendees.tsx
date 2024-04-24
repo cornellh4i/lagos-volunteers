@@ -16,14 +16,12 @@ import {
   useQuery,
   useQueryClient,
   useMutation,
-  QueryClient,
 } from "@tanstack/react-query";
 import { convertToISO, fetchUserIdFromDatabase } from "@/utils/helpers";
 import { useAuth } from "@/utils/AuthContext";
 import router from "next/router";
 import { api } from "@/utils/api";
 import { useRouter } from "next/router";
-import Loading from "../molecules/Loading";
 import Card from "../molecules/Card";
 import Link from "next/link";
 import ArrowOutwardIcon from "@mui/icons-material/ArrowOutward";
@@ -36,10 +34,7 @@ import EditIcon from "@mui/icons-material/Edit";
 import TextCopy from "../atoms/TextCopy";
 import { formatDateTimeToUI, formatDateTimeRange } from "@/utils/helpers";
 import { EventData } from "@/utils/types";
-import { FileCopy } from "@mui/icons-material";
 import { BASE_URL_CLIENT } from "@/utils/constants";
-
-//Initial push
 
 type attendeeData = {
   id: number;
@@ -161,8 +156,6 @@ const AttendeesTable = ({
       ),
     },
   ];
-
-  // const filteredRows = rows.filter((attendee: attendeeData) => attendee.status === status);
 
   return (
     <>
@@ -352,8 +345,6 @@ interface TabProps {
 
 }
 
-
-
 const TabComponent: React.FC<TabProps> = ({ queryString, statusVar, enumVar }) => {
   const router = useRouter();
   const eventid = router.query.eventid as string;
@@ -410,8 +401,7 @@ const TabComponent: React.FC<TabProps> = ({ queryString, statusVar, enumVar }) =
       });
     }
   };
-  //first commit
-  //second commit
+
   /** Tanstack query to fetch attendees data */
   const {
     data,
@@ -559,55 +549,6 @@ const ManageAttendees = ({ }: ManageAttendeesProps) => {
   };
 
   const dateHeader = formatDateTimeToUI(datetime);
-
-  // /** Process attendees data */
-  // const processAttendeesData = (data: any, paginationModel: any) => {
-  //   if (!data) return null;
-
-  //   const attendees = data.result;
-  //   const attendeeList = attendees.map((attendee: any) => ({
-  //     id: attendee.id,
-  //     status: attendee.events[0].attendeeStatus,
-  //     name: `${attendee.profile?.firstName} ${attendee.profile?.lastName}`,
-  //     email: attendee.email,
-  //     phone: attendee.profile?.phoneNumber || "123-456-7890", // TODO: Change to actual phone number
-  //   }));
-
-  //   const totalNumberofData = data.totalItems || 0;
-  //   const cursor = data.cursor || "";
-  //   const totalNumberOfPages = Math.ceil(
-  //     totalNumberofData / paginationModel.pageSize
-  //   );
-
-  //   return { attendeeList, totalNumberofData, cursor, totalNumberOfPages };
-  // };
-
-  // /** Process each query result */
-  // const queryClient = useQueryClient();
-  // // Prefetch logic for each query result
-  // const prefetchNextPage = (
-  //   eventid: any,
-  //   paginationModel: any,
-  //   status: any,
-  //   page: any,
-  //   totalNumberOfPages: any,
-  //   cursor: any
-  // ) => {
-  //   if (page < totalNumberOfPages) {
-  //     queryClient.prefetchQuery({
-  //       queryKey: ["event", eventid, page + 1],
-  //       queryFn: async () => {
-  //         const { data } = await api.get(
-  //           `/users?eventId=${eventid}&attendeeStatus=${status}&limit=${paginationModel.pageSize}&after=${cursor}`
-  //         );
-  //         return data["data"];
-  //       },
-  //       staleTime: Infinity,
-  //     });
-  //   }
-  // };
-
-  // Call prefetch for each query result
 
   /** Attendees list tabs */
   const tabs = [
