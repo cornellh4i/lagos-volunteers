@@ -180,75 +180,45 @@ const getUsers = async (
       },
     };
   }
-  // let emailOrNameArr = []
-  // if (filter.emailOrName) {
-  //   if (filter.emailOrName.includes(" ")) {
-  //     const [firstName, lastName] = filter.emailOrName.split(" ");
-  //     emailOrNameArr.push(firstName)
-  //     emailOrNameArr.push(lastName)
-  //   } else {
-  //     emailOrNameArr.push(filter.emailOrName)
-  //   }
-  // }
-  // Handles all other filtering
+
   let whereDict = {
     events: events,
-    // email: Array.isArray(filter.email) ? { in: filter.email } : filter.email,
-    email: {
-      contains: filter.email,
-      mode: Prisma.QueryMode.insensitive,
-    },
-    role: {
-      equals: filter.role,
-    },
-    hours: filter.hours,
-    status: {
-      equals: filter.status,
-    },
-    profile: {
-      // firstName: Array.isArray(filter.firstName)
-      //   ? { in: filter.firstName }
-      //   : filter.firstName,
-      firstName: {
-        contains: filter.firstName,
-        mode: Prisma.QueryMode.insensitive,
-      },
-      lastName: {
-        contains: filter.lastName,
-        mode: Prisma.QueryMode.insensitive,
-      },
-      // lastName: Array.isArray(filter.lastName || filter.email)
-      //   ? { in: filter.lastName }
-      //   : filter.lastName,
-      nickname: Array.isArray(filter.nickname)
-        ? { in: filter.nickname }
-        : filter.nickname,
-    },
   };
 
-  let whereDictOr = [{
-    profile: {
-      firstName: {
+  let searchQueryDict = [
+    {
+      email: {
+        equals: filter.email,
+      },
+      role: {
+        equals: filter.role,
+      },
+      hours: filter.hours,
+      status: {
+        equals: filter.status,
+      },
+      profile: {
+        firstName: {
+          contains: filter.emailOrName, // Search by email or name
+          mode: Prisma.QueryMode.insensitive,
+        },
+      },
+    },
+    {
+      profile: {
+        lastName: {
+          contains: filter.emailOrName, // Search by email or name
+          mode: Prisma.QueryMode.insensitive,
+        },
+      },
+    },
+    {
+      email: {
         contains: filter.emailOrName, // Search by email or name
         mode: Prisma.QueryMode.insensitive,
       },
     },
-  },
-  {
-    profile: {
-      lastName: {
-        contains: filter.emailOrName, // Search by email or name
-        mode: Prisma.QueryMode.insensitive,
-      },
-    },
-  }, {
-    email: {
-      contains: filter.emailOrName, // Search by email or name
-      mode: Prisma.QueryMode.insensitive,
-    },
-  },
-  ]
-
+  ];
 
   /* RESULT */
 
@@ -256,21 +226,23 @@ const getUsers = async (
   const totalRecords = await prisma.user.count({
     where: {
       AND: [whereDict],
+      OR: searchQueryDict,
     },
   });
 
   const queryResult = await prisma.user.findMany({
     where: {
-      OR: whereDictOr,
+      AND: whereDict,
+      OR: searchQueryDict,
     },
     include: {
       profile: true,
       events: eventId
         ? {
-          where: {
-            eventId: eventId,
-          },
-        }
+            where: {
+              eventId: eventId,
+            },
+          }
         : {},
     },
     orderBy: sortDict[sort.key],
@@ -295,26 +267,26 @@ const getUsersPaginated = async (req: Request) => {
   // if no after is supplied make the request independent of that paramter
   return query.after === undefined
     ? prisma.user.findMany({
-      take: query.limit ? parseInt(query.limit as string) : 10,
-      orderBy: {
-        id: "asc",
-      },
-      include: {
-        profile: true,
-      },
-    })
+        take: query.limit ? parseInt(query.limit as string) : 10,
+        orderBy: {
+          id: "asc",
+        },
+        include: {
+          profile: true,
+        },
+      })
     : prisma.user.findMany({
-      take: query.limit ? parseInt(query.limit as string) : 10,
-      cursor: {
-        id: query.after ? (query.after as string) : undefined,
-      },
-      orderBy: {
-        id: "asc",
-      },
-      include: {
-        profile: true,
-      },
-    });
+        take: query.limit ? parseInt(query.limit as string) : 10,
+        cursor: {
+          id: query.after ? (query.after as string) : undefined,
+        },
+        orderBy: {
+          id: "asc",
+        },
+        include: {
+          profile: true,
+        },
+      });
 };
 
 /**
