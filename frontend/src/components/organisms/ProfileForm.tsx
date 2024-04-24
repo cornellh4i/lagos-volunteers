@@ -88,30 +88,6 @@ const ProfileForm = ({ userDetails }: ProfileFormProps) => {
     setChecked((checked) => !checked);
   };
 
-  /** Tanstack query mutation to reauthenticate the user session */
-  const ReAuthenticateUserSession = useMutation({
-    mutationFn: async (data: any) => {
-      const currentUser = auth.currentUser;
-      if (currentUser != null) {
-        const credentials = EmailAuthProvider.credential(
-          data.email,
-          data.oldPassword
-        );
-        return reauthenticateWithCredential(currentUser, credentials);
-      }
-    },
-    retry: false,
-  });
-
-  /** Tanstack query mutation to update user password in Firebase */
-  const updateUserPasswordInFirebase = useMutation({
-    mutationFn: async (data: any) => {
-      const user = auth.currentUser as User;
-      return updatePassword(user, data.newPassword);
-    },
-    retry: false,
-  });
-
   /** Tanstack query mutation to update the user profile */
   const updateProfileInDB = useMutation({
     mutationFn: async (data: any) => {
