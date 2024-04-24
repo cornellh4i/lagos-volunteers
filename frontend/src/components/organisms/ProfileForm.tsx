@@ -15,6 +15,7 @@ type FormValues = {
   email: string;
   firstName: string;
   lastName: string;
+  phoneNumber: string;
   // preferredName: string;
   oldPassword: string;
   newPassword: string;
@@ -27,6 +28,7 @@ type formData = {
   email: string;
   firstName: string;
   lastName: string;
+  phoneNumber: string;
   nickname: string;
   role?: string;
   status?: string;
@@ -85,6 +87,7 @@ const ProfileForm = ({ userDetails }: ProfileFormProps) => {
       email: userDetails.email,
       firstName: userDetails.firstName,
       lastName: userDetails.lastName,
+      phoneNumber: userDetails.phoneNumber,
       // preferredName: userDetails.nickname,
       oldPassword: "",
       newPassword: "",
@@ -131,6 +134,7 @@ const ProfileForm = ({ userDetails }: ProfileFormProps) => {
       return api.put(`/users/${userDetails.id}/profile`, {
         firstName: data.firstName,
         lastName: data.lastName,
+        phoneNumber: data.phoneNumber,
         // nickname: data.preferredName,
       });
     },
@@ -176,6 +180,20 @@ const ProfileForm = ({ userDetails }: ProfileFormProps) => {
       {/* Profile form */}
       <form onSubmit={handleSubmit(handleChanges)} className="space-y-4">
         <TextField
+          error={errors.firstName?.message}
+          label="First name"
+          {...register("firstName", {
+            required: { value: true, message: "Required" },
+          })}
+        />
+        <TextField
+          error={errors.lastName?.message}
+          label="Last name"
+          {...register("lastName", {
+            required: { value: true, message: "Required" },
+          })}
+        />
+        <TextField
           error={errors.email?.message}
           label="Email"
           {...register("email", {
@@ -188,17 +206,15 @@ const ProfileForm = ({ userDetails }: ProfileFormProps) => {
           })}
         />
         <TextField
-          error={errors.firstName?.message}
-          label="First name"
-          {...register("firstName", {
+          error={errors.phoneNumber?.message}
+          label="Phone number"
+          {...register("phoneNumber", {
             required: { value: true, message: "Required" },
-          })}
-        />
-        <TextField
-          error={errors.lastName?.message}
-          label="Last name"
-          {...register("lastName", {
-            required: { value: true, message: "Required" },
+            pattern: {
+              value:
+                /^\+?\d{1,4}?[-.\s]?\(?\d{1,3}?\)?[-.\s]?\d{1,4}[-.\s]?\d{1,4}[-.\s]?\d{1,9}$/,
+              message: "Invalid phone number",
+            },
           })}
         />
         {/* <TextField
@@ -226,20 +242,20 @@ const ProfileForm = ({ userDetails }: ProfileFormProps) => {
               value: 6,
               message: "Password must be at least 6 characters",
             },
-            validate: {
-              hasUpper: (value) =>
-                /.*[A-Z].*/.test(value) ||
-                "Password must contain at least one uppercase letter",
-              hasLower: (value) =>
-                /.*[a-z].*/.test(value) ||
-                "Password must contain at least one lowercase letter",
-              hasNumber: (value) =>
-                /.*[0-9].*/.test(value) ||
-                "Password must contain at least one number",
-              hasSpecialChar: (value) =>
-                /.*[\W_].*/.test(value) ||
-                "Password must contain at least one special character",
-            },
+            // validate: {
+            //   hasUpper: (value) =>
+            //     /.*[A-Z].*/.test(value) ||
+            //     "Password must contain at least one uppercase letter",
+            //   hasLower: (value) =>
+            //     /.*[a-z].*/.test(value) ||
+            //     "Password must contain at least one lowercase letter",
+            //   hasNumber: (value) =>
+            //     /.*[0-9].*/.test(value) ||
+            //     "Password must contain at least one number",
+            //   hasSpecialChar: (value) =>
+            //     /.*[\W_].*/.test(value) ||
+            //     "Password must contain at least one special character",
+            // },
           })}
         />
         <TextField
