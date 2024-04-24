@@ -64,6 +64,7 @@ const UpcomingEvents = () => {
           role: "Supervisor",
           hours: eventHours(event["startDate"], event["endDate"]),
           img_src: event["imageURL"],
+          status: event["status"],
         };
       }
     ) || [];
@@ -213,6 +214,7 @@ const PastEvents = () => {
       endDate: event["endDate"],
       role: "Supervisor",
       hours: eventHours(event["endDate"], event["startDate"]),
+      status: event["status"],
     });
   });
 
@@ -225,6 +227,7 @@ const PastEvents = () => {
       endDate: event["endDate"],
       role: "Volunteer",
       hours: eventHours(event["endDate"], event["startDate"]),
+      status: event["status"],
     });
   });
 
@@ -370,6 +373,14 @@ const PastEvents = () => {
       headerName: "Program Name",
       minWidth: 200,
       flex: 1,
+      renderHeader: (params) => (
+        <div style={{ fontWeight: "bold" }}>{params.colDef.headerName}</div>
+      ),
+    },
+    {
+      field: "status",
+      headerName: "Event Status",
+      minWidth: 150,
       renderHeader: (params) => (
         <div style={{ fontWeight: "bold" }}>{params.colDef.headerName}</div>
       ),

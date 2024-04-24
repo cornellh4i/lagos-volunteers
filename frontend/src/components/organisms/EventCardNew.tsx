@@ -18,7 +18,8 @@ const EventCardContent = ({ event }: EventCardNewProps) => {
   const formattedEndTime = format(new Date(event.endDate), "hh:mm a");
   const timeRange = `${formattedStartTime} - ${formattedEndTime}`;
   const date = new Date(event.startDate);
-  const dateInfo = displayDateInfo(date);
+  const dateInfo =
+    event.status === "CANCELED" ? "Canceled" : displayDateInfo(date);
   const url =
     event.role === "Supervisor"
       ? `/events/${event.id}/attendees`
@@ -29,7 +30,11 @@ const EventCardContent = ({ event }: EventCardNewProps) => {
   return (
     <div>
       <div className="flex flex-row gap-4">
-        <div className="font-semibold text-orange-500">
+        <div
+          className={`font-semibold ${
+            event.status === "CANCELED" ? "text-red-600" : "text-orange-500"
+          }`}
+        >
           <IconText icon={<FiberManualRecordIcon className="text-xs" />}>
             {dateInfo}
           </IconText>

@@ -123,10 +123,6 @@ const EventForm = ({
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
 
-  /** Handles for graying out buttons */
-  /** USE STATE WILL REFRESH EVERY TIME - Need a way to access event status itself */
-  const [canceled, setCanceled] = useState(false);
-
   /** Tanstack mutation for creating a new event */
   const {
     mutateAsync: handleCreateNewEvent,
@@ -229,7 +225,6 @@ const EventForm = ({
   const handleCreateEvent: SubmitHandler<FormValues> = async (data) => {
     try {
       await handleCreateNewEvent(data);
-      setCanceled(true);
     } catch (error) {
       setErrorNotificationOpen(true);
       setErrorMessage("We were unable to create this event. Please try again");
@@ -476,11 +471,7 @@ const EventForm = ({
               </div>
               {/* TODO: Add functionality */}
               <div className="sm:col-start-7 sm:col-span-3">
-                <Button
-                  disabled={canceled}
-                  variety="error"
-                  onClick={handleOpen}
-                >
+                <Button variety="error" onClick={handleOpen}>
                   Cancel event
                 </Button>
               </div>
@@ -488,7 +479,7 @@ const EventForm = ({
                 <Button
                   type="submit"
                   loading={editEventPending}
-                  disabled={editEventPending || canceled}
+                  disabled={editEventPending}
                 >
                   Save changes
                 </Button>
