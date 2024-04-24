@@ -11,7 +11,7 @@ import {
   useSignInWithGoogle,
 } from "react-firebase-hooks/auth";
 import Snackbar from "../atoms/Snackbar";
-import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
+import { GoogleAuthProvider, User, signInWithPopup } from "firebase/auth";
 import { api } from "@/utils/api";
 import { useMutation } from "@tanstack/react-query";
 
@@ -112,11 +112,11 @@ const LoginForm = () => {
   }, [signInErrors]);
 
   /** Sign in with Google */
-
+  
   const handleGoogleLogin = async () => {
-    const provider = await new GoogleAuthProvider();
+    const provider = new GoogleAuthProvider();
     signInWithPopup(auth, provider)
-    .then((result) => {
+    .then(async (result) => {
       // The signed-in user info.
       const user = result.user;
       // console.log("user", user);
@@ -130,13 +130,22 @@ const LoginForm = () => {
         const { response, data } = await api.get(`/users/${userid}`);
 
         if (!data["data"]) {
-          // console.log("creating user");
-          await createLocalUserFromGoogle.mutateAsync({userid, firstName, lastName, email, phoneNumber});
+          console.log("creating user");
+          try {
+            await createLocalUserFromGoogle.mutateAsync({userid, firstName, lastName, email, phoneNumber});
+          } catch (e: any) {
+            console.log("error creating local user");
+          }
         } else {
-          // console.log("user already created");
+          console.log("user already created");
         }
       }
-      createUser();
+
+      try {
+        await createUser();
+      } catch (e: any) {
+        console.log(e);
+      }
 
     }).catch((error) => {
       // Handle Errors here.
@@ -146,7 +155,8 @@ const LoginForm = () => {
       const email = error.customData.email;
       // The AuthCredential type that was used.
       const credential = GoogleAuthProvider.credentialFromError(error);
-      // ...
+      
+      console.log(error);
     });
   }
 
