@@ -53,10 +53,15 @@ interface ProfileFormProps {
 interface ModalBodyProps {
   userDetails: formData;
   handleClose: () => void;
+  setErrorNotificationOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 /** Confirmation Modal To Delete An Account */
-const ModalBody = ({ userDetails, handleClose }: ModalBodyProps) => {
+const ModalBody = ({
+  userDetails,
+  handleClose,
+  setErrorNotificationOpen,
+}: ModalBodyProps) => {
   const {
     register,
     handleSubmit,
@@ -64,16 +69,19 @@ const ModalBody = ({ userDetails, handleClose }: ModalBodyProps) => {
     formState: { errors },
   } = useForm<DeleteAccountFormValues>();
 
-  //changeUserStatus handles deleting user from prisma and firebase
-  const { mutateAsync: deleteUserProfile, error: deleteUserProfileError } =
-    useMutation({
-      mutationFn: async () => {
-        const { data } = await api.delete(`/users/${userDetails.id}`);
-        return data;
-      },
-      retry: false,
-      onSuccess: () => {},
-    });
+  // deleteUserProfile handles deleting user from prisma and firebase
+  const {
+    mutateAsync: deleteUserProfile,
+    error: deleteUserProfileError,
+    isPending,
+  } = useMutation({
+    mutationFn: async () => {
+      const { data } = await api.delete(`/users/${userDetails.id}`);
+      return data;
+    },
+    retry: false,
+    onSuccess: () => {},
+  });
 
   //Variables for signing out user
   const { error, signOutUser } = useAuth();
@@ -100,6 +108,7 @@ const ModalBody = ({ userDetails, handleClose }: ModalBodyProps) => {
       await handleSignOut();
     } catch (error) {
       console.log(error);
+      setErrorNotificationOpen(true);
     }
   };
 
@@ -129,7 +138,7 @@ const ModalBody = ({ userDetails, handleClose }: ModalBodyProps) => {
         />
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 mt-10">
           <div className="order-1 sm:order-2">
-            <Button variety="bigred" type="submit">
+            <Button loading={isPending} variety="bigred" type="submit">
               Delete
             </Button>
           </div>
@@ -270,7 +279,11 @@ const ProfileForm = ({ userDetails }: ProfileFormProps) => {
         open={open}
         handleClose={handleClose}
         children={
-          <ModalBody userDetails={userDetails} handleClose={handleClose} />
+          <ModalBody
+            userDetails={userDetails}
+            handleClose={handleClose}
+            setErrorNotificationOpen={setErrorNotificationOpen}
+          />
         }
       />
 
@@ -278,8 +291,7 @@ const ProfileForm = ({ userDetails }: ProfileFormProps) => {
       <Snackbar
         variety="error"
         open={errorNotificationOpen}
-        onClose={() => setErrorNotificationOpen(false)}
-      >
+        onClose={() => setErrorNotificationOpen(false)}>
         Error: {handleErrors(errorMessage)}
       </Snackbar>
 
@@ -287,8 +299,7 @@ const ProfileForm = ({ userDetails }: ProfileFormProps) => {
       <Snackbar
         variety="success"
         open={successNotificationOpen}
-        onClose={() => setSuccessNotificationOpen(false)}
-      >
+        onClose={() => setSuccessNotificationOpen(false)}>
         Success: Profile update was successful!
       </Snackbar>
 
@@ -389,8 +400,7 @@ const ProfileForm = ({ userDetails }: ProfileFormProps) => {
               onClick={() => {
                 reset(undefined, { keepDefaultValues: true });
               }}
-              disabled={!isDirty}
-            >
+              disabled={!isDirty}>
               Reset changes
             </Button>
           </div>
