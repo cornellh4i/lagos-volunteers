@@ -185,6 +185,7 @@ const getUsers = async (
     events: events,
   };
 
+
   let searchQueryDict = [
     {
       email: {
@@ -199,7 +200,7 @@ const getUsers = async (
       },
       profile: {
         firstName: {
-          contains: filter.emailOrName, // Search by email or name
+          contains: filter.firstName, // Search by email or name
           mode: Prisma.QueryMode.insensitive,
         },
       },
@@ -207,18 +208,91 @@ const getUsers = async (
     {
       profile: {
         lastName: {
-          contains: filter.emailOrName, // Search by email or name
+          contains: filter.lastName, // Search by email or name
           mode: Prisma.QueryMode.insensitive,
         },
       },
     },
     {
       email: {
-        contains: filter.emailOrName, // Search by email or name
+        contains: filter.email, // Search by email or name
         mode: Prisma.QueryMode.insensitive,
       },
     },
   ];
+
+  let emailOrName = "";
+
+  if (filter.emailOrName) {
+    if (filter.emailOrName.includes(" ")) {
+      const emailOrName = filter.emailOrName.split(" ");
+      searchQueryDict = []
+      searchQueryDict.push({
+        email: {
+          equals: filter.email,
+        },
+        role: {
+          equals: filter.role,
+        },
+        hours: filter.hours,
+        status: {
+          equals: filter.status,
+        },
+        profile: {
+          firstName: {
+            contains: emailOrName[0], // Search by email or name
+            mode: Prisma.QueryMode.insensitive,
+          },
+        },
+      },
+        {
+          profile: {
+            lastName: {
+              contains: emailOrName[1], // Search by email or name
+              mode: Prisma.QueryMode.insensitive,
+            },
+          },
+        },);
+
+    } else {
+      searchQueryDict = []
+      emailOrName = filter.emailOrName;
+      searchQueryDict.push(
+        {
+          email: {
+            equals: filter.email,
+          },
+          role: {
+            equals: filter.role,
+          },
+          hours: filter.hours,
+          status: {
+            equals: filter.status,
+          },
+          profile: {
+            firstName: {
+              contains: emailOrName, // Search by email or name
+              mode: Prisma.QueryMode.insensitive,
+            },
+          },
+        },
+        {
+          profile: {
+            lastName: {
+              contains: emailOrName, // Search by email or name
+              mode: Prisma.QueryMode.insensitive,
+            },
+          },
+        },
+        {
+          email: {
+            contains: emailOrName, // Search by email or name
+            mode: Prisma.QueryMode.insensitive,
+          },
+        },);
+    }
+  }
+
 
   /* RESULT */
 
@@ -239,10 +313,10 @@ const getUsers = async (
       profile: true,
       events: eventId
         ? {
-            where: {
-              eventId: eventId,
-            },
-          }
+          where: {
+            eventId: eventId,
+          },
+        }
         : {},
     },
     orderBy: sortDict[sort.key],
@@ -267,26 +341,26 @@ const getUsersPaginated = async (req: Request) => {
   // if no after is supplied make the request independent of that paramter
   return query.after === undefined
     ? prisma.user.findMany({
-        take: query.limit ? parseInt(query.limit as string) : 10,
-        orderBy: {
-          id: "asc",
-        },
-        include: {
-          profile: true,
-        },
-      })
+      take: query.limit ? parseInt(query.limit as string) : 10,
+      orderBy: {
+        id: "asc",
+      },
+      include: {
+        profile: true,
+      },
+    })
     : prisma.user.findMany({
-        take: query.limit ? parseInt(query.limit as string) : 10,
-        cursor: {
-          id: query.after ? (query.after as string) : undefined,
-        },
-        orderBy: {
-          id: "asc",
-        },
-        include: {
-          profile: true,
-        },
-      });
+      take: query.limit ? parseInt(query.limit as string) : 10,
+      cursor: {
+        id: query.after ? (query.after as string) : undefined,
+      },
+      orderBy: {
+        id: "asc",
+      },
+      include: {
+        profile: true,
+      },
+    });
 };
 
 /**
