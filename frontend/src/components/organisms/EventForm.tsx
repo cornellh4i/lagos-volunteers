@@ -46,9 +46,9 @@ type FormValues = {
   eventDescription: string;
   imageURL: string;
   rsvpLinkImage: string;
-  startDate: string;
-  startTime: string;
-  endTime: string;
+  startDate: Date;
+  startTime: Date;
+  endTime: Date;
   mode: string;
 };
 
