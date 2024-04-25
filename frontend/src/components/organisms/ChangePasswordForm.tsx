@@ -1,35 +1,24 @@
 import React, { useState } from "react";
 import Button from "../atoms/Button";
 import TextField from "../atoms/TextField";
-import Checkbox from "../atoms/Checkbox";
 import { auth } from "@/utils/firebase";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { reauthenticateWithCredential, EmailAuthProvider } from "firebase/auth";
 import Snackbar from "../atoms/Snackbar";
-import { api } from "@/utils/api";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import { updatePassword } from "firebase/auth";
 import { User } from "firebase/auth";
 
 type FormValues = {
   email: string;
-  firstName: string;
-  lastName: string;
-  phoneNumber: string;
-  // preferredName: string;
   oldPassword: string;
   newPassword: string;
   confirmNewPassword: string;
-  emailNotifications: boolean;
 };
 
 type formData = {
   id: string;
   email: string;
-  firstName: string;
-  lastName: string;
-  phoneNumber: string;
-  nickname: string;
   role?: string;
   status?: string;
   createdAt?: string;
@@ -43,8 +32,6 @@ interface ChangePasswordFormProps {
 }
 
 const ChangePasswordForm = ({ userDetails }: ChangePasswordFormProps) => {
-  const queryClient = useQueryClient();
-
   /** State variables for the notification popups for profile update */
   const [successNotificationOpen, setSuccessNotificationOpen] = useState(false);
   const [errorNotificationOpen, setErrorNotificationOpen] = useState(false);
@@ -85,24 +72,12 @@ const ChangePasswordForm = ({ userDetails }: ChangePasswordFormProps) => {
   } = useForm<FormValues>({
     defaultValues: {
       email: userDetails.email,
-      firstName: userDetails.firstName,
-      lastName: userDetails.lastName,
-      phoneNumber: userDetails.phoneNumber,
       // preferredName: userDetails.nickname,
       oldPassword: "",
       newPassword: "",
       confirmNewPassword: "",
-      emailNotifications: false,
     },
   });
-
-  /** Handles checkbox */
-
-  // TODO: Implement this
-  const [checked, setChecked] = useState(false);
-  const handleCheckbox = () => {
-    setChecked((checked) => !checked);
-  };
 
   /** Tanstack query mutation to reauthenticate the user session */
   const ReAuthenticateUserSession = useMutation({
@@ -124,22 +99,6 @@ const ChangePasswordForm = ({ userDetails }: ChangePasswordFormProps) => {
     mutationFn: async (data: any) => {
       const user = auth.currentUser as User;
       return updatePassword(user, data.newPassword);
-    },
-    retry: false,
-  });
-
-  /** Tanstack query mutation to update the user profile */
-  const updateProfileInDB = useMutation({
-    mutationFn: async (data: any) => {
-      return api.put(`/users/${userDetails.id}/profile`, {
-        firstName: data.firstName,
-        lastName: data.lastName,
-        phoneNumber: data.phoneNumber,
-        // nickname: data.preferredName,
-      });
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["profile"] });
     },
     retry: false,
   });

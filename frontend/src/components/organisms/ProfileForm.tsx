@@ -2,14 +2,10 @@ import React, { useState } from "react";
 import Button from "../atoms/Button";
 import TextField from "../atoms/TextField";
 import Checkbox from "../atoms/Checkbox";
-import { auth } from "@/utils/firebase";
 import { useForm, SubmitHandler } from "react-hook-form";
-import { reauthenticateWithCredential, EmailAuthProvider } from "firebase/auth";
 import Snackbar from "../atoms/Snackbar";
 import { api } from "@/utils/api";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { updatePassword } from "firebase/auth";
-import { User } from "firebase/auth";
 
 type FormValues = {
   email: string;
