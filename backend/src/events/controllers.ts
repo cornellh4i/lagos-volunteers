@@ -265,6 +265,18 @@ const getEvent = async (eventID: string) => {
 };
 
 /**
+ * Returns a boleean indicating whether event is past or not
+ * @param eventID (String)
+ * @returns promise with boolean or error
+ */
+export const isEventPast = async (eventID: string) => {
+  const currentDateTime = new Date();
+  const event = (await getEvent(eventID)) as Event;
+  const eventDate = new Date(event.startDate);
+  return eventDate < currentDateTime;
+};
+
+/**
  * Gets all attendees registered for an event
  * @param eventID (String)
  * @param userID (String)
@@ -333,8 +345,9 @@ const addAttendee = async (eventID: string, userID: string) => {
   var eventDateTimeUnknown = event?.startDate as unknown;
   var eventDateTimeString = eventDateTimeUnknown as string;
   var textBody = "Your registration was successful.";
+  const eventIsInThePast = await isEventPast(eventID);
 
-  if (process.env.NODE_ENV != "test") {
+  if (process.env.NODE_ENV != "test" && !eventIsInThePast) {
     // creates updated html path with the changed inputs
     const updatedHtml = replaceEventInputs(
       stringEventUpdate,
@@ -349,6 +362,9 @@ const addAttendee = async (eventID: string, userID: string) => {
       "Your registration was successful.",
       updatedHtml
     );
+  }
+  if (eventIsInThePast) {
+    return Promise.reject("Event is past, cannot enroll new user");
   }
   return await prisma.eventEnrollment.create({
     data: {
@@ -427,6 +443,10 @@ const deleteAttendee = async (
  * @returns promise with event or error
  */
 const updateEventStatus = async (eventID: string, status: string) => {
+  if (await isEventPast(eventID)) {
+    return Promise.reject("Event is past, cannot update status");
+  }
+
   return await prisma.event.update({
     where: {
       id: eventID,
