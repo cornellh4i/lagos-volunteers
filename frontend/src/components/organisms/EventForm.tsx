@@ -206,6 +206,7 @@ const EventForm = ({
       },
       retry: false,
       onSuccess: () => {
+        console.log("Updated event data:");
         queryClient.invalidateQueries({
           queryKey: ["event", eventId],
         });
