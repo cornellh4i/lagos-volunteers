@@ -81,6 +81,9 @@ const getEvents = async (
   pagination: {
     after: string;
     limit: string;
+  },
+  include: {
+    attendees: boolean;
   }
 ) => {
   /* SORTING */
@@ -116,7 +119,7 @@ const getEvents = async (
   /* FILTERING */
 
   let whereDict: { [key: string]: any } = {};
-  let includeDict: { [key: string]: any } = {};
+  let includeDict: { [key: string]: any } = include;
 
   // Handles GET /events?date=upcoming and GET /events?date=past
   // TODO: Investigate creating events that occur in a few minutes into the future
