@@ -39,10 +39,10 @@ const UpcomingEvents = () => {
       const userid = await fetchUserIdFromDatabase(user?.email as string);
       setUserid(userid);
       const upcomingEventsUserRegisteredFor = await api.get(
-        `/events?userid=${userid}&date=upcoming&sort=startDate:desc`
+        `/events?userid=${userid}&date=upcoming&sort=startDate:asc`
       );
       const upcomingEventsUserSupervises = await api.get(
-        `/events?ownerid=${userid}&date=upcoming&sort=startDate:desc`
+        `/events?ownerid=${userid}&date=upcoming&sort=startDate:asc`
       );
       return {
         upcomingRegistered: upcomingEventsUserRegisteredFor.data["data"],
@@ -173,7 +173,7 @@ const PastEvents = () => {
     queryFn: async () => {
       const userid = await fetchUserIdFromDatabase(user?.email as string);
       const pastEventsUserRegisteredFor = await api.get(
-        `/events?userid=${userid}&date=past&limit=${PAGE_SIZE_VOLUNTEER}`
+        `/events?userid=${userid}&date=past&sort=startDate:desc&include=attendees&limit=${PAGE_SIZE_VOLUNTEER}`
       );
       return pastEventsUserRegisteredFor["data"];
     },
@@ -225,6 +225,7 @@ const PastEvents = () => {
       endDate: event["endDate"],
       role: "Volunteer",
       hours: eventHours(event["endDate"], event["startDate"]),
+      attendeeStatus: event["attendees"][0]["attendeeStatus"], //I added this - David
     });
   });
 
@@ -264,7 +265,7 @@ const PastEvents = () => {
         queryKey: ["volunteer_events", paginationModelVolunteer.page + 1],
         queryFn: async () => {
           const pastEventsUserRegisteredFor = await api.get(
-            `/events?userid=${userid}&date=past&limit=${PAGE_SIZE_VOLUNTEER}&after=${cursorVolunteer}`
+            `/events?userid=${userid}&date=past&sort=startDate:desc&include=attendees&limit=${PAGE_SIZE_VOLUNTEER}&after=${cursorVolunteer}`
           );
           return pastEventsUserRegisteredFor["data"];
         },
@@ -324,6 +325,14 @@ const PastEvents = () => {
       field: "hours",
       headerName: "Hours",
       minWidth: 150,
+      renderHeader: (params) => (
+        <div style={{ fontWeight: "bold" }}>{params.colDef.headerName}</div>
+      ),
+    },
+    {
+      field: "attendeeStatus",
+      headerName: "Attendee Status",
+      minWidth: 250,
       renderHeader: (params) => (
         <div style={{ fontWeight: "bold" }}>{params.colDef.headerName}</div>
       ),
