@@ -205,11 +205,12 @@ const EventForm = ({
         return response;
       },
       retry: false,
-      onSuccess: () => {
-        console.log("Updated event data:");
-        queryClient.invalidateQueries({
-          queryKey: ["event", eventId],
-        });
+      onSuccess: (updatedEventData) => {
+        console.log("Updated event data:", updatedEventData);
+        // queryClient.invalidateQueries({
+        //   queryKey: ["event", eventId],
+        // });
+        queryClient.setQueryData(["event", eventId], updatedEventData);
         localStorage.setItem("eventEdited", "true");
         router.push("/events/view");
       },
