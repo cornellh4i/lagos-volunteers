@@ -202,8 +202,8 @@ const EventForm = ({
           capacity: +volunteerSignUpCap,
           mode: `${mode}`,
         });
-        const updatedEventData = {
-          id: eventId, // Assuming the server response includes the event ID
+        const updatedEventData = await api.put(`/events/${eventId}`, {
+          id: eventId,
           eventName,
           location: status === 0 ? "VIRTUAL" : location,
           volunteerSignUpCap,
@@ -213,9 +213,9 @@ const EventForm = ({
           startTime: new Date(startDateTime),
           endTime: new Date(endDateTime),
           mode: mode,
-        };
+        });
 
-        return updatedEventData;
+        return response;
       },
       retry: false,
       onSuccess: (updatedEventData) => {
