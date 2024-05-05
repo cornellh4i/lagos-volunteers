@@ -202,7 +202,20 @@ const EventForm = ({
           capacity: +volunteerSignUpCap,
           mode: `${mode}`,
         });
-        return response;
+        const updatedEventData = {
+          id: eventId, // Assuming the server response includes the event ID
+          eventName,
+          location: status === 0 ? "VIRTUAL" : location,
+          volunteerSignUpCap,
+          eventDescription,
+          imageURL: newImageURL,
+          startDate: new Date(startDateTime),
+          startTime: new Date(startDateTime),
+          endTime: new Date(endDateTime),
+          mode: mode,
+        };
+
+        return updatedEventData;
       },
       retry: false,
       onSuccess: (updatedEventData) => {
