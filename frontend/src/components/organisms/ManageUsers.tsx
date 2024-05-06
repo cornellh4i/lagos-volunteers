@@ -46,7 +46,7 @@ const Active = () => {
   const [cursor, setCursor] = useState("");
 
   /** If a valid cursor is passed, fetch the next batch of users */
-  const fetchUsersBatch = async (cursor?: string, searchQuery?: string) => {
+  const fetchUsersBatch = async () => {
     if (searchQuery) {
       const { data } = await api.get(
         `/users?emailOrName=${searchQuery}&limit=${paginationModel.pageSize}&after=${cursor}`
@@ -64,7 +64,7 @@ const Active = () => {
   const { data, isPending, error, isPlaceholderData, refetch } = useQuery({
     queryKey: ["users", paginationModel.page],
     queryFn: async () => {
-      const data = await fetchUsersBatch(cursor, searchQuery);
+      const data = await fetchUsersBatch();
       if (data?.data.cursor) {
         setCursor(data.data.cursor);
       }
@@ -99,7 +99,7 @@ const Active = () => {
     if (!isPlaceholderData && paginationModel.page < totalNumberOfPages) {
       queryClient.prefetchQuery({
         queryKey: ["users", paginationModel.page + 1],
-        queryFn: async () => fetchUsersBatch(cursor, searchQuery),
+        queryFn: async () => fetchUsersBatch(cursor),
         staleTime: Infinity,
       });
     }

@@ -224,9 +224,9 @@ const getUsers = async (
   let emailOrName = "";
 
   if (filter.emailOrName) {
+    searchQueryDict = [];
     if (filter.emailOrName.includes(" ")) {
       const emailOrName = filter.emailOrName.split(" ");
-      searchQueryDict = []
       searchQueryDict.push({
         email: {
           equals: filter.email,
@@ -255,7 +255,6 @@ const getUsers = async (
         },);
 
     } else {
-      searchQueryDict = []
       emailOrName = filter.emailOrName;
       searchQueryDict.push(
         {
