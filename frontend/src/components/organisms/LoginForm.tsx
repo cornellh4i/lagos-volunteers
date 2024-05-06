@@ -14,6 +14,7 @@ import Snackbar from "../atoms/Snackbar";
 import { GoogleAuthProvider, User, signInWithPopup } from "firebase/auth";
 import { api } from "@/utils/api";
 import { useMutation } from "@tanstack/react-query";
+import Loading from "../molecules/Loading";
 
 export type FormValues = {
   email: string;
@@ -29,24 +30,19 @@ const GoogleIcon = () => {
         xmlns="http://www.w3.org/2000/svg"
         viewBox="0 0 48 48"
         xmlnsXlink="http://www.w3.org/1999/xlink"
-        style={{ display: "block" }}
-      >
+        style={{ display: "block" }}>
         <path
           fill="#EA4335"
-          d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"
-        ></path>
+          d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"></path>
         <path
           fill="#4285F4"
-          d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"
-        ></path>
+          d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"></path>
         <path
           fill="#FBBC05"
-          d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"
-        ></path>
+          d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"></path>
         <path
           fill="#34A853"
-          d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"
-        ></path>
+          d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"></path>
         <path fill="none" d="M0 0h48v48H0z"></path>
       </svg>
     </div>
@@ -111,78 +107,79 @@ const LoginForm = () => {
     }
   }, [signInErrors]);
 
-  /** Sign in with Google */
-  
-  const handleGoogleLogin = async () => {
-    const provider = new GoogleAuthProvider();
-    signInWithPopup(auth, provider)
-    .then(async (result) => {
-      // The signed-in user info.
-      const user = result.user;
-      // console.log("user", user);
+  /** Tanstack query mutation to create a new user */
+  const { mutateAsync: createLocalUserFromGoogle, isPending: googleLoading } =
+    useMutation({
+      mutationFn: async (data: {
+        userid: string;
+        firstName: string;
+        lastName: string;
+        email: string;
+        phoneNumber: string;
+      }) => {
+        const { userid, firstName, lastName, email } = data;
+        const emailLowerCase = email.toLowerCase();
+        const post = {
+          id: userid,
+          email: emailLowerCase,
+          profile: {
+            firstName,
+            lastName,
+          },
+        };
+        const { response } = await api.post("/users/create", post, false);
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.error);
+        }
 
-      const createUser = async () => {
-        const [firstName, lastName] = user?.displayName ? user?.displayName?.split(" ") : ["", ""]
+        return response;
+      },
+      retry: false,
+    });
+
+  /** Sign in with Google */
+
+  const handleGoogleLogin = async () => {
+    try {
+      const provider = new GoogleAuthProvider();
+      const result = await signInWithPopup(auth, provider);
+      const user = result.user;
+
+      if (user) {
         const email = user?.email as string;
         const userid = user?.uid as string;
         const phoneNumber = user?.phoneNumber as string;
+        const [firstName, lastName] = user?.displayName
+          ? user?.displayName?.split(" ")
+          : ["", ""];
+
         // Check if user exists in local database
         const { response, data } = await api.get(`/users/${userid}`);
-
+        console.log(data);
         if (!data["data"]) {
-          console.log("creating user");
-          try {
-            await createLocalUserFromGoogle.mutateAsync({userid, firstName, lastName, email, phoneNumber});
-          } catch (e: any) {
-            console.log("error creating local user");
-          }
+          const backendUser = await createLocalUserFromGoogle({
+            userid,
+            firstName,
+            lastName,
+            email,
+            phoneNumber,
+          });
+          console.log(backendUser);
         } else {
-          console.log("user already created");
+          setNotifOpen(true);
+          setErrorMessage(
+            "Your account already exists. Please log in using your email and password."
+          );
         }
       }
+    } catch (e) {
+      setNotifOpen(true);
+      setErrorMessage("Your could not be created. Please try again later.");
+    }
+  };
 
-      try {
-        await createUser();
-      } catch (e: any) {
-        console.log(e);
-      }
-
-    }).catch((error) => {
-      // Handle Errors here.
-      const errorCode = error.code;
-      const errorMessage = error.message;
-      // The email of the user's account used.
-      const email = error.customData.email;
-      // The AuthCredential type that was used.
-      const credential = GoogleAuthProvider.credentialFromError(error);
-      
-      console.log(error);
-    });
-  }
-
-  /** Tanstack query mutation to create a new user */
-  const createLocalUserFromGoogle = useMutation({
-    mutationFn: async (data: {userid: string, firstName: string, lastName: string, email: string, phoneNumber: string}) => {
-      const {userid, firstName, lastName, email} = data
-      const emailLowerCase = email.toLowerCase();
-      const post = {
-        id: userid,
-        email: emailLowerCase,
-        profile: {
-          firstName,
-          lastName,
-        },
-      };
-      const { response } = await api.post("/users/googleCreate", post, false);
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error);
-      }
-
-      return response;
-    },
-    retry: false,
-  });
+  if (googleLoading) return <Loading />;
 
   return (
     <>
@@ -190,8 +187,7 @@ const LoginForm = () => {
       <Snackbar
         variety="error"
         open={notifOpen}
-        onClose={() => setNotifOpen(false)}
-      >
+        onClose={() => setNotifOpen(false)}>
         Error: {errorMessage}
       </Snackbar>
 
@@ -223,16 +219,14 @@ const LoginForm = () => {
           <div className="text-center">
             <Link
               href="/password/forgot"
-              className="text-primary-200 hover:underline no-underline"
-            >
+              className="text-primary-200 hover:underline no-underline">
               Forgot password?
             </Link>
           </div>
           <Button
             loading={signInLoading}
             disabled={signInLoading}
-            type="submit"
-          >
+            type="submit">
             Log in
           </Button>
         </form>
@@ -252,8 +246,7 @@ const LoginForm = () => {
           variety="secondary"
           icon={<GoogleIcon />}
           onClick={handleGoogleLogin}
-          type="submit"
-        >
+          type="submit">
           Continue with Google
         </Button>
       </div>
