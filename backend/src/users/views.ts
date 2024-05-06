@@ -78,8 +78,8 @@ userRouter.post(
 
 userRouter.delete("/:userid", useAuth, async (req: Request, res: Response) => {
   // #swagger.tags = ['Users']
+  await admin.auth().deleteUser(req.params.userid);
   attempt(res, 200, () => userController.deleteUser(req.params.userid));
-  await admin.auth().deleteUser(req.params.userid); //put await and attempt in same promise (try-catch like above route)
   socketNotify("/users");
 });
 
