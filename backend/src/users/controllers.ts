@@ -332,7 +332,7 @@ const getSearchedUser = async (
     },
     include: {
       profile: true,
-      preferences:true
+      preferences: true,
     },
   });
 };
@@ -508,7 +508,7 @@ const getUserPreferences = async (userId: string) => {
  */
 const editPreferences = async (
   userId: string,
-  preferences: UserPreferences,
+  preferences: UserPreferences
 ) => {
   return prisma.user.update({
     where: { id: userId },
@@ -547,10 +547,7 @@ const editStatus = async (userId: string, status: string) => {
         userName,
         textBody
       );
-      const userPreferences = await userController.getUserPreferences(userId);
-      if (userPreferences?.preferences?.sendEmailNotification == true) {
-        await sendEmail(userEmail, "You have been blacklisted.", updatedHtml);
-      }
+      await sendEmail(userEmail, "You have been blacklisted.", updatedHtml);
     }
   }
 
@@ -583,16 +580,16 @@ const editRole = async (userId: string, role: string) => {
     if (userPreferences?.preferences?.sendEmailNotification == true) {
       if (prevUserRole === "SUPERVISOR" && role === "ADMIN") {
         const updatedHtml = replaceUserInputs(
-        stringUserUpdate,
-        userName,
-        textBodySA
+          stringUserUpdate,
+          userName,
+          textBodySA
         );
         await sendEmail(userEmail, "Your email subject", updatedHtml);
       } else if (prevUserRole === "VOLUNTEER" && role === "SUPERVISOR") {
         const updatedHtml = replaceUserInputs(
-        stringUserUpdate,
-        userName,
-        textBodyVS
+          stringUserUpdate,
+          userName,
+          textBodyVS
         );
         await sendEmail(userEmail, "Your role has changed.", updatedHtml);
       }

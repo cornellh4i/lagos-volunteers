@@ -102,6 +102,7 @@ const Profile = () => {
         <ProfileForm
           userDetails={{
             ...data.profile,
+            ...data.preferences,
             ...data,
           }}
         />

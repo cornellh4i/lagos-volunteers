@@ -10,6 +10,7 @@ import { api } from "@/utils/api";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { updatePassword } from "firebase/auth";
 import { User } from "firebase/auth";
+import { Controller } from "react-hook-form";
 
 type FormValues = {
   email: string;
@@ -47,8 +48,6 @@ const ProfileForm = ({ userDetails }: ProfileFormProps) => {
   /** State variables for the notification popups */
   const [successNotificationOpen, setSuccessNotificationOpen] = useState(false);
   const [errorNotificationOpen, setErrorNotificationOpen] = useState(false);
-  const [emailNotifications, setEmailNotifications] = useState(userDetails.sendEmailNotification);
-
 
   /** Handles form errors */
   const [errorMessage, setErrorMessage] = React.useState<string>("");
@@ -79,6 +78,7 @@ const ProfileForm = ({ userDetails }: ProfileFormProps) => {
   /** React hook form */
   const {
     register,
+    control,
     handleSubmit,
     watch,
     reset,
@@ -97,18 +97,6 @@ const ProfileForm = ({ userDetails }: ProfileFormProps) => {
   });
 
   /** Handles checkbox */
-
-  // TODO: Implement this
-
-  // const [checked, setChecked] = useState(emailNotifications);
-  // const handleCheckbox = () => {
-  //   setChecked ((prev) => !prev);
-  //   // setEmailNotifications((prev) => !prev); 
-  // };
-
-const handleCheckbox = () => {
-  setEmailNotifications((prev) => !prev);;
-};
 
   /** Tanstack query mutation to reauthenticate the user session */
   const ReAuthenticateUserSession = useMutation({
@@ -149,9 +137,9 @@ const handleCheckbox = () => {
     retry: false,
   });
 
-   /** Tanstack query mutation to update the user profile */
-   const updatePreferencesInDB = useMutation({
-    mutationFn: async (data: any) => {
+  /** Tanstack query mutation to update the user profile */
+  const updatePreferencesInDB = useMutation({
+    mutationFn: async (emailNotifications: boolean) => {
       return api.put(`/users/${userDetails.id}/preferences`, {
         sendEmailNotification: emailNotifications,
       });
@@ -168,7 +156,7 @@ const handleCheckbox = () => {
       await ReAuthenticateUserSession.mutateAsync(data);
       await updateUserPasswordInFirebase.mutateAsync(data);
       await updateProfileInDB.mutateAsync(data);
-      await updatePreferencesInDB.mutateAsync(data);
+      await updatePreferencesInDB.mutateAsync(data.emailNotifications);
       setSuccessNotificationOpen(true);
     } catch (error: any) {
       setErrorNotificationOpen(true);
@@ -182,8 +170,7 @@ const handleCheckbox = () => {
       <Snackbar
         variety="error"
         open={errorNotificationOpen}
-        onClose={() => setErrorNotificationOpen(false)}
-      >
+        onClose={() => setErrorNotificationOpen(false)}>
         Error: {handleErrors(errorMessage)}
       </Snackbar>
 
@@ -191,8 +178,7 @@ const handleCheckbox = () => {
       <Snackbar
         variety="success"
         open={successNotificationOpen}
-        onClose={() => setSuccessNotificationOpen(false)}
-      >
+        onClose={() => setSuccessNotificationOpen(false)}>
         Success: Profile update was successful!
       </Snackbar>
 
@@ -277,12 +263,12 @@ const handleCheckbox = () => {
             },
           })}
         />
-        <Checkbox
-          onChange={handleCheckbox}
-          // {...register("emailNotifications")}
-          label="Email notifications"
-          checked={emailNotifications}
-
+        <Controller
+          name="emailNotifications"
+          control={control}
+          render={({ field }) => (
+            <Checkbox {...field} label="Email notifications" />
+          )}
         />
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <div className="order-1 sm:order-2">
@@ -295,8 +281,7 @@ const handleCheckbox = () => {
               onClick={() => {
                 reset(undefined, { keepDefaultValues: true });
               }}
-              disabled={!isDirty}
-            >
+              disabled={!isDirty}>
               Reset changes
             </Button>
           </div>
