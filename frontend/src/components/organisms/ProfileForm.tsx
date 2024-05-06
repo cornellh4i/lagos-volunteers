@@ -145,7 +145,7 @@ const ProfileForm = ({ userDetails }: ProfileFormProps) => {
       });
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["preferences"] });
+      queryClient.invalidateQueries({ queryKey: ["profile"] });
     },
     retry: false,
   });
