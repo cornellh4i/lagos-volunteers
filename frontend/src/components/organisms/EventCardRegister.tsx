@@ -5,13 +5,19 @@ import Button from "../atoms/Button";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { api } from "@/utils/api";
 import { useAuth } from "@/utils/AuthContext";
+import Alert from "../atoms/Alert";
 
 interface EventRegisterCardProps {
   attendeeId: string;
   eventId: string;
+  date: Date;
 }
 
-const EventCardRegister = ({ eventId, attendeeId }: EventRegisterCardProps) => {
+const EventCardRegister = ({
+  eventId,
+  attendeeId,
+  date,
+}: EventRegisterCardProps) => {
   const { user } = useAuth();
   const queryClient = useQueryClient();
 
@@ -35,6 +41,10 @@ const EventCardRegister = ({ eventId, attendeeId }: EventRegisterCardProps) => {
     },
   });
 
+  /** Register button should be disabled if event is in the past */
+  const currentDate = new Date();
+  const disableRegisterEvent = date < currentDate;
+
   return (
     <Card>
       <div className="font-semibold text-2xl">Register for this event</div>
@@ -48,16 +58,21 @@ const EventCardRegister = ({ eventId, attendeeId }: EventRegisterCardProps) => {
       <div className="mt-3" />
       <CustomCheckbox
         label="I agree to the terms and conditions"
+        disabled={disableRegisterEvent}
         onChange={() => setIsChecked(!isChecked)}
       />
       <div className="mt-3" />
-      <Button
-        onClick={handleEventResgistration}
-        disabled={!isChecked}
-        loading={isPending}
-      >
-        Register
-      </Button>
+      {disableRegisterEvent ? (
+        <Button disabled>The event has concluded.</Button>
+      ) : (
+        <Button
+          onClick={handleEventResgistration}
+          disabled={!isChecked}
+          loading={isPending}
+        >
+          Register
+        </Button>
+      )}
     </Card>
   );
 };
