@@ -42,7 +42,7 @@ const CustomDatePicker = forwardRef(
             ref={ref}
             format="DD/MM/YYYY"
             defaultValue={value ? dayjs(value) : undefined}
-            minDate={tomorrow}
+            disablePast={true}
             {...props}
           />
         </LocalizationProvider>

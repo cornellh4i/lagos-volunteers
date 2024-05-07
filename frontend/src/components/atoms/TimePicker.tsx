@@ -6,6 +6,7 @@ import { IconButton } from "@mui/material";
 import { InputAdornment } from "@mui/material";
 import { AccessTime } from "@mui/icons-material";
 import dayjs from "dayjs";
+import { TimePicker } from "@mui/x-date-pickers/TimePicker";
 
 interface TimePickerProps {
   label: string;
@@ -27,7 +28,7 @@ const CustomTimePicker = forwardRef(
       <div>
         <div className="mb-1">{label}</div>
         <LocalizationProvider dateAdapter={AdapterDayjs}>
-          <TimeField
+          <TimePicker
             sx={{
               "& .MuiInputBase-root": {
                 borderRadius: "8px",
@@ -36,24 +37,10 @@ const CustomTimePicker = forwardRef(
                 height: "9px",
               },
             }}
-            fullWidth
             label=""
             defaultValue={value ? dayjs(value) : undefined}
-            InputProps={{
-              endAdornment: (
-                <InputAdornment position="end">
-                  <IconButton
-                    className="cursor-default"
-                    disableRipple
-                    edge="end"
-                  >
-                    <AccessTime />
-                  </IconButton>
-                </InputAdornment>
-              ),
-            }}
-            slotProps={{ textField: { error: error !== "" } }}
             ref={ref}
+            disablePast={true}
             {...props}
           />
         </LocalizationProvider>
