@@ -46,6 +46,7 @@ type FormValues = {
   startTime: Date;
   endTime: Date;
   mode: string;
+  status: string;
 };
 
 /** An EventForm page */
@@ -216,7 +217,7 @@ const EventForm = ({
         queryClient.invalidateQueries({
           queryKey: ["event", eventId],
         });
-        localStorage.setItem("eventEdited", "true");
+        localStorage.setItem("eventCanceled", "true");
         router.push("/events/view");
       },
     });
@@ -273,6 +274,9 @@ const EventForm = ({
       </div>
     );
   };
+
+  // Check if this event has been canceled
+  const thisEventHasBeenCanceled = eventDetails?.status === "CANCELED";
 
   return (
     <>
@@ -469,9 +473,8 @@ const EventForm = ({
                   <Button variety="secondary">Go back</Button>
                 </Link>
               </div>
-              {/* TODO: Add functionality */}
               <div className="sm:col-start-7 sm:col-span-3">
-                <Button variety="error" onClick={handleOpen}>
+                <Button variety="error" loading={cancelEventPending} disabled={thisEventHasBeenCanceled} onClick={handleOpen}>
                   Cancel event
                 </Button>
               </div>
@@ -479,7 +482,7 @@ const EventForm = ({
                 <Button
                   type="submit"
                   loading={editEventPending}
-                  disabled={editEventPending}
+                  disabled={thisEventHasBeenCanceled}
                 >
                   Save changes
                 </Button>

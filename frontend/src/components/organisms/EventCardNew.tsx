@@ -8,6 +8,7 @@ import { ViewEventsEvent } from "@/utils/types";
 import { format } from "date-fns";
 import Link from "next/link";
 import { displayDateInfo } from "@/utils/helpers";
+import Chip from "../atoms/Chip";
 
 interface EventCardNewProps {
   event: ViewEventsEvent;
@@ -19,7 +20,11 @@ const EventCardContent = ({ event }: EventCardNewProps) => {
   const timeRange = `${formattedStartTime} - ${formattedEndTime}`;
   const date = new Date(event.startDate);
   const dateInfo =
-    event.status === "CANCELED" ? "Canceled" : displayDateInfo(date);
+    event.status === "CANCELED" ? (
+      <Chip size ="small" label="Canceled" color="error" />
+    ) : (
+      displayDateInfo(date)
+    );
   const url =
     event.role === "Supervisor"
       ? `/events/${event.id}/attendees`
