@@ -11,11 +11,7 @@ import Markdown from "react-markdown";
 import UploadIcon from "@mui/icons-material/Upload";
 import EditIcon from "@mui/icons-material/Edit";
 import { useAuth } from "@/utils/AuthContext";
-import dynamic from "next/dynamic";
-
-const EditorComp = dynamic(() => import("@/components/atoms/Editor"), {
-  ssr: false,
-});
+import EditorComp from "@/components/atoms/Editor";
 
 type modalBodyProps = {
   handleModal: () => void;

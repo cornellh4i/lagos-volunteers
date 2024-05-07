@@ -97,7 +97,13 @@ eventRouter.get("/", useAuth, async (req: Request, res: Response) => {
     limit: req.query.limit as string,
   };
 
-  attempt(res, 200, () => eventController.getEvents(filter, sort, pagination));
+  const include = {
+    attendees: req.query.include === "attendees" ? true : false,
+  };
+
+  attempt(res, 200, () =>
+    eventController.getEvents(filter, sort, pagination, include)
+  );
 });
 
 eventRouter.get("/upcoming", useAuth, async (req: Request, res: Response) => {

@@ -25,12 +25,8 @@ import {
 import { api } from "@/utils/api";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import Dropzone from "../atoms/Dropzone";
-import dynamic from "next/dynamic";
 import Alert from "../atoms/Alert";
-
-const EditorComp = dynamic(() => import("@/components/atoms/Editor"), {
-  ssr: false,
-});
+import EditorComp from "@/components/atoms/Editor";
 
 interface EventFormProps {
   eventId?: string | string[] | undefined;
