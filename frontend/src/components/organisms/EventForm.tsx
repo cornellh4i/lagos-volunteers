@@ -277,6 +277,7 @@ const EventForm = ({
 
   // Check if this event has been canceled
   const thisEventHasBeenCanceled = eventDetails?.status === "CANCELED";
+  const thisEventIsNowInThePast = eventDetails?.endTime ?? new Date() < new Date();
 
   return (
     <>
@@ -474,7 +475,7 @@ const EventForm = ({
                 </Link>
               </div>
               <div className="sm:col-start-7 sm:col-span-3">
-                <Button variety="error" loading={cancelEventPending} disabled={thisEventHasBeenCanceled} onClick={handleOpen}>
+                <Button variety="error" loading={cancelEventPending } disabled={thisEventHasBeenCanceled || thisEventIsNowInThePast} onClick={handleOpen}>
                   Cancel event
                 </Button>
               </div>
@@ -482,7 +483,7 @@ const EventForm = ({
                 <Button
                   type="submit"
                   loading={editEventPending}
-                  disabled={thisEventHasBeenCanceled}
+                  disabled={thisEventHasBeenCanceled || thisEventIsNowInThePast}
                 >
                   Save changes
                 </Button>
