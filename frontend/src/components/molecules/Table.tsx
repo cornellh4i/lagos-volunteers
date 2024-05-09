@@ -18,6 +18,8 @@ interface TableProps {
   setPaginationModel: React.Dispatch<React.SetStateAction<GridPaginationModel>>;
   sortModel?: GridSortModel;
   setSortModel: React.Dispatch<React.SetStateAction<GridSortModel>>;
+  handlePaginationModelChange: (newModel: GridPaginationModel) => void;
+  loading?: boolean;
 }
 /** A Table component */
 const Table = ({
@@ -28,9 +30,12 @@ const Table = ({
   setPaginationModel,
   sortModel,
   setSortModel,
+  handlePaginationModelChange,
+  loading
 }: TableProps) => {
   const handleSortModelChange = (newModel: GridSortModel) => {
     setSortModel(newModel);
+    setPaginationModel((prev) => ({ ...prev, page: 0 }));
   };
   return (
     <div>
@@ -42,7 +47,7 @@ const Table = ({
           disableRowSelectionOnClick
           rowCount={dataSetLength} // number of rows in the entire dataset
           paginationModel={paginationModel} // current page and page size
-          onPaginationModelChange={setPaginationModel}
+          onPaginationModelChange={handlePaginationModelChange}
           pageSizeOptions={[]}
           paginationMode="server"
           disableColumnMenu
@@ -50,6 +55,7 @@ const Table = ({
           sortModel={sortModel}
           onSortModelChange={handleSortModelChange}
           sortingOrder={["desc", "asc"]}
+          loading={loading}
         />
       )}
     </div>

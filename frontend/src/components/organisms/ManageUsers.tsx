@@ -27,6 +27,8 @@ type ActiveProps = {
   setPaginationModel: React.Dispatch<React.SetStateAction<GridPaginationModel>>;
   sortModel: GridSortModel;
   setSortModel: React.Dispatch<React.SetStateAction<GridSortModel>>;
+  handlePaginationModelChange: (newModel: GridPaginationModel) => void;
+  isLoading: boolean;
 };
 
 type userInfo = {
@@ -44,7 +46,9 @@ const Active = ({
   paginationModel,
   setPaginationModel,
   sortModel,
+  handlePaginationModelChange,
   setSortModel,
+  isLoading,
 }: ActiveProps) => {
   const eventColumns: GridColDef[] = [
     {
@@ -104,12 +108,10 @@ const Active = ({
             display: "flex",
             alignItems: "center",
             justifyContent: "flex-end",
-          }}
-        >
+          }}>
           <Link
             href={`/users/${params.row.id}/manage`}
-            className="no-underline"
-          >
+            className="no-underline">
             <Button variety="tertiary" size="small" icon={<AccountBoxIcon />}>
               View Profile
             </Button>
@@ -143,6 +145,7 @@ const Active = ({
       </div>
       <Card size="table">
         <Table
+          handlePaginationModelChange={handlePaginationModelChange}
           columns={eventColumns}
           rows={initalRowData}
           dataSetLength={usersLength}
@@ -150,7 +153,7 @@ const Active = ({
           setPaginationModel={setPaginationModel}
           sortModel={sortModel}
           setSortModel={setSortModel}
-          // loading={loading}
+          loading={isLoading}
         />
       </Card>
     </div>
@@ -162,27 +165,65 @@ const ManageUsers = ({}: ManageUsersProps) => {
   /** Pagination model for the table */
   const [paginationModel, setPaginationModel] = useState<GridPaginationModel>({
     page: 0,
-    pageSize: 20,
+    pageSize: 10,
   });
+
+  const [mapPageToNextCursor, setMapPageToNextCursor] = useState<
+    { fowardCursor: string; backwardCursor: string }[]
+  >([{ fowardCursor: "", backwardCursor: "" }]);
 
   //Create a serverside sorting model for table using useState (LOOK AT THISSS)
   const [sortModel, setSortModel] = React.useState<GridSortModel>([
     { field: "firstName", sort: "asc" },
   ]);
 
-  let cursor = "";
+  let forwardCursor = "";
+  let backwardCursor = "";
+  const queryClient = useQueryClient();
+
+  /** Handles pagination model change */
+  const handlePaginationModelChange = async (newModel: GridPaginationModel) => {
+    mapPageToNextCursor.push({
+      fowardCursor: forwardCursor,
+      backwardCursor: backwardCursor,
+    });
+    console.log(mapPageToNextCursor);
+    if (newModel.page > paginationModel.page) {
+      queryClient.fetchQuery({
+        queryKey: ["users", newModel.page],
+        queryFn: async () =>
+          await fetchBatchOfUsers(mapPageToNextCursor[newModel.page].fowardCursor),
+      });
+    } else if (newModel.page < paginationModel.page) {
+      console.log(mapPageToNextCursor);
+      queryClient.fetchQuery({
+        queryKey: ["users", newModel.page],
+        queryFn: async () =>
+          await fetchBatchOfUsers(
+            mapPageToNextCursor[paginationModel.page+1].backwardCursor,
+            true
+          ),
+      });
+    }
+    setPaginationModel(newModel);
+    console.log(newModel);
+  };
 
   /** If a valid cursor is passed, fetch the next batch of users */
-  const fetchUsersBatch = async (cursor?: string) => {
-    if (cursor !== "") {
+  const fetchBatchOfUsers = async (
+    cursor: string = "",
+    prev: boolean = false
+  ) => {
+    if (prev) {
       const { response, data } = await api.get(
-        //look at response
-        `/users?limit=${paginationModel.pageSize}&after=${cursor}&sort=${sortModel[0].field}:${sortModel[0].sort}`
+        `/users?limit=${-paginationModel.pageSize}&after=${cursor}&sort=${
+          sortModel[0].field
+        }:${sortModel[0].sort}`
       );
       return data;
     } else {
       const { response, data } = await api.get(
-        `/users?limit=${paginationModel.pageSize}&sort=${sortModel[0].field}:${sortModel[0].sort}`
+        `/users?limit=${paginationModel.pageSize}&after=${cursor}&sort=${sortModel[0].field}:${sortModel[0].sort}`
       );
       return data;
     }
@@ -192,15 +233,11 @@ const ManageUsers = ({}: ManageUsersProps) => {
   const { data, isPending, error, isPlaceholderData, refetch } = useQuery({
     queryKey: ["users", paginationModel.page],
     queryFn: async () => {
-      return await fetchUsersBatch(cursor);
+      return await fetchBatchOfUsers();
     },
-    staleTime: Infinity,
   });
   const rows: userInfo[] = [];
   const totalNumberofData = data?.data.totalItems;
-  if (data?.data.cursor) {
-    cursor = data.data.cursor;
-  }
   data?.data.result.map((user: any) => {
     rows.push({
       id: user.id,
@@ -211,57 +248,66 @@ const ManageUsers = ({}: ManageUsersProps) => {
       hours: user.hours, // TODO: properly calculate hours
     });
   });
+  if (data?.data.cursor) {
+    forwardCursor = data?.data.cursor;
+    backwardCursor = data?.data.result[0].id;
+  }
+  console.log(data);
   const totalNumberOfPages = Math.ceil(
     totalNumberofData / paginationModel.pageSize
   );
 
   // Refetch table data when sort model changes
-  useEffect(() => {
-    // invalidate the cache query to refetch the data
-    queryClient.invalidateQueries({
-      queryKey: ["users", paginationModel],
-    });
-    // reset the cursor to the default value
-    cursor = "";
-    // reset the page to 0
-    setPaginationModel((prev) => ({ ...prev, page: 0 }));
+  // useEffect(() => {
+  //   // invalidate the cache query to refetch the data
+  //   queryClient.invalidateQueries({
+  //     queryKey: ["users", paginationModel],
+  //   });
+  //   // reset the cursor to the default value
+  //   cursor = "";
+  //   // reset the page to 0
+  //   setPaginationModel((prev) => ({ ...prev, page: 0 }));
 
-    console.log(sortModel);
-    console.log(paginationModel);
-    console.log(cursor);
+  //   console.log(sortModel);
+  //   console.log(paginationModel);
+  //   console.log(cursor);
 
-    // refetch the data
-    const refetchData = async () => {
-      await refetch();
-    };
-    refetchData();
-  }, [sortModel[0]["sort"]]);
+  //   // refetch the data
+  //   const refetchData = async () => {
+  //     await refetch();
+  //   };
+  //   refetchData();
+  // }, [sortModel[0]["sort"]]);
 
-  console.log(rows);
+  // console.log(sortModel);
+  // console.log(paginationModel);
+  // console.log(data);
 
-  // Prefetch the next page
-  const queryClient = useQueryClient();
-  useEffect(() => {
-    if (!isPlaceholderData && paginationModel.page < totalNumberOfPages) {
-      queryClient.prefetchQuery({
-        queryKey: ["users", paginationModel.page + 1],
-        queryFn: async () => await fetchUsersBatch(cursor),
-        staleTime: Infinity,
-      });
-    }
-  }, [data, queryClient, cursor, totalNumberofData, paginationModel.page]);
+  // // Prefetch the next page
+  // const queryClient = useQueryClient();
+  // useEffect(() => {
+  //   if (!isPlaceholderData && paginationModel.page < totalNumberOfPages) {
+  //     queryClient.prefetchQuery({
+  //       queryKey: ["users", paginationModel.page + 1],
+  //       queryFn: async () => await fetchUsersBatch(cursor),
+  //       staleTime: Infinity,
+  //     });
+  //   }
+  // }, [data, queryClient, cursor, totalNumberofData, paginationModel.page]);
 
   const tabs = [
     {
       label: "Active",
       panel: (
         <Active
+          handlePaginationModelChange={handlePaginationModelChange}
           initalRowData={rows}
           usersLength={totalNumberofData}
           paginationModel={paginationModel}
           setPaginationModel={setPaginationModel}
           sortModel={sortModel}
           setSortModel={setSortModel}
+          isLoading={isPending}
         />
       ),
     },
@@ -271,12 +317,14 @@ const ManageUsers = ({}: ManageUsersProps) => {
       label: "Blacklisted",
       panel: (
         <Active
+          handlePaginationModelChange={handlePaginationModelChange}
           initalRowData={rows}
           usersLength={totalNumberofData}
           paginationModel={paginationModel}
           setPaginationModel={setPaginationModel}
           sortModel={sortModel}
           setSortModel={setSortModel}
+          isLoading={isPending}
         />
       ),
     },

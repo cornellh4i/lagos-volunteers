@@ -126,7 +126,7 @@ const getUsers = async (
   // Handles GET /users?limit=20&after=asdf
   let cursor = undefined;
   let skip = undefined;
-  if (pagination.after) {
+  if (pagination.after != "") {
     cursor = {
       id: pagination.after as string,
     };
@@ -186,19 +186,25 @@ const getUsers = async (
     },
   });
 
-  const queryResult = await prisma.user.findMany({
-    where: {
-      AND: [whereDict],
-    },
-    include: {
-      profile: true,
-      events: eventId ? true : false,
-    },
+  let queryOptions = {
+    where: { AND: [whereDict] },
+    include: { profile: true, events: eventId ? true : false },
     orderBy: sortDict[sort.key],
     take: take,
     skip: skip,
-    cursor: cursor,
-  });
+  };
+  let queryResult;
+  if (cursor) {
+    queryResult = await prisma.user.findMany({
+      ...queryOptions,
+      cursor,
+    });
+  } else {
+    queryResult = await prisma.user.findMany({
+      ...queryOptions,
+    });
+  }
+
   const lastPostInResults = take
     ? queryResult[take - 1]
     : queryResult[queryResult.length - 1];
