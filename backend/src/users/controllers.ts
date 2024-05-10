@@ -208,8 +208,14 @@ const getUsers = async (
   const lastPostInResults = take
     ? queryResult[take - 1]
     : queryResult[queryResult.length - 1];
-  const myCursor = lastPostInResults ? lastPostInResults.id : undefined;
-  return { result: queryResult, cursor: myCursor, totalItems: totalRecords };
+  const nextCursor = lastPostInResults ? lastPostInResults.id : undefined;
+  const prevCursor = queryResult[0] ? queryResult[0].id : undefined;
+  return {
+    result: queryResult,
+    nextCursor: nextCursor,
+    prevCursor: prevCursor,
+    totalItems: totalRecords,
+  };
 };
 
 /**

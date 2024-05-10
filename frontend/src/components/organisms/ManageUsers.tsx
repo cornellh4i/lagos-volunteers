@@ -12,11 +12,14 @@ import SearchBar from "@/components/atoms/SearchBar";
 import Link from "next/link";
 import { formatDateString } from "@/utils/helpers";
 import { api } from "@/utils/api";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  useQuery,
+  useQueryClient,
+  keepPreviousData,
+} from "@tanstack/react-query";
 import Loading from "@/components/molecules/Loading";
 import Card from "../molecules/Card";
 import { formatRoleOrStatus } from "@/utils/helpers";
-import { Console } from "console";
 
 interface ManageUsersProps {}
 
@@ -168,45 +171,33 @@ const ManageUsers = ({}: ManageUsersProps) => {
     pageSize: 10,
   });
 
-  const [mapPageToNextCursor, setMapPageToNextCursor] = useState<
-    { fowardCursor: string; backwardCursor: string }[]
-  >([{ fowardCursor: "", backwardCursor: "" }]);
-
   //Create a serverside sorting model for table using useState (LOOK AT THISSS)
   const [sortModel, setSortModel] = React.useState<GridSortModel>([
     { field: "firstName", sort: "asc" },
   ]);
 
-  let forwardCursor = "";
-  let backwardCursor = "";
   const queryClient = useQueryClient();
 
   /** Handles pagination model change */
   const handlePaginationModelChange = async (newModel: GridPaginationModel) => {
-    mapPageToNextCursor.push({
-      fowardCursor: forwardCursor,
-      backwardCursor: backwardCursor,
-    });
-    console.log(mapPageToNextCursor);
-    if (newModel.page > paginationModel.page) {
-      queryClient.fetchQuery({
+    const currentPage = paginationModel.page;
+    const nextPageCursor = data?.data.nextCursor;
+    const prevPageCursor = data?.data.prevCursor;
+
+    setPaginationModel(newModel);
+    if (currentPage < newModel.page) {
+      await queryClient.fetchQuery({
         queryKey: ["users", newModel.page],
-        queryFn: async () =>
-          await fetchBatchOfUsers(mapPageToNextCursor[newModel.page].fowardCursor),
+        queryFn: async () => await fetchBatchOfUsers(nextPageCursor),
+        staleTime: Infinity,
       });
-    } else if (newModel.page < paginationModel.page) {
-      console.log(mapPageToNextCursor);
-      queryClient.fetchQuery({
+    } else if (currentPage > newModel.page) {
+      await queryClient.fetchQuery({
         queryKey: ["users", newModel.page],
-        queryFn: async () =>
-          await fetchBatchOfUsers(
-            mapPageToNextCursor[paginationModel.page+1].backwardCursor,
-            true
-          ),
+        queryFn: async () => await fetchBatchOfUsers(prevPageCursor, true),
+        staleTime: Infinity,
       });
     }
-    setPaginationModel(newModel);
-    console.log(newModel);
   };
 
   /** If a valid cursor is passed, fetch the next batch of users */
@@ -235,7 +226,10 @@ const ManageUsers = ({}: ManageUsersProps) => {
     queryFn: async () => {
       return await fetchBatchOfUsers();
     },
+    placeholderData: keepPreviousData,
+    staleTime: Infinity,
   });
+
   const rows: userInfo[] = [];
   const totalNumberofData = data?.data.totalItems;
   data?.data.result.map((user: any) => {
@@ -247,53 +241,11 @@ const ManageUsers = ({}: ManageUsersProps) => {
       createdAt: new Date(user.createdAt),
       hours: user.hours, // TODO: properly calculate hours
     });
-  });
-  if (data?.data.cursor) {
-    forwardCursor = data?.data.cursor;
-    backwardCursor = data?.data.result[0].id;
-  }
-  console.log(data);
+  }) || [];
+
   const totalNumberOfPages = Math.ceil(
     totalNumberofData / paginationModel.pageSize
   );
-
-  // Refetch table data when sort model changes
-  // useEffect(() => {
-  //   // invalidate the cache query to refetch the data
-  //   queryClient.invalidateQueries({
-  //     queryKey: ["users", paginationModel],
-  //   });
-  //   // reset the cursor to the default value
-  //   cursor = "";
-  //   // reset the page to 0
-  //   setPaginationModel((prev) => ({ ...prev, page: 0 }));
-
-  //   console.log(sortModel);
-  //   console.log(paginationModel);
-  //   console.log(cursor);
-
-  //   // refetch the data
-  //   const refetchData = async () => {
-  //     await refetch();
-  //   };
-  //   refetchData();
-  // }, [sortModel[0]["sort"]]);
-
-  // console.log(sortModel);
-  // console.log(paginationModel);
-  // console.log(data);
-
-  // // Prefetch the next page
-  // const queryClient = useQueryClient();
-  // useEffect(() => {
-  //   if (!isPlaceholderData && paginationModel.page < totalNumberOfPages) {
-  //     queryClient.prefetchQuery({
-  //       queryKey: ["users", paginationModel.page + 1],
-  //       queryFn: async () => await fetchUsersBatch(cursor),
-  //       staleTime: Infinity,
-  //     });
-  //   }
-  // }, [data, queryClient, cursor, totalNumberofData, paginationModel.page]);
 
   const tabs = [
     {
