@@ -189,7 +189,7 @@ const PastEvents = () => {
     queryFn: async () => {
       const userid = await fetchUserIdFromDatabase(user?.email as string);
       const pastEventsUserSupervised = await api.get(
-        `/events?ownerid=${userid}&date=past&limit=${PAGE_SIZE_SUPERVISOR}`
+        `/events?ownerid=${userid}&date=past&sort=startDate:desc&limit=${PAGE_SIZE_SUPERVISOR}`
       );
       return pastEventsUserSupervised["data"];
     },
@@ -225,7 +225,7 @@ const PastEvents = () => {
       endDate: event["endDate"],
       role: "Volunteer",
       hours: eventHours(event["endDate"], event["startDate"]),
-      attendeeStatus: event["attendees"][0]["attendeeStatus"], //I added this - David
+      attendeeStatus: event["attendees"][0]["attendeeStatus"],
     });
   });
 
@@ -331,7 +331,7 @@ const PastEvents = () => {
     },
     {
       field: "attendeeStatus",
-      headerName: "Attendee Status",
+      headerName: "Status",
       minWidth: 250,
       renderHeader: (params) => (
         <div style={{ fontWeight: "bold" }}>{params.colDef.headerName}</div>
@@ -339,7 +339,7 @@ const PastEvents = () => {
     },
     {
       field: "role",
-      headerName: "Status",
+      headerName: "Role",
       minWidth: 150,
       renderHeader: (params) => (
         <div style={{ fontWeight: "bold" }}>{params.colDef.headerName}</div>
