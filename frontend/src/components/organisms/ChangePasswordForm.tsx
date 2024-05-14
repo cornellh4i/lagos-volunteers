@@ -58,7 +58,7 @@ const ChangePasswordForm = ({ userDetails }: ChangePasswordFormProps) => {
       case "too-many-requests":
         return "You have made too many requests to change your password. Please try again later.";
       default:
-        return "Something went wrong. Please try again";
+        return "Something went wrong. Please try again.";
     }
   };
 
@@ -155,20 +155,6 @@ const ChangePasswordForm = ({ userDetails }: ChangePasswordFormProps) => {
               value: 6,
               message: "Password must be at least 6 characters",
             },
-            // validate: {
-            //   hasUpper: (value) =>
-            //     /.*[A-Z].*/.test(value) ||
-            //     "Password must contain at least one uppercase letter",
-            //   hasLower: (value) =>
-            //     /.*[a-z].*/.test(value) ||
-            //     "Password must contain at least one lowercase letter",
-            //   hasNumber: (value) =>
-            //     /.*[0-9].*/.test(value) ||
-            //     "Password must contain at least one number",
-            //   hasSpecialChar: (value) =>
-            //     /.*[\W_].*/.test(value) ||
-            //     "Password must contain at least one special character",
-            // },
           })}
         />
         <TextField

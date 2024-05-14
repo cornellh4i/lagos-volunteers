@@ -47,14 +47,8 @@ const ProfileForm = ({ userDetails }: ProfileFormProps) => {
   const handleErrors = (errors: any) => {
     const errorParsed = errors?.split("/")[1]?.slice(0, -2);
     switch (errorParsed) {
-      case "invalid-email":
-        return "Invalid email address format.";
-      case "user-disabled":
-        return "User with this email has been disabled.";
-      case "user-not-found":
-        return "There is no user with this email address.";
       default:
-        return "Something went wrong. Please try again";
+        return "Something went wrong. Please try again.";
     }
   };
 
