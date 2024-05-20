@@ -15,10 +15,9 @@ interface TableProps {
   dataSetLength: number;
   /** The pagination model should come from the data layer, the parent component */
   paginationModel: GridPaginationModel;
-  setPaginationModel: React.Dispatch<React.SetStateAction<GridPaginationModel>>;
   sortModel?: GridSortModel;
-  setSortModel: React.Dispatch<React.SetStateAction<GridSortModel>>;
   handlePaginationModelChange: (newModel: GridPaginationModel) => void;
+  handleSortModelChange: (newModel: GridSortModel) => void;
   loading?: boolean;
 }
 /** A Table component */
@@ -27,16 +26,11 @@ const Table = ({
   rows,
   dataSetLength,
   paginationModel,
-  setPaginationModel,
   sortModel,
-  setSortModel,
   handlePaginationModelChange,
+  handleSortModelChange,
   loading
 }: TableProps) => {
-  const handleSortModelChange = (newModel: GridSortModel) => {
-    setSortModel(newModel);
-    setPaginationModel((prev) => ({ ...prev, page: 0 }));
-  };
   return (
     <div>
       {rows.length > 0 && (
