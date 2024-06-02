@@ -94,7 +94,7 @@ const EventCardNew = ({ event }: EventCardNewProps) => {
           <Card>
             <div className="flex">
               {/* Card left content */}
-              <div className="md:max-w-xs">
+              <div className="md:max-w-xs w-full">
                 <EventCardContent event={event} />
               </div>
 
