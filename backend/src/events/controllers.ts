@@ -361,7 +361,7 @@ const addAttendee = async (eventID: string, userID: string) => {
       textBody
     );
     const userPreferences = await userController.getUserPreferences(userID);
-    if (userPreferences?.preferences?.sendEmailNotification == true) {
+    if (userPreferences?.preferences?.sendEmailNotification === true) {
       await sendEmail(
         userEmail,
         "Your registration was successful.",
@@ -421,7 +421,7 @@ const deleteAttendee = async (
       textBody
     );
     const userPreferences = await userController.getUserPreferences(userID);
-    if (userPreferences?.preferences?.sendEmailNotification == true) {
+    if (userPreferences?.preferences?.sendEmailNotification === true) {
       await sendEmail(
         userEmail,
         "Your event cancellation was successful.",
@@ -510,11 +510,11 @@ const confirmUser = async (eventID: string, userID: string) => {
       textBody
     );
     const userPreferences = await userController.getUserPreferences(userID);
-    if (userPreferences?.preferences?.sendEmailNotification == true) {
+    if (userPreferences?.preferences?.sendEmailNotification === true) {
       await sendEmail(
-      userEmail,
-      "Your attendance has been confirmed",
-      updatedHtml
+        userEmail,
+        "Your attendance has been confirmed",
+        updatedHtml
       );
     }
   }

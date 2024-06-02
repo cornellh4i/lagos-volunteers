@@ -231,6 +231,7 @@ const getUsers = async (
     },
     include: {
       profile: true,
+      preferences: true,
       events: eventId
         ? {
             where: {
@@ -351,7 +352,6 @@ const getSearchedUser = async (
     },
     include: {
       profile: true,
-      preferences: true,
     },
   });
 };
@@ -607,7 +607,7 @@ const editRole = async (userId: string, role: string) => {
 
   if (process.env.NODE_ENV != "test") {
     const userPreferences = await userController.getUserPreferences(userId);
-    if (userPreferences?.preferences?.sendEmailNotification == true) {
+    if (userPreferences?.preferences?.sendEmailNotification === true) {
       if (prevUserRole === "SUPERVISOR" && role === "ADMIN") {
         const updatedHtml = replaceUserInputs(
           stringUserUpdate,
