@@ -287,18 +287,30 @@ const ManageUsers = ({}: ManageUsersProps) => {
   const queryClient = useQueryClient();
 
   /** Pagination model for the table */
-  const [paginationModel, setPaginationModel] = useState<GridPaginationModel>({
-    page: 0,
-    pageSize: 10,
-  });
+  const [activeUsersPaginationModel, setActiveUsersPaginationModel] =
+    useState<GridPaginationModel>({
+      page: 0,
+      pageSize: 10,
+    });
+
+  const [blacklistedUsersPaginationModel, setBlacklistedUsersPaginationModel] =
+    useState<GridPaginationModel>({
+      page: 0,
+      pageSize: 10,
+    });
 
   /** Sorting Model for the table */
-  const [sortModel, setSortModel] = React.useState<GridSortModel>([
-    { field: "firstName", sort: "asc" },
-  ]);
+  const [activeUsersSortModel, setActiveUsersSortModel] =
+    React.useState<GridSortModel>([{ field: "firstName", sort: "asc" }]);
+
+  const [blacklistedUsersSortModel, setBlacklistedUsersSortModel] =
+    React.useState<GridSortModel>([{ field: "firstName", sort: "asc" }]);
 
   /** Search query for the table */
-  const [searchQuery, setSearchQuery] = useState("");
+  const [activeUsersSearchQuery, setActiveUsersSearchQuery] = useState("");
+
+  const [blacklistedUsersSearchQuery, setBlacklistedUsersSearchQuery] =
+    useState("");
 
   /** Function to fetch a batch of users with respect to the current pagination
    * and sorting states.
@@ -308,14 +320,31 @@ const ManageUsers = ({}: ManageUsersProps) => {
    * data before the current cursor. This is effectively the previous page.
    * @returns the current page of users (with respect to the current pagination and sorting states)
    */
-  const fetchBatchOfUsers = async (
+  const fetchBatchOfActiveUsers = async (
     cursor: string = "",
     prev: boolean = false
   ) => {
-    const limit = prev ? -paginationModel.pageSize : paginationModel.pageSize;
-    let url = `/users?status=ACTIVE&limit=${limit}&after=${cursor}&sort=${sortModel[0].field}:${sortModel[0].sort}&include=hours`;
-    if (searchQuery !== "") {
-      url += `&email=${searchQuery}`;
+    const limit = prev
+      ? -activeUsersPaginationModel.pageSize
+      : activeUsersPaginationModel.pageSize;
+    let url = `/users?status=ACTIVE&limit=${limit}&after=${cursor}&sort=${activeUsersSortModel[0].field}:${activeUsersSortModel[0].sort}&include=hours`;
+    if (activeUsersSearchQuery !== "") {
+      url += `&email=${activeUsersSearchQuery}`;
+    }
+    const { response, data } = await api.get(url);
+    return data;
+  };
+
+  const fetchBatchOfBlacklistedUsers = async (
+    cursor: string = "",
+    prev: boolean = false
+  ) => {
+    const limit = prev
+      ? -blacklistedUsersPaginationModel.pageSize
+      : blacklistedUsersPaginationModel.pageSize;
+    let url = `/users?status=INACTIVE&limit=${limit}&after=${cursor}&sort=${blacklistedUsersSortModel[0].field}:${blacklistedUsersSortModel[0].sort}&include=hours`;
+    if (blacklistedUsersSearchQuery !== "") {
+      url += `&email=${blacklistedUsersSearchQuery}`;
     }
     const { response, data } = await api.get(url);
     return data;
@@ -327,15 +356,41 @@ const ManageUsers = ({}: ManageUsersProps) => {
    * Note: The queryKey being used is very specific to the sorting and pagination states.
    * This is important because the queryKey will determine when cached data becomes stale.
    */
-  const { data, isPending, error, isPlaceholderData, refetch } = useQuery({
+  const {
+    data: activeUsersdata,
+    isPending,
+    error,
+    isPlaceholderData,
+    refetch,
+  } = useQuery({
     queryKey: [
       "users",
-      paginationModel.page,
-      sortModel[0].sort,
-      sortModel[0].field,
+      activeUsersPaginationModel.page,
+      activeUsersSortModel[0].sort,
+      activeUsersSortModel[0].field,
     ],
     queryFn: async () => {
-      return await fetchBatchOfUsers();
+      return await fetchBatchOfActiveUsers();
+    },
+    placeholderData: keepPreviousData,
+    staleTime: Infinity,
+  });
+
+  const {
+    data: blacklistedUsersdata,
+    isPending: isBlacklistedUsersPending,
+    error: isBlacklistedUsersError,
+    isPlaceholderData: isBlacklistedUsersPlaceholderData,
+    refetch: refetchBlacklistedUsers,
+  } = useQuery({
+    queryKey: [
+      "users",
+      blacklistedUsersPaginationModel.page,
+      blacklistedUsersSortModel[0].sort,
+      blacklistedUsersSortModel[0].field,
+    ],
+    queryFn: async () => {
+      return await fetchBatchOfBlacklistedUsers();
     },
     placeholderData: keepPreviousData,
     staleTime: Infinity,
@@ -346,11 +401,13 @@ const ManageUsers = ({}: ManageUsersProps) => {
    * If the newModel is greater than the current page, fetch the next page
    * If the newModel is less than the current page, fetch the previous page
    */
-  const handlePaginationModelChange = async (newModel: GridPaginationModel) => {
-    const currentPage = paginationModel.page;
-    const nextPageCursor = data?.data.nextCursor;
-    const prevPageCursor = data?.data.prevCursor;
-    setPaginationModel(newModel);
+  const handleActiveUsersPaginationModelChange = async (
+    newModel: GridPaginationModel
+  ) => {
+    const currentPage = activeUsersPaginationModel.page;
+    const nextPageCursor = activeUsersdata?.data.nextCursor;
+    const prevPageCursor = activeUsersdata?.data.prevCursor;
+    setActiveUsersPaginationModel(newModel);
 
     // Fetch Next Page
     if (currentPage < newModel.page) {
@@ -358,10 +415,10 @@ const ManageUsers = ({}: ManageUsersProps) => {
         queryKey: [
           "users",
           newModel.page,
-          sortModel[0].sort,
-          sortModel[0].field,
+          activeUsersSortModel[0].sort,
+          activeUsersSortModel[0].field,
         ],
-        queryFn: async () => await fetchBatchOfUsers(nextPageCursor),
+        queryFn: async () => await fetchBatchOfActiveUsers(nextPageCursor),
         staleTime: Infinity,
       });
       // Fetch previous page
@@ -370,10 +427,47 @@ const ManageUsers = ({}: ManageUsersProps) => {
         queryKey: [
           "users",
           newModel.page,
-          sortModel[0].sort,
-          sortModel[0].field,
+          activeUsersSortModel[0].sort,
+          activeUsersSortModel[0].field,
         ],
-        queryFn: async () => await fetchBatchOfUsers(prevPageCursor, true),
+        queryFn: async () =>
+          await fetchBatchOfActiveUsers(prevPageCursor, true),
+        staleTime: Infinity,
+      });
+    }
+  };
+
+  const handleBlacklistedUsersPaginationModelChange = async (
+    newModel: GridPaginationModel
+  ) => {
+    const currentPage = blacklistedUsersPaginationModel.page;
+    const nextPageCursor = blacklistedUsersdata?.data.nextCursor;
+    const prevPageCursor = blacklistedUsersdata?.data.prevCursor;
+    setBlacklistedUsersPaginationModel(newModel);
+
+    // Fetch Next Page
+    if (currentPage < newModel.page) {
+      await queryClient.fetchQuery({
+        queryKey: [
+          "users",
+          newModel.page,
+          blacklistedUsersSortModel[0].sort,
+          blacklistedUsersSortModel[0].field,
+        ],
+        queryFn: async () => await fetchBatchOfBlacklistedUsers(nextPageCursor),
+        staleTime: Infinity,
+      });
+      // Fetch previous page
+    } else if (currentPage > newModel.page) {
+      await queryClient.fetchQuery({
+        queryKey: [
+          "users",
+          newModel.page,
+          blacklistedUsersSortModel[0].sort,
+          blacklistedUsersSortModel[0].field,
+        ],
+        queryFn: async () =>
+          await fetchBatchOfBlacklistedUsers(prevPageCursor, true),
         staleTime: Infinity,
       });
     }
@@ -385,15 +479,30 @@ const ManageUsers = ({}: ManageUsersProps) => {
    * but only after the sortModel has been updated. Hence, we call the fetchNewDataWithUpdatedSort function
    * on changes to the sortModel (see useEffect below)
    */
-  const handleSortModelChange = async (newModel: GridSortModel) => {
-    setPaginationModel((prev) => ({ ...prev, page: 0 }));
-    setSortModel(newModel);
+  const handleActiveUsersSortModelChange = async (newModel: GridSortModel) => {
+    setActiveUsersPaginationModel((prev) => ({ ...prev, page: 0 }));
+    setActiveUsersSortModel(newModel);
   };
+
   /** Handles a change in the state - search query */
-  const handleNewSearchQuery = async (newQuery: string) => {
-    setPaginationModel((prev) => ({ ...prev, page: 0 }));
-    setSortModel([{ field: "firstName", sort: "asc" }]);
-    setSearchQuery(newQuery);
+  const handleNewActiveUsersSearchQuery = async (newQuery: string) => {
+    setActiveUsersPaginationModel((prev) => ({ ...prev, page: 0 }));
+    setActiveUsersSortModel([{ field: "firstName", sort: "asc" }]);
+    setActiveUsersSearchQuery(newQuery);
+  };
+
+  const handleBlacklistedUsersSortModelChange = async (
+    newModel: GridSortModel
+  ) => {
+    setBlacklistedUsersPaginationModel((prev) => ({ ...prev, page: 0 }));
+    setBlacklistedUsersSortModel(newModel);
+  };
+
+  /** Handles a change in the state - search query */
+  const handleNewBlacklistedUsersSearchQuery = async (newQuery: string) => {
+    setBlacklistedUsersPaginationModel((prev) => ({ ...prev, page: 0 }));
+    setBlacklistedUsersSortModel([{ field: "firstName", sort: "asc" }]);
+    setBlacklistedUsersSearchQuery(newQuery);
   };
 
   /** Fetches the data with the new sort model
@@ -402,36 +511,96 @@ const ManageUsers = ({}: ManageUsersProps) => {
   useEffect(() => {
     const fetchNewDataWithUpdatedSort = async () => {
       await queryClient.fetchQuery({
-        queryKey: ["users", 0, sortModel[0].sort, sortModel[0].field],
-        queryFn: async () => await fetchBatchOfUsers("", false),
+        queryKey: [
+          "users",
+          0,
+          activeUsersSortModel[0].sort,
+          activeUsersSortModel[0].field,
+        ],
+        queryFn: async () => await fetchBatchOfActiveUsers("", false),
         staleTime: Infinity,
       });
     };
     fetchNewDataWithUpdatedSort();
-  }, [sortModel]);
+  }, [activeUsersSortModel]);
+
+  useEffect(() => {
+    const fetchNewDataWithUpdatedSort = async () => {
+      await queryClient.fetchQuery({
+        queryKey: [
+          "users",
+          0,
+          blacklistedUsersSortModel[0].sort,
+          blacklistedUsersSortModel[0].field,
+        ],
+        queryFn: async () => await fetchBatchOfBlacklistedUsers("", false),
+        staleTime: Infinity,
+      });
+    };
+    fetchNewDataWithUpdatedSort();
+  }, [blacklistedUsersSortModel]);
 
   /** Handles a change in the state - search query */
   useEffect(() => {
-    console.log("searchQuery changed to:", searchQuery);
     const fetchNewDataWithUpdatedSearchQuery = async () => {
       queryClient.invalidateQueries({
         queryKey: ["users"],
       });
       await queryClient.fetchQuery({
-        queryKey: ["users", 0, sortModel[0].sort, sortModel[0].field],
+        queryKey: [
+          "users",
+          0,
+          activeUsersSortModel[0].sort,
+          activeUsersSortModel[0].field,
+        ],
         queryFn: async () => {
-          return await fetchBatchOfUsers("", false);
+          return await fetchBatchOfActiveUsers("", false);
         },
         staleTime: Infinity,
       });
     };
     fetchNewDataWithUpdatedSearchQuery();
-  }, [searchQuery]);
+  }, [activeUsersSearchQuery]);
 
-  const rows: userInfo[] = [];
-  const totalNumberofData = data?.data.totalItems;
-  data?.data.result.map((user: any) => {
-    rows.push({
+  useEffect(() => {
+    const fetchNewDataWithUpdatedSearchQuery = async () => {
+      queryClient.invalidateQueries({
+        queryKey: ["users"],
+      });
+      await queryClient.fetchQuery({
+        queryKey: [
+          "users",
+          0,
+          blacklistedUsersSortModel[0].sort,
+          blacklistedUsersSortModel[0].field,
+        ],
+        queryFn: async () => {
+          return await fetchBatchOfBlacklistedUsers("", false);
+        },
+        staleTime: Infinity,
+      });
+    };
+    fetchNewDataWithUpdatedSearchQuery();
+  }, [blacklistedUsersSearchQuery]);
+
+  const activeUsersRows: userInfo[] = [];
+  const blacklistedUsersRows: userInfo[] = [];
+  const totalNumberofActiveUsersData = activeUsersdata?.data.totalItems;
+  const totalNumberofBlacklistedUsersData =
+    blacklistedUsersdata?.data.totalItems;
+  activeUsersdata?.data.result.map((user: any) => {
+    activeUsersRows.push({
+      id: user.id,
+      firstName: user.profile?.firstName + " " + user.profile?.lastName,
+      email: user.email,
+      role: formatRoleOrStatus(user.role),
+      createdAt: new Date(user.createdAt),
+      hours: user.hours, // TODO: properly calculate hours
+    });
+  }) || [];
+
+  blacklistedUsersdata?.data.result.map((user: any) => {
+    blacklistedUsersRows.push({
       id: user.id,
       firstName: user.profile?.firstName + " " + user.profile?.lastName,
       email: user.email,
@@ -446,13 +615,13 @@ const ManageUsers = ({}: ManageUsersProps) => {
       label: "Active",
       panel: (
         <Active
-          handlePaginationModelChange={handlePaginationModelChange}
-          handleSortModelChange={handleSortModelChange}
-          handleNewSearchQuery={handleNewSearchQuery}
-          rows={rows}
-          usersLength={totalNumberofData}
-          paginationModel={paginationModel}
-          sortModel={sortModel}
+          handlePaginationModelChange={handleActiveUsersPaginationModelChange}
+          handleSortModelChange={handleActiveUsersSortModelChange}
+          handleNewSearchQuery={handleNewActiveUsersSearchQuery}
+          rows={activeUsersRows}
+          usersLength={totalNumberofActiveUsersData}
+          paginationModel={activeUsersPaginationModel}
+          sortModel={activeUsersSortModel}
           isLoading={isPending}
         />
       ),
@@ -463,14 +632,16 @@ const ManageUsers = ({}: ManageUsersProps) => {
       label: "Blacklisted",
       panel: (
         <Blacklisted
-          handlePaginationModelChange={handlePaginationModelChange}
-          handleSortModelChange={handleSortModelChange}
-          handleNewSearchQuery={handleNewSearchQuery}
-          rows={rows}
-          usersLength={totalNumberofData}
-          paginationModel={paginationModel}
-          sortModel={sortModel}
-          isLoading={isPending}
+          handlePaginationModelChange={
+            handleBlacklistedUsersPaginationModelChange
+          }
+          handleSortModelChange={handleBlacklistedUsersSortModelChange}
+          handleNewSearchQuery={handleNewBlacklistedUsersSearchQuery}
+          rows={blacklistedUsersRows}
+          usersLength={totalNumberofBlacklistedUsersData}
+          paginationModel={blacklistedUsersPaginationModel}
+          sortModel={blacklistedUsersSortModel}
+          isLoading={isBlacklistedUsersPending}
         />
       ),
     },
