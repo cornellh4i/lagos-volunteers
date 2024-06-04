@@ -32,6 +32,7 @@ type ManageUsersTableProps = {
   sortModel: GridSortModel;
   handlePaginationModelChange: (newModel: GridPaginationModel) => void;
   handleSortModelChange: (newModel: GridSortModel) => void;
+  handleNewSearchQuery: (newQuery: string) => void;
   isLoading: boolean;
 };
 
@@ -51,6 +52,7 @@ const Active = ({
   sortModel,
   handlePaginationModelChange,
   handleSortModelChange,
+  handleNewSearchQuery,
   isLoading,
 }: ManageUsersTableProps) => {
   /** New state variable for storing search query */
@@ -134,7 +136,7 @@ const Active = ({
   const handleSubmitSearch = (event: FormEvent<HTMLFormElement>) => {
     // Prevent page refresh
     event.preventDefault();
-
+    handleNewSearchQuery(value);
     // Set search query
     setSearchQuery(value);
   };
@@ -172,11 +174,9 @@ const Blacklisted = ({
   sortModel,
   handlePaginationModelChange,
   handleSortModelChange,
+  handleNewSearchQuery,
   isLoading,
 }: ManageUsersTableProps) => {
-  /** New state variable for storing search query */
-  const [searchQuery, setSearchQuery] = useState("");
-
   const eventColumns: GridColDef[] = [
     {
       field: "name",
@@ -245,15 +245,15 @@ const Blacklisted = ({
 
   /** Search bar */
   const [value, setValue] = React.useState("");
+
   const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
     setValue(event.target.value);
   };
+
   const handleSubmitSearch = (event: FormEvent<HTMLFormElement>) => {
     // Prevent page refresh
     event.preventDefault();
-
-    // Set search query
-    setSearchQuery(value);
+    handleNewSearchQuery(value);
   };
 
   return (
@@ -297,6 +297,9 @@ const ManageUsers = ({}: ManageUsersProps) => {
     { field: "firstName", sort: "asc" },
   ]);
 
+  /** Search query for the table */
+  const [searchQuery, setSearchQuery] = useState("");
+
   /** Function to fetch a batch of users with respect to the current pagination
    * and sorting states.
    * @param cursor is the cursor to fetch the next batch of users
@@ -309,25 +312,19 @@ const ManageUsers = ({}: ManageUsersProps) => {
     cursor: string = "",
     prev: boolean = false
   ) => {
-    if (prev) {
-      const { response, data } = await api.get(
-        `/users?limit=${-paginationModel.pageSize}&after=${cursor}&sort=${
-          sortModel[0].field
-        }:${sortModel[0].sort}`
-      );
-      return data;
-    } else {
-      const { response, data } = await api.get(
-        `/users?limit=${paginationModel.pageSize}&after=${cursor}&sort=${sortModel[0].field}:${sortModel[0].sort}`
-      );
-      return data;
+    const limit = prev ? -paginationModel.pageSize : paginationModel.pageSize;
+    let url = `/users?status=ACTIVE&limit=${limit}&after=${cursor}&sort=${sortModel[0].field}:${sortModel[0].sort}&include=hours`;
+    if (searchQuery !== "") {
+      url += `&email=${searchQuery}`;
     }
+    const { response, data } = await api.get(url);
+    return data;
   };
 
   /** Tanstack query for fetching users
    * This runs initially when the component is rendered.
    * The default sorting and pagination states are used.
-   * Note; The queryKey being used is very specific to the sorting and pagination states.
+   * Note: The queryKey being used is very specific to the sorting and pagination states.
    * This is important because the queryKey will determine when cached data becomes stale.
    */
   const { data, isPending, error, isPlaceholderData, refetch } = useQuery({
@@ -392,6 +389,12 @@ const ManageUsers = ({}: ManageUsersProps) => {
     setPaginationModel((prev) => ({ ...prev, page: 0 }));
     setSortModel(newModel);
   };
+  /** Handles a change in the state - search query */
+  const handleNewSearchQuery = async (newQuery: string) => {
+    setPaginationModel((prev) => ({ ...prev, page: 0 }));
+    setSortModel([{ field: "firstName", sort: "asc" }]);
+    setSearchQuery(newQuery);
+  };
 
   /** Fetches the data with the new sort model
    * This is called when the sortModel changes
@@ -406,6 +409,24 @@ const ManageUsers = ({}: ManageUsersProps) => {
     };
     fetchNewDataWithUpdatedSort();
   }, [sortModel]);
+
+  /** Handles a change in the state - search query */
+  useEffect(() => {
+    console.log("searchQuery changed to:", searchQuery);
+    const fetchNewDataWithUpdatedSearchQuery = async () => {
+      queryClient.invalidateQueries({
+        queryKey: ["users"],
+      });
+      await queryClient.fetchQuery({
+        queryKey: ["users", 0, sortModel[0].sort, sortModel[0].field],
+        queryFn: async () => {
+          return await fetchBatchOfUsers("", false);
+        },
+        staleTime: Infinity,
+      });
+    };
+    fetchNewDataWithUpdatedSearchQuery();
+  }, [searchQuery]);
 
   const rows: userInfo[] = [];
   const totalNumberofData = data?.data.totalItems;
@@ -427,6 +448,7 @@ const ManageUsers = ({}: ManageUsersProps) => {
         <Active
           handlePaginationModelChange={handlePaginationModelChange}
           handleSortModelChange={handleSortModelChange}
+          handleNewSearchQuery={handleNewSearchQuery}
           rows={rows}
           usersLength={totalNumberofData}
           paginationModel={paginationModel}
@@ -443,6 +465,7 @@ const ManageUsers = ({}: ManageUsersProps) => {
         <Blacklisted
           handlePaginationModelChange={handlePaginationModelChange}
           handleSortModelChange={handleSortModelChange}
+          handleNewSearchQuery={handleNewSearchQuery}
           rows={rows}
           usersLength={totalNumberofData}
           paginationModel={paginationModel}
