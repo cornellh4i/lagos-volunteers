@@ -9,6 +9,7 @@ import {
   GridSortDirection,
 } from "@mui/x-data-grid";
 import AccountBoxIcon from "@mui/icons-material/AccountBox";
+import PersonIcon from "@mui/icons-material/Person";
 import SearchBar from "@/components/atoms/SearchBar";
 import Link from "next/link";
 import { formatDateString } from "@/utils/helpers";
@@ -24,8 +25,8 @@ import { formatRoleOrStatus } from "@/utils/helpers";
 
 interface ManageUsersProps {}
 
-type ActiveProps = {
-  initalRowData: Object[];
+type ManageUsersTableProps = {
+  rows: userInfo[];
   usersLength: number;
   paginationModel: GridPaginationModel;
   sortModel: GridSortModel;
@@ -44,14 +45,17 @@ type userInfo = {
 };
 
 const Active = ({
-  initalRowData,
+  rows,
   usersLength,
   paginationModel,
   sortModel,
   handlePaginationModelChange,
   handleSortModelChange,
   isLoading,
-}: ActiveProps) => {
+}: ManageUsersTableProps) => {
+  /** New state variable for storing search query */
+  const [searchQuery, setSearchQuery] = useState("");
+
   const eventColumns: GridColDef[] = [
     {
       field: "firstName",
@@ -106,18 +110,131 @@ const Active = ({
       headerName: "",
       field: "actions",
       flex: 0.5,
-      minWidth: 180,
+      minWidth: 140,
       renderCell: (params) => (
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "flex-end",
-          }}>
+        <div>
           <Link
             href={`/users/${params.row.id}/manage`}
             className="no-underline">
-            <Button variety="tertiary" size="small" icon={<AccountBoxIcon />}>
+            <Button variety="tertiary" size="small" icon={<PersonIcon />}>
+              View Profile
+            </Button>
+          </Link>
+        </div>
+      ),
+    },
+  ];
+
+  /** Search bar */
+  // TODO: Implement seach bar with new pagination logic.
+  const [value, setValue] = React.useState("");
+  const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
+    setValue(event.target.value);
+  };
+  const handleSubmitSearch = (event: FormEvent<HTMLFormElement>) => {
+    // Prevent page refresh
+    event.preventDefault();
+
+    // Set search query
+    setSearchQuery(value);
+  };
+
+  return (
+    <div>
+      <div className="pb-5 w-full sm:w-[600px]">
+        <SearchBar
+          placeholder="Search member by name, email"
+          value={value}
+          onChange={handleChange}
+          onSubmit={handleSubmitSearch}
+        />
+      </div>
+      <Card size="table">
+        <Table
+          handlePaginationModelChange={handlePaginationModelChange}
+          handleSortModelChange={handleSortModelChange}
+          columns={eventColumns}
+          rows={rows}
+          dataSetLength={usersLength}
+          paginationModel={paginationModel}
+          sortModel={sortModel}
+          loading={isLoading}
+        />
+      </Card>
+    </div>
+  );
+};
+
+const Blacklisted = ({
+  rows,
+  usersLength,
+  paginationModel,
+  sortModel,
+  handlePaginationModelChange,
+  handleSortModelChange,
+  isLoading,
+}: ManageUsersTableProps) => {
+  /** New state variable for storing search query */
+  const [searchQuery, setSearchQuery] = useState("");
+
+  const eventColumns: GridColDef[] = [
+    {
+      field: "name",
+      headerName: "Name",
+      flex: 2,
+      minWidth: 200,
+      renderHeader: (params) => (
+        <div style={{ fontWeight: "bold" }}>{params.colDef.headerName}</div>
+      ),
+    },
+    {
+      field: "email",
+      headerName: "Email",
+      flex: 1,
+      minWidth: 150,
+      renderHeader: (params) => (
+        <div style={{ fontWeight: "bold" }}>{params.colDef.headerName}</div>
+      ),
+    },
+    {
+      field: "role",
+      headerName: "Role",
+      flex: 0.5,
+      minWidth: 100,
+      renderHeader: (params) => (
+        <div style={{ fontWeight: "bold" }}>{params.colDef.headerName}</div>
+      ),
+    },
+    {
+      field: "date",
+      headerName: "Joined on",
+      flex: 0.5,
+      minWidth: 100,
+      type: "date",
+      renderHeader: (params) => (
+        <div style={{ fontWeight: "bold" }}>{params.colDef.headerName}</div>
+      ),
+    },
+    {
+      field: "hours",
+      headerName: "Total hours",
+      flex: 0.5,
+      minWidth: 100,
+      renderHeader: (params) => (
+        <div style={{ fontWeight: "bold" }}>{params.colDef.headerName}</div>
+      ),
+    },
+    {
+      headerName: "",
+      field: "actions",
+      flex: 0.5,
+      minWidth: 140,
+      renderCell: (params) => (
+        <div>
+          <Link
+            href={`/users/${params.row.id}/manage`}
+            className="no-underline">
+            <Button variety="tertiary" size="small" icon={<PersonIcon />}>
               View Profile
             </Button>
           </Link>
@@ -131,8 +248,12 @@ const Active = ({
   const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
     setValue(event.target.value);
   };
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+  const handleSubmitSearch = (event: FormEvent<HTMLFormElement>) => {
+    // Prevent page refresh
     event.preventDefault();
+
+    // Set search query
+    setSearchQuery(value);
   };
 
   return (
@@ -142,15 +263,15 @@ const Active = ({
           placeholder="Search member by name, email"
           value={value}
           onChange={handleChange}
-          onClick={handleSubmit}
+          onSubmit={handleSubmitSearch}
         />
       </div>
       <Card size="table">
         <Table
+          columns={eventColumns}
           handlePaginationModelChange={handlePaginationModelChange}
           handleSortModelChange={handleSortModelChange}
-          columns={eventColumns}
-          rows={initalRowData}
+          rows={rows}
           dataSetLength={usersLength}
           paginationModel={paginationModel}
           sortModel={sortModel}
@@ -306,7 +427,7 @@ const ManageUsers = ({}: ManageUsersProps) => {
         <Active
           handlePaginationModelChange={handlePaginationModelChange}
           handleSortModelChange={handleSortModelChange}
-          initalRowData={rows}
+          rows={rows}
           usersLength={totalNumberofData}
           paginationModel={paginationModel}
           sortModel={sortModel}
@@ -319,10 +440,10 @@ const ManageUsers = ({}: ManageUsersProps) => {
     {
       label: "Blacklisted",
       panel: (
-        <Active
+        <Blacklisted
           handlePaginationModelChange={handlePaginationModelChange}
           handleSortModelChange={handleSortModelChange}
-          initalRowData={rows}
+          rows={rows}
           usersLength={totalNumberofData}
           paginationModel={paginationModel}
           sortModel={sortModel}
@@ -332,16 +453,11 @@ const ManageUsers = ({}: ManageUsersProps) => {
     },
   ];
 
-  /** Loading screen */
-  if (isPending) return <Loading />;
-
   return (
-    <>
-      <TabContainer
-        left={<div className="font-semibold text-3xl">Manage Members</div>}
-        tabs={tabs}
-      />
-    </>
+    <TabContainer
+      left={<div className="font-semibold text-3xl">Manage Members</div>}
+      tabs={tabs}
+    />
   );
 };
 

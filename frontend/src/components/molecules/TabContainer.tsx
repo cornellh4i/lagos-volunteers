@@ -30,7 +30,6 @@ const HorizontalTabContainer = ({
             {left}
             <div className={fullWidth ? "w-full" : "ml-auto min-w-fit"}>
               <TabList
-                value={value}
                 onChange={handleChange}
                 variant="scrollable"
                 scrollButtons={false}
@@ -49,7 +48,7 @@ const HorizontalTabContainer = ({
               </TabList>
             </div>
           </div>
-          <div className="h-screen mt-6">
+          <div className="mt-6">
             {tabs.map((tab, index) => (
               <TabPanel key={index} className="p-0 mt-4" value={String(index)}>
                 {tab.panel}

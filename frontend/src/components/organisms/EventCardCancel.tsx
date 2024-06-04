@@ -14,6 +14,7 @@ import { useForm, SubmitHandler } from "react-hook-form";
 interface EventCardCancelProps {
   attendeeId: string;
   eventId: string;
+  date: Date;
 }
 
 interface modalProps {
@@ -32,7 +33,7 @@ const ModalBody = ({ handleClose, mutateFn }: modalProps) => {
           alignItems: "center",
         }}
       >
-        <h2>Cancel Registration</h2>
+        <h2 className="mt-0">Cancel Registration</h2>
       </Box>
       <Box
         sx={{
@@ -44,21 +45,25 @@ const ModalBody = ({ handleClose, mutateFn }: modalProps) => {
       >
         <div>Are you sure you want to cancel?</div>
       </Box>
-      <Grid container spacing={2}>
-        <Grid item md={6} xs={12}>
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+        <div className="order-1 sm:order-2">
+          <Button onClick={mutateFn}>Yes</Button>
+        </div>
+        <div className="order-2 sm:order-1">
           <Button variety="secondary" onClick={handleClose}>
             No
           </Button>
-        </Grid>
-        <Grid item md={6} xs={12}>
-          <Button onClick={mutateFn}>Yes</Button>
-        </Grid>
-      </Grid>
+        </div>
+      </div>
     </div>
   );
 };
 
-const EventCardCancel = ({ eventId, attendeeId }: EventCardCancelProps) => {
+const EventCardCancel = ({
+  eventId,
+  attendeeId,
+  date,
+}: EventCardCancelProps) => {
   const { user } = useAuth();
   const queryClient = useQueryClient();
 
@@ -110,6 +115,10 @@ const EventCardCancel = ({ eventId, attendeeId }: EventCardCancelProps) => {
     setOpen(!open);
   };
 
+  /** Register button should be disabled if event is in the past */
+  const currentDate = new Date();
+  const disableCancelEvent = date < currentDate;
+
   return (
     <>
       <Modal
@@ -121,7 +130,9 @@ const EventCardCancel = ({ eventId, attendeeId }: EventCardCancelProps) => {
       <Card>
         <div className="font-semibold text-2xl">You're registered</div>
         <div className="mt-5" />
-        <div className="font-semibold text-lg">No longer able to attend?</div>
+        <div className="font-semibold text-lg mb-2">
+          No longer able to attend?
+        </div>
         <IconText icon={<AccessTimeFilledIcon />}>
           {/* TODO: Update how many hours left */}
           <div>4 hours left to cancel registration</div>
@@ -136,17 +147,23 @@ const EventCardCancel = ({ eventId, attendeeId }: EventCardCancelProps) => {
         <form onSubmit={handleSubmit(handleCancelSubmissionReason)}>
           <div className="font-semibold text-lg">Reason for canceling</div>
           <MultilineTextField
-            error={errors.cancelReason}
+            error={errors.cancelReason?.message}
             placeholder="Your answer here"
-            required={true}
             value={cancelationMessage}
-            {...register("cancelReason", { required: true })}
+            {...register("cancelReason", {
+              required: { value: true, message: "Required" },
+            })}
+            disabled={disableCancelEvent}
             onChange={(e: any) => setCancelationMessage(e.target.value)}
           />
           <div className="mt-3" />
-          <Button type="submit" variety="error">
-            Cancel registration
-          </Button>
+          {disableCancelEvent ? (
+            <Button disabled>The event has concluded.</Button>
+          ) : (
+            <Button type="submit" variety="error">
+              Cancel registration
+            </Button>
+          )}
         </form>
       </Card>
     </>

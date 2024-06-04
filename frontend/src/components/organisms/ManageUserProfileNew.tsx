@@ -17,6 +17,7 @@ import { Box, Grid } from "@mui/material";
 import Modal from "../molecules/Modal";
 import Snackbar from "../atoms/Snackbar";
 import { formatRoleOrStatus } from "@/utils/helpers";
+import { useAuth } from "@/utils/AuthContext";
 
 type userProfileData = {
   name: string;
@@ -84,18 +85,18 @@ const ModalBody = ({ status, blacklistFunc, handleClose }: modalBodyProps) => {
           ? "Are you sure you want to blacklist this user?"
           : "Are you sure you want to remove this member from the blacklist?"}
       </Box>
-      <Grid container spacing={2}>
-        <Grid item md={6} xs={12}>
-          <Button variety="error" onClick={handleClose}>
-            Cancel
-          </Button>
-        </Grid>
-        <Grid item md={6} xs={12}>
-          <Button variety="secondary" onClick={blacklistFunc}>
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+        <div className="order-1 sm:order-2">
+          <Button variety="error" onClick={blacklistFunc}>
             {status == "ACTIVE" ? "Yes, blacklist" : "Yes, Remove"}
           </Button>
-        </Grid>
-      </Grid>
+        </div>
+        <div className="order-2 sm:order-1">
+          <Button variety="secondary" onClick={handleClose}>
+            Cancel
+          </Button>
+        </div>
+      </div>
     </div>
   );
 };
@@ -103,6 +104,7 @@ const ModalBody = ({ status, blacklistFunc, handleClose }: modalBodyProps) => {
 const ManageUserProfileNew = () => {
   const router = useRouter();
   const { userid } = router.query;
+  const { user } = useAuth();
 
   /** State variables for the notification popups */
   const [statusChangeNotifOnSuccess, setStatusChangeNotifOnSuccess] =
@@ -119,8 +121,19 @@ const ManageUserProfileNew = () => {
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
 
+  // TODO: REPLACE CONSTANTS WITH ACTUAL VALUES
   const REFERENCE_HOURS = 80;
   const CERTIFICATE_HOURS = 120;
+
+  /** Tanstack query for fetching the user's total hours */
+  const hoursQuery = useQuery({
+    queryKey: ["userHours", userid],
+    queryFn: async () => {
+      const { data: dataHours } = await api.get(`/users/${userid}/hours`);
+      return dataHours["data"];
+    },
+  });
+  let hours = hoursQuery.data;
 
   /** Tanstack query for fetching the user profile data */
   const {
@@ -140,7 +153,7 @@ const ManageUserProfileNew = () => {
     email,
     joinDate,
     userId,
-    hours,
+    hours: fakeHours,
     status,
     imgSrc,
     phoneNumber,
@@ -231,6 +244,8 @@ const ManageUserProfileNew = () => {
     retry: false,
     onSuccess: () => {
       setRoleChangeNotifOpenOnSuccess(true);
+      // refresh firebase tokens
+      user?.getIdToken(true);
       queryClient.invalidateQueries({ queryKey: ["user", userid] });
     },
     onError: () => {
@@ -286,7 +301,9 @@ const ManageUserProfileNew = () => {
         variety="success"
       >
         {`Success: ${name} is now ${
-          role === "ADMIN" ? ` an ${formatRoleOrStatus(role)}` : ` a ${formatRoleOrStatus(role)}`
+          role === "ADMIN"
+            ? ` an ${formatRoleOrStatus(role)}`
+            : ` a ${formatRoleOrStatus(role)}`
         }`}
       </Snackbar>
 
@@ -330,7 +347,8 @@ const ManageUserProfileNew = () => {
       <div className="grid gap-4 md:grid-cols-2">
         <Card>
           <h3 className="mb-2 mt-0">
-            {name} is {role === "ADMIN" ? "an Admin" : `a ${formatRoleOrStatus(role)}`}
+            {name} is{" "}
+            {role === "ADMIN" ? "an Admin" : `a ${formatRoleOrStatus(role)}`}
           </h3>
           <div className="mb-4">
             This member currently has {hours} hours of volunteer experience.
@@ -373,20 +391,20 @@ const ManageUserProfileNew = () => {
         <Card>
           <LinearProgress value={100 * (hours / REFERENCE_HOURS)} />
           <h3 className="mb-2 mt-4">Reference Hour Tracker</h3>
-          <div className="mb-4">
+          <div>
             {hours} / {REFERENCE_HOURS} hours complete
           </div>
-          <Button>Approve Reference Request</Button>
+          {/* <Button>Approve Reference Request</Button> */}
         </Card>
         <Card>
           <LinearProgress value={100 * (hours / CERTIFICATE_HOURS)} />
           <h3 className="mb-2 mt-4">Certificate Hour Tracker</h3>
-          <div className="mb-4">
+          <div>
             {hours} / {CERTIFICATE_HOURS} hours complete
           </div>
-          <Button disabled={hours !== CERTIFICATE_HOURS}>
+          {/* <Button disabled={hours !== CERTIFICATE_HOURS}>
             Approve Certificate Request
-          </Button>
+          </Button> */}
         </Card>
       </div>
       <h3>Event History</h3>
