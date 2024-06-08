@@ -186,6 +186,14 @@ const getEvents = async (
  * @returns promise with eventID or error.
  */
 const updateEvent = async (eventID: string, event: Event) => {
+  const eventDetails = await getEvent(eventID);
+  const currentDate = new Date();
+  if (eventDetails) {
+    if (eventDetails.startDate < currentDate) {
+      return Promise.reject("Event has already started");
+    }
+  }
+
   return prisma.event.update({
     where: {
       id: eventID,
