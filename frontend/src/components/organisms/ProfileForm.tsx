@@ -170,7 +170,8 @@ const ProfileForm = ({ userDetails }: ProfileFormProps) => {
       <Snackbar
         variety="error"
         open={errorNotificationOpen}
-        onClose={() => setErrorNotificationOpen(false)}>
+        onClose={() => setErrorNotificationOpen(false)}
+      >
         Error: {handleErrors(errorMessage)}
       </Snackbar>
 
@@ -178,7 +179,8 @@ const ProfileForm = ({ userDetails }: ProfileFormProps) => {
       <Snackbar
         variety="success"
         open={successNotificationOpen}
-        onClose={() => setSuccessNotificationOpen(false)}>
+        onClose={() => setSuccessNotificationOpen(false)}
+      >
         Success: Profile update was successful!
       </Snackbar>
 
@@ -267,7 +269,11 @@ const ProfileForm = ({ userDetails }: ProfileFormProps) => {
           name="emailNotifications"
           control={control}
           render={({ field }) => (
-            <Checkbox {...field} label="Email notifications" />
+            <Checkbox
+              {...field}
+              label="Email notifications"
+              checked={field.value}
+            />
           )}
         />
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
@@ -281,7 +287,8 @@ const ProfileForm = ({ userDetails }: ProfileFormProps) => {
               onClick={() => {
                 reset(undefined, { keepDefaultValues: true });
               }}
-              disabled={!isDirty}>
+              disabled={!isDirty}
+            >
               Reset changes
             </Button>
           </div>
