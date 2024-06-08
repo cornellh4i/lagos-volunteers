@@ -1,5 +1,6 @@
 import React from "react";
 import ProfileForm from "@/components/organisms/ProfileForm";
+import ChangePasswordForm from "@/components/organisms/ChangePasswordForm";
 import CenteredTemplate from "@/components/templates/CenteredTemplate";
 import Banner from "@/components/molecules/Banner";
 import { useAuth } from "@/utils/AuthContext";
@@ -97,12 +98,21 @@ const Profile = () => {
           </div>
         )}
       </Card>
-      <h3 className="text-xl font-normal">My Profile</h3>
+      <h3 className="text-xl font-normal mt-12">My Profile</h3>
       <Card size="medium">
         <ProfileForm
           userDetails={{
             ...data.profile,
             ...data.preferences,
+            ...data,
+          }}
+        />
+      </Card>
+      <h3 className="text-xl font-normal mt-12">My Account</h3>
+      <Card size="medium">
+        <ChangePasswordForm
+          userDetails={{
+            ...data.profile,
             ...data,
           }}
         />

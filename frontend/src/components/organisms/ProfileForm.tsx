@@ -2,9 +2,7 @@ import React, { useState } from "react";
 import Button from "../atoms/Button";
 import TextField from "../atoms/TextField";
 import Checkbox from "../atoms/Checkbox";
-import { auth } from "@/utils/firebase";
 import { useForm, SubmitHandler } from "react-hook-form";
-import { reauthenticateWithCredential, EmailAuthProvider } from "firebase/auth";
 import Snackbar from "../atoms/Snackbar";
 import { api } from "@/utils/api";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -16,10 +14,8 @@ type FormValues = {
   email: string;
   firstName: string;
   lastName: string;
+  phoneNumber: string;
   // preferredName: string;
-  oldPassword: string;
-  newPassword: string;
-  confirmNewPassword: string;
   emailNotifications: boolean;
 };
 
@@ -28,6 +24,7 @@ type formData = {
   email: string;
   firstName: string;
   lastName: string;
+  phoneNumber: string;
   nickname: string;
   role?: string;
   status?: string;
@@ -45,7 +42,7 @@ interface ProfileFormProps {
 const ProfileForm = ({ userDetails }: ProfileFormProps) => {
   const queryClient = useQueryClient();
 
-  /** State variables for the notification popups */
+  /** State variables for the notification popups for profile update */
   const [successNotificationOpen, setSuccessNotificationOpen] = useState(false);
   const [errorNotificationOpen, setErrorNotificationOpen] = useState(false);
 
@@ -54,24 +51,8 @@ const ProfileForm = ({ userDetails }: ProfileFormProps) => {
   const handleErrors = (errors: any) => {
     const errorParsed = errors?.split("/")[1]?.slice(0, -2);
     switch (errorParsed) {
-      case "invalid-email":
-        return "Invalid email address format.";
-      case "user-disabled":
-        return "User with this email has been disabled.";
-      case "user-not-found":
-        return "There is no user with this email address.";
-      case "wrong-password":
-        return "Old password is incorrect.";
-      case "weak-password":
-        return "Password must be at least 6 characters.";
-      case "invalid-password":
-        return "Invalid password.";
-      case "requires-recent-login":
-        return "Please reauthenticate to change your password.";
-      case "too-many-requests":
-        return "You have made too many requests to change your password. Please try again later.";
       default:
-        return "Something went wrong. Please try again";
+        return "Something went wrong. Please try again.";
     }
   };
 
@@ -88,38 +69,10 @@ const ProfileForm = ({ userDetails }: ProfileFormProps) => {
       email: userDetails.email,
       firstName: userDetails.firstName,
       lastName: userDetails.lastName,
+      phoneNumber: userDetails.phoneNumber,
       // preferredName: userDetails.nickname,
-      oldPassword: "",
-      newPassword: "",
-      confirmNewPassword: "",
       emailNotifications: userDetails.sendEmailNotification,
     },
-  });
-
-  /** Handles checkbox */
-
-  /** Tanstack query mutation to reauthenticate the user session */
-  const ReAuthenticateUserSession = useMutation({
-    mutationFn: async (data: any) => {
-      const currentUser = auth.currentUser;
-      if (currentUser != null) {
-        const credentials = EmailAuthProvider.credential(
-          data.email,
-          data.oldPassword
-        );
-        return reauthenticateWithCredential(currentUser, credentials);
-      }
-    },
-    retry: false,
-  });
-
-  /** Tanstack query mutation to update user password in Firebase */
-  const updateUserPasswordInFirebase = useMutation({
-    mutationFn: async (data: any) => {
-      const user = auth.currentUser as User;
-      return updatePassword(user, data.newPassword);
-    },
-    retry: false,
   });
 
   /** Tanstack query mutation to update the user profile */
@@ -128,6 +81,7 @@ const ProfileForm = ({ userDetails }: ProfileFormProps) => {
       return api.put(`/users/${userDetails.id}/profile`, {
         firstName: data.firstName,
         lastName: data.lastName,
+        phoneNumber: data.phoneNumber,
         // nickname: data.preferredName,
       });
     },
@@ -153,8 +107,6 @@ const ProfileForm = ({ userDetails }: ProfileFormProps) => {
   /** Handles form submit */
   const handleChanges: SubmitHandler<FormValues> = async (data) => {
     try {
-      await ReAuthenticateUserSession.mutateAsync(data);
-      await updateUserPasswordInFirebase.mutateAsync(data);
       await updateProfileInDB.mutateAsync(data);
       await updatePreferencesInDB.mutateAsync(data.emailNotifications);
       setSuccessNotificationOpen(true);
@@ -187,18 +139,6 @@ const ProfileForm = ({ userDetails }: ProfileFormProps) => {
       {/* Profile form */}
       <form onSubmit={handleSubmit(handleChanges)} className="space-y-4">
         <TextField
-          error={errors.email?.message}
-          label="Email"
-          {...register("email", {
-            required: { value: true, message: "Required" },
-            pattern: {
-              value:
-                /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/,
-              message: "Invalid email address",
-            },
-          })}
-        />
-        <TextField
           error={errors.firstName?.message}
           label="First name"
           {...register("firstName", {
@@ -212,6 +152,30 @@ const ProfileForm = ({ userDetails }: ProfileFormProps) => {
             required: { value: true, message: "Required" },
           })}
         />
+        <TextField
+          error={errors.email?.message}
+          label="Email"
+          {...register("email", {
+            required: { value: true, message: "Required" },
+            pattern: {
+              value:
+                /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/,
+              message: "Invalid email address",
+            },
+          })}
+        />
+        <TextField
+          error={errors.phoneNumber?.message}
+          label="Phone number"
+          {...register("phoneNumber", {
+            required: { value: true, message: "Required" },
+            pattern: {
+              value:
+                /^\+?\d{1,4}?[-.\s]?\(?\d{1,3}?\)?[-.\s]?\d{1,4}[-.\s]?\d{1,4}[-.\s]?\d{1,9}$/,
+              message: "Invalid phone number",
+            },
+          })}
+        />
         {/* <TextField
           label="Preferred name"
           error={errors.preferredName?.message}
@@ -219,52 +183,6 @@ const ProfileForm = ({ userDetails }: ProfileFormProps) => {
             required: { value: true, message: "Required" },
           })}
         /> */}
-        <TextField
-          type="password"
-          label="Old password"
-          error={errors.oldPassword?.message}
-          {...register("oldPassword", {
-            required: { value: true, message: "Required" },
-          })}
-        />
-        <TextField
-          type="password"
-          label="New password "
-          error={errors.newPassword?.message}
-          {...register("newPassword", {
-            required: { value: true, message: "Required" },
-            minLength: {
-              value: 6,
-              message: "Password must be at least 6 characters",
-            },
-            validate: {
-              hasUpper: (value) =>
-                /.*[A-Z].*/.test(value) ||
-                "Password must contain at least one uppercase letter",
-              hasLower: (value) =>
-                /.*[a-z].*/.test(value) ||
-                "Password must contain at least one lowercase letter",
-              hasNumber: (value) =>
-                /.*[0-9].*/.test(value) ||
-                "Password must contain at least one number",
-              hasSpecialChar: (value) =>
-                /.*[\W_].*/.test(value) ||
-                "Password must contain at least one special character",
-            },
-          })}
-        />
-        <TextField
-          type="password"
-          error={errors.confirmNewPassword?.message}
-          label="Confirm password"
-          {...register("confirmNewPassword", {
-            required: { value: true, message: "Required" },
-            validate: {
-              matchPassword: (value) =>
-                value === watch("newPassword") || "Passwords do not match",
-            },
-          })}
-        />
         <Controller
           name="emailNotifications"
           control={control}
