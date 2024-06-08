@@ -275,18 +275,18 @@ const EventForm = ({
   const ModalBody = ({ handleClose }: modalBodyProps) => {
     return (
       <div>
-        <Box sx={{ textAlign: "center", marginBottom: 3 }}>
+        <p className="mt-0 text-center text-2xl font-semibold">
           Are you sure you want to cancel this event?
-        </Box>
+        </p>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <div className="order-1 sm:order-2">
-            <Button variety="error" onClick={handleCancelEvent}>
+            <Button variety="mainError" onClick={handleCancelEvent}>
               Yes, cancel
             </Button>
           </div>
           <div className="order-2 sm:order-1">
             <Button variety="secondary" onClick={handleClose}>
-              Go Back
+              Go back
             </Button>
           </div>
         </div>
