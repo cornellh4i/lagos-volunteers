@@ -63,6 +63,7 @@ const UpcomingEvents = () => {
           endDate: event["endDate"],
           role: "Supervisor",
           hours: eventHours(event["startDate"], event["endDate"]),
+          status: event["status"],
           imageURL: event["imageURL"],
         };
       }
@@ -79,6 +80,7 @@ const UpcomingEvents = () => {
           role: "Volunteer",
           hours: eventHours(event["startDate"], event["endDate"]),
           imageURL: event["imageURL"],
+          status: event["status"],
         };
       }
     ) || [];
@@ -213,6 +215,7 @@ const PastEvents = () => {
       endDate: event["endDate"],
       role: "Supervisor",
       hours: eventHours(event["endDate"], event["startDate"]),
+      status: event["status"],
     });
   });
 
@@ -225,6 +228,7 @@ const PastEvents = () => {
       endDate: event["endDate"],
       role: "Volunteer",
       hours: eventHours(event["endDate"], event["startDate"]),
+      status: event["status"],
     });
   });
 
@@ -311,6 +315,19 @@ const PastEvents = () => {
       renderHeader: (params) => (
         <div style={{ fontWeight: "bold" }}>{params.colDef.headerName}</div>
       ),
+      renderCell: (params) => (
+        <div className="flex items-center">
+          {params.row.name}
+          {params.row.status == "CANCELED" && (
+            <Chip
+              size="small"
+              label="Canceled"
+              color="error"
+              className="ml-3"
+            />
+          )}
+        </div>
+      ),
     },
     {
       field: "startDate",
@@ -372,6 +389,19 @@ const PastEvents = () => {
       flex: 1,
       renderHeader: (params) => (
         <div style={{ fontWeight: "bold" }}>{params.colDef.headerName}</div>
+      ),
+      renderCell: (params) => (
+        <div className="flex items-center">
+          {params.row.name}
+          {params.row.status == "CANCELED" && (
+            <Chip
+              size="small"
+              label="Canceled"
+              color="error"
+              className="ml-3"
+            />
+          )}
+        </div>
       ),
     },
     {
@@ -519,6 +549,7 @@ const ViewEvents = () => {
 
     const [isEventCreated, setIsEventCreated] = useState(false);
     const [isEventEdited, setIsEventEdited] = useState(false);
+    const [isEventCanceled, setIsEventCanceled] = useState(false);
 
     useEffect(() => {
       const isEventCreated = localStorage.getItem("eventCreated");
@@ -529,6 +560,10 @@ const ViewEvents = () => {
       if (localStorage.getItem("eventEdited")) {
         setIsEventEdited(true);
         localStorage.removeItem("eventEdited");
+      }
+      if (localStorage.getItem("eventCanceled")) {
+        setIsEventCanceled(true);
+        localStorage.removeItem("eventCanceled");
       }
     }, []);
 
@@ -551,6 +586,16 @@ const ViewEvents = () => {
         >
           Your event has been successfully updated!
         </Snackbar>
+
+        {/* Event canceled success notification */}
+        <Snackbar
+          variety="success"
+          open={isEventCanceled}
+          onClose={() => setIsEventCanceled(false)}
+        >
+          Your event has been successfully canceled!
+        </Snackbar>
+
         <TabContainer
           tabs={tabs}
           left={<div className="text-3xl font-semibold">My Events</div>}

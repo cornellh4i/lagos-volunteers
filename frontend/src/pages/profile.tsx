@@ -20,8 +20,8 @@ const Profile = () => {
   const { data, isLoading, isError } = useQuery({
     queryKey: ["profile", user?.email],
     queryFn: async () => {
-      const { data } = await api.get(`/users/search/?email=${user?.email}`);
-      return data["data"][0];
+      const { data } = await api.get(`/users?email=${user?.email}`);
+      return data["data"]["result"][0];
     },
   });
 
@@ -102,6 +102,7 @@ const Profile = () => {
         <ProfileForm
           userDetails={{
             ...data.profile,
+            ...data.preferences,
             ...data,
           }}
         />
