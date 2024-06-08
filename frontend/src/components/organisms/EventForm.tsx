@@ -28,7 +28,6 @@ import Dropzone from "../atoms/Dropzone";
 import Alert from "../atoms/Alert";
 import EditorComp from "@/components/atoms/Editor";
 import Modal from "../molecules/Modal";
-import Alert from "../atoms/Alert";
 
 interface EventFormProps {
   eventId?: string | string[] | undefined;
@@ -44,9 +43,9 @@ type FormValues = {
   eventDescription: string;
   imageURL: string;
   rsvpLinkImage: string;
-  startDate: Date;
-  startTime: Date;
-  endTime: Date;
+  startDate: string;
+  startTime: string;
+  endTime: string;
   mode: string;
   status: string;
 };
@@ -262,11 +261,6 @@ const EventForm = ({
     }
   };
 
-  /** Edit event "Save changes" button should be disabled if event is in the past */
-  const currentDate = new Date();
-  const disableEditEvent = eventDetails
-    ? new Date(eventDetails?.startDate) < currentDate
-    : false;
   /** Helper for handling canceling events */
   const handleCancelEvent = async () => {
     try {
@@ -300,8 +294,14 @@ const EventForm = ({
     );
   };
 
-  // Check if this event has been canceled
-  const thisEventHasBeenCanceled = eventDetails?.status === "CANCELED";
+  /** Edit event "Save changes" button should be disabled if event is in the past */
+  const currentDate = new Date();
+  const eventIsPast = eventDetails
+    ? new Date(eventDetails?.startDate) < currentDate
+    : false;
+
+  /** Check if this event has been canceled */
+  const eventIsCanceled = eventDetails?.status === "CANCELED";
 
   return (
     <>
@@ -310,6 +310,7 @@ const EventForm = ({
         handleClose={handleClose}
         children={<ModalBody handleClose={handleClose} />}
       />
+
       {/* Error component */}
       <Snackbar
         variety="error"
@@ -318,9 +319,22 @@ const EventForm = ({
       >
         Error: {errorMessage}
       </Snackbar>
-      {thisEventHasBeenCanceled && (
+
+      {/* Alert for when the event cannot be edited because it's in the past */}
+      {eventType == "edit" && eventIsPast && (
         <div className="pb-6">
-          <Alert variety="warning">This event has been canceled.</Alert>
+          <Alert variety="warning">
+            This event is in the past. You are not able to make changes.
+          </Alert>
+        </div>
+      )}
+
+      {/* Alert for when the event cannot be edited because it has been canceled */}
+      {eventIsCanceled && (
+        <div className="pb-6">
+          <Alert variety="warning">
+            This event has been canceled. You are not able to make changes.
+          </Alert>
         </div>
       )}
 
@@ -335,15 +349,6 @@ const EventForm = ({
         <div className="font-bold text-3xl">
           {eventType == "create" ? "Create Event" : "Edit Event"}
         </div>
-
-        {/* Alert for when the event cannot be edited because it's in the past */}
-        {eventType == "edit" && disableEditEvent && (
-          <Alert variety="error">
-            This event is in the past, so you are not able to make changes to
-            the event.
-          </Alert>
-        )}
-
         <div className="grid grid-cols-1 col-span-2">
           <TextField
             label="Event Name"
@@ -523,11 +528,7 @@ const EventForm = ({
                 <Button
                   variety="error"
                   loading={cancelEventPending}
-                  disabled={
-                    editEventPending ||
-                    thisEventHasBeenCanceled ||
-                    disableEditEvent
-                  }
+                  disabled={editEventPending || eventIsCanceled || eventIsPast}
                   onClick={handleOpen}
                 >
                   Cancel event
@@ -537,11 +538,7 @@ const EventForm = ({
                 <Button
                   type="submit"
                   loading={editEventPending}
-                  disabled={
-                    editEventPending ||
-                    thisEventHasBeenCanceled ||
-                    disableEditEvent
-                  }
+                  disabled={editEventPending || eventIsCanceled || eventIsPast}
                 >
                   Save changes
                 </Button>
