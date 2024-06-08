@@ -72,7 +72,6 @@ const ChangePasswordForm = ({ userDetails }: ChangePasswordFormProps) => {
   } = useForm<FormValues>({
     defaultValues: {
       email: userDetails.email,
-      // preferredName: userDetails.nickname,
       oldPassword: "",
       newPassword: "",
       confirmNewPassword: "",
@@ -169,9 +168,9 @@ const ChangePasswordForm = ({ userDetails }: ChangePasswordFormProps) => {
             },
           })}
         />
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 pt-2">
           <div className="order-1 sm:order-2">
-            <Button type="submit">Change Password</Button>
+            <Button type="submit">Change password</Button>
           </div>
           <div className="order-2 sm:order-1">
             <Button
@@ -182,7 +181,7 @@ const ChangePasswordForm = ({ userDetails }: ChangePasswordFormProps) => {
               }}
               disabled={!isDirty}
             >
-              Cancel
+              Reset changes
             </Button>
           </div>
         </div>

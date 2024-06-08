@@ -207,7 +207,7 @@ const ProfileForm = ({ userDetails }: ProfileFormProps) => {
               }}
               disabled={!isDirty}
             >
-              Cancel
+              Reset changes
             </Button>
           </div>
         </div>
