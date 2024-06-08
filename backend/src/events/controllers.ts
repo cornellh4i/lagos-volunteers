@@ -360,11 +360,14 @@ const addAttendee = async (eventID: string, userID: string) => {
       eventLocation,
       textBody
     );
-    await sendEmail(
-      userEmail,
-      "Your registration was successful.",
-      updatedHtml
-    );
+    const userPreferences = await userController.getUserPreferences(userID);
+    if (userPreferences?.preferences?.sendEmailNotification === true) {
+      await sendEmail(
+        userEmail,
+        "Your registration was successful.",
+        updatedHtml
+      );
+    }
   }
   if (eventIsInThePast) {
     return Promise.reject("Event is past, cannot enroll new user");
@@ -417,11 +420,14 @@ const deleteAttendee = async (
       eventLocation,
       textBody
     );
-    await sendEmail(
-      userEmail,
-      "Your event cancellation was successful.",
-      updatedHtml
-    );
+    const userPreferences = await userController.getUserPreferences(userID);
+    if (userPreferences?.preferences?.sendEmailNotification === true) {
+      await sendEmail(
+        userEmail,
+        "Your event cancellation was successful.",
+        updatedHtml
+      );
+    }
   }
 
   // update db
@@ -503,11 +509,14 @@ const confirmUser = async (eventID: string, userID: string) => {
       eventLocation,
       textBody
     );
-    await sendEmail(
-      userEmail,
-      "Your attendance has been confirmed",
-      updatedHtml
-    );
+    const userPreferences = await userController.getUserPreferences(userID);
+    if (userPreferences?.preferences?.sendEmailNotification === true) {
+      await sendEmail(
+        userEmail,
+        "Your attendance has been confirmed",
+        updatedHtml
+      );
+    }
   }
 
   return await prisma.eventEnrollment.update({
