@@ -13,7 +13,7 @@ import RadioGroup from "@mui/material/RadioGroup";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import FormControl from "@mui/material/FormControl";
 import LocationPicker from "../atoms/LocationPicker";
-import { Typography, Box } from "@mui/material";
+import { Typography } from "@mui/material";
 import { useAuth } from "@/utils/AuthContext";
 import router from "next/router";
 import Snackbar from "../atoms/Snackbar";
