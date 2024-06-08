@@ -22,6 +22,7 @@ import EventCardCancel from "./EventCardCancel";
 import Markdown from "react-markdown";
 import DefaultTemplate from "../templates/DefaultTemplate";
 import FetchDataError from "./FetchDataError";
+import EventDetails from "./EventDetails";
 
 interface ViewEventDetailsProps {}
 
@@ -132,9 +133,17 @@ const ViewEventDetails = () => {
             {userHasCanceledAttendance ? (
               <EventCardCancelConfirmation />
             ) : eventAttendance ? (
-              <EventCardCancel eventId={eventid} attendeeId={userid} />
+              <EventCardCancel
+                eventId={eventid}
+                attendeeId={userid}
+                date={new Date(eventData.startDate)}
+              />
             ) : (
-              <EventCardRegister eventId={eventid} attendeeId={userid} />
+              <EventCardRegister
+                eventId={eventid}
+                attendeeId={userid}
+                date={new Date(eventData.startDate)}
+              />
             )}
           </div>
         )

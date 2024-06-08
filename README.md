@@ -13,8 +13,6 @@
   </p>
 </div>
 
-
-
 <!-- TABLE OF CONTENTS -->
 <details>
   <summary>Table of Contents</summary>
@@ -35,24 +33,24 @@
   </ol>
 </details>
 
-
-
 <!-- ABOUT THE PROJECT -->
-## About The Project
-This project aims to develop a volunteer management system for Lagos Food Bank Initiative. The system will allow volunteers to sign up for shifts, and for LFBI to manage volunteers and hours. 
+
+## About the Project
+
+This project aims to develop a volunteer management system for Lagos Food Bank Initiative. The system will allow volunteers to sign up for shifts, and for LFBI to manage volunteers and hours.
 
 ### Built With
 
-* [![Next][Next.js]][Next-url]
-* [![React][React.js]][React-url]
-* [![Express][Express.js]][Express-url]
-* [![Postresql][Prisma.io]][Prisma-url]
+- [![Next][Next.js]][Next-url]
+- [![React][React.js]][React-url]
+- [![Express][Express.js]][Express-url]
+- [![Postresql][Prisma.io]][Prisma-url]
 
 <!-- GETTING STARTED -->
+
 ## Getting Started
 
-
-> Folder structure 
+> Folder structure
 
     .
     ├── frontend      # Next.js client
@@ -60,9 +58,10 @@ This project aims to develop a volunteer management system for Lagos Food Bank I
     └── README.md
 
 ### Prerequisites
-* Nodejs
-* PostreSQL
-* Docker
+
+- Nodejs
+- PostreSQL
+- Docker
 
 ### Installation
 
@@ -85,9 +84,60 @@ This project aims to develop a volunteer management system for Lagos Food Bank I
 
 > Note: See individual project files for more information on how to build and deploy the project.
 
+## Contributors
+
+### Spring 2024
+
+- Leads
+  - Akinfolami Akin-Alamu
+  - Jason Zheng
+- Developers
+  - Arushi Aggarwal
+  - Owen Chen
+  - Hubert He
+  - Trung-Nghia Le
+  - Brandon Lerit
+  - Diego Marques
+  - Tanvi Mavani
+  - David Valarezo
+
+### Fall 2023
+
+- Leads
+  - Akinfolami Akin-Alamu
+  - Jason Zheng
+- Developers
+  - Sneha Rajaraman
+  - Daniel Thorne
+  - Louis Valencia
+  - Sophie Wang
+  - Yichen Yao
+  - Hannah Zhang
+- Designers
+  - Ella Keen Allee
+  - Bella Besuud
+  - Mika Labadan
+
+### Spring 2023
+
+- Leads
+  - Akinfolami Akin-Alamu
+  - Jason Zheng
+- Developers
+  - Jiayi Bai
+  - Daniel Botros
+  - Sneha Rajaraman
+  - Sophie Wang
+  - Yichen Yao
+  - Hannah Zhang
+- Designers
+  - Bella Besuud
+  - Mika Labadan
+  - Julia Papp
 
 <!-- MARKDOWN LINKS & IMAGES -->
 <!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
+
 [Next.js]: https://img.shields.io/badge/next.js-000000?style=for-the-badge&logo=nextdotjs&logoColor=white
 [Next-url]: https://nextjs.org/
 [React.js]: https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB
@@ -96,4 +146,3 @@ This project aims to develop a volunteer management system for Lagos Food Bank I
 [Express.js]: https://img.shields.io/badge/express.js-%23404d59.svg?style=for-the-badge&logo=express&logoColor=%2361DAFB
 [Express-url]: https://expressjs.com/
 [Prisma-url]: https://www.prisma.io/
-

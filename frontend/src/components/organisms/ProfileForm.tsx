@@ -6,6 +6,9 @@ import { useForm, SubmitHandler } from "react-hook-form";
 import Snackbar from "../atoms/Snackbar";
 import { api } from "@/utils/api";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { updatePassword } from "firebase/auth";
+import { User } from "firebase/auth";
+import { Controller } from "react-hook-form";
 
 type FormValues = {
   email: string;
@@ -29,6 +32,7 @@ type formData = {
   verified?: boolean;
   disciplinaryNotices?: number;
   imageUrl?: string;
+  sendEmailNotification: boolean;
 };
 
 interface ProfileFormProps {
@@ -55,6 +59,7 @@ const ProfileForm = ({ userDetails }: ProfileFormProps) => {
   /** React hook form */
   const {
     register,
+    control,
     handleSubmit,
     watch,
     reset,
@@ -66,17 +71,9 @@ const ProfileForm = ({ userDetails }: ProfileFormProps) => {
       lastName: userDetails.lastName,
       phoneNumber: userDetails.phoneNumber,
       // preferredName: userDetails.nickname,
-      emailNotifications: false,
+      emailNotifications: userDetails.sendEmailNotification,
     },
   });
-
-  /** Handles checkbox */
-
-  // TODO: Implement this
-  const [checked, setChecked] = useState(false);
-  const handleCheckbox = () => {
-    setChecked((checked) => !checked);
-  };
 
   /** Tanstack query mutation to update the user profile */
   const updateProfileInDB = useMutation({
@@ -94,10 +91,24 @@ const ProfileForm = ({ userDetails }: ProfileFormProps) => {
     retry: false,
   });
 
-  /** Handles form submit for profile changes */
+  /** Tanstack query mutation to update the user profile */
+  const updatePreferencesInDB = useMutation({
+    mutationFn: async (emailNotifications: boolean) => {
+      return api.put(`/users/${userDetails.id}/preferences`, {
+        sendEmailNotification: emailNotifications,
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["profile"] });
+    },
+    retry: false,
+  });
+
+  /** Handles form submit */
   const handleChanges: SubmitHandler<FormValues> = async (data) => {
     try {
       await updateProfileInDB.mutateAsync(data);
+      await updatePreferencesInDB.mutateAsync(data.emailNotifications);
       setSuccessNotificationOpen(true);
     } catch (error: any) {
       setErrorNotificationOpen(true);
@@ -172,10 +183,16 @@ const ProfileForm = ({ userDetails }: ProfileFormProps) => {
             required: { value: true, message: "Required" },
           })}
         /> */}
-        <Checkbox
-          checked={checked}
-          onChange={handleCheckbox}
-          label="Email notifications"
+        <Controller
+          name="emailNotifications"
+          control={control}
+          render={({ field }) => (
+            <Checkbox
+              {...field}
+              label="Email notifications"
+              checked={field.value}
+            />
+          )}
         />
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <div className="order-1 sm:order-2">
