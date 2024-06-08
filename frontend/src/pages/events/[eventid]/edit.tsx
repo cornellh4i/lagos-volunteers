@@ -20,6 +20,7 @@ type eventData = {
   startTime: Date;
   endTime: Date;
   mode: string;
+  status: string;
 };
 
 /** An EditEvent page */
@@ -48,6 +49,7 @@ const EditEvent = () => {
     startTime: data?.startDate,
     endTime: data?.endDate,
     mode: data?.mode,
+    status: data?.status,
   };
 
   /** Loading screen */
