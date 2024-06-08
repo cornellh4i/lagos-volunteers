@@ -15,10 +15,10 @@ type eventData = {
   eventDescription: string;
   imageURL: string;
   rsvpLinkImage: string;
-  startDate: Date;
-  endDate: Date;
-  startTime: Date;
-  endTime: Date;
+  startDate: string;
+  endDate: string;
+  startTime: string;
+  endTime: string;
   mode: string;
   status: string;
 };
