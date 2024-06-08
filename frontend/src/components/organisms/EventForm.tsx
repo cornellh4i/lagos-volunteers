@@ -296,7 +296,7 @@ const EventForm = ({
   // Check if this event has been canceled
   const thisEventHasBeenCanceled = eventDetails?.status === "CANCELED";
   const thisEventIsNowInThePast =
-    eventDetails?.endTime ?? new Date() < new Date();
+    eventDetails?.endTime && new Date() < new Date();
 
   return (
     <>
