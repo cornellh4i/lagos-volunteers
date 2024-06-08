@@ -17,8 +17,8 @@ import {
  * @returns the userid
  */
 export const fetchUserIdFromDatabase = async (email: string) => {
-  const { data } = await api.get(`/users/search/?email=${email}`);
-  return data["data"][0]["id"];
+  const { data } = await api.get(`/users?email=${email}`);
+  return data["data"]["result"][0]["id"];
 };
 
 /**
