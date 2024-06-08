@@ -21,7 +21,7 @@ const EventCardContent = ({ event }: EventCardNewProps) => {
   const date = new Date(event.startDate);
   const dateInfo =
     event.status === "CANCELED" ? (
-      <Chip size ="small" label="Canceled" color="error" />
+      <Chip size="small" label="Canceled" color="error" />
     ) : (
       displayDateInfo(date)
     );

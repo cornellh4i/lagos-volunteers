@@ -370,7 +370,8 @@ const PastEvents = () => {
         <div>
           <Link
             href={`/events/${params.row.id}/register`}
-            className="no-underline">
+            className="no-underline"
+          >
             <Button variety="tertiary" size="small" icon={<ArrowOutwardIcon />}>
               View Event
             </Button>
@@ -560,7 +561,7 @@ const ViewEvents = () => {
         setIsEventEdited(true);
         localStorage.removeItem("eventEdited");
       }
-      if(localStorage.getItem("eventCanceled")) {
+      if (localStorage.getItem("eventCanceled")) {
         setIsEventCanceled(true);
         localStorage.removeItem("eventCanceled");
       }
@@ -572,7 +573,8 @@ const ViewEvents = () => {
         <Snackbar
           variety="success"
           open={isEventCreated}
-          onClose={() => setIsEventCreated(false)}>
+          onClose={() => setIsEventCreated(false)}
+        >
           Your event was successfully created!
         </Snackbar>
 
@@ -580,7 +582,8 @@ const ViewEvents = () => {
         <Snackbar
           variety="success"
           open={isEventEdited}
-          onClose={() => setIsEventEdited(false)}>
+          onClose={() => setIsEventEdited(false)}
+        >
           Your event has been successfully updated!
         </Snackbar>
 
@@ -588,7 +591,8 @@ const ViewEvents = () => {
         <Snackbar
           variety="success"
           open={isEventCanceled}
-          onClose={() => setIsEventCanceled(false)}>
+          onClose={() => setIsEventCanceled(false)}
+        >
           Your event has been successfully canceled!
         </Snackbar>
 
