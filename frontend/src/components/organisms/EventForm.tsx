@@ -27,6 +27,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import Dropzone from "../atoms/Dropzone";
 import EditorComp from "@/components/atoms/Editor";
 import Modal from "../molecules/Modal";
+import Alert from "../atoms/Alert";
 
 interface EventFormProps {
   eventId?: string | string[] | undefined;
@@ -313,6 +314,11 @@ const EventForm = ({
       >
         Error: {errorMessage}
       </Snackbar>
+      {thisEventHasBeenCanceled && (
+        <div className="pb-6">
+          <Alert variety="warning">This event has been canceled.</Alert>
+        </div>
+      )}
 
       <form
         onSubmit={
