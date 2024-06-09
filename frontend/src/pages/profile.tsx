@@ -58,7 +58,7 @@ const Profile = () => {
         and should absolutely be refactored into something sane ASAP */}
         <h3 className="mt-0 mb-2 font-normal">
           You are {data?.role === "ADMIN" ? "an " : "a "}
-          <span className="font-bold">{formatRoleOrStatus(data.role)}</span>
+          <span className="font-bold">{formatRoleOrStatus(data?.role)}</span>
         </h3>
         {data?.role === "ADMIN" && (
           <div>

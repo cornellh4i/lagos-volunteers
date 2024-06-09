@@ -13,6 +13,7 @@ import {
 const userRouter = Router();
 import * as firebase from "firebase-admin";
 import { attempt, socketNotify } from "../utils/helpers";
+import admin from "firebase-admin";
 
 let useAuth: RequestHandler;
 let useAdminAuth: RequestHandler;
@@ -85,6 +86,7 @@ userRouter.post(
 
 userRouter.delete("/:userid", useAuth, async (req: Request, res: Response) => {
   // #swagger.tags = ['Users']
+  await admin.auth().deleteUser(req.params.userid);
   attempt(res, 200, () => userController.deleteUser(req.params.userid));
   socketNotify("/users");
 });
