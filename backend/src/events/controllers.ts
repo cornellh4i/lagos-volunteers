@@ -153,6 +153,14 @@ const getEvents = async (
     };
   }
 
+  let queryOptions = {
+    where: { AND: [whereDict] },
+    include: includeDict,
+    orderBy: sortDict[sort.key],
+    take: take,
+    skip: skip,
+  };
+
   // Find the total number of records before pagination is applied
   const totalRecords = await prisma.event.count({
     where: {
@@ -161,22 +169,29 @@ const getEvents = async (
   });
 
   /* RESULT */
-
-  const queryResult = await prisma.event.findMany({
-    where: {
-      AND: [whereDict],
-    },
-    include: includeDict,
-    orderBy: sortDict[sort.key],
-    take: take,
-    skip: skip,
-    cursor: cursor,
-  });
-  const lastPostInResults = take
-    ? queryResult[take - 1]
-    : queryResult[queryResult.length - 1];
-  const myCursor = lastPostInResults ? lastPostInResults.id : undefined;
-  return { result: queryResult, cursor: myCursor, totalItems: totalRecords };
+  let queryResult;
+  if (cursor) {
+    queryResult = await prisma.event.findMany({
+      ...queryOptions,
+      cursor,
+    });
+  } else {
+    queryResult = await prisma.event.findMany({
+      ...queryOptions,
+    });
+  }
+  let lastPostInResults;
+  if (queryResult.length > 0) {
+    lastPostInResults = queryResult[queryResult.length - 1];
+  }
+  const nextCursor = lastPostInResults?.id;
+  const prevCursor = queryResult[0] ? queryResult[0].id : undefined;
+  return {
+    result: queryResult,
+    nextCursor: nextCursor,
+    prevCursor: prevCursor,
+    totalItems: totalRecords,
+  };
 };
 
 /**

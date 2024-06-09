@@ -154,7 +154,7 @@ const getUsers = async (
   // Handles GET /users?limit=20&after=asdf
   let cursor = undefined;
   let skip = undefined;
-  if (pagination.after != "") {
+  if (pagination.after) {
     cursor = {
       id: pagination.after as string,
     };

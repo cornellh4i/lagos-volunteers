@@ -36,7 +36,7 @@ const Table = ({
 }: TableProps) => {
   return (
     <DataGrid
-      className={`w-full ${rows.length === 0 ? "h-[500px]" : "h-auto"}`}
+      className={`w-full ${rows.length === 0 ? "h-[200px]" : "h-auto"}`}
       columns={columns}
       slots={{
         loadingOverlay: LinearProgress as GridSlots["loadingOverlay"],
