@@ -17,15 +17,17 @@ import { Typography } from "@mui/material";
 import { useAuth } from "@/utils/AuthContext";
 import router from "next/router";
 import Snackbar from "../atoms/Snackbar";
-import { convertToISO, fetchUserIdFromDatabase } from "@/utils/helpers";
+import {
+  convertToISO,
+  fetchUserIdFromDatabase,
+  uploadImageToFirebase,
+} from "@/utils/helpers";
 import { api } from "@/utils/api";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import Dropzone from "../atoms/Dropzone";
-import dynamic from "next/dynamic";
-
-const EditorComp = dynamic(() => import("@/components/atoms/Editor"), {
-  ssr: false,
-});
+import Alert from "../atoms/Alert";
+import EditorComp from "@/components/atoms/Editor";
+import Modal from "../molecules/Modal";
 
 interface EventFormProps {
   eventId?: string | string[] | undefined;
@@ -39,12 +41,13 @@ type FormValues = {
   location: string;
   volunteerSignUpCap: string;
   eventDescription: string;
-  eventImage: string;
+  imageURL: string;
   rsvpLinkImage: string;
-  startDate: Date;
-  startTime: Date;
-  endTime: Date;
+  startDate: string;
+  startTime: string;
+  endTime: string;
   mode: string;
+  status: string;
 };
 
 /** An EventForm page */
@@ -65,6 +68,9 @@ const EventForm = ({
     setValue("eventDescription", value);
   };
 
+  /** Dropzone file */
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+
   /** Dropzone errors */
   const [dropzoneError, setDropzoneError] = useState("");
 
@@ -81,6 +87,10 @@ const EventForm = ({
   );
   const radioHandler = (status: number) => {
     setStatus(status);
+  };
+
+  type modalBodyProps = {
+    handleClose: () => void;
   };
 
   /** React hook form */
@@ -100,7 +110,7 @@ const EventForm = ({
             location: eventDetails.location,
             volunteerSignUpCap: eventDetails.volunteerSignUpCap,
             eventDescription: eventDetails.eventDescription,
-            eventImage: eventDetails.eventImage,
+            imageURL: eventDetails.imageURL,
             rsvpLinkImage: eventDetails.rsvpLinkImage,
             startDate: eventDetails.startDate,
             startTime: eventDetails.startTime,
@@ -112,6 +122,11 @@ const EventForm = ({
 
   /** Handles form errors for time and date validation */
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
+  /** Handles for cancelling an event */
+  const [open, setOpen] = useState(false);
+  const handleOpen = () => setOpen(true);
+  const handleClose = () => setOpen(false);
 
   /** Tanstack mutation for creating a new event */
   const {
@@ -127,6 +142,7 @@ const EventForm = ({
         location,
         volunteerSignUpCap,
         eventDescription,
+        imageURL,
         startDate,
         startTime,
         endTime,
@@ -134,12 +150,18 @@ const EventForm = ({
       const userid = await fetchUserIdFromDatabase(user?.email as string);
       const startDateTime = convertToISO(startTime, startDate);
       const endDateTime = convertToISO(endTime, startDate);
+      let newImageURL = null;
+      if (selectedFile) {
+        newImageURL = await uploadImageToFirebase(userid, selectedFile);
+      }
+
       const { response } = await api.post("/events", {
         userID: `${userid}`,
         event: {
           name: `${eventName}`,
           location: status === 0 ? "VIRTUAL" : `${location}`,
           description: `${eventDescription}`,
+          imageURL: newImageURL,
           startDate: startDateTime,
           endDate: endDateTime,
           capacity: +volunteerSignUpCap,
@@ -165,16 +187,24 @@ const EventForm = ({
           location,
           volunteerSignUpCap,
           eventDescription,
+          imageURL,
           startDate,
           startTime,
           endTime,
         } = data;
+        const userid = await fetchUserIdFromDatabase(user?.email as string);
         const startDateTime = convertToISO(startTime, startDate);
         const endDateTime = convertToISO(endTime, startDate);
+        let newImageURL = imageURL;
+        if (selectedFile) {
+          newImageURL = await uploadImageToFirebase(userid, selectedFile); // Update URL if there is any.
+        }
+
         const { response } = await api.put(`/events/${eventId}`, {
           name: `${eventName}`,
           location: status === 0 ? "VIRTUAL" : `${location}`,
           description: `${eventDescription}`,
+          imageURL: newImageURL,
           startDate: startDateTime,
           endDate: endDateTime,
           capacity: +volunteerSignUpCap,
@@ -188,6 +218,25 @@ const EventForm = ({
           queryKey: ["event", eventId],
         });
         localStorage.setItem("eventEdited", "true");
+        router.push("/events/view");
+      },
+    });
+
+  /** Tanstack mutation for canceling an event */
+  const { mutateAsync: handleCancelEventAsync, isPending: cancelEventPending } =
+    useMutation({
+      mutationFn: async () => {
+        const { response } = await api.patch(`/events/${eventId}/status`, {
+          status: "CANCELED",
+        });
+        return response;
+      },
+      retry: false,
+      onSuccess: () => {
+        queryClient.invalidateQueries({
+          queryKey: ["event", eventId],
+        });
+        localStorage.setItem("eventCanceled", "true");
         router.push("/events/view");
       },
     });
@@ -212,8 +261,56 @@ const EventForm = ({
     }
   };
 
+  /** Helper for handling canceling events */
+  const handleCancelEvent = async () => {
+    try {
+      await handleCancelEventAsync();
+    } catch (error) {
+      setErrorNotificationOpen(true);
+      setErrorMessage("We were unable to cancel this event. Please try again");
+    }
+  };
+
+  /** Confirmation modal for canceling an event */
+  const ModalBody = ({ handleClose }: modalBodyProps) => {
+    return (
+      <div>
+        <p className="mt-0 text-center text-2xl font-semibold">
+          Are you sure you want to cancel this event?
+        </p>
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <div className="order-1 sm:order-2">
+            <Button variety="mainError" onClick={handleCancelEvent}>
+              Yes, cancel
+            </Button>
+          </div>
+          <div className="order-2 sm:order-1">
+            <Button variety="secondary" onClick={handleClose}>
+              Go back
+            </Button>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  /** Edit event "Save changes" button should be disabled if event is in the past */
+  const currentDate = new Date();
+  const eventIsPast = eventDetails
+    ? new Date(eventDetails?.startDate) < currentDate
+    : false;
+
+  /** Check if this event has been canceled */
+  const eventIsCanceled = eventDetails?.status === "CANCELED";
+
   return (
     <>
+      <Modal
+        open={open}
+        handleClose={handleClose}
+        children={<ModalBody handleClose={handleClose} />}
+      />
+
       {/* Error component */}
       <Snackbar
         variety="error"
@@ -222,6 +319,24 @@ const EventForm = ({
       >
         Error: {errorMessage}
       </Snackbar>
+
+      {/* Alert for when the event cannot be edited because it's in the past */}
+      {eventType == "edit" && eventIsPast && (
+        <div className="pb-6">
+          <Alert variety="warning">
+            This event is in the past. You are not able to make changes.
+          </Alert>
+        </div>
+      )}
+
+      {/* Alert for when the event cannot be edited because it has been canceled */}
+      {eventIsCanceled && (
+        <div className="pb-6">
+          <Alert variety="warning">
+            This event has been canceled. You are not able to make changes.
+          </Alert>
+        </div>
+      )}
 
       <form
         onSubmit={
@@ -372,7 +487,14 @@ const EventForm = ({
             })}
           />
         </div>
-        <Dropzone setError={setDropzoneError} label="Event Image" />
+        <Dropzone
+          setError={setDropzoneError}
+          label="Event Image"
+          selectedFile={selectedFile}
+          setSelectedFile={setSelectedFile}
+          defaultValue={eventDetails?.imageURL}
+        />
+
         {/* <TextCopy
           label="RSVP Link Image"
           text={
@@ -402,15 +524,21 @@ const EventForm = ({
                   <Button variety="secondary">Go back</Button>
                 </Link>
               </div>
-              {/* TODO: Add functionality */}
               <div className="sm:col-start-7 sm:col-span-3">
-                <Button variety="error">Cancel event</Button>
+                <Button
+                  variety="error"
+                  loading={cancelEventPending}
+                  disabled={editEventPending || eventIsCanceled || eventIsPast}
+                  onClick={handleOpen}
+                >
+                  Cancel event
+                </Button>
               </div>
               <div className="order-first sm:order-last sm:col-start-10 sm:col-span-3">
                 <Button
                   type="submit"
                   loading={editEventPending}
-                  disabled={editEventPending}
+                  disabled={editEventPending || eventIsCanceled || eventIsPast}
                 >
                   Save changes
                 </Button>
