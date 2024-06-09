@@ -7,12 +7,7 @@ import Snackbar from "../atoms/Snackbar";
 import { useRouter } from "next/router";
 import { api } from "@/utils/api";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { updatePassword } from "firebase/auth";
-import { User } from "firebase/auth";
 import Modal from "@/components/molecules/Modal";
-import { Box, IconButton } from "@mui/material";
-import { Grid } from "@mui/material";
-
 import { useAuth } from "@/utils/AuthContext"; // - ndavid
 import { Controller } from "react-hook-form";
 
