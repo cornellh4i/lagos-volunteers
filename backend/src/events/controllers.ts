@@ -81,6 +81,9 @@ const getEvents = async (
   pagination: {
     after: string;
     limit: string;
+  },
+  include: {
+    attendees: boolean;
   }
 ) => {
   /* SORTING */
@@ -116,7 +119,7 @@ const getEvents = async (
   /* FILTERING */
 
   let whereDict: { [key: string]: any } = {};
-  let includeDict: { [key: string]: any } = {};
+  let includeDict: { [key: string]: any } = include;
 
   // Handles GET /events?date=upcoming and GET /events?date=past
   // TODO: Investigate creating events that occur in a few minutes into the future
@@ -183,6 +186,14 @@ const getEvents = async (
  * @returns promise with eventID or error.
  */
 const updateEvent = async (eventID: string, event: Event) => {
+  const eventDetails = await getEvent(eventID);
+  const currentDate = new Date();
+  if (eventDetails) {
+    if (eventDetails.startDate < currentDate) {
+      return Promise.reject("Event has already started");
+    }
+  }
+
   return prisma.event.update({
     where: {
       id: eventID,
@@ -357,11 +368,17 @@ const addAttendee = async (eventID: string, userID: string) => {
       eventLocation,
       textBody
     );
-    await sendEmail(
-      userEmail,
-      "Your registration was successful.",
-      updatedHtml
-    );
+    const userPreferences = await userController.getUserPreferences(userID);
+    if (userPreferences?.preferences?.sendEmailNotification === true) {
+      await sendEmail(
+        userEmail,
+        "Your registration was successful.",
+        updatedHtml
+      );
+    }
+  }
+  if (eventIsInThePast) {
+    return Promise.reject("Event is past, cannot enroll new user");
   }
   if (eventIsInThePast) {
     return Promise.reject("Event is past, cannot enroll new user");
@@ -414,11 +431,14 @@ const deleteAttendee = async (
       eventLocation,
       textBody
     );
-    await sendEmail(
-      userEmail,
-      "Your event cancellation was successful.",
-      updatedHtml
-    );
+    const userPreferences = await userController.getUserPreferences(userID);
+    if (userPreferences?.preferences?.sendEmailNotification === true) {
+      await sendEmail(
+        userEmail,
+        "Your event cancellation was successful.",
+        updatedHtml
+      );
+    }
   }
 
   // update db
@@ -500,11 +520,14 @@ const confirmUser = async (eventID: string, userID: string) => {
       eventLocation,
       textBody
     );
-    await sendEmail(
-      userEmail,
-      "Your attendance has been confirmed",
-      updatedHtml
-    );
+    const userPreferences = await userController.getUserPreferences(userID);
+    if (userPreferences?.preferences?.sendEmailNotification === true) {
+      await sendEmail(
+        userEmail,
+        "Your attendance has been confirmed",
+        updatedHtml
+      );
+    }
   }
 
   return await prisma.eventEnrollment.update({

@@ -15,11 +15,12 @@ type eventData = {
   eventDescription: string;
   imageURL: string;
   rsvpLinkImage: string;
-  startDate: Date;
-  endDate: Date;
-  startTime: Date;
-  endTime: Date;
+  startDate: string;
+  endDate: string;
+  startTime: string;
+  endTime: string;
   mode: string;
+  status: string;
 };
 
 /** An EditEvent page */
@@ -48,6 +49,7 @@ const EditEvent = () => {
     startTime: data?.startDate,
     endTime: data?.endDate,
     mode: data?.mode,
+    status: data?.status,
   };
 
   /** Loading screen */

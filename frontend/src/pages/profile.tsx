@@ -1,5 +1,6 @@
 import React from "react";
 import ProfileForm from "@/components/organisms/ProfileForm";
+import ChangePasswordForm from "@/components/organisms/ChangePasswordForm";
 import CenteredTemplate from "@/components/templates/CenteredTemplate";
 import Banner from "@/components/molecules/Banner";
 import { useAuth } from "@/utils/AuthContext";
@@ -20,8 +21,8 @@ const Profile = () => {
   const { data, isLoading, isError } = useQuery({
     queryKey: ["profile", user?.email],
     queryFn: async () => {
-      const { data } = await api.get(`/users/search/?email=${user?.email}`);
-      return data["data"][0];
+      const { data } = await api.get(`/users?email=${user?.email}`);
+      return data["data"]["result"][0];
     },
   });
 
@@ -57,7 +58,7 @@ const Profile = () => {
         and should absolutely be refactored into something sane ASAP */}
         <h3 className="mt-0 mb-2 font-normal">
           You are {data?.role === "ADMIN" ? "an " : "a "}
-          <span className="font-bold">{formatRoleOrStatus(data.role)}</span>
+          <span className="font-bold">{formatRoleOrStatus(data?.role)}</span>
         </h3>
         {data?.role === "ADMIN" && (
           <div>
@@ -97,9 +98,19 @@ const Profile = () => {
           </div>
         )}
       </Card>
-      <h3 className="text-xl font-normal">My Profile</h3>
+      <h3 className="text-xl font-normal mt-12">My Profile</h3>
       <Card size="medium">
         <ProfileForm
+          userDetails={{
+            ...data.profile,
+            ...data.preferences,
+            ...data,
+          }}
+        />
+      </Card>
+      <h3 className="text-xl font-normal mt-12">My Account</h3>
+      <Card size="medium">
+        <ChangePasswordForm
           userDetails={{
             ...data.profile,
             ...data,
