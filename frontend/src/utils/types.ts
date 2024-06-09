@@ -11,6 +11,7 @@ export type ViewEventsEvent = {
   ownerId?: string;
   description?: string;
   capacity?: number;
+  status?: EventStatus;
   imageURL?: string;
   attendeeStatus?: string;
 };

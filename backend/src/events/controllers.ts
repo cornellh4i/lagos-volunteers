@@ -186,6 +186,14 @@ const getEvents = async (
  * @returns promise with eventID or error.
  */
 const updateEvent = async (eventID: string, event: Event) => {
+  const eventDetails = await getEvent(eventID);
+  const currentDate = new Date();
+  if (eventDetails) {
+    if (eventDetails.startDate < currentDate) {
+      return Promise.reject("Event has already started");
+    }
+  }
+
   return prisma.event.update({
     where: {
       id: eventID,
@@ -360,11 +368,14 @@ const addAttendee = async (eventID: string, userID: string) => {
       eventLocation,
       textBody
     );
-    await sendEmail(
-      userEmail,
-      "Your registration was successful.",
-      updatedHtml
-    );
+    const userPreferences = await userController.getUserPreferences(userID);
+    if (userPreferences?.preferences?.sendEmailNotification === true) {
+      await sendEmail(
+        userEmail,
+        "Your registration was successful.",
+        updatedHtml
+      );
+    }
   }
   if (eventIsInThePast) {
     return Promise.reject("Event is past, cannot enroll new user");
@@ -417,11 +428,14 @@ const deleteAttendee = async (
       eventLocation,
       textBody
     );
-    await sendEmail(
-      userEmail,
-      "Your event cancellation was successful.",
-      updatedHtml
-    );
+    const userPreferences = await userController.getUserPreferences(userID);
+    if (userPreferences?.preferences?.sendEmailNotification === true) {
+      await sendEmail(
+        userEmail,
+        "Your event cancellation was successful.",
+        updatedHtml
+      );
+    }
   }
 
   // update db
@@ -503,11 +517,14 @@ const confirmUser = async (eventID: string, userID: string) => {
       eventLocation,
       textBody
     );
-    await sendEmail(
-      userEmail,
-      "Your attendance has been confirmed",
-      updatedHtml
-    );
+    const userPreferences = await userController.getUserPreferences(userID);
+    if (userPreferences?.preferences?.sendEmailNotification === true) {
+      await sendEmail(
+        userEmail,
+        "Your attendance has been confirmed",
+        updatedHtml
+      );
+    }
   }
 
   return await prisma.eventEnrollment.update({
