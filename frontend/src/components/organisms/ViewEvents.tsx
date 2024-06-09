@@ -9,7 +9,11 @@ import Table from "@/components/molecules/Table";
 import Button from "../atoms/Button";
 import Link from "next/link";
 import { useAuth } from "@/utils/AuthContext";
-import { eventHours, fetchUserIdFromDatabase } from "@/utils/helpers";
+import {
+  convertEnrollmentStatusToString,
+  eventHours,
+  fetchUserIdFromDatabase,
+} from "@/utils/helpers";
 import { Action, ViewEventsEvent } from "@/utils/types";
 import { api } from "@/utils/api";
 import ManageSearchIcon from "@mui/icons-material/ManageSearch";
@@ -228,7 +232,9 @@ const PastEvents = () => {
       endDate: event["endDate"],
       role: "Volunteer",
       hours: eventHours(event["endDate"], event["startDate"]),
-      attendeeStatus: event["attendees"][0]["attendeeStatus"],
+      attendeeStatus: convertEnrollmentStatusToString(
+        event["attendees"][0]["attendeeStatus"]
+      ),
       status: event["status"],
     });
   });

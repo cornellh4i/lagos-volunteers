@@ -212,3 +212,22 @@ export const uploadImageToFirebase = async (
     return "";
   }
 };
+
+/**
+ * Converts the user registration status enum to a display friendly string
+ * @param status is the EnrollmentStatus enum
+ */
+export const convertEnrollmentStatusToString = (status: string) => {
+  switch (status) {
+    case "PENDING":
+      return "Pending";
+    case "CHECKED_IN":
+      return "Checked in";
+    case "CHECKED_OUT":
+      return "Checked out";
+    case "REMOVED":
+      return "Removed";
+    case "CANCELED":
+      return "Canceled";
+  }
+};
