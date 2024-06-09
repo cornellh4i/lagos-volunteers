@@ -243,21 +243,27 @@ const EventForm = ({
 
   /** Helper for handling creating events */
   const handleCreateEvent: SubmitHandler<FormValues> = async (data) => {
-    try {
-      await handleCreateNewEvent(data);
-    } catch (error) {
-      setErrorNotificationOpen(true);
-      setErrorMessage("We were unable to create this event. Please try again");
+    if (timeAndDateValidation()) {
+      try {
+        await handleCreateNewEvent(data);
+      } catch (error) {
+        setErrorNotificationOpen(true);
+        setErrorMessage(
+          "We were unable to create this event. Please try again"
+        );
+      }
     }
   };
 
   /** Helper for handling editing events */
   const handleEditEvent: SubmitHandler<FormValues> = async (data) => {
-    try {
-      await handleEditEventAsync(data);
-    } catch (error) {
-      setErrorNotificationOpen(true);
-      setErrorMessage("We were unable to edit this event. Please try again");
+    if (timeAndDateValidation()) {
+      try {
+        await handleEditEventAsync(data);
+      } catch (error) {
+        setErrorNotificationOpen(true);
+        setErrorMessage("We were unable to edit this event. Please try again");
+      }
     }
   };
 
@@ -268,6 +274,20 @@ const EventForm = ({
     } catch (error) {
       setErrorNotificationOpen(true);
       setErrorMessage("We were unable to cancel this event. Please try again");
+    }
+  };
+
+  /** Performs validation to ensure event starts after current time */
+  const timeAndDateValidation = () => {
+    const { startTime, startDate } = getValues();
+    const startDateTime = convertToISO(startTime, startDate);
+    if (new Date(startDateTime) <= new Date()) {
+      setErrorNotificationOpen(true);
+      setErrorMessage("Created event cannot be in the past.");
+      return false;
+    } else {
+      setErrorMessage(null);
+      return true;
     }
   };
 

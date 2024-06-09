@@ -1,17 +1,14 @@
 import React, { forwardRef, Ref } from "react";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
-import { TimeField } from "@mui/x-date-pickers/TimeField";
-import { IconButton } from "@mui/material";
-import { InputAdornment } from "@mui/material";
-import { AccessTime } from "@mui/icons-material";
-import dayjs from "dayjs";
 import { TimePicker } from "@mui/x-date-pickers/TimePicker";
+import dayjs from "dayjs";
 
 interface TimePickerProps {
   label: string;
   value?: string;
   error?: string;
+  disablePast?: boolean;
   [key: string]: any;
 }
 
@@ -21,7 +18,13 @@ interface TimePickerProps {
  */
 const CustomTimePicker = forwardRef(
   (
-    { label, value, error = "", ...props }: TimePickerProps,
+    {
+      label,
+      value,
+      error = "",
+      disablePast = false,
+      ...props
+    }: TimePickerProps,
     ref: Ref<HTMLInputElement>
   ) => {
     return (
@@ -40,7 +43,7 @@ const CustomTimePicker = forwardRef(
             label=""
             defaultValue={value ? dayjs(value) : undefined}
             ref={ref}
-            disablePast={true}
+            disablePast={disablePast}
             {...props}
           />
         </LocalizationProvider>
