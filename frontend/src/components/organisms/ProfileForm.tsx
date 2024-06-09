@@ -137,7 +137,7 @@ const ModalBody = ({
         />
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 mt-10">
           <div className="order-1 sm:order-2">
-            <Button loading={isPending} variety="bigred" type="submit">
+            <Button loading={isPending} variety="mainError" type="submit">
               Delete
             </Button>
           </div>
@@ -329,6 +329,11 @@ const ProfileForm = ({ userDetails }: ProfileFormProps) => {
             <Button type="submit">Save changes</Button>
           </div>
           <div className="order-2 sm:order-2">
+            <Button variety="error" type="button" onClick={handleOpen}>
+              Delete account
+            </Button>
+          </div>
+          <div className="order-2 sm:order-1">
             <Button
               type="button"
               variety="secondary"
@@ -338,11 +343,6 @@ const ProfileForm = ({ userDetails }: ProfileFormProps) => {
               disabled={!isDirty}
             >
               Reset changes
-            </Button>
-          </div>
-          <div className="order-2 sm:order-1">
-            <Button variety="error" type="button" onClick={handleOpen}>
-              Delete account
             </Button>
           </div>
         </div>
