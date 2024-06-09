@@ -55,7 +55,7 @@ interface ModalBodyProps {
   setErrorNotificationOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-/** Confirmation Modal To Delete An Account */
+/** Confirmation modal to delete an account */
 const ModalBody = ({
   userDetails,
   handleClose,
@@ -82,12 +82,12 @@ const ModalBody = ({
     onSuccess: () => {},
   });
 
-  //Variables for signing out user
+  // Variables for signing out user
   const { error, signOutUser } = useAuth();
   const queryClient = useQueryClient();
   const router = useRouter();
 
-  //Signs out user and redirects them to login page
+  // Signs out user and redirects them to login page
   const handleSignOut = async () => {
     try {
       await signOutUser();
@@ -98,7 +98,8 @@ const ModalBody = ({
     }
   };
 
-  /**  When delete form is submitted, we will delete user, end their session,
+  /**
+   * When delete form is submitted, we will delete user, end their session,
    * and redirect them to login page
    */
   const handleDeleteAccount = async () => {
