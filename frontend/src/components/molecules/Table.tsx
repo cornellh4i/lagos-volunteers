@@ -4,7 +4,9 @@ import {
   GridColDef,
   GridPaginationModel,
   GridSortModel,
+  GridSlots,
 } from "@mui/x-data-grid";
+import LinearProgress from "@mui/material/LinearProgress";
 
 interface TableProps {
   /** The columns of the table, following the MUI Data Grid spec */
@@ -20,6 +22,7 @@ interface TableProps {
   handleSortModelChange: (newModel: GridSortModel) => void;
   loading?: boolean;
 }
+
 /** A Table component */
 const Table = ({
   columns,
@@ -29,30 +32,35 @@ const Table = ({
   sortModel,
   handlePaginationModelChange,
   handleSortModelChange,
-  loading
+  loading,
 }: TableProps) => {
   return (
-    <div>
-      {rows.length > 0 ? (
-        <DataGrid
-          columns={columns}
-          rows={rows}
-          sx={{ border: 0 }}
-          disableRowSelectionOnClick
-          rowCount={dataSetLength} // number of rows in the entire dataset
-          paginationModel={paginationModel} // current page and page size
-          onPaginationModelChange={handlePaginationModelChange}
-          pageSizeOptions={[]}
-          paginationMode="server"
-          disableColumnMenu
-          sortingMode="server"
-          sortModel={sortModel}
-          onSortModelChange={handleSortModelChange}
-          sortingOrder={["desc", "asc"]}
-          loading={loading}
-        />
-      ): (<div className="flex justify-center">No records found</div>)}
-    </div>
+    <DataGrid
+      className={`w-full ${rows.length === 0 ? "h-[500px]" : "h-auto"}`}
+      columns={columns}
+      slots={{
+        loadingOverlay: LinearProgress as GridSlots["loadingOverlay"],
+        noRowsOverlay: () => (
+          <div className="flex justify-center items-center h-full">
+            No results found
+          </div>
+        ),
+      }}
+      rows={rows}
+      sx={{ border: 0 }}
+      disableRowSelectionOnClick
+      rowCount={dataSetLength} // number of rows in the entire dataset
+      paginationModel={paginationModel} // current page and page size
+      onPaginationModelChange={handlePaginationModelChange}
+      pageSizeOptions={[]}
+      paginationMode="server"
+      disableColumnMenu
+      sortingMode="server"
+      sortModel={sortModel}
+      onSortModelChange={handleSortModelChange}
+      sortingOrder={["desc", "asc"]}
+      loading={loading}
+    />
   );
 };
 

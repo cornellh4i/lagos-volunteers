@@ -160,7 +160,7 @@ const getUsers = async (
     };
     skip = 1;
   }
-  let take = undefined;
+  let take = 0;
   if (pagination.limit) {
     take = parseInt(pagination.limit as string);
   } else {
@@ -254,11 +254,13 @@ const getUsers = async (
       newQueryResult[i].totalHours = hours;
     }
   }
+
   // Metadata
-  const lastPostInResults = take
-    ? queryResult[take - 1]
-    : queryResult[queryResult.length - 1];
-  const nextCursor = lastPostInResults ? lastPostInResults.id : undefined;
+  let lastPostInResults;
+  if (queryResult.length > 0) {
+    lastPostInResults = queryResult[queryResult.length - 1];
+  }
+  const nextCursor = lastPostInResults?.id;
   const prevCursor = queryResult[0] ? queryResult[0].id : undefined;
   return {
     result: newQueryResult,
