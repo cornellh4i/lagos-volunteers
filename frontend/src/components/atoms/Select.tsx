@@ -36,6 +36,7 @@ const Select = ({
         sx={{
           borderRadius: "8px",
           height: height,
+          background: "white",
         }}
         MenuProps={{
           MenuListProps: {

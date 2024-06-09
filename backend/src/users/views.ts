@@ -1,5 +1,5 @@
 import { Router, RequestHandler, Request, Response } from "express";
-import { Prisma, userRole, UserStatus } from "@prisma/client";
+import { Prisma, userRole, UserStatus, EnrollmentStatus } from "@prisma/client";
 import userController from "./controllers";
 import {
   auth,
@@ -7,6 +7,8 @@ import {
   updateFirebaseUserToSupervisor,
   updateFirebaseUserToAdmin,
   NoAuth,
+  authIfAdmin,
+  authIfSupervisor,
 } from "../middleware/auth";
 const userRouter = Router();
 import * as firebase from "firebase-admin";
@@ -14,10 +16,16 @@ import { attempt, socketNotify } from "../utils/helpers";
 import admin from "firebase-admin";
 
 let useAuth: RequestHandler;
+let useAdminAuth: RequestHandler;
+let useSupervisorAuth: RequestHandler;
 
 process.env.NODE_ENV === "test"
-  ? (useAuth = NoAuth as RequestHandler)
-  : (useAuth = auth as RequestHandler);
+  ? ((useAuth = NoAuth as RequestHandler),
+    (useAdminAuth = NoAuth as RequestHandler),
+    (useSupervisorAuth = NoAuth as RequestHandler))
+  : ((useAuth = auth as RequestHandler),
+    (useAdminAuth = authIfAdmin as RequestHandler),
+    (useSupervisorAuth = authIfSupervisor as RequestHandler));
 
 userRouter.post(
   "/",
@@ -93,10 +101,14 @@ userRouter.put("/:userid", useAuth, async (req: Request, res: Response) => {
   socketNotify(`/users/${req.params.userid}`);
 });
 
-userRouter.get("/count", useAuth, async (req: Request, res: Response) => {
-  // #swagger.tags = ['Users']
-  attempt(res, 200, userController.getCountUsers);
-});
+userRouter.get(
+  "/count",
+  useAdminAuth || useSupervisorAuth,
+  async (req: Request, res: Response) => {
+    // #swagger.tags = ['Users']
+    attempt(res, 200, userController.getCountUsers);
+  }
+);
 
 userRouter.get("/", useAuth, async (req: Request, res: Response) => {
   // #swagger.tags = ['Users']
@@ -109,6 +121,7 @@ userRouter.get("/", useAuth, async (req: Request, res: Response) => {
     hours: req.query.hours ? parseInt(req.query.hours as string) : undefined,
     status: req.query.status as UserStatus,
     eventId: req.query.eventId as string,
+    attendeeStatus: req.query.attendeeStatus as EnrollmentStatus,
   };
 
   const sortQuery = req.query.sort as string;
@@ -125,13 +138,23 @@ userRouter.get("/", useAuth, async (req: Request, res: Response) => {
     limit: req.query.limit as string,
   };
 
-  attempt(res, 200, () => userController.getUsers(filter, sort, pagination));
+  const include = {
+    hours: req.query.include === "hours" ? true : false,
+  };
+
+  attempt(res, 200, () =>
+    userController.getUsers(filter, sort, pagination, include)
+  );
 });
 
-userRouter.get("/pagination", useAuth, async (req: Request, res: Response) => {
-  // #swagger.tags = ['Users']
-  attempt(res, 200, () => userController.getUsersPaginated(req));
-});
+userRouter.get(
+  "/pagination",
+  useAdminAuth || useSupervisorAuth,
+  async (req: Request, res: Response) => {
+    // #swagger.tags = ['Users']
+    attempt(res, 200, () => userController.getUsersPaginated(req));
+  }
+);
 
 userRouter.get("/search", useAuth, async (req: Request, res: Response) => {
   // #swagger.tags = ['Users']
@@ -151,10 +174,14 @@ userRouter.get("/search", useAuth, async (req: Request, res: Response) => {
   );
 });
 
-userRouter.get("/sorting", useAuth, async (req: Request, res: Response) => {
-  // #swagger.tags = ['Users']
-  attempt(res, 200, () => userController.getUsersSorted(req));
-});
+userRouter.get(
+  "/sorting",
+  useAdminAuth || useSupervisorAuth,
+  async (req: Request, res: Response) => {
+    // #swagger.tags = ['Users']
+    attempt(res, 200, () => userController.getUsersSorted(req));
+  }
+);
 
 userRouter.get(
   "/:userid/profile",
@@ -246,16 +273,22 @@ userRouter.put(
   }
 );
 
-userRouter.patch("/:userid/status", async (req: Request, res: Response) => {
-  // #swagger.tags = ['Users']
-  const { status } = req.body;
-  attempt(res, 200, () => userController.editStatus(req.params.userid, status));
-  socketNotify(`/users/${req.params.userid}`);
-});
+userRouter.patch(
+  "/:userid/status",
+  useAdminAuth,
+  async (req: Request, res: Response) => {
+    // #swagger.tags = ['Users']
+    const { status } = req.body;
+    attempt(res, 200, () =>
+      userController.editStatus(req.params.userid, status)
+    );
+    socketNotify(`/users/${req.params.userid}`);
+  }
+);
 
 userRouter.patch(
   "/:userid/role",
-  useAuth,
+  useAdminAuth,
   async (req: Request, res: Response) => {
     // #swagger.tags = ['Users']
     const { role } = req.body;
@@ -289,7 +322,7 @@ userRouter.patch(
 
 userRouter.patch(
   "/:userid/hours",
-  useAuth,
+  useAdminAuth || useSupervisorAuth,
   async (req: Request, res: Response) => {
     // #swagger.tags = ['Users']
     const { hours } = req.body;

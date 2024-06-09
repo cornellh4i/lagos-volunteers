@@ -2,10 +2,11 @@ import React, { ReactNode, forwardRef, Ref } from "react";
 import MuiAlert from "@mui/material/Alert";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import CancelIcon from "@mui/icons-material/Cancel";
+import ErrorIcon from "@mui/icons-material/Error";
 
 interface AlertProps {
   children: ReactNode;
-  variety: "success" | "error";
+  variety: "success" | "error" | "warning";
   onClose: () => void;
   [key: string]: any;
 }
@@ -28,6 +29,9 @@ const Alert = forwardRef(
         bgcolor = "error.light";
         icon = <CancelIcon color="error" fontSize="inherit" />;
         break;
+      case "warning":
+        bgcolor = "warning.light";
+        icon = <ErrorIcon color="warning" fontSize="inherit" />;
     }
 
     return (

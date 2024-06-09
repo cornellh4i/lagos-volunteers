@@ -78,13 +78,6 @@ const LoginForm = () => {
     await signInWithEmailAndPassword(email, password);
   };
 
-  /** Handles login success */
-  useEffect(() => {
-    if (signedInUser?.user.emailVerified) {
-      router.push("/events/view");
-    }
-  }, [signedInUser]);
-
   /** Handles login errors */
   const [errorMessage, setErrorMessage] = useState("");
   useEffect(() => {
