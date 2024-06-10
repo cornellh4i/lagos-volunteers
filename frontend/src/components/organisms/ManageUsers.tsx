@@ -193,7 +193,7 @@ const Blacklisted = ({
       ),
     },
     {
-      field: "date",
+      field: "createdAt",
       headerName: "Joined on",
       sortable: false,
       flex: 0.5,
