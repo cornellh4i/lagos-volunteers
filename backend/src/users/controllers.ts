@@ -110,6 +110,7 @@ const getUsers = async (
     status?: UserStatus;
     eventId?: string;
     attendeeStatus?: EnrollmentStatus;
+    emailOrName?: string;
   },
   sort: {
     key: string;
@@ -183,14 +184,8 @@ const getUsers = async (
     };
   }
 
-  // Handles all other filtering
   let whereDict = {
     events: events,
-    // email: Array.isArray(filter.email) ? { in: filter.email } : filter.email,
-    email: {
-      contains: filter.email,
-      mode: Prisma.QueryMode.insensitive,
-    },
     role: {
       equals: filter.role,
     },
@@ -198,35 +193,79 @@ const getUsers = async (
     status: {
       equals: filter.status,
     },
-    profile: {
-      // firstName: Array.isArray(filter.firstName)
-      //   ? { in: filter.firstName }
-      //   : filter.firstName,
-      firstName: {
-        contains: filter.firstName,
-        mode: Prisma.QueryMode.insensitive,
-      },
-      lastName: Array.isArray(filter.lastName)
-        ? { in: filter.lastName }
-        : filter.lastName,
-      nickname: Array.isArray(filter.nickname)
-        ? { in: filter.nickname }
-        : filter.nickname,
-    },
   };
+
+  // Handles a search query
+
+  let nameOrEmail = filter.emailOrName ? filter.emailOrName.split(" ") : [];
+  let searchQueryBuilder = {};
+  if (nameOrEmail.length === 2) {
+    searchQueryBuilder = {
+      OR: [
+        {
+          profile: {
+            firstName: {
+              contains: nameOrEmail[0], // Search by email or name
+              mode: Prisma.QueryMode.insensitive,
+            },
+            lastName: {
+              contains: nameOrEmail[1], // Search by email or name
+              mode: Prisma.QueryMode.insensitive,
+            },
+          },
+        },
+        {
+          email: {
+            contains: nameOrEmail[0], // Search by email or name
+            mode: Prisma.QueryMode.insensitive,
+          },
+        },
+      ],
+    };
+  } else if (nameOrEmail.length === 1) {
+    searchQueryBuilder = {
+      OR: [
+        {
+          email: {
+            contains: nameOrEmail[0], // Search by email or name
+            mode: Prisma.QueryMode.insensitive,
+          },
+        },
+        {
+          profile: {
+            firstName: {
+              contains: nameOrEmail[0], // Search by email or name
+              mode: Prisma.QueryMode.insensitive,
+            },
+          },
+        },
+        {
+          profile: {
+            lastName: {
+              contains: nameOrEmail[0], // Search by email or name
+              mode: Prisma.QueryMode.insensitive,
+            },
+          },
+        },
+      ],
+    };
+  }
 
   /* RESULT */
 
   // Find the total number of records before pagination is applied
   const totalRecords = await prisma.user.count({
     where: {
-      AND: [whereDict],
+      AND: [whereDict, searchQueryBuilder],
     },
   });
 
   let queryOptions = {
-    where: { AND: [whereDict] },
-    include: { profile: true, events: eventId ? true : false },
+    where: { AND: [whereDict, searchQueryBuilder] },
+    include: {
+      profile: true,
+      events: eventId ? true : false,
+    },
     orderBy: sortDict[sort.key],
     take: take,
     skip: skip,

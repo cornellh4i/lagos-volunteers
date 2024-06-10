@@ -40,7 +40,7 @@ function useManageUserState(state: "ACTIVE" | "INACTIVE") {
     const limit = prev ? -paginationModel.pageSize : paginationModel.pageSize;
     let url = `/users?status=${state}&limit=${limit}&after=${cursor}&sort=${sortModel[0].field}:${sortModel[0].sort}&include=hours`;
     if (searchQuery !== "") {
-      url += `&email=${searchQuery}`;
+      url += `&emailOrName=${searchQuery}`;
     }
     const { response, data } = await api.get(url);
     return data;
