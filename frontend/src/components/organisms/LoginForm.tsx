@@ -171,16 +171,13 @@ const LoginForm = () => {
             phoneNumber,
           });
           console.log(backendUser);
-        } else {
-          setNotifOpen(true);
-          setErrorMessage(
-            "Your account already exists. Please log in using your email and password."
-          );
         }
       }
     } catch (e) {
       setNotifOpen(true);
-      setErrorMessage("Your could not be created. Please try again later.");
+      setErrorMessage(
+        "Your account could not be created. Please try again later."
+      );
     }
   };
 
