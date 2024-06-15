@@ -277,7 +277,6 @@ const getEvent = async (eventID: string) => {
         },
       },
       tags: true,
-      attendees: true,
     },
   });
 };
@@ -333,7 +332,7 @@ const updateEnrollmentStatus = async (
   userID: string,
   newStatus: EnrollmentStatus
 ) => {
-  return await prisma.eventEnrollment.update({
+  const res = await prisma.eventEnrollment.update({
     where: {
       userId_eventId: {
         userId: userID,
@@ -344,6 +343,8 @@ const updateEnrollmentStatus = async (
       attendeeStatus: newStatus,
     },
   });
+  console.log(res);
+  return res;
 };
 
 /**

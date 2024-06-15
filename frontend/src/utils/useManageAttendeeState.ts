@@ -8,7 +8,7 @@ import { api } from "./api";
 import { formatRoleOrStatus } from "@/utils/helpers";
 import { GridPaginationModel, GridSortModel } from "@mui/x-data-grid";
 
-function useManageAttendeeState(
+export default function useManageAttendeeState(
   state: "PENDING" | "CHECKED_IN" | "CHECKED_OUT" | "REMOVED" | "CANCELED",
   eventid: string
 ) {
@@ -42,7 +42,7 @@ function useManageAttendeeState(
     const limit = prev ? -paginationModel.pageSize : paginationModel.pageSize;
     let url = `/users?eventId=${eventid}&attendeeStatus=${state}&limit=${limit}&after=${cursor}&sort=${sortModel[0].field}:${sortModel[0].sort}`;
     if (searchQuery !== "") {
-      url += `&email=${searchQuery}`;
+      url += `&emailOrName=${searchQuery}`;
     }
     const { response, data } = await api.get(url);
     return data["data"];
@@ -56,6 +56,7 @@ function useManageAttendeeState(
    */
   const { data, isPending, error, refetch, isPlaceholderData } = useQuery({
     queryKey: [
+      eventid,
       `users_${state}`,
       paginationModel.page,
       sortModel[0].sort,
@@ -75,8 +76,8 @@ function useManageAttendeeState(
   data?.result.map((user: any) => {
     rows.push({
       id: user.id,
-      status: user.events[0].attendeeStatus,
-      name: `${user.profile?.firstName} ${user.profile?.lastName}`,
+      status: state,
+      firstName: `${user.profile?.firstName} ${user.profile?.lastName}`,
       email: user.email,
       role: user.role,
       phone: user.profile?.phoneNumber || "123-456-7890", // TODO: Change to actual phone number
@@ -93,6 +94,7 @@ function useManageAttendeeState(
     if (currentPage < newModel.page) {
       await queryClient.fetchQuery({
         queryKey: [
+          eventid,
           `users_${state}`,
           newModel.page,
           sortModel[0].sort,
@@ -106,6 +108,7 @@ function useManageAttendeeState(
     } else if (currentPage > newModel.page) {
       await queryClient.fetchQuery({
         queryKey: [
+          eventid,
           `users_${state}`,
           newModel.page,
           sortModel[0].sort,
