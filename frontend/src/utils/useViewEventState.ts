@@ -5,7 +5,10 @@ import {
   useQuery,
 } from "@tanstack/react-query";
 import { api } from "./api";
-import { formatRoleOrStatus } from "@/utils/helpers";
+import {
+  convertEnrollmentStatusToString,
+  formatRoleOrStatus,
+} from "@/utils/helpers";
 import { GridPaginationModel, GridSortModel } from "@mui/x-data-grid";
 import { eventHours } from "@/utils/helpers";
 import {
@@ -52,12 +55,7 @@ function useViewEventState(
     const limit = prev ? -paginationModel.pageSize : paginationModel.pageSize;
     const whichUser =
       role === "Volunteer" ? `userid=${userid}` : `ownerid=${userid}`;
-    let url = `/events?${whichUser}&limit=${limit}&after=${cursor}&sort=${sortModel[0].field}:${sortModel[0].sort}`;
-    if (state === "upcoming") {
-      url += `&date=upcoming`;
-    } else if (state === "past") {
-      url += `&date=past`;
-    }
+    let url = `/events?${whichUser}&limit=${limit}&after=${cursor}&sort=${sortModel[0].field}:${sortModel[0].sort}&date=${state}&include=attendees`;
     const { response, data } = await api.get(url);
     return data;
   };
@@ -92,6 +90,12 @@ function useViewEventState(
       endDate: new Date(event.endDate),
       role: event.role,
       hours: eventHours(event.endDate, event.startDate),
+      attendeeStatus:
+        event.attendees.length > 0
+          ? convertEnrollmentStatusToString(
+              event.attendees["0"]["attendeeStatus"]
+            )
+          : undefined,
     });
   });
 
