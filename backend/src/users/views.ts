@@ -85,7 +85,7 @@ userRouter.post(
 );
 
 userRouter.post(
-  "/create",
+  "/google",
   NoAuth as RequestHandler,
   async (req: Request, res: Response) => {
     // #swagger.tags = ['Users']

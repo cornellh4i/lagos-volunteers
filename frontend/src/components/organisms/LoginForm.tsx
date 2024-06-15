@@ -132,7 +132,7 @@ const LoginForm = () => {
             lastName,
           },
         };
-        const { response } = await api.post("/users/create", post, false);
+        const { response } = await api.post("/users/google", post, false);
         if (!response.ok) {
           const errorData = await response.json();
           throw new Error(errorData.error);
@@ -144,7 +144,6 @@ const LoginForm = () => {
     });
 
   /** Sign in with Google */
-
   const handleGoogleLogin = async () => {
     try {
       const provider = new GoogleAuthProvider();
@@ -246,8 +245,6 @@ const LoginForm = () => {
           </Link>
         </div>
         <Button
-          // loading={googleLoading}
-          // disabled={googleLoading}
           variety="secondary"
           icon={<GoogleIcon />}
           onClick={handleGoogleLogin}
