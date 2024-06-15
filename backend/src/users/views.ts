@@ -84,6 +84,32 @@ userRouter.post(
   }
 );
 
+userRouter.post(
+  "/google",
+  NoAuth as RequestHandler,
+  async (req: Request, res: Response) => {
+    // #swagger.tags = ['Users']
+    socketNotify("/users");
+    const { ...rest } = req.body;
+    try {
+      await firebase.auth().setCustomUserClaims(rest.id, {
+        admin: false,
+        supervisor: false,
+        volunteer: true,
+      });
+      const user = await userController.createUser(
+        rest,
+        rest.profile,
+        rest.preferences,
+        rest.permissions
+      );
+      return res.status(200).send({ success: true, user: user });
+    } catch (e: any) {
+      return res.status(500).send({ success: false, error: e.message });
+    }
+  }
+);
+
 userRouter.delete("/:userid", useAuth, async (req: Request, res: Response) => {
   // #swagger.tags = ['Users']
   await admin.auth().deleteUser(req.params.userid);

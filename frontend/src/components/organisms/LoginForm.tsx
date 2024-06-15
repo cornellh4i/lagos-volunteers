@@ -11,6 +11,10 @@ import {
   useSignInWithGoogle,
 } from "react-firebase-hooks/auth";
 import Snackbar from "../atoms/Snackbar";
+import { GoogleAuthProvider, User, signInWithPopup } from "firebase/auth";
+import { api } from "@/utils/api";
+import { useMutation } from "@tanstack/react-query";
+import Loading from "../molecules/Loading";
 
 export type FormValues = {
   email: string;
@@ -108,9 +112,75 @@ const LoginForm = () => {
     }
   }, [signInErrors]);
 
+  /** Tanstack query mutation to create a new user */
+  const { mutateAsync: createLocalUserFromGoogle, isPending: googleLoading } =
+    useMutation({
+      mutationFn: async (data: {
+        userid: string;
+        firstName: string;
+        lastName: string;
+        email: string;
+        phoneNumber: string;
+      }) => {
+        const { userid, firstName, lastName, email } = data;
+        const emailLowerCase = email.toLowerCase();
+        const post = {
+          id: userid,
+          email: emailLowerCase,
+          profile: {
+            firstName,
+            lastName,
+          },
+        };
+        const { response } = await api.post("/users/google", post, false);
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.error);
+        }
+
+        return response;
+      },
+      retry: false,
+    });
+
   /** Sign in with Google */
-  const [signInWithGoogle, googleUser, googleLoading, googleError] =
-    useSignInWithGoogle(auth);
+  const handleGoogleLogin = async () => {
+    try {
+      const provider = new GoogleAuthProvider();
+      const result = await signInWithPopup(auth, provider);
+      const user = result.user;
+
+      if (user) {
+        const email = user?.email as string;
+        const userid = user?.uid as string;
+        const phoneNumber = user?.phoneNumber as string;
+        const [firstName, lastName] = user?.displayName
+          ? user?.displayName?.split(" ")
+          : ["", ""];
+
+        // Check if user exists in local database
+        const { response, data } = await api.get(`/users/${userid}`);
+        console.log(data);
+        if (!data["data"]) {
+          const backendUser = await createLocalUserFromGoogle({
+            userid,
+            firstName,
+            lastName,
+            email,
+            phoneNumber,
+          });
+          console.log(backendUser);
+        }
+      }
+    } catch (e) {
+      setNotifOpen(true);
+      setErrorMessage(
+        "Your account could not be created. Please try again later."
+      );
+    }
+  };
+
+  if (googleLoading) return <Loading />;
 
   return (
     <>
@@ -175,11 +245,9 @@ const LoginForm = () => {
           </Link>
         </div>
         <Button
-          loading={googleLoading}
-          disabled={googleLoading}
           variety="secondary"
           icon={<GoogleIcon />}
-          // onClick={() => handleGoogleLogin()}
+          onClick={handleGoogleLogin}
           type="submit"
         >
           Continue with Google
