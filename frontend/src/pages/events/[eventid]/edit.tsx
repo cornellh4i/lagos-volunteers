@@ -6,6 +6,7 @@ import Loading from "@/components/molecules/Loading";
 import { api } from "@/utils/api";
 import { useQuery } from "@tanstack/react-query";
 import Card from "@/components/molecules/Card";
+import DefaultTemplate from "@/components/templates/DefaultTemplate";
 
 type eventData = {
   id: string;
@@ -53,7 +54,13 @@ const EditEvent = () => {
   };
 
   /** Loading screen */
-  if (isLoading) return <Loading />;
+  if (isLoading || !event.id) {
+    return (
+      <DefaultTemplate>
+        <Loading />
+      </DefaultTemplate>
+    );
+  }
 
   return (
     <CenteredTemplate>
