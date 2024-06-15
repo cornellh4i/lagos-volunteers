@@ -193,6 +193,9 @@ const getUsers = async (
     status: {
       equals: filter.status,
     },
+    email: {
+      equals: filter.email,
+    },
   };
 
   // Handles a search query
