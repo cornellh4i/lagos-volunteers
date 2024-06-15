@@ -13,6 +13,7 @@ export type ViewEventsEvent = {
   capacity?: number;
   status?: EventStatus;
   imageURL?: string;
+  attendeeStatus?: string;
 };
 
 export type EventData = {

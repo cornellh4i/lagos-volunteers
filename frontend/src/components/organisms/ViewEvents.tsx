@@ -9,7 +9,11 @@ import Table from "@/components/molecules/Table";
 import Button from "../atoms/Button";
 import Link from "next/link";
 import { useAuth } from "@/utils/AuthContext";
-import { eventHours, fetchUserIdFromDatabase } from "@/utils/helpers";
+import {
+  convertEnrollmentStatusToString,
+  eventHours,
+  fetchUserIdFromDatabase,
+} from "@/utils/helpers";
 import { Action, ViewEventsEvent } from "@/utils/types";
 import { api } from "@/utils/api";
 import ManageSearchIcon from "@mui/icons-material/ManageSearch";
@@ -39,10 +43,10 @@ const UpcomingEvents = () => {
       const userid = await fetchUserIdFromDatabase(user?.email as string);
       setUserid(userid);
       const upcomingEventsUserRegisteredFor = await api.get(
-        `/events?userid=${userid}&date=upcoming&sort=startDate:desc`
+        `/events?userid=${userid}&date=upcoming&sort=startDate:asc`
       );
       const upcomingEventsUserSupervises = await api.get(
-        `/events?ownerid=${userid}&date=upcoming&sort=startDate:desc`
+        `/events?ownerid=${userid}&date=upcoming&sort=startDate:asc`
       );
       return {
         upcomingRegistered: upcomingEventsUserRegisteredFor.data["data"],
@@ -175,7 +179,7 @@ const PastEvents = () => {
     queryFn: async () => {
       const userid = await fetchUserIdFromDatabase(user?.email as string);
       const pastEventsUserRegisteredFor = await api.get(
-        `/events?userid=${userid}&date=past&limit=${PAGE_SIZE_VOLUNTEER}`
+        `/events?userid=${userid}&date=past&sort=startDate:desc&include=attendees&limit=${PAGE_SIZE_VOLUNTEER}`
       );
       return pastEventsUserRegisteredFor["data"];
     },
@@ -191,7 +195,7 @@ const PastEvents = () => {
     queryFn: async () => {
       const userid = await fetchUserIdFromDatabase(user?.email as string);
       const pastEventsUserSupervised = await api.get(
-        `/events?ownerid=${userid}&date=past&limit=${PAGE_SIZE_SUPERVISOR}`
+        `/events?ownerid=${userid}&date=past&sort=startDate:desc&limit=${PAGE_SIZE_SUPERVISOR}`
       );
       return pastEventsUserSupervised["data"];
     },
@@ -228,6 +232,9 @@ const PastEvents = () => {
       endDate: event["endDate"],
       role: "Volunteer",
       hours: eventHours(event["endDate"], event["startDate"]),
+      attendeeStatus: convertEnrollmentStatusToString(
+        event["attendees"][0]["attendeeStatus"]
+      ),
       status: event["status"],
     });
   });
@@ -268,7 +275,7 @@ const PastEvents = () => {
         queryKey: ["volunteer_events", paginationModelVolunteer.page + 1],
         queryFn: async () => {
           const pastEventsUserRegisteredFor = await api.get(
-            `/events?userid=${userid}&date=past&limit=${PAGE_SIZE_VOLUNTEER}&after=${cursorVolunteer}`
+            `/events?userid=${userid}&date=past&sort=startDate:desc&include=attendees&limit=${PAGE_SIZE_VOLUNTEER}&after=${cursorVolunteer}`
           );
           return pastEventsUserRegisteredFor["data"];
         },
@@ -340,6 +347,14 @@ const PastEvents = () => {
     {
       field: "hours",
       headerName: "Hours",
+      minWidth: 50,
+      renderHeader: (params) => (
+        <div style={{ fontWeight: "bold" }}>{params.colDef.headerName}</div>
+      ),
+    },
+    {
+      field: "attendeeStatus",
+      headerName: "Status",
       minWidth: 150,
       renderHeader: (params) => (
         <div style={{ fontWeight: "bold" }}>{params.colDef.headerName}</div>
@@ -347,7 +362,7 @@ const PastEvents = () => {
     },
     {
       field: "role",
-      headerName: "Status",
+      headerName: "Role",
       minWidth: 150,
       renderHeader: (params) => (
         <div style={{ fontWeight: "bold" }}>{params.colDef.headerName}</div>
