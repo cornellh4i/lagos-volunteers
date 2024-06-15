@@ -109,13 +109,12 @@ export const eventHours = (endTime: string, startTime: string) => {
 export const formatDateTimeToUI = (datetime: string) => {
   const [date, timeRange] = datetime.split(", ");
   const formattedDate = new Date(date).toLocaleString("en-GB", {
-    weekday: "long",
     year: "numeric",
     month: "long",
     day: "numeric",
   });
 
-  return [formattedDate, timeRange];
+  return formattedDate;
 };
 
 /**

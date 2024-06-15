@@ -25,6 +25,7 @@ import Card from "../molecules/Card";
 import LinearProgress from "../atoms/LinearProgress";
 import ArrowOutwardIcon from "@mui/icons-material/ArrowOutward";
 import Snackbar from "../atoms/Snackbar";
+import useViewEventState from "@/utils/useViewEventState";
 
 /** Displays upcoming events for the user */
 const UpcomingEvents = () => {
@@ -152,166 +153,21 @@ const PastEvents = () => {
   const { user, role } = useAuth();
   const [userid, setUserid] = useState<string>("");
 
-  /** Table pagination models and page sizes */
-  const [paginationModelVolunteer, setPaginationModelVolunteer] =
-    useState<GridPaginationModel>({
-      page: 0,
-      pageSize: 5,
-    });
-  const [paginationModelSupervisor, setPaginationModelSupervisor] =
-    useState<GridPaginationModel>({
-      page: 0,
-      pageSize: 5,
-    });
-  const PAGE_SIZE_VOLUNTEER = paginationModelVolunteer.pageSize;
-  const PAGE_SIZE_SUPERVISOR = paginationModelSupervisor.pageSize; // Number of records to fetch per page
-
-  // Handling past events
-  // We need to separate the query for past events registered for and past events supervised
-  // because we need to handle pagination differently for each (state is different)
-  let cursorVolunteer = "";
-  let cursorSupervisor = "";
-  const {
-    data: pastEventsUserVolunteerdForQuery,
-    isPlaceholderData: isPastVolunteerPlaceHolder,
-  } = useQuery({
-    queryKey: ["volunteer_events", paginationModelVolunteer.page],
-    queryFn: async () => {
-      const userid = await fetchUserIdFromDatabase(user?.email as string);
-      const pastEventsUserRegisteredFor = await api.get(
-        `/events?userid=${userid}&date=past&sort=startDate:desc&include=attendees&limit=${PAGE_SIZE_VOLUNTEER}`
-      );
-      return pastEventsUserRegisteredFor["data"];
-    },
-    staleTime: Infinity,
-    retry: false,
-  });
+  // NOTE: Since supervisors/admins can't register for events,
+  // They will only see past events that they have created.
+  // while volunteers will only see past events that they have registered for.
 
   const {
-    data: pastEventsUserSupervisedQuery,
-    isPlaceholderData: isPastSupervisorPlaceHolder,
-  } = useQuery({
-    queryKey: ["supervised_events", paginationModelSupervisor.page],
-    queryFn: async () => {
-      const userid = await fetchUserIdFromDatabase(user?.email as string);
-      const pastEventsUserSupervised = await api.get(
-        `/events?ownerid=${userid}&date=past&sort=startDate:desc&limit=${PAGE_SIZE_SUPERVISOR}`
-      );
-      return pastEventsUserSupervised["data"];
-    },
-    staleTime: Infinity,
-    retry: false,
-  });
-
-  const supervisorPastEvents = pastEventsUserSupervisedQuery?.data.result || [];
-  const volunteerPastEvents =
-    pastEventsUserVolunteerdForQuery?.data.result || [];
-
-  const supervisorAllPastEvents: ViewEventsEvent[] = [];
-  const volunteerAllPastEvents: ViewEventsEvent[] = [];
-
-  supervisorPastEvents.map((event: any) => {
-    supervisorAllPastEvents.push({
-      id: event["id"],
-      name: event["name"],
-      location: event["location"],
-      startDate: formatDateString(event["startDate"]),
-      endDate: event["endDate"],
-      role: "Supervisor",
-      hours: eventHours(event["endDate"], event["startDate"]),
-      status: event["status"],
-    });
-  });
-
-  volunteerPastEvents.map((event: any) => {
-    volunteerAllPastEvents.push({
-      id: event["id"],
-      name: event["name"],
-      location: event["location"],
-      startDate: formatDateString(event["startDate"]),
-      endDate: event["endDate"],
-      role: "Volunteer",
-      hours: eventHours(event["endDate"], event["startDate"]),
-      attendeeStatus: convertEnrollmentStatusToString(
-        event["attendees"][0]["attendeeStatus"]
-      ),
-      status: event["status"],
-    });
-  });
-
-  const pastVolunteerEvents = {
-    result: volunteerAllPastEvents,
-    total: pastEventsUserVolunteerdForQuery?.data.totalItems,
-  };
-
-  const pastSupervisorEvents = {
-    result: supervisorAllPastEvents,
-    total: pastEventsUserSupervisedQuery?.data.totalItems,
-  };
-
-  const queryClient = useQueryClient();
-  const totalNumberOfPagesVolunteer = Math.ceil(
-    pastEventsUserVolunteerdForQuery?.data.totalItems / PAGE_SIZE_VOLUNTEER
-  );
-  const totalNumberOfPagesSupervisor = Math.ceil(
-    pastEventsUserSupervisedQuery?.data.totalItems / PAGE_SIZE_SUPERVISOR
-  );
-
-  if (pastEventsUserVolunteerdForQuery?.data.cursor) {
-    cursorVolunteer = pastEventsUserVolunteerdForQuery?.data.cursor;
-  }
-
-  if (pastEventsUserSupervisedQuery?.data.cursor) {
-    cursorSupervisor = pastEventsUserSupervisedQuery?.data.cursor;
-  }
-
-  // Prefetch the next page for past events pagination
-  useEffect(() => {
-    if (
-      !isPastVolunteerPlaceHolder &&
-      paginationModelVolunteer.page < totalNumberOfPagesVolunteer
-    ) {
-      queryClient.prefetchQuery({
-        queryKey: ["volunteer_events", paginationModelVolunteer.page + 1],
-        queryFn: async () => {
-          const pastEventsUserRegisteredFor = await api.get(
-            `/events?userid=${userid}&date=past&sort=startDate:desc&include=attendees&limit=${PAGE_SIZE_VOLUNTEER}&after=${cursorVolunteer}`
-          );
-          return pastEventsUserRegisteredFor["data"];
-        },
-        staleTime: Infinity,
-      });
-    }
-  }, [
-    pastEventsUserVolunteerdForQuery,
-    queryClient,
-    paginationModelVolunteer,
-    cursorVolunteer,
-    totalNumberOfPagesVolunteer,
-  ]);
-  useEffect(() => {
-    if (
-      paginationModelSupervisor.page < totalNumberOfPagesSupervisor &&
-      !isPastSupervisorPlaceHolder
-    ) {
-      queryClient.prefetchQuery({
-        queryKey: ["supervised_events", paginationModelSupervisor.page + 1],
-        queryFn: async () => {
-          const pastEventsUserSupervised = await api.get(
-            `/events?ownerid=${userid}&date=past&limit=${PAGE_SIZE_SUPERVISOR}&after=${cursorSupervisor}`
-          );
-          return pastEventsUserSupervised["data"];
-        },
-        staleTime: Infinity,
-      });
-    }
-  }, [
-    pastEventsUserSupervisedQuery,
-    queryClient,
-    paginationModelSupervisor,
-    cursorSupervisor,
-    totalNumberOfPagesSupervisor,
-  ]);
+    rows,
+    isPending,
+    error,
+    hours,
+    totalNumberofData,
+    paginationModel,
+    sortModel,
+    handlePaginationModelChange,
+    handleSortModelChange,
+  } = useViewEventState(role, "past");
 
   const volunteerEventColumns: GridColDef[] = [
     {
@@ -347,6 +203,7 @@ const PastEvents = () => {
     {
       field: "hours",
       headerName: "Hours",
+      sortable: false,
       minWidth: 50,
       renderHeader: (params) => (
         <div style={{ fontWeight: "bold" }}>{params.colDef.headerName}</div>
@@ -355,30 +212,16 @@ const PastEvents = () => {
     {
       field: "attendeeStatus",
       headerName: "Status",
+      sortable: false,
       minWidth: 150,
       renderHeader: (params) => (
         <div style={{ fontWeight: "bold" }}>{params.colDef.headerName}</div>
       ),
-    },
-    {
-      field: "role",
-      headerName: "Role",
-      minWidth: 150,
-      renderHeader: (params) => (
-        <div style={{ fontWeight: "bold" }}>{params.colDef.headerName}</div>
-      ),
-      renderCell: (params) => {
-        return (
-          <Chip
-            color={params.value == "Supervisor" ? "primary" : "success"}
-            label={params.value}
-          />
-        );
-      },
     },
     {
       headerName: "",
       field: "actions",
+      sortable: false,
       minWidth: 150,
       align: "right",
       renderCell: (params) => (
@@ -422,7 +265,7 @@ const PastEvents = () => {
     {
       field: "startDate",
       headerName: "Date",
-      minWidth: 150,
+      minWidth: 200,
       renderHeader: (params) => (
         <div style={{ fontWeight: "bold" }}>{params.colDef.headerName}</div>
       ),
@@ -442,27 +285,9 @@ const PastEvents = () => {
       },
     },
   ];
-
-  /** Loading screen */
-  // if (isLoading) return <Loading />;
-
-  /** Error screen */
-  // if (isError) return <Error />;
-
-  // TODO: Replace constants with actual values
-  /** Tanstack query for fetching the user's total hours */
-  const hoursQuery = useQuery({
-    queryKey: ["userHours", userid],
-    queryFn: async () => {
-      const userid = await fetchUserIdFromDatabase(user?.email as string);
-      setUserid(userid);
-      const { data: dataHours } = await api.get(`/users/${userid}/hours`);
-      return dataHours["data"];
-    },
-  });
-  let hours = hoursQuery.data;
   const REFERENCE_HOURS = 80;
   const CERTIFICATE_HOURS = 120;
+  console.log(hours);
 
   return (
     <>
@@ -493,56 +318,43 @@ const PastEvents = () => {
                 You must complete a minimum of 120 hours, have photo proof, and
                 write a reflection to receive a volunteer certificate.
               </div>
+              {/* TODO: Add button to request certificate */}
               {/* <div className="mt-4">
                 <Button disabled>Request Certificate</Button>
               </div> */}
             </Card>
           </div>
-          {/* {((role === "Admin" && pastSupervisorEvents.result.length == 0) ||
-            (role === "Supervisor" &&
-              pastSupervisorEvents.result.length == 0) ||
-            (role === "Volunteer" &&
-              pastVolunteerEvents.result.length == 0)) && (
-            <div className="p-10">
-              <div className="text-center">There are no past events</div>
-            </div>
-          )} */}
-          {pastVolunteerEvents.result.length === 0 ? (
-            <div className="p-10">
-              <div className="text-center">There are no past events</div>
-            </div>
-          ) : (
-            <Card size="table">
-              <Table
-                columns={volunteerEventColumns}
-                rows={pastVolunteerEvents.result}
-                dataSetLength={pastVolunteerEvents.total}
-                paginationModel={paginationModelVolunteer}
-                setPaginationModel={setPaginationModelVolunteer}
-              />
-            </Card>
-          )}
         </>
       )}
-      {(role === "Supervisor" || role === "Admin") && (
-        <>
-          {pastSupervisorEvents.result.length === 0 ? (
-            <div className="p-10">
-              <div className="text-center">There are no past events</div>
-            </div>
-          ) : (
-            <Card size="table">
-              <Table
-                columns={SupervisoreventColumns}
-                rows={pastSupervisorEvents.result}
-                dataSetLength={pastSupervisorEvents.total}
-                paginationModel={paginationModelSupervisor}
-                setPaginationModel={setPaginationModelSupervisor}
-              />
-            </Card>
-          )}
-        </>
-      )}
+      <div>
+        {role === "Supervisor" || role === "Admin" ? (
+          <Card size="table">
+            <Table
+              columns={SupervisoreventColumns}
+              rows={rows}
+              dataSetLength={totalNumberofData}
+              paginationModel={paginationModel}
+              handlePaginationModelChange={handlePaginationModelChange}
+              handleSortModelChange={handleSortModelChange}
+              sortModel={sortModel}
+              loading={isPending}
+            />
+          </Card>
+        ) : (
+          <Card size="table">
+            <Table
+              columns={volunteerEventColumns}
+              rows={rows}
+              dataSetLength={totalNumberofData}
+              paginationModel={paginationModel}
+              handlePaginationModelChange={handlePaginationModelChange}
+              handleSortModelChange={handleSortModelChange}
+              sortModel={sortModel}
+              loading={isPending}
+            />
+          </Card>
+        )}
+      </div>
     </>
   );
 };

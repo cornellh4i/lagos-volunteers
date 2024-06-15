@@ -110,6 +110,7 @@ const getUsers = async (
     status?: UserStatus;
     eventId?: string;
     attendeeStatus?: EnrollmentStatus;
+    emailOrName?: string;
   },
   sort: {
     key: string;
@@ -160,7 +161,7 @@ const getUsers = async (
     };
     skip = 1;
   }
-  let take = undefined;
+  let take = 0;
   if (pagination.limit) {
     take = parseInt(pagination.limit as string);
   } else {
@@ -183,14 +184,8 @@ const getUsers = async (
     };
   }
 
-  // Handles all other filtering
   let whereDict = {
     events: events,
-    // email: Array.isArray(filter.email) ? { in: filter.email } : filter.email,
-    email: {
-      contains: filter.email,
-      mode: Prisma.QueryMode.insensitive,
-    },
     role: {
       equals: filter.role,
     },
@@ -198,53 +193,99 @@ const getUsers = async (
     status: {
       equals: filter.status,
     },
-    profile: {
-      // firstName: Array.isArray(filter.firstName)
-      //   ? { in: filter.firstName }
-      //   : filter.firstName,
-      firstName: {
-        contains: filter.firstName,
-        mode: Prisma.QueryMode.insensitive,
-      },
-      lastName: Array.isArray(filter.lastName)
-        ? { in: filter.lastName }
-        : filter.lastName,
-      nickname: Array.isArray(filter.nickname)
-        ? { in: filter.nickname }
-        : filter.nickname,
+    email: {
+      equals: filter.email,
     },
   };
+
+  // Handles a search query
+
+  let nameOrEmail = filter.emailOrName ? filter.emailOrName.split(" ") : [];
+  let searchQueryBuilder = {};
+  if (nameOrEmail.length === 2) {
+    searchQueryBuilder = {
+      OR: [
+        {
+          profile: {
+            firstName: {
+              contains: nameOrEmail[0], // Search by email or name
+              mode: Prisma.QueryMode.insensitive,
+            },
+            lastName: {
+              contains: nameOrEmail[1], // Search by email or name
+              mode: Prisma.QueryMode.insensitive,
+            },
+          },
+        },
+        {
+          email: {
+            contains: nameOrEmail[0], // Search by email or name
+            mode: Prisma.QueryMode.insensitive,
+          },
+        },
+      ],
+    };
+  } else if (nameOrEmail.length === 1) {
+    searchQueryBuilder = {
+      OR: [
+        {
+          email: {
+            contains: nameOrEmail[0], // Search by email or name
+            mode: Prisma.QueryMode.insensitive,
+          },
+        },
+        {
+          profile: {
+            firstName: {
+              contains: nameOrEmail[0], // Search by email or name
+              mode: Prisma.QueryMode.insensitive,
+            },
+          },
+        },
+        {
+          profile: {
+            lastName: {
+              contains: nameOrEmail[0], // Search by email or name
+              mode: Prisma.QueryMode.insensitive,
+            },
+          },
+        },
+      ],
+    };
+  }
 
   /* RESULT */
 
   // Find the total number of records before pagination is applied
   const totalRecords = await prisma.user.count({
     where: {
-      AND: [whereDict],
+      AND: [whereDict, searchQueryBuilder],
     },
   });
 
-  // Query result
-  const queryResult = await prisma.user.findMany({
-    where: {
-      AND: [whereDict],
-    },
+  let queryOptions = {
+    where: { AND: [whereDict, searchQueryBuilder] },
     include: {
       profile: true,
       preferences: true,
-      events: eventId
-        ? {
-            where: {
-              eventId: eventId,
-            },
-          }
-        : {},
+      events: eventId ? true : false,
     },
     orderBy: sortDict[sort.key],
     take: take,
     skip: skip,
-    cursor: cursor,
-  });
+  };
+
+  let queryResult;
+  if (cursor) {
+    queryResult = await prisma.user.findMany({
+      ...queryOptions,
+      cursor,
+    });
+  } else {
+    queryResult = await prisma.user.findMany({
+      ...queryOptions,
+    });
+  }
 
   // Get hours for each user if hours should be included
   const newQueryResult: any = queryResult;
@@ -258,13 +299,18 @@ const getUsers = async (
   }
 
   // Metadata
-  const lastPostInResults = take
-    ? queryResult[take - 1]
-    : queryResult[queryResult.length - 1];
-  const myCursor = lastPostInResults ? lastPostInResults.id : undefined;
-
-  // Return result
-  return { result: newQueryResult, cursor: myCursor, totalItems: totalRecords };
+  let lastPostInResults;
+  if (queryResult.length > 0) {
+    lastPostInResults = queryResult[queryResult.length - 1];
+  }
+  const nextCursor = lastPostInResults?.id;
+  const prevCursor = queryResult[0] ? queryResult[0].id : undefined;
+  return {
+    result: newQueryResult,
+    nextCursor: nextCursor,
+    prevCursor: prevCursor,
+    totalItems: totalRecords,
+  };
 };
 
 /**

@@ -6,10 +6,19 @@ import LinearProgress from "../atoms/LinearProgress";
 import Select from "../atoms/Select";
 import MenuItem from "@mui/material/MenuItem";
 import Table from "../molecules/Table";
-import { GridColDef, GridPaginationModel } from "@mui/x-data-grid";
+import {
+  GridColDef,
+  GridPaginationModel,
+  GridSortModel,
+} from "@mui/x-data-grid";
 import { api } from "@/utils/api";
 import { eventHours, formatDateString } from "@/utils/helpers";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  useMutation,
+  useQuery,
+  useQueryClient,
+  keepPreviousData,
+} from "@tanstack/react-query";
 import { useRouter } from "next/router";
 import Loading from "../molecules/Loading";
 import { SelectChangeEvent } from "@mui/material/Select";
@@ -33,8 +42,8 @@ type userProfileData = {
 
 type eventRegistrationData = {
   id: string;
-  program: string;
-  date: string;
+  name: string;
+  startDate: string;
   hours: number;
 };
 
@@ -42,7 +51,7 @@ interface ManageUserProfileNew {}
 
 const eventColumns: GridColDef[] = [
   {
-    field: "program",
+    field: "name",
     headerName: "Program Name",
     flex: 2,
     minWidth: 100,
@@ -51,7 +60,7 @@ const eventColumns: GridColDef[] = [
     ),
   },
   {
-    field: "date",
+    field: "startDate",
     headerName: "Date",
     type: "string",
     flex: 0.5,
@@ -63,6 +72,7 @@ const eventColumns: GridColDef[] = [
   {
     field: "hours",
     headerName: "Hours",
+    sortable: false,
     type: "number",
     renderHeader: (params) => (
       <div style={{ fontWeight: "bold" }}>{params.colDef.headerName}</div>
@@ -105,6 +115,7 @@ const ManageUserProfileNew = () => {
   const router = useRouter();
   const { userid } = router.query;
   const { user } = useAuth();
+  const queryClient = useQueryClient();
 
   /** State variables for the notification popups */
   const [statusChangeNotifOnSuccess, setStatusChangeNotifOnSuccess] =
@@ -174,63 +185,94 @@ const ManageUserProfileNew = () => {
     page: 0,
     pageSize: 10,
   });
+  const [sortModel, setSortModel] = useState<GridSortModel>([
+    { field: "startDate", sort: "asc" },
+  ]);
 
-  /** Tanstack query for fetching the events a user is registered for */
+  const fetchBatchOfEvents = async (
+    userid: string,
+    cursor: string = "",
+    prev: boolean = false
+  ) => {
+    const limit = prev ? -paginationModel.pageSize : paginationModel.pageSize;
+    let url = `/events?userid=${userid}&limit=${limit}&after=${cursor}&sort=${sortModel[0].field}:${sortModel[0].sort}`;
+    const { response, data } = await api.get(url);
+    return data["data"];
+  };
+
+  /** Tanstack query for fetching events*/
   const {
-    data: registeredEventsQuery,
-    isPending: registeredEventsQueryPending,
-    isError: registeredEventsQueryError,
-    isPlaceholderData,
+    data,
+    isPending,
+    isError: isEventError,
+    isPlaceholderData: isEventPlaceholderData,
   } = useQuery({
-    queryKey: ["user_events", userid, paginationModel.page],
+    queryKey: [
+      "user_events",
+      userid,
+      paginationModel.page,
+      sortModel[0].sort,
+      sortModel[0].field,
+    ],
     queryFn: async () => {
-      const { data } = await api.get(
-        `/events?userid=${userid}&limit=${paginationModel.pageSize}`
-      );
-      return data["data"];
+      return await fetchBatchOfEvents(userid as string);
     },
-    staleTime: Infinity,
+    placeholderData: keepPreviousData,
+    staleTime: 0,
   });
-  let cursor = "";
-  if (registeredEventsQuery?.cursor) {
-    cursor = registeredEventsQuery.cursor;
-  }
-  const totalNumberofData = registeredEventsQuery?.totalItems;
-  const totalNumberofPages = Math.ceil(
-    totalNumberofData / paginationModel.pageSize
-  );
+
   const registeredEvents: eventRegistrationData[] = [];
-  registeredEventsQuery?.result.map((event: any) => {
+  const totalNumberofData = data?.totalItems || 0;
+  data?.result.map((event: any) => {
     registeredEvents.push({
       id: event.id,
-      program: event.name,
-      date: formatDateString(event.startDate),
+      name: event.name,
+      startDate: formatDateString(event.startDate),
       hours: eventHours(event.endDate, event.startDate),
     });
   });
 
-  // Prefetch the next page
-  const queryClient = useQueryClient();
-  useEffect(() => {
-    if (!isPlaceholderData && paginationModel.page < totalNumberofPages) {
-      queryClient.prefetchQuery({
-        queryKey: ["user_events", userid, paginationModel.page + 1],
-        queryFn: async () => {
-          const { data } = await api.get(
-            `/events?userid=${userid}&limit=${paginationModel.pageSize}&after=${cursor}`
-          );
-          return data["data"];
-        },
-        staleTime: Infinity,
+  const handlePaginationModelChange = async (newModel: GridPaginationModel) => {
+    const currentPage = paginationModel.page;
+    const nextPageCursor = data?.nextCursor;
+    const prevPageCursor = data?.prevCursor;
+    setPaginationModel(newModel);
+
+    // Fetch Next Page
+    if (currentPage < newModel.page) {
+      await queryClient.fetchQuery({
+        queryKey: [
+          "user_events",
+          userid,
+          newModel.page,
+          sortModel[0].sort,
+          sortModel[0].field,
+        ],
+        queryFn: async () =>
+          await fetchBatchOfEvents(userid as string, nextPageCursor),
+        staleTime: 0,
+      });
+      // Fetch previous page
+    } else if (currentPage > newModel.page) {
+      await queryClient.fetchQuery({
+        queryKey: [
+          "user_events",
+          userid,
+          newModel.page,
+          sortModel[0].sort,
+          sortModel[0].field,
+        ],
+        queryFn: async () =>
+          await fetchBatchOfEvents(userid as string, prevPageCursor, true),
+        staleTime: 0,
       });
     }
-  }, [
-    registeredEventsQuery,
-    queryClient,
-    cursor,
-    totalNumberofData,
-    paginationModel.page,
-  ]);
+  };
+
+  const handleSortModelChange = async (newModel: GridSortModel) => {
+    setPaginationModel((prev) => ({ ...prev, page: 0 }));
+    setSortModel(newModel);
+  };
 
   /** Tanstack query mutation for changing the user role */
   const { mutateAsync: changeUserRole } = useMutation({
@@ -409,19 +451,15 @@ const ManageUserProfileNew = () => {
       </div>
       <h3>Event History</h3>
       <Card size="table">
-        {registeredEvents.length === 0 ? (
-          <div className="text-center">
-            <p>No events found</p>
-          </div>
-        ) : (
-          <Table
-            columns={eventColumns}
-            rows={registeredEvents}
-            dataSetLength={totalNumberofData}
-            paginationModel={paginationModel}
-            setPaginationModel={setPaginationModel}
-          />
-        )}
+        <Table
+          columns={eventColumns}
+          rows={registeredEvents}
+          dataSetLength={totalNumberofData}
+          paginationModel={paginationModel}
+          handlePaginationModelChange={handlePaginationModelChange}
+          handleSortModelChange={handleSortModelChange}
+          loading={isPending}
+        />
       </Card>
     </>
   );

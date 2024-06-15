@@ -2,112 +2,53 @@ import React, { ChangeEvent, FormEvent, useEffect, useState } from "react";
 import Table from "@/components/molecules/Table";
 import TabContainer from "@/components/molecules/TabContainer";
 import Button from "../atoms/Button";
-import { GridColDef, GridPaginationModel } from "@mui/x-data-grid";
+import {
+  GridColDef,
+  GridPaginationModel,
+  GridSortModel,
+} from "@mui/x-data-grid";
+import AccountBoxIcon from "@mui/icons-material/AccountBox";
 import PersonIcon from "@mui/icons-material/Person";
 import SearchBar from "@/components/atoms/SearchBar";
 import Link from "next/link";
-import { formatDateString } from "@/utils/helpers";
-import { api } from "@/utils/api";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
-import Loading from "@/components/molecules/Loading";
 import Card from "../molecules/Card";
-import { formatRoleOrStatus } from "@/utils/helpers";
+import useManageUserState from "@/utils/useManageUserState";
 
 interface ManageUsersProps {}
 
-type ActiveProps = {
-  initalRowData: Object[];
+type ManageUsersTableProps = {
+  rows: userInfo[];
   usersLength: number;
   paginationModel: GridPaginationModel;
-  setPaginationModel: React.Dispatch<React.SetStateAction<GridPaginationModel>>;
-  setSearchQuery: React.Dispatch<React.SetStateAction<string>>;
-  setCursor: React.Dispatch<React.SetStateAction<string>>;
+  sortModel: GridSortModel;
+  handlePaginationModelChange: (newModel: GridPaginationModel) => void;
+  handleSortModelChange: (newModel: GridSortModel) => void;
+  handleNewSearchQuery: (newQuery: string) => void;
+  isLoading: boolean;
 };
 
 type userInfo = {
   id: string;
-  name: string;
+  firstName: string;
   email: string;
   role: string;
-  date: Date;
+  createdAt: Date;
   hours: number;
 };
 
-const Active = () => {
-  /** New state variable for storing search query */
-  const [searchQuery, setSearchQuery] = useState("");
-
-  /** Pagination model for the table */
-  const [paginationModel, setPaginationModel] = useState<GridPaginationModel>({
-    page: 0,
-    pageSize: 20,
-  });
-  // let cursor = "";
-  const [cursor, setCursor] = useState("");
-
-  /** If a valid cursor is passed, fetch the next batch of users */
-  const fetchUsersBatch = async (cursor?: string, searchQuery?: string) => {
-    if (searchQuery) {
-      const { data } = await api.get(
-        `/users?email=${searchQuery}&status=ACTIVE&limit=${paginationModel.pageSize}&after=${cursor}&include=hours`
-      );
-      return data;
-    } else {
-      const { data } = await api.get(
-        `/users?status=ACTIVE&limit=${paginationModel.pageSize}&after=${cursor}&include=hours`
-      );
-      return data;
-    }
-  };
-
-  /** Tanstack query for fetching users  */
-  const { data, isPending, error, isPlaceholderData, refetch } = useQuery({
-    queryKey: ["users", paginationModel.page],
-    queryFn: async () => {
-      const data = await fetchUsersBatch(cursor, searchQuery);
-      if (data?.data.cursor) {
-        setCursor(data.data.cursor);
-      }
-      return data;
-    },
-    staleTime: Infinity,
-  });
-  const rows: userInfo[] = [];
-  const totalNumberofData = data?.data.totalItems;
-  data?.data.result.map((user: any) => {
-    rows.push({
-      id: user.id,
-      name: user.profile?.firstName + " " + user.profile?.lastName,
-      email: user.email,
-      role: formatRoleOrStatus(user.role),
-      date: new Date(user.createdAt),
-      hours: user.totalHours, // TODO: properly calculate hours
-    });
-  });
-  const totalNumberOfPages = Math.ceil(
-    totalNumberofData / paginationModel.pageSize
-  );
-
-  // Update row data when search query changes
-  useEffect(() => {
-    refetch();
-  }, [searchQuery]);
-
-  // Prefetch the next page
-  const queryClient = useQueryClient();
-  useEffect(() => {
-    if (!isPlaceholderData && paginationModel.page < totalNumberOfPages) {
-      queryClient.prefetchQuery({
-        queryKey: ["users", paginationModel.page + 1],
-        queryFn: async () => fetchUsersBatch(cursor, searchQuery),
-        staleTime: Infinity,
-      });
-    }
-  }, [data, queryClient, cursor, totalNumberofData, paginationModel.page]);
-
+const Active = ({
+  rows,
+  usersLength,
+  paginationModel,
+  sortModel,
+  handlePaginationModelChange,
+  handleSortModelChange,
+  handleNewSearchQuery,
+  isLoading,
+}: ManageUsersTableProps) => {
   const eventColumns: GridColDef[] = [
     {
-      field: "name",
+      field: "firstName",
       headerName: "Name",
       flex: 2,
       minWidth: 200,
@@ -127,6 +68,7 @@ const Active = () => {
     {
       field: "role",
       headerName: "Role",
+      sortable: false,
       flex: 0.5,
       minWidth: 100,
       renderHeader: (params) => (
@@ -134,8 +76,9 @@ const Active = () => {
       ),
     },
     {
-      field: "date",
+      field: "createdAt",
       headerName: "Joined on",
+      sortable: false,
       flex: 0.5,
       minWidth: 100,
       type: "date",
@@ -146,6 +89,7 @@ const Active = () => {
     {
       field: "hours",
       headerName: "Total hours",
+      sortable: false,
       flex: 0.5,
       minWidth: 100,
       renderHeader: (params) => (
@@ -173,6 +117,7 @@ const Active = () => {
   ];
 
   /** Search bar */
+  // TODO: Implement seach bar with new pagination logic.
   const [value, setValue] = React.useState("");
   const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
     setValue(event.target.value);
@@ -180,16 +125,8 @@ const Active = () => {
   const handleSubmitSearch = (event: FormEvent<HTMLFormElement>) => {
     // Prevent page refresh
     event.preventDefault();
-
-    // Reset cursor on every new search
-    setCursor("");
-
-    // Set search query
-    setSearchQuery(value);
+    handleNewSearchQuery(value);
   };
-
-  /** Loading screen */
-  if (isPending) return <Loading />;
 
   return (
     <div>
@@ -203,92 +140,33 @@ const Active = () => {
       </div>
       <Card size="table">
         <Table
+          handlePaginationModelChange={handlePaginationModelChange}
+          handleSortModelChange={handleSortModelChange}
           columns={eventColumns}
           rows={rows}
-          dataSetLength={totalNumberofData}
+          dataSetLength={usersLength}
           paginationModel={paginationModel}
-          setPaginationModel={setPaginationModel}
+          sortModel={sortModel}
+          loading={isLoading}
         />
       </Card>
     </div>
   );
 };
 
-const Blacklisted = () => {
-  /** New state variable for storing search query */
-  const [searchQuery, setSearchQuery] = useState("");
-
-  /** Pagination model for the table */
-  const [paginationModel, setPaginationModel] = useState<GridPaginationModel>({
-    page: 0,
-    pageSize: 20,
-  });
-  // let cursor = "";
-  const [cursor, setCursor] = useState("");
-
-  /** If a valid cursor is passed, fetch the next batch of users */
-  const fetchUsersBatch = async (cursor?: string, searchQuery?: string) => {
-    if (searchQuery) {
-      const { data } = await api.get(
-        `/users?email=${searchQuery}&status=INACTIVE&limit=${paginationModel.pageSize}&after=${cursor}&include=hours`
-      );
-      return data;
-    } else {
-      const { data } = await api.get(
-        `/users?status=INACTIVE&limit=${paginationModel.pageSize}&after=${cursor}&include=hours`
-      );
-      return data;
-    }
-  };
-
-  /** Tanstack query for fetching users  */
-  const { data, isPending, error, isPlaceholderData, refetch } = useQuery({
-    queryKey: ["users", paginationModel.page],
-    queryFn: async () => {
-      const data = await fetchUsersBatch(cursor, searchQuery);
-      if (data?.data.cursor) {
-        setCursor(data.data.cursor);
-      }
-      return data;
-    },
-    staleTime: Infinity,
-  });
-  const rows: userInfo[] = [];
-  const totalNumberofData = data?.data.totalItems;
-  data?.data.result.map((user: any) => {
-    rows.push({
-      id: user.id,
-      name: user.profile?.firstName + " " + user.profile?.lastName,
-      email: user.email,
-      role: formatRoleOrStatus(user.role),
-      date: new Date(user.createdAt),
-      hours: user.totalHours, // TODO: properly calculate hours
-    });
-  });
-  const totalNumberOfPages = Math.ceil(
-    totalNumberofData / paginationModel.pageSize
-  );
-
-  // Update row data when search query changes
-  useEffect(() => {
-    refetch();
-  }, [searchQuery]);
-
-  // Prefetch the next page
-  const queryClient = useQueryClient();
-  useEffect(() => {
-    if (!isPlaceholderData && paginationModel.page < totalNumberOfPages) {
-      queryClient.prefetchQuery({
-        queryKey: ["users", paginationModel.page + 1],
-        queryFn: async () => fetchUsersBatch(cursor, searchQuery),
-        staleTime: Infinity,
-      });
-    }
-  }, [data, queryClient, cursor, totalNumberofData, paginationModel.page]);
-
+const Blacklisted = ({
+  rows,
+  usersLength,
+  paginationModel,
+  sortModel,
+  handlePaginationModelChange,
+  handleSortModelChange,
+  handleNewSearchQuery,
+  isLoading,
+}: ManageUsersTableProps) => {
   const eventColumns: GridColDef[] = [
     {
-      field: "name",
+      field: "firstName",
       headerName: "Name",
       flex: 2,
       minWidth: 200,
@@ -308,6 +186,7 @@ const Blacklisted = () => {
     {
       field: "role",
       headerName: "Role",
+      sortable: false,
       flex: 0.5,
       minWidth: 100,
       renderHeader: (params) => (
@@ -315,8 +194,9 @@ const Blacklisted = () => {
       ),
     },
     {
-      field: "date",
+      field: "createdAt",
       headerName: "Joined on",
+      sortable: false,
       flex: 0.5,
       minWidth: 100,
       type: "date",
@@ -327,6 +207,7 @@ const Blacklisted = () => {
     {
       field: "hours",
       headerName: "Total hours",
+      sortable: false,
       flex: 0.5,
       minWidth: 100,
       renderHeader: (params) => (
@@ -355,22 +236,16 @@ const Blacklisted = () => {
 
   /** Search bar */
   const [value, setValue] = React.useState("");
+
   const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
     setValue(event.target.value);
   };
+
   const handleSubmitSearch = (event: FormEvent<HTMLFormElement>) => {
     // Prevent page refresh
     event.preventDefault();
-
-    // Reset cursor on every new search
-    setCursor("");
-
-    // Set search query
-    setSearchQuery(value);
+    handleNewSearchQuery(value);
   };
-
-  /** Loading screen */
-  if (isPending) return <Loading />;
 
   return (
     <div>
@@ -385,10 +260,13 @@ const Blacklisted = () => {
       <Card size="table">
         <Table
           columns={eventColumns}
+          handlePaginationModelChange={handlePaginationModelChange}
+          handleSortModelChange={handleSortModelChange}
           rows={rows}
-          dataSetLength={totalNumberofData}
+          dataSetLength={usersLength}
           paginationModel={paginationModel}
-          setPaginationModel={setPaginationModel}
+          sortModel={sortModel}
+          loading={isLoading}
         />
       </Card>
     </div>
@@ -397,16 +275,63 @@ const Blacklisted = () => {
 
 /** A ManageUsers component */
 const ManageUsers = ({}: ManageUsersProps) => {
+  const {
+    rows: activeUsersRows,
+    isPending: isActivePending,
+    error: isActiveError,
+    handlePaginationModelChange: handleActivePaginationModelChange,
+    handleSortModelChange: handleActiveSortModelChange,
+    handleSearchQuery: handleActiveSearchQuery,
+    paginationModel: activePaginationModel,
+    sortModel: activeSortModel,
+    searchQuery: activeSearchQuery,
+    totalNumberofData: totalNumberofActiveData,
+  } = useManageUserState("ACTIVE");
+
+  const {
+    rows: blacklistedUsersRows,
+    isPending: isBlacklistedPending,
+    error: isBlacklistedError,
+    handlePaginationModelChange: handleBlacklistedPaginationModelChange,
+    handleSortModelChange: handleBlacklistedSortModelChange,
+    handleSearchQuery: handleBlacklistedSearchQuery,
+    paginationModel: blacklistedPaginationModel,
+    sortModel: blacklistedSortModel,
+    searchQuery: blacklistedSearchQuery,
+    totalNumberofData: totalNumberofBlacklistedData,
+  } = useManageUserState("INACTIVE");
+
   const tabs = [
     {
       label: "Active",
-      panel: <Active />,
+      panel: (
+        <Active
+          handlePaginationModelChange={handleActivePaginationModelChange}
+          handleSortModelChange={handleActiveSortModelChange}
+          handleNewSearchQuery={handleActiveSearchQuery}
+          rows={activeUsersRows}
+          usersLength={totalNumberofActiveData}
+          paginationModel={activePaginationModel}
+          sortModel={activeSortModel}
+          isLoading={isActivePending}
+        />
+      ),
     },
 
-    // TODO: implement pagination and fetching for blacklisted users
     {
       label: "Blacklisted",
-      panel: <Blacklisted />,
+      panel: (
+        <Blacklisted
+          handlePaginationModelChange={handleBlacklistedPaginationModelChange}
+          handleSortModelChange={handleBlacklistedSortModelChange}
+          handleNewSearchQuery={handleBlacklistedSearchQuery}
+          rows={blacklistedUsersRows}
+          usersLength={totalNumberofBlacklistedData}
+          paginationModel={blacklistedPaginationModel}
+          sortModel={blacklistedSortModel}
+          isLoading={isBlacklistedPending}
+        />
+      ),
     },
   ];
 

@@ -129,6 +129,11 @@
             "type": "string"
           },
           {
+            "name": "emailOrName",
+            "in": "query",
+            "type": "string"
+          },
+          {
             "name": "sort",
             "in": "query",
             "type": "string"
