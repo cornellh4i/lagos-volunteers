@@ -48,7 +48,7 @@ const ChangePasswordForm = ({ userDetails }: ChangePasswordFormProps) => {
       case "user-not-found":
         return "There is no user with this email address.";
       case "wrong-password":
-        return "Old password is incorrect.";
+        return "Current password is incorrect.";
       case "weak-password":
         return "Password must be at least 6 characters.";
       case "invalid-password":
@@ -135,10 +135,19 @@ const ChangePasswordForm = ({ userDetails }: ChangePasswordFormProps) => {
       </Snackbar>
 
       {/* Profile form */}
+      <h3 className="mt-0 mb-4 font-normal">Change your password</h3>
+      <div className="text-sm mb-4">
+        Passwords should meet the following requirements:
+        <ul className="m-0 px-4">
+          <li>At least 6 characters in length</li>
+          <li>Contain a mix of uppercase and lowercase letters</li>
+          <li>Include at least one number and one special character</li>
+        </ul>
+      </div>
       <form onSubmit={handleSubmit(handleChanges)} className="space-y-4">
         <TextField
           type="password"
-          label="Old password"
+          label="Current password"
           error={errors.oldPassword?.message}
           {...register("oldPassword", {
             required: { value: true, message: "Required" },
