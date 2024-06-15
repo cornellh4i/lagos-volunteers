@@ -36,7 +36,7 @@ function useViewEventState(
 
   /** Sorting Model for the table */
   const [sortModel, setSortModel] = useState<GridSortModel>([
-    { field: "startDate", sort: "asc" },
+    { field: "startDate", sort: "desc" },
   ]);
 
   /** Function to fetch a batch of events with respect to the current pagination

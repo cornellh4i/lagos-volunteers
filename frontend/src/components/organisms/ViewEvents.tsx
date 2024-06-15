@@ -195,7 +195,7 @@ const PastEvents = () => {
     {
       field: "startDate",
       headerName: "Date",
-      minWidth: 200,
+      minWidth: 150,
       renderHeader: (params) => (
         <div style={{ fontWeight: "bold" }}>{params.colDef.headerName}</div>
       ),
