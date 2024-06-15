@@ -90,6 +90,7 @@ function useViewEventState(
       endDate: new Date(event.endDate),
       role: event.role,
       hours: eventHours(event.endDate, event.startDate),
+      status: event.status,
       attendeeStatus:
         event.attendees.length > 0
           ? convertEnrollmentStatusToString(
