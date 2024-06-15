@@ -105,7 +105,8 @@ const Active = ({
         <div>
           <Link
             href={`/users/${params.row.id}/manage`}
-            className="no-underline">
+            className="no-underline"
+          >
             <Button variety="tertiary" size="small" icon={<PersonIcon />}>
               View Profile
             </Button>
@@ -222,7 +223,8 @@ const Blacklisted = ({
         <div>
           <Link
             href={`/users/${params.row.id}/manage`}
-            className="no-underline">
+            className="no-underline"
+          >
             <Button variety="tertiary" size="small" icon={<PersonIcon />}>
               View Profile
             </Button>

@@ -340,7 +340,8 @@ const ManageUserProfileNew = () => {
       <Snackbar
         onClose={() => setRoleChangeNotifOpenOnSuccess(false)}
         open={roleChangeNotifOpenOnSuccess}
-        variety="success">
+        variety="success"
+      >
         {`Success: ${name} is now ${
           role === "ADMIN"
             ? ` an ${formatRoleOrStatus(role)}`
@@ -352,7 +353,8 @@ const ManageUserProfileNew = () => {
       <Snackbar
         onClose={() => setRoleChangeNotifOpenOnFailure(false)}
         open={roleChangeNotifOpenOnFailure}
-        variety="error">
+        variety="error"
+      >
         {`Error: ${name}'s role could not be changed. Please try again`}
       </Snackbar>
 
@@ -360,7 +362,8 @@ const ManageUserProfileNew = () => {
       <Snackbar
         onClose={() => setStatusChangeNotifOnSuccess(false)}
         open={statusChangeNotifOnSuccess}
-        variety="success">
+        variety="success"
+      >
         {`Success: ${name} is now ${
           status === "ACTIVE" ? ` an active ` : ` a blacklisted `
         } member`}
@@ -370,7 +373,8 @@ const ManageUserProfileNew = () => {
       <Snackbar
         onClose={() => setStatusChangeNotifOnFailure(false)}
         open={statusChangeNotifOnFailure}
-        variety="error">
+        variety="error"
+      >
         {`Error: ${name}'s status could not be changed. Please try again`}
       </Snackbar>
 
@@ -396,7 +400,8 @@ const ManageUserProfileNew = () => {
             value={role}
             onChange={(event: SelectChangeEvent) =>
               changeUserRole({ role: event.target.value })
-            }>
+            }
+          >
             <MenuItem value="VOLUNTEER">Volunteer</MenuItem>
             <MenuItem value="SUPERVISOR">Supervisor</MenuItem>
             <MenuItem value="ADMIN">Admin</MenuItem>
