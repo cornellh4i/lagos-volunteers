@@ -246,13 +246,13 @@ const Registrations = ({
           {totalHours.toString()} Hours Volunteered
         </div>
       </IconText>
-      <Table
+      {/* <Table
         columns={eventColumns}
         rows={userRegistrations}
         paginationModel={paginationModel}
         setPaginationModel={setPaginationModel}
         dataSetLength={totalNumberofData}
-      />
+      /> */}
     </>
   );
 };

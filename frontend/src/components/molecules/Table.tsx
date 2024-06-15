@@ -4,7 +4,7 @@ import {
   GridColDef,
   GridPaginationModel,
   GridSortModel,
-  GridSlots,
+  // GridSlots,
 } from "@mui/x-data-grid";
 import LinearProgress from "@mui/material/LinearProgress";
 
@@ -39,7 +39,7 @@ const Table = ({
       className={`w-full ${rows.length === 0 ? "h-[200px]" : "h-auto"}`}
       columns={columns}
       slots={{
-        loadingOverlay: LinearProgress as GridSlots["loadingOverlay"],
+        // loadingOverlay: LinearProgress as GridSlots["loadingOverlay"],
         noRowsOverlay: () => (
           <div className="flex justify-center items-center h-full">
             No results found

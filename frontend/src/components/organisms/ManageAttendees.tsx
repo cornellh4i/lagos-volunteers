@@ -397,7 +397,7 @@ const DuplicateEventModalBody = ({
 };
 
 /** A ManageAttendees component */
-const ManageAttendees = ({}: ManageAttendeesProps) => {
+const ManageAttendees = () => {
   const router = useRouter();
   const eventid = router.query.eventid as string;
 
