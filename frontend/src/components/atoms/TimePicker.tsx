@@ -1,16 +1,14 @@
 import React, { forwardRef, Ref } from "react";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
-import { TimeField } from "@mui/x-date-pickers/TimeField";
-import { IconButton } from "@mui/material";
-import { InputAdornment } from "@mui/material";
-import { AccessTime } from "@mui/icons-material";
+import { TimePicker } from "@mui/x-date-pickers/TimePicker";
 import dayjs from "dayjs";
 
 interface TimePickerProps {
   label: string;
   value?: string;
   error?: string;
+  disablePast?: boolean;
   [key: string]: any;
 }
 
@@ -20,14 +18,20 @@ interface TimePickerProps {
  */
 const CustomTimePicker = forwardRef(
   (
-    { label, value, error = "", ...props }: TimePickerProps,
+    {
+      label,
+      value,
+      error = "",
+      disablePast = false,
+      ...props
+    }: TimePickerProps,
     ref: Ref<HTMLInputElement>
   ) => {
     return (
       <div>
         <div className="mb-1">{label}</div>
         <LocalizationProvider dateAdapter={AdapterDayjs}>
-          <TimeField
+          <TimePicker
             sx={{
               "& .MuiInputBase-root": {
                 borderRadius: "8px",
@@ -36,24 +40,10 @@ const CustomTimePicker = forwardRef(
                 height: "9px",
               },
             }}
-            fullWidth
             label=""
             defaultValue={value ? dayjs(value) : undefined}
-            InputProps={{
-              endAdornment: (
-                <InputAdornment position="end">
-                  <IconButton
-                    className="cursor-default"
-                    disableRipple
-                    edge="end"
-                  >
-                    <AccessTime />
-                  </IconButton>
-                </InputAdornment>
-              ),
-            }}
-            slotProps={{ textField: { error: error !== "" } }}
             ref={ref}
+            disablePast={disablePast}
             {...props}
           />
         </LocalizationProvider>

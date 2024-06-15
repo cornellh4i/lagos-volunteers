@@ -9,7 +9,11 @@ import Table from "@/components/molecules/Table";
 import Button from "../atoms/Button";
 import Link from "next/link";
 import { useAuth } from "@/utils/AuthContext";
-import { eventHours, fetchUserIdFromDatabase } from "@/utils/helpers";
+import {
+  convertEnrollmentStatusToString,
+  eventHours,
+  fetchUserIdFromDatabase,
+} from "@/utils/helpers";
 import { Action, ViewEventsEvent } from "@/utils/types";
 import { api } from "@/utils/api";
 import ManageSearchIcon from "@mui/icons-material/ManageSearch";
@@ -40,10 +44,10 @@ const UpcomingEvents = () => {
       const userid = await fetchUserIdFromDatabase(user?.email as string);
       setUserid(userid);
       const upcomingEventsUserRegisteredFor = await api.get(
-        `/events?userid=${userid}&date=upcoming&sort=startDate:desc`
+        `/events?userid=${userid}&date=upcoming&sort=startDate:asc`
       );
       const upcomingEventsUserSupervises = await api.get(
-        `/events?ownerid=${userid}&date=upcoming&sort=startDate:desc`
+        `/events?ownerid=${userid}&date=upcoming&sort=startDate:asc`
       );
       return {
         upcomingRegistered: upcomingEventsUserRegisteredFor.data["data"],
@@ -64,6 +68,7 @@ const UpcomingEvents = () => {
           endDate: event["endDate"],
           role: "Supervisor",
           hours: eventHours(event["startDate"], event["endDate"]),
+          status: event["status"],
           imageURL: event["imageURL"],
         };
       }
@@ -80,6 +85,7 @@ const UpcomingEvents = () => {
           role: "Volunteer",
           hours: eventHours(event["startDate"], event["endDate"]),
           imageURL: event["imageURL"],
+          status: event["status"],
         };
       }
     ) || [];
@@ -172,6 +178,19 @@ const PastEvents = () => {
       renderHeader: (params) => (
         <div style={{ fontWeight: "bold" }}>{params.colDef.headerName}</div>
       ),
+      renderCell: (params) => (
+        <div className="flex items-center">
+          {params.row.name}
+          {params.row.status == "CANCELED" && (
+            <Chip
+              size="small"
+              label="Canceled"
+              color="error"
+              className="ml-3"
+            />
+          )}
+        </div>
+      ),
     },
     {
       field: "startDate",
@@ -200,7 +219,8 @@ const PastEvents = () => {
         <div>
           <Link
             href={`/events/${params.row.id}/register`}
-            className="no-underline">
+            className="no-underline"
+          >
             <Button variety="tertiary" size="small" icon={<ArrowOutwardIcon />}>
               View Event
             </Button>
@@ -218,6 +238,19 @@ const PastEvents = () => {
       flex: 1,
       renderHeader: (params) => (
         <div style={{ fontWeight: "bold" }}>{params.colDef.headerName}</div>
+      ),
+      renderCell: (params) => (
+        <div className="flex items-center">
+          {params.row.name}
+          {params.row.status == "CANCELED" && (
+            <Chip
+              size="small"
+              label="Canceled"
+              color="error"
+              className="ml-3"
+            />
+          )}
+        </div>
       ),
     },
     {
@@ -334,6 +367,7 @@ const ViewEvents = () => {
 
     const [isEventCreated, setIsEventCreated] = useState(false);
     const [isEventEdited, setIsEventEdited] = useState(false);
+    const [isEventCanceled, setIsEventCanceled] = useState(false);
 
     useEffect(() => {
       const isEventCreated = localStorage.getItem("eventCreated");
@@ -345,6 +379,10 @@ const ViewEvents = () => {
         setIsEventEdited(true);
         localStorage.removeItem("eventEdited");
       }
+      if (localStorage.getItem("eventCanceled")) {
+        setIsEventCanceled(true);
+        localStorage.removeItem("eventCanceled");
+      }
     }, []);
 
     return (
@@ -353,7 +391,8 @@ const ViewEvents = () => {
         <Snackbar
           variety="success"
           open={isEventCreated}
-          onClose={() => setIsEventCreated(false)}>
+          onClose={() => setIsEventCreated(false)}
+        >
           Your event was successfully created!
         </Snackbar>
 
@@ -361,9 +400,20 @@ const ViewEvents = () => {
         <Snackbar
           variety="success"
           open={isEventEdited}
-          onClose={() => setIsEventEdited(false)}>
+          onClose={() => setIsEventEdited(false)}
+        >
           Your event has been successfully updated!
         </Snackbar>
+
+        {/* Event canceled success notification */}
+        <Snackbar
+          variety="success"
+          open={isEventCanceled}
+          onClose={() => setIsEventCanceled(false)}
+        >
+          Your event has been successfully canceled!
+        </Snackbar>
+
         <TabContainer
           tabs={tabs}
           left={<div className="text-3xl font-semibold">My Events</div>}

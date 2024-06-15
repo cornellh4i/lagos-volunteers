@@ -264,6 +264,7 @@ const getUsers = async (
     where: { AND: [whereDict, searchQueryBuilder] },
     include: {
       profile: true,
+      preferences: true,
       events: eventId ? true : false,
     },
     orderBy: sortDict[sort.key],
@@ -648,20 +649,23 @@ const editRole = async (userId: string, role: string) => {
   var textBodyVS = "Your role has changed from volunteer to supervisor.";
 
   if (process.env.NODE_ENV != "test") {
-    if (prevUserRole === "SUPERVISOR" && role === "ADMIN") {
-      const updatedHtml = replaceUserInputs(
-        stringUserUpdate,
-        userName,
-        textBodySA
-      );
-      await sendEmail(userEmail, "Your email subject", updatedHtml);
-    } else if (prevUserRole === "VOLUNTEER" && role === "SUPERVISOR") {
-      const updatedHtml = replaceUserInputs(
-        stringUserUpdate,
-        userName,
-        textBodyVS
-      );
-      await sendEmail(userEmail, "Your role has changed.", updatedHtml);
+    const userPreferences = await userController.getUserPreferences(userId);
+    if (userPreferences?.preferences?.sendEmailNotification === true) {
+      if (prevUserRole === "SUPERVISOR" && role === "ADMIN") {
+        const updatedHtml = replaceUserInputs(
+          stringUserUpdate,
+          userName,
+          textBodySA
+        );
+        await sendEmail(userEmail, "Your email subject", updatedHtml);
+      } else if (prevUserRole === "VOLUNTEER" && role === "SUPERVISOR") {
+        const updatedHtml = replaceUserInputs(
+          stringUserUpdate,
+          userName,
+          textBodyVS
+        );
+        await sendEmail(userEmail, "Your role has changed.", updatedHtml);
+      }
     }
   }
   return prisma.user.update({

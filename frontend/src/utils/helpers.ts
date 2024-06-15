@@ -17,8 +17,8 @@ import {
  * @returns the userid
  */
 export const fetchUserIdFromDatabase = async (email: string) => {
-  const { data } = await api.get(`/users/search/?email=${email}`);
-  return data["data"][0]["id"];
+  const { data } = await api.get(`/users?email=${email}`);
+  return data["data"]["result"][0]["id"];
 };
 
 /**
@@ -75,7 +75,10 @@ export const formatDateString = (dateString: string) => {
  * @param inputDate is the inputDate
  * @returns the ISO string
  */
-export const convertToISO = (inputTime: Date, inputDate: Date) => {
+export const convertToISO = (
+  inputTime: Date | string,
+  inputDate: Date | string
+) => {
   const date = format(new Date(inputDate), "yyyy-MM-dd");
   const time = format(new Date(inputTime), "HH:mm:ss");
 
@@ -207,5 +210,24 @@ export const uploadImageToFirebase = async (
   } catch (error) {
     console.error("Upload failed:", error);
     return "";
+  }
+};
+
+/**
+ * Converts the user registration status enum to a display friendly string
+ * @param status is the EnrollmentStatus enum
+ */
+export const convertEnrollmentStatusToString = (status: string) => {
+  switch (status) {
+    case "PENDING":
+      return "Pending";
+    case "CHECKED_IN":
+      return "Checked in";
+    case "CHECKED_OUT":
+      return "Checked out";
+    case "REMOVED":
+      return "Removed";
+    case "CANCELED":
+      return "Canceled";
   }
 };
