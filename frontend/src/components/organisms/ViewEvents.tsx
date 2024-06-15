@@ -347,7 +347,7 @@ const PastEvents = () => {
     {
       field: "hours",
       headerName: "Hours",
-      minWidth: 150,
+      minWidth: 50,
       renderHeader: (params) => (
         <div style={{ fontWeight: "bold" }}>{params.colDef.headerName}</div>
       ),
@@ -355,7 +355,7 @@ const PastEvents = () => {
     {
       field: "attendeeStatus",
       headerName: "Status",
-      minWidth: 250,
+      minWidth: 150,
       renderHeader: (params) => (
         <div style={{ fontWeight: "bold" }}>{params.colDef.headerName}</div>
       ),
