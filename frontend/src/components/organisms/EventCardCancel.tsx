@@ -32,8 +32,7 @@ const ModalBody = ({ handleClose, mutateFn }: modalProps) => {
           display: "flex",
           justifyContent: "center",
           alignItems: "center",
-        }}
-      >
+        }}>
         <h2 className="mt-0">Cancel Registration</h2>
       </Box>
       <Box
@@ -42,8 +41,7 @@ const ModalBody = ({ handleClose, mutateFn }: modalProps) => {
           display: "flex",
           justifyContent: "center",
           alignItems: "center",
-        }}
-      >
+        }}>
         <div>Are you sure you want to cancel?</div>
       </Box>
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
@@ -122,8 +120,9 @@ const EventCardCancel = ({
 
   // We assume the deadline to cancel is 24 hours in advance.
   const millisecondsPerHour = 1000 * 60 * 60;
-  const hoursLeftToCancel =
-    (date.getTime() - currentDate.getTime()) / millisecondsPerHour - 24;
+  const hoursLeftToCancel = Math.round(
+    (date.getTime() - currentDate.getTime()) / millisecondsPerHour - 24
+  );
 
   return (
     <>
@@ -145,9 +144,13 @@ const EventCardCancel = ({
         </div>
         {hoursLeftToCancel > 0 && (
           <IconText icon={<AccessTimeFilledIcon />}>
-            <div>
-              {Math.round(hoursLeftToCancel)} hours left to cancel registration
-            </div>
+            {hoursLeftToCancel < 48 ? (
+              <div>{hoursLeftToCancel}hours left to cancel registration</div>
+            ) : (
+              <div>
+                {Math.round(hoursLeftToCancel / 24)} days left to cancel
+              </div>
+            )}
           </IconText>
         )}
         <div className="mt-3" />
