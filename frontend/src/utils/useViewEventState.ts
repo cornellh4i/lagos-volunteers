@@ -11,11 +11,7 @@ import {
 } from "@/utils/helpers";
 import { GridPaginationModel, GridSortModel } from "@mui/x-data-grid";
 import { eventHours } from "@/utils/helpers";
-import {
-  fetchUserIdFromDatabase,
-  formatDateString,
-  formatDateTimeToUI,
-} from "@/utils/helpers";
+import { fetchUserIdFromDatabase, formatDateString } from "@/utils/helpers";
 import { useAuth } from "@/utils/AuthContext";
 
 function useViewEventState(
@@ -86,7 +82,7 @@ function useViewEventState(
       id: event.id,
       name: event.name,
       location: event.location,
-      startDate: formatDateTimeToUI(event.startDate),
+      startDate: formatDateString(event.startDate),
       endDate: new Date(event.endDate),
       role: event.role,
       hours: eventHours(event.endDate, event.startDate),
