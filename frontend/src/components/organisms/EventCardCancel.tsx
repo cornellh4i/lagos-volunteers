@@ -154,14 +154,14 @@ const EventCardCancel = ({
         {hoursLeftToCancel < 0 ? (
           <div>
             You have passed the window for canceling your registration.
-            Registration must be cancelled at least 24 hours before the event
+            Registration must be canceled at least 24 hours before the event
             begins. Failure to do so may affect your volunteer status.
           </div>
         ) : (
           <div>
             <div>
               If you can no longer attend, please cancel your registration.
-              Registration must be cancelled at least 24 hours before the event
+              Registration must be canceled at least 24 hours before the event
               begins. Failure to do so may affect your volunteer status.
             </div>
             <div className="mt-3" />
