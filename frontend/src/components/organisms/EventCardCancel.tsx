@@ -14,6 +14,7 @@ import { useForm, SubmitHandler } from "react-hook-form";
 interface EventCardCancelProps {
   attendeeId: string;
   eventId: string;
+  attendeeStatus: string;
   date: Date;
 }
 
@@ -31,8 +32,7 @@ const ModalBody = ({ handleClose, mutateFn }: modalProps) => {
           display: "flex",
           justifyContent: "center",
           alignItems: "center",
-        }}
-      >
+        }}>
         <h2 className="mt-0">Cancel Registration</h2>
       </Box>
       <Box
@@ -41,8 +41,7 @@ const ModalBody = ({ handleClose, mutateFn }: modalProps) => {
           display: "flex",
           justifyContent: "center",
           alignItems: "center",
-        }}
-      >
+        }}>
         <div>Are you sure you want to cancel?</div>
       </Box>
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
@@ -62,6 +61,7 @@ const ModalBody = ({ handleClose, mutateFn }: modalProps) => {
 const EventCardCancel = ({
   eventId,
   attendeeId,
+  attendeeStatus,
   date,
 }: EventCardCancelProps) => {
   const { user } = useAuth();
@@ -96,7 +96,7 @@ const EventCardCancel = ({
   } = useMutation({
     mutationKey: ["event", eventId],
     mutationFn: async () => {
-      await api.put(`/events/${eventId}/attendees`, {
+      await api.put(`/events/${eventId}/attendees/${attendeeId}/cancel`, {
         attendeeid: attendeeId,
         cancelationMessage: cancelationMessage,
       });
@@ -117,7 +117,12 @@ const EventCardCancel = ({
 
   /** Register button should be disabled if event is in the past */
   const currentDate = new Date();
-  const disableCancelEvent = date < currentDate;
+
+  // We assume the deadline to cancel is 24 hours in advance.
+  const millisecondsPerHour = 1000 * 60 * 60;
+  const hoursLeftToCancel = Math.round(
+    (date.getTime() - currentDate.getTime()) / millisecondsPerHour - 24
+  );
 
   return (
     <>
@@ -130,41 +135,57 @@ const EventCardCancel = ({
       <Card>
         <div className="font-semibold text-2xl">You're registered</div>
         <div className="mt-5" />
+        <div className="mb-2">
+          Your registration status is <b>{attendeeStatus}</b>.
+        </div>
+        <div className="mt-5" />
         <div className="font-semibold text-lg mb-2">
           No longer able to attend?
         </div>
-        <IconText icon={<AccessTimeFilledIcon />}>
-          {/* TODO: Update how many hours left */}
-          <div>4 hours left to cancel registration</div>
-        </IconText>
+        {hoursLeftToCancel > 0 && (
+          <IconText icon={<AccessTimeFilledIcon />}>
+            {hoursLeftToCancel < 48 ? (
+              <div>{hoursLeftToCancel}hours left to cancel registration</div>
+            ) : (
+              <div>
+                {Math.round(hoursLeftToCancel / 24)} days left to cancel
+              </div>
+            )}
+          </IconText>
+        )}
         <div className="mt-3" />
-        <div>
-          If you can no longer attend, please cancel your registration.
-          Registration must be cancelled at least 24 hours before the event
-          begins. Failure to do so may affect your volunteer status.
-        </div>
-        <div className="mt-3" />
-        <form onSubmit={handleSubmit(handleCancelSubmissionReason)}>
-          <div className="font-semibold text-lg">Reason for canceling</div>
-          <MultilineTextField
-            error={errors.cancelReason?.message}
-            placeholder="Your answer here"
-            value={cancelationMessage}
-            {...register("cancelReason", {
-              required: { value: true, message: "Required" },
-            })}
-            disabled={disableCancelEvent}
-            onChange={(e: any) => setCancelationMessage(e.target.value)}
-          />
-          <div className="mt-3" />
-          {disableCancelEvent ? (
-            <Button disabled>The event has concluded.</Button>
-          ) : (
-            <Button type="submit" variety="error">
-              Cancel registration
-            </Button>
-          )}
-        </form>
+        {hoursLeftToCancel < 0 ? (
+          <div>
+            You have passed the window for canceling your registration.
+            Registration must be canceled at least 24 hours before the event
+            begins. Failure to do so may affect your volunteer status.
+          </div>
+        ) : (
+          <div>
+            <div>
+              If you can no longer attend, please cancel your registration.
+              Registration must be canceled at least 24 hours before the event
+              begins. Failure to do so may affect your volunteer status.
+            </div>
+            <div className="mt-3" />
+            <form onSubmit={handleSubmit(handleCancelSubmissionReason)}>
+              <div className="font-semibold text-lg">Reason for canceling</div>
+              <MultilineTextField
+                error={errors.cancelReason?.message}
+                placeholder="Your answer here"
+                value={cancelationMessage}
+                {...register("cancelReason", {
+                  required: { value: true, message: "Required" },
+                })}
+                onChange={(e: any) => setCancelationMessage(e.target.value)}
+              />
+              <div className="mt-3" />
+              <Button type="submit" variety="mainError">
+                Cancel registration
+              </Button>
+            </form>
+          </div>
+        )}
       </Card>
     </>
   );

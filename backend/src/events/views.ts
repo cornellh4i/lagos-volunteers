@@ -170,15 +170,15 @@ eventRouter.patch(
 );
 
 eventRouter.put(
-  "/:eventid/attendees",
-  useAdminAuth || useSupervisorAuth,
+  "/:eventid/attendees/:attendeeid/cancel",
+  useAuth,
   async (req: Request, res: Response) => {
     // #swagger.tags = ['Events']
-    const { attendeeid, cancelationMessage } = req.body;
+    const { cancelationMessage } = req.body;
     attempt(res, 200, () =>
       eventController.deleteAttendee(
         req.params.eventid,
-        attendeeid,
+        req.params.attendeeid,
         cancelationMessage
       )
     );

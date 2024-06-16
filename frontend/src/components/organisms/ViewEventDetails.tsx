@@ -12,7 +12,10 @@ import { useRouter } from "next/router";
 import { useAuth } from "@/utils/AuthContext";
 import { useQuery } from "@tanstack/react-query";
 import { api } from "@/utils/api";
-import { fetchUserIdFromDatabase } from "@/utils/helpers";
+import {
+  convertEnrollmentStatusToString,
+  fetchUserIdFromDatabase,
+} from "@/utils/helpers";
 import { formatDateTimeRange } from "@/utils/helpers";
 import { EventData } from "@/utils/types";
 import Loading from "@/components/molecules/Loading";
@@ -50,7 +53,7 @@ const ViewEventDetails = () => {
 
   /** If the user canceled their event registration */
   const userHasCanceledAttendance =
-    eventAttendance && eventAttendance["canceled"];
+    eventAttendance && eventAttendance.attendeeStatus === "CANCELED";
 
   /** Set event details */
   const {
@@ -135,6 +138,9 @@ const ViewEventDetails = () => {
             ) : eventAttendance ? (
               <EventCardCancel
                 eventId={eventid}
+                attendeeStatus={convertEnrollmentStatusToString(
+                  eventAttendance.attendeeStatus
+                )}
                 attendeeId={userid}
                 date={new Date(eventData.startDate)}
               />
