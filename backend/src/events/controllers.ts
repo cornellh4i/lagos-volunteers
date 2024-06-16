@@ -463,7 +463,7 @@ const deleteAttendee = async (
       },
     },
     data: {
-      canceled: true,
+      attendeeStatus: "CANCELED",
       cancelationMessage: cancelationMessage,
     },
   });

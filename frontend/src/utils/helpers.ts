@@ -228,5 +228,7 @@ export const convertEnrollmentStatusToString = (status: string) => {
       return "Removed";
     case "CANCELED":
       return "Canceled";
+    default:
+      return "";
   }
 };
