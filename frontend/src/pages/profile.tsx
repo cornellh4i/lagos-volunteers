@@ -2,7 +2,6 @@ import React from "react";
 import ProfileForm from "@/components/organisms/ProfileForm";
 import ChangePasswordForm from "@/components/organisms/ChangePasswordForm";
 import CenteredTemplate from "@/components/templates/CenteredTemplate";
-import Banner from "@/components/molecules/Banner";
 import { useAuth } from "@/utils/AuthContext";
 import Avatar from "@/components/molecules/Avatar";
 import Card from "@/components/molecules/Card";
@@ -12,6 +11,8 @@ import Loading from "@/components/molecules/Loading";
 import FetchDataError from "@/components/organisms/FetchDataError";
 import { formatRoleOrStatus } from "@/utils/helpers";
 import DefaultTemplate from "@/components/templates/DefaultTemplate";
+import LinkEmailPasswordForm from "@/components/organisms/LinkEmailPasswordForm";
+import ManageProvidersForm from "@/components/organisms/ManageProvidersForm";
 
 /** A Profile page */
 const Profile = () => {
@@ -43,6 +44,11 @@ const Profile = () => {
       </DefaultTemplate>
     );
   }
+
+  /** Whether the user only has sign-in providers */
+  const hasOnlyGoogleProvider =
+    user?.providerData.some((x) => x.providerId === "google.com") &&
+    !user?.providerData.some((x) => x.providerId === "password");
 
   return (
     <CenteredTemplate>
@@ -109,13 +115,20 @@ const Profile = () => {
         />
       </Card>
       <h3 className="text-xl font-normal mt-12">My Account</h3>
+      <Card size="medium" className="mb-4">
+        <ManageProvidersForm />
+      </Card>
       <Card size="medium">
-        <ChangePasswordForm
-          userDetails={{
-            ...data.profile,
-            ...data,
-          }}
-        />
+        {hasOnlyGoogleProvider ? (
+          <LinkEmailPasswordForm />
+        ) : (
+          <ChangePasswordForm
+            userDetails={{
+              ...data.profile,
+              ...data,
+            }}
+          />
+        )}
       </Card>
     </CenteredTemplate>
   );
