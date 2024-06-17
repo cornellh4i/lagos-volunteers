@@ -23,7 +23,11 @@ import DatePicker from "../atoms/DatePicker";
 import TimePicker from "../atoms/TimePicker";
 import Snackbar from "../atoms/Snackbar";
 import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
-import { convertToISO, fetchUserIdFromDatabase } from "@/utils/helpers";
+import {
+  convertToISO,
+  fetchUserIdFromDatabase,
+  registeredVolunteerNumberInEvent,
+} from "@/utils/helpers";
 import { useAuth } from "@/utils/AuthContext";
 import router from "next/router";
 import { api } from "@/utils/api";
@@ -668,7 +672,12 @@ const ManageAttendees = () => {
           />
           <IconTextHeader
             icon={<GroupsIcon />}
-            header={<>{capacity} volunteers needed</>}
+            header={
+              <>
+                {registeredVolunteerNumberInEvent(eventData.attendees)}/
+                {capacity} volunteers registered
+              </>
+            }
           />
           <TextCopy
             label="RSVP Link"

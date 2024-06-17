@@ -233,3 +233,19 @@ export const convertEnrollmentStatusToString = (status: string) => {
       return "";
   }
 };
+
+/**
+ * Given a list of EventEnrollment objects from the database, returns how many
+ * volunteers are registered for the event. Note: volunteers are not considered
+ * registered if they have canceled their registration or if their registration
+ * has been removed by the supervisor.
+ * @param attendees - The list of EventEnrollment objects
+ * @returns The number of registered volunteers
+ */
+export const registeredVolunteerNumberInEvent = (attendees?: any[]) => {
+  return attendees?.filter(
+    (attendee: any) =>
+      attendee.attendeeStatus !== "CANCELED" &&
+      attendee.attendeeStatus !== "REMOVED"
+  ).length;
+};

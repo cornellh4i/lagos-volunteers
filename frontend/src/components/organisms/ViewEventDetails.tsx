@@ -15,6 +15,7 @@ import { api } from "@/utils/api";
 import {
   convertEnrollmentStatusToString,
   fetchUserIdFromDatabase,
+  registeredVolunteerNumberInEvent,
 } from "@/utils/helpers";
 import { formatDateTimeRange } from "@/utils/helpers";
 import { EventData } from "@/utils/types";
@@ -41,15 +42,16 @@ const ViewEventDetails = () => {
     queryFn: async () => {
       const userid = await fetchUserIdFromDatabase(user?.email as string);
       setUserid(userid);
-      const { data } = await api.get(
-        `/users/${userid}/registered?eventid=${id}`
-      );
+      const { data } = await api.get(`/events/${id}`);
       return data["data"];
     },
   });
 
-  let eventData = data?.eventDetails || {};
-  let eventAttendance = data?.attendance;
+  /** Undefined if user not in the attendees list, otherwise EventAttendance object */
+  let eventData = data || {};
+  let eventAttendance = eventData?.attendees?.find(
+    (attendee: any) => attendee.userId === userid
+  );
 
   /** If the user canceled their event registration */
   const userHasCanceledAttendance =
@@ -111,7 +113,12 @@ const ViewEventDetails = () => {
             />
             <IconTextHeader
               icon={<GroupsIcon />}
-              header={<>{capacity} volunteers needed</>}
+              header={
+                <>
+                  {registeredVolunteerNumberInEvent(eventData.attendees)}/
+                  {capacity} volunteers registered
+                </>
+              }
             />
           </div>
         </div>
