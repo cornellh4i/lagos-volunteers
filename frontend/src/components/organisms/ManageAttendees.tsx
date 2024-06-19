@@ -44,6 +44,8 @@ import { BASE_URL_CLIENT } from "@/utils/constants";
 import useWebSocket from "react-use-websocket";
 import { BASE_WEBSOCKETS_URL } from "@/utils/constants";
 import useManageAttendeeState from "@/utils/useManageAttendeeState";
+import ManageSearchIcon from "@mui/icons-material/ManageSearch";
+import MultilineTextField from "../atoms/MultilineTextField";
 
 type attendeeData = {
   id: number;
@@ -54,8 +56,8 @@ type attendeeData = {
 };
 interface AttendeesTableProps {
   eventid: string;
+  eventData: any; // the result of the tanstack query for GET /events/:eventid
   attendeesStatus: string;
-  tableName: string;
   rows: attendeeData[];
   totalNumberofData: number;
   paginationModel: GridPaginationModel;
@@ -72,10 +74,36 @@ type FormValues = {
   endTime: Date;
 };
 
+interface ViewCancelMessageModalBodyProps {
+  handleClose: () => void;
+  eventData?: any;
+  userid?: string;
+}
+
+const ViewCancelMessageModalBody = ({
+  handleClose,
+  eventData,
+  userid,
+}: ViewCancelMessageModalBodyProps) => {
+  const eventAttendance = eventData?.attendees?.find(
+    (attendee: any) => attendee.userId === userid
+  );
+
+  return (
+    <div className="space-y-4">
+      <div className="font-bold text-2xl text-center">
+        Reason for Cancelation
+      </div>
+      <MultilineTextField disabled value={eventAttendance.cancelationMessage} />
+      <Button onClick={handleClose}>Cancel</Button>
+    </div>
+  );
+};
+
 const AttendeesTable = ({
   eventid,
+  eventData,
   attendeesStatus,
-  tableName,
   rows,
   totalNumberofData,
   paginationModel,
@@ -198,6 +226,74 @@ const AttendeesTable = ({
     },
   ];
 
+  /** Whether the View Cancel Message modal is open or not */
+  const [viewCancelMessageOpen, setViewCancelMessageOpen] = useState(false);
+
+  /** The View Cancel Message event ids and user ids */
+  const [useridCancel, setUseridCancel] = useState<string | undefined>(
+    undefined
+  );
+
+  /** Opens the View Cancel Message modal */
+  const handleOpen = (userid: string) => {
+    setViewCancelMessageOpen(true);
+    setUseridCancel(userid);
+  };
+
+  /** Closes the View Cancel Message modal */
+  const handleClose = () => setViewCancelMessageOpen(false);
+
+  const canceledAttendeesColumns: GridColDef[] = [
+    {
+      field: "firstName",
+      headerName: "Name",
+      minWidth: 200,
+      flex: 2,
+      renderHeader: (params) => (
+        <div style={{ fontWeight: "bold" }}>{params.colDef.headerName}</div>
+      ),
+    },
+    {
+      field: "email",
+      headerName: "Email",
+      minWidth: 200,
+      flex: 0.5,
+      renderHeader: (params) => (
+        <div style={{ fontWeight: "bold" }}>{params.colDef.headerName}</div>
+      ),
+    },
+    {
+      field: "phone",
+      headerName: "Phone number",
+      sortable: false,
+      minWidth: 200,
+      flex: 0.5,
+      renderHeader: (params) => (
+        <div style={{ fontWeight: "bold" }}>{params.colDef.headerName}</div>
+      ),
+    },
+    {
+      field: "actions",
+      headerName: "",
+      sortable: false,
+      minWidth: 200,
+      flex: 0.5,
+      renderHeader: (params) => (
+        <div style={{ fontWeight: "bold" }}>{params.colDef.headerName}</div>
+      ),
+      renderCell: (params) => (
+        <Button
+          variety="tertiary"
+          size="small"
+          icon={<ManageSearchIcon />}
+          onClick={() => handleOpen(params.row.id)}
+        >
+          View Cancelation
+        </Button>
+      ),
+    },
+  ];
+
   const [value, setValue] = React.useState("");
   const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
     setValue(event.target.value);
@@ -211,6 +307,7 @@ const AttendeesTable = ({
 
   return (
     <div>
+      {/* INFO MESSAGES */}
       {attendeesStatus === "PENDING" ? (
         <p>
           Volunteers are <b>pending</b> when they have registered for an event
@@ -242,6 +339,20 @@ const AttendeesTable = ({
       ) : (
         <div />
       )}
+
+      {/* View cancel messages modal */}
+      <Modal
+        open={viewCancelMessageOpen}
+        handleClose={handleClose}
+        children={
+          <ViewCancelMessageModalBody
+            // eventid={eventidCancel}
+            eventData={eventData}
+            userid={useridCancel}
+            handleClose={handleClose}
+          />
+        }
+      />
       <div className="pb-5 w-full sm:w-[600px]">
         <SearchBar
           placeholder="Search member by name or email"
@@ -252,7 +363,11 @@ const AttendeesTable = ({
       </div>
       <Card size="table">
         <Table
-          columns={eventColumns}
+          columns={
+            attendeesStatus === "CANCELED"
+              ? canceledAttendeesColumns
+              : eventColumns
+          }
           rows={rows}
           dataSetLength={totalNumberofData}
           paginationModel={paginationModel}
@@ -540,8 +655,8 @@ const ManageAttendees = () => {
       panel: (
         <AttendeesTable
           eventid={eventid}
+          eventData={eventData}
           attendeesStatus="PENDING"
-          tableName="Pending"
           rows={pendingUsers}
           totalNumberofData={totalNumberofPendingUsers}
           paginationModel={pendingUsersPaginationModel}
@@ -558,8 +673,8 @@ const ManageAttendees = () => {
       panel: (
         <AttendeesTable
           eventid={eventid}
+          eventData={eventData}
           attendeesStatus="CHECKED_IN"
-          tableName="Checked in"
           rows={checkedInUsers}
           totalNumberofData={totalNumberofCheckedInUsers}
           paginationModel={checkedInUsersPaginationModel}
@@ -578,8 +693,8 @@ const ManageAttendees = () => {
       panel: (
         <AttendeesTable
           eventid={eventid}
+          eventData={eventData}
           attendeesStatus="CHECKED_OUT"
-          tableName="Checked out"
           rows={checkedOutUsers}
           totalNumberofData={totalNumberofCheckedOutUsers}
           paginationModel={checkedOutUsersPaginationModel}
@@ -598,8 +713,8 @@ const ManageAttendees = () => {
       panel: (
         <AttendeesTable
           eventid={eventid}
+          eventData={eventData}
           attendeesStatus="CANCELED"
-          tableName="Registration canceled"
           rows={canceledUsers}
           totalNumberofData={totalNumberofCanceledUsers}
           paginationModel={canceledUsersPaginationModel}
@@ -616,8 +731,8 @@ const ManageAttendees = () => {
       panel: (
         <AttendeesTable
           eventid={eventid}
+          eventData={eventData}
           attendeesStatus="REMOVED"
-          tableName="Registration removed"
           rows={removedUsers}
           totalNumberofData={totalNumberofRemovedUsers}
           paginationModel={removedUsersPaginationModel}
