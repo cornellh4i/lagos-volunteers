@@ -40,6 +40,7 @@ const CustomTimePicker = forwardRef(
                 height: "9px",
               },
             }}
+            slotProps={{ textField: { fullWidth: true } }}
             label=""
             defaultValue={value ? dayjs(value) : undefined}
             ref={ref}
