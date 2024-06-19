@@ -119,6 +119,10 @@ const AttendeesTable = ({
     },
     retry: false,
     onSuccess: () => {
+      // Invalidate the Event Recap query to fetch new data
+      queryClient.invalidateQueries({ queryKey: ["event"] });
+
+      // Invalidate the Manage Attendees query to fetch new data
       queryClient.invalidateQueries({ queryKey: [eventid] });
 
       // Invalidating the cache will fetch new data from the server
@@ -133,6 +137,10 @@ const AttendeesTable = ({
     lastMessage.data ==
       `{"resource":"/events/${eventid}","message":"The resource has been updated!"}`
   ) {
+    // Invalidate the Event Recap query to fetch new data
+    queryClient.invalidateQueries({ queryKey: ["event"] });
+
+    // Invalidate the Manage Attendees query to fetch new data
     queryClient.invalidateQueries({ queryKey: [eventid] });
   }
 
@@ -468,6 +476,7 @@ const ManageAttendees = () => {
   const { user, role } = useAuth();
   const [userid, setUserid] = React.useState("");
 
+  /** Tanstack query for fetching event information to show in the Event Recap */
   const { data, isLoading, isError, error } = useQuery({
     queryKey: ["event", eventid],
     queryFn: async () => {

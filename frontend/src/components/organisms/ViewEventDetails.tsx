@@ -10,7 +10,7 @@ import FmdGoodIcon from "@mui/icons-material/FmdGood";
 import GroupsIcon from "@mui/icons-material/Groups";
 import { useRouter } from "next/router";
 import { useAuth } from "@/utils/AuthContext";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { api } from "@/utils/api";
 import {
   convertEnrollmentStatusToString,
@@ -27,6 +27,8 @@ import Markdown from "react-markdown";
 import DefaultTemplate from "../templates/DefaultTemplate";
 import FetchDataError from "./FetchDataError";
 import EventDetails from "./EventDetails";
+import useWebSocket from "react-use-websocket";
+import { BASE_WEBSOCKETS_URL } from "@/utils/constants";
 
 interface ViewEventDetailsProps {}
 
@@ -35,6 +37,27 @@ const ViewEventDetails = () => {
   const id = router.query.eventid as string;
   const { user, role } = useAuth();
   const [userid, setUserid] = React.useState("");
+
+  /** Tanstack query client */
+  const queryClient = useQueryClient();
+
+  // Define the WebSocket URL
+  const socketUrl = BASE_WEBSOCKETS_URL as string;
+
+  // Use the useWebSocket hook
+  const { sendMessage, lastMessage, readyState } = useWebSocket(socketUrl, {
+    shouldReconnect: () => true,
+  });
+
+  // TODO: Proper handling of websocket messages
+  if (
+    lastMessage &&
+    lastMessage.data ==
+      `{"resource":"/events/${id}","message":"The resource has been updated!"}`
+  ) {
+    // Invalidate the Event Details query to fetch new data
+    queryClient.invalidateQueries({ queryKey: ["event"] });
+  }
 
   /** Tanstack query to fetch and update the event details */
   const { data, isLoading, isError, error } = useQuery({
@@ -145,15 +168,17 @@ const ViewEventDetails = () => {
             ) : eventAttendance ? (
               <EventCardCancel
                 eventId={eventid}
-                attendeeStatus={convertEnrollmentStatusToString(
-                  eventAttendance.attendeeStatus
-                )}
+                attendeeStatus={eventAttendance.attendeeStatus}
                 attendeeId={userid}
                 date={new Date(eventData.startDate)}
               />
             ) : (
               <EventCardRegister
                 eventId={eventid}
+                overCapacity={
+                  registeredVolunteerNumberInEvent(eventData.attendees) ===
+                  capacity
+                }
                 attendeeId={userid}
                 date={new Date(eventData.startDate)}
               />

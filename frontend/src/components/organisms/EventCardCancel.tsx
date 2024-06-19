@@ -10,6 +10,7 @@ import { useAuth } from "@/utils/AuthContext";
 import { Box, Grid } from "@mui/material";
 import Modal from "@/components/molecules/Modal";
 import { useForm, SubmitHandler } from "react-hook-form";
+import { convertEnrollmentStatusToString } from "@/utils/helpers";
 
 interface EventCardCancelProps {
   attendeeId: string;
@@ -32,7 +33,8 @@ const ModalBody = ({ handleClose, mutateFn }: modalProps) => {
           display: "flex",
           justifyContent: "center",
           alignItems: "center",
-        }}>
+        }}
+      >
         <h2 className="mt-0">Cancel Registration</h2>
       </Box>
       <Box
@@ -41,7 +43,8 @@ const ModalBody = ({ handleClose, mutateFn }: modalProps) => {
           display: "flex",
           justifyContent: "center",
           alignItems: "center",
-        }}>
+        }}
+      >
         <div>Are you sure you want to cancel?</div>
       </Box>
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
@@ -136,32 +139,40 @@ const EventCardCancel = ({
         <div className="font-semibold text-2xl">You're registered</div>
         <div className="mt-5" />
         <div className="mb-2">
-          Your registration status is <b>{attendeeStatus}</b>.
+          Your registration status is{" "}
+          <b>{convertEnrollmentStatusToString(attendeeStatus)}</b>.
         </div>
         <div className="mt-5" />
         <div className="font-semibold text-lg mb-2">
           No longer able to attend?
         </div>
-        {hoursLeftToCancel > 0 && (
-          <IconText icon={<AccessTimeFilledIcon />}>
-            {hoursLeftToCancel < 48 ? (
-              <div>{hoursLeftToCancel}hours left to cancel registration</div>
-            ) : (
-              <div>
-                {Math.round(hoursLeftToCancel / 24)} days left to cancel
-              </div>
-            )}
-          </IconText>
-        )}
         <div className="mt-3" />
         {hoursLeftToCancel < 0 ? (
           <div>
-            You have passed the window for canceling your registration.
-            Registration must be canceled at least 24 hours before the event
-            begins. Failure to do so may affect your volunteer status.
+            have passed the window for canceling your registration. Registration
+            must be canceled at least 24 hours before the event begins. Failure
+            to do so may affect your volunteer status.
+          </div>
+        ) : attendeeStatus !== "PENDING" ? (
+          <div>
+            Your attendee status has been modified by a supervisor. You are no
+            longer able to cancel your registration.
           </div>
         ) : (
           <div>
+            <div className="mb-2">
+              <IconText icon={<AccessTimeFilledIcon />}>
+                {hoursLeftToCancel < 48 ? (
+                  <div>
+                    {hoursLeftToCancel} hours left to cancel registration
+                  </div>
+                ) : (
+                  <div>
+                    {Math.round(hoursLeftToCancel / 24)} days left to cancel
+                  </div>
+                )}
+              </IconText>
+            </div>
             <div>
               If you can no longer attend, please cancel your registration.
               Registration must be canceled at least 24 hours before the event

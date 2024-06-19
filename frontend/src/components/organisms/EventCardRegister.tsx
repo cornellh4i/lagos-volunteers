@@ -8,13 +8,15 @@ import { useAuth } from "@/utils/AuthContext";
 import Alert from "../atoms/Alert";
 
 interface EventRegisterCardProps {
-  attendeeId: string;
   eventId: string;
+  overCapacity: boolean;
+  attendeeId: string;
   date: Date;
 }
 
 const EventCardRegister = ({
   eventId,
+  overCapacity,
   attendeeId,
   date,
 }: EventRegisterCardProps) => {
@@ -58,12 +60,14 @@ const EventCardRegister = ({
       <div className="mt-3" />
       <CustomCheckbox
         label="I agree to the terms and conditions"
-        disabled={disableRegisterEvent}
+        disabled={disableRegisterEvent || overCapacity}
         onChange={() => setIsChecked(!isChecked)}
       />
       <div className="mt-3" />
       {disableRegisterEvent ? (
         <Button disabled>The event has concluded.</Button>
+      ) : overCapacity ? (
+        <Button disabled>The event has reached capacity.</Button>
       ) : (
         <Button
           onClick={handleEventResgistration}
