@@ -52,8 +52,9 @@ type attendeeData = {
   email: string;
   phone: string;
 };
-interface ManageAttendeesProps {
+interface AttendeesTableProps {
   eventid: string;
+  attendeesStatus: string;
   tableName: string;
   rows: attendeeData[];
   totalNumberofData: number;
@@ -71,10 +72,9 @@ type FormValues = {
   endTime: Date;
 };
 
-interface ManageAttendeesProps {}
-
 const AttendeesTable = ({
   eventid,
+  attendeesStatus,
   tableName,
   rows,
   totalNumberofData,
@@ -84,7 +84,7 @@ const AttendeesTable = ({
   handleSortModelChange,
   handleSearchQuery,
   isLoading,
-}: ManageAttendeesProps) => {
+}: AttendeesTableProps) => {
   const queryClient = useQueryClient();
 
   // Define the WebSocket URL
@@ -211,7 +211,37 @@ const AttendeesTable = ({
 
   return (
     <div>
-      <p>These Volunteers are {tableName}.</p>
+      {attendeesStatus === "PENDING" ? (
+        <p>
+          Volunteers are <b>pending</b> when they have registered for an event
+          but have not been checked in by a supervisor{" "}
+        </p>
+      ) : attendeesStatus === "CHECKED_IN" ? (
+        <p>
+          Volunteers are <b>checked in</b> when they arrive at the volunteer
+          event.
+        </p>
+      ) : attendeesStatus === "CHECKED_OUT" ? (
+        <p>
+          Volunteers are <b>checked out</b> when they leave the volunteer event.
+          Only volunteers listed in this category have their hours tracked for
+          the event.
+        </p>
+      ) : attendeesStatus === "CANCELED" ? (
+        <p>
+          Volunteers are listed here when they have canceled their registration
+          and will no longer be showing up to the event. Volunteers listed here
+          do not count towards the volunteer cap.
+        </p>
+      ) : attendeesStatus === "REMOVED" ? (
+        <p>
+          Volunteers are listed here when their registration is removed manually
+          by a supervisor. Volunteers listed here do not count towards the
+          volunteer cap.
+        </p>
+      ) : (
+        <div />
+      )}
       <div className="pb-5 w-full sm:w-[600px]">
         <SearchBar
           placeholder="Search member by name or email"
@@ -510,6 +540,7 @@ const ManageAttendees = () => {
       panel: (
         <AttendeesTable
           eventid={eventid}
+          attendeesStatus="PENDING"
           tableName="Pending"
           rows={pendingUsers}
           totalNumberofData={totalNumberofPendingUsers}
@@ -527,6 +558,7 @@ const ManageAttendees = () => {
       panel: (
         <AttendeesTable
           eventid={eventid}
+          attendeesStatus="CHECKED_IN"
           tableName="Checked in"
           rows={checkedInUsers}
           totalNumberofData={totalNumberofCheckedInUsers}
@@ -546,6 +578,7 @@ const ManageAttendees = () => {
       panel: (
         <AttendeesTable
           eventid={eventid}
+          attendeesStatus="CHECKED_OUT"
           tableName="Checked out"
           rows={checkedOutUsers}
           totalNumberofData={totalNumberofCheckedOutUsers}
@@ -565,6 +598,7 @@ const ManageAttendees = () => {
       panel: (
         <AttendeesTable
           eventid={eventid}
+          attendeesStatus="CANCELED"
           tableName="Registration canceled"
           rows={canceledUsers}
           totalNumberofData={totalNumberofCanceledUsers}
@@ -582,6 +616,7 @@ const ManageAttendees = () => {
       panel: (
         <AttendeesTable
           eventid={eventid}
+          attendeesStatus="REMOVED"
           tableName="Registration removed"
           rows={removedUsers}
           totalNumberofData={totalNumberofRemovedUsers}
