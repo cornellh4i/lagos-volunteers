@@ -344,7 +344,7 @@ const getAttendee = async (eventID: string, userID: string) => {
  * volunteers are registered for the event. Note: volunteers are not considered
  * registered if they have canceled their registration or if their registration
  * has been removed by the supervisor.
- * @param attendees - The list of EventEnrollment objects
+ * @param eventid - The event id
  * @returns The number of registered volunteers
  */
 export const getRegisteredVolunteerNumberInEvent = async (eventid: string) => {
