@@ -119,8 +119,8 @@ const AttendeesTable = ({
     },
     retry: false,
     onSuccess: () => {
-      // Invalidate the Event Recap query to fetch new data
-      queryClient.invalidateQueries({ queryKey: ["event"] });
+      // Invalidate the number of registered volunteers query to fetch new data
+      queryClient.invalidateQueries({ queryKey: ["registeredVoluneers"] });
 
       // Invalidate the Manage Attendees query to fetch new data
       queryClient.invalidateQueries({ queryKey: [eventid] });
@@ -625,6 +625,17 @@ const ManageAttendees = () => {
 
   /** Loading screen */
 
+  /** Number of registered volunteers */
+  const { data: registeredVolunteersNumber } = useQuery({
+    queryKey: ["registeredVoluneers", eventid],
+    queryFn: async () => {
+      const { data } = await api.get(
+        `/events/${eventid}/attendees/registered/length`
+      );
+      return data.data;
+    },
+  });
+
   return (
     <>
       {/* Notifications */}
@@ -683,8 +694,7 @@ const ManageAttendees = () => {
             icon={<GroupsIcon />}
             header={
               <>
-                {registeredVolunteerNumberInEvent(eventData.attendees)}/
-                {capacity} volunteers registered
+                {registeredVolunteersNumber}/{capacity} volunteers registered
               </>
             }
           />

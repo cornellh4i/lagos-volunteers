@@ -55,8 +55,8 @@ const ViewEventDetails = () => {
     lastMessage.data ==
       `{"resource":"/events/${id}","message":"The resource has been updated!"}`
   ) {
-    // Invalidate the Event Details query to fetch new data
-    queryClient.invalidateQueries({ queryKey: ["event"] });
+    // Invalidate the number of registered volunteers query to fetch new data
+    queryClient.invalidateQueries({ queryKey: ["registeredVoluneers"] });
   }
 
   /** Tanstack query to fetch and update the event details */
@@ -72,9 +72,24 @@ const ViewEventDetails = () => {
 
   /** Undefined if user not in the attendees list, otherwise EventAttendance object */
   let eventData = data || {};
-  let eventAttendance = eventData?.attendees?.find(
-    (attendee: any) => attendee.userId === userid
-  );
+
+  const { data: eventAttendance } = useQuery({
+    queryKey: ["eventAttendance", id, userid],
+    queryFn: async () => {
+      const { data } = await api.get(`/events/${id}/attendees/${userid}`);
+      return data.data;
+    },
+  });
+
+  const { data: registeredVolunteersNumber } = useQuery({
+    queryKey: ["registeredVoluneers", id],
+    queryFn: async () => {
+      const { data } = await api.get(
+        `/events/${id}/attendees/registered/length`
+      );
+      return data.data;
+    },
+  });
 
   /** If the user canceled their event registration */
   const userHasCanceledAttendance =
@@ -138,8 +153,7 @@ const ViewEventDetails = () => {
               icon={<GroupsIcon />}
               header={
                 <>
-                  {registeredVolunteerNumberInEvent(eventData.attendees)}/
-                  {capacity} volunteers registered
+                  {registeredVolunteersNumber}/{capacity} volunteers registered
                 </>
               }
             />
@@ -175,10 +189,7 @@ const ViewEventDetails = () => {
             ) : (
               <EventCardRegister
                 eventId={eventid}
-                overCapacity={
-                  registeredVolunteerNumberInEvent(eventData.attendees) ===
-                  capacity
-                }
+                overCapacity={registeredVolunteersNumber === capacity}
                 attendeeId={userid}
                 date={new Date(eventData.startDate)}
               />

@@ -279,7 +279,6 @@ const getEvent = async (eventID: string) => {
       id: eventID,
     },
     include: {
-      attendees: true,
       owner: {
         select: {
           profile: true,
@@ -308,30 +307,55 @@ export const isEventPast = async (eventID: string) => {
  * @param userID (String)
  * @returns promise with all attendees of the event or error
  */
-const getAttendees = async (eventID: string, userID: string) => {
-  if (userID) {
-    // If userID is provided, return only the attendee connected to the userID and eventID
-    return prisma.eventEnrollment.findUnique({
-      where: {
-        userId_eventId: {
-          userId: userID,
-          eventId: eventID,
-        },
-      },
-      include: {
-        user: true,
-        event: true,
-      },
-    });
-  }
-
-  // if userID is not provided, return all attendees of the event
+const getAttendees = async (eventID: string) => {
   return prisma.eventEnrollment.findMany({
     where: {
       eventId: eventID,
     },
     include: {
       user: true,
+    },
+  });
+};
+
+/**
+ * Gets a specific attendee registered for an event
+ * @param eventID (String)
+ * @param userID (String)
+ * @returns promise with all attendees of the event or error
+ */
+const getAttendee = async (eventID: string, userID: string) => {
+  return prisma.eventEnrollment.findUnique({
+    where: {
+      userId_eventId: {
+        userId: userID,
+        eventId: eventID,
+      },
+    },
+    include: {
+      user: true,
+      event: true,
+    },
+  });
+};
+
+/**
+ * Given a list of EventEnrollment objects from the database, returns how many
+ * volunteers are registered for the event. Note: volunteers are not considered
+ * registered if they have canceled their registration or if their registration
+ * has been removed by the supervisor.
+ * @param attendees - The list of EventEnrollment objects
+ * @returns The number of registered volunteers
+ */
+export const getRegisteredVolunteerNumberInEvent = async (eventid: string) => {
+  return prisma.eventEnrollment.count({
+    where: {
+      eventId: eventid,
+      NOT: {
+        attendeeStatus: {
+          in: [EnrollmentStatus.CANCELED, EnrollmentStatus.REMOVED],
+        },
+      },
     },
   });
 };
@@ -565,6 +589,8 @@ export default {
   getPastEvents,
   getEvent,
   getAttendees,
+  getAttendee,
+  getRegisteredVolunteerNumberInEvent,
   addAttendee,
   deleteAttendee,
   updateEventStatus,
