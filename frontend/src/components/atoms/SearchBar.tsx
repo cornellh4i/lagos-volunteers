@@ -36,7 +36,8 @@ const SearchBar = ({ onSubmit, ...props }: SearchBarProps) => {
                   edge="end"
                   onClick={() => {
                     props.resetSearch();
-                  }}>
+                  }}
+                >
                   <CancelIcon />
                 </IconButton>
               )}

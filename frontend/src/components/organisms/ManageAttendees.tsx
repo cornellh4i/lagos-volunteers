@@ -186,7 +186,8 @@ const AttendeesTable = ({
             value={params.row.status}
             onChange={(event: any) =>
               handleStatusChange(params.row.id, event.target.value)
-            }>
+            }
+          >
             <MenuItem value="PENDING">Pending</MenuItem>
             <MenuItem value="CHECKED_IN">Check in</MenuItem>
             <MenuItem value="CHECKED_OUT">Check out</MenuItem>
@@ -659,7 +660,8 @@ const ManageAttendees = () => {
       <Snackbar
         variety="error"
         open={errorNotificationOpen}
-        onClose={() => setErrorNotificationOpen(false)}>
+        onClose={() => setErrorNotificationOpen(false)}
+      >
         Error: {errorMessage}
       </Snackbar>
 
