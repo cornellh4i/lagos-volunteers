@@ -105,8 +105,7 @@ const Active = ({
         <div>
           <Link
             href={`/users/${params.row.id}/manage`}
-            className="no-underline"
-          >
+            className="no-underline">
             <Button variety="tertiary" size="small" icon={<PersonIcon />}>
               View Profile
             </Button>
@@ -128,6 +127,11 @@ const Active = ({
     handleNewSearchQuery(value);
   };
 
+  const handleResetSearch = () => {
+    setValue("");
+    handleNewSearchQuery("");
+  };
+
   return (
     <div>
       <div className="pb-5 w-full sm:w-[600px]">
@@ -136,6 +140,8 @@ const Active = ({
           value={value}
           onChange={handleChange}
           onSubmit={handleSubmitSearch}
+          resetSearch={handleResetSearch}
+          showCancelButton={value !== ""}
         />
       </div>
       <Card size="table">
@@ -223,8 +229,7 @@ const Blacklisted = ({
         <div>
           <Link
             href={`/users/${params.row.id}/manage`}
-            className="no-underline"
-          >
+            className="no-underline">
             <Button variety="tertiary" size="small" icon={<PersonIcon />}>
               View Profile
             </Button>
@@ -247,6 +252,11 @@ const Blacklisted = ({
     handleNewSearchQuery(value);
   };
 
+  const handleResetSearch = () => {
+    setValue("");
+    handleNewSearchQuery("");
+  };
+
   return (
     <div>
       <div className="pb-5 w-full sm:w-[600px]">
@@ -255,6 +265,8 @@ const Blacklisted = ({
           value={value}
           onChange={handleChange}
           onSubmit={handleSubmitSearch}
+          resetSearch={handleResetSearch}
+          showCancelButton={value !== ""}
         />
       </div>
       <Card size="table">

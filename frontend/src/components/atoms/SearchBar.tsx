@@ -1,6 +1,7 @@
 import React, { ChangeEvent, FormEvent } from "react";
 import { Box, TextField, InputAdornment, IconButton } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
+import CancelIcon from "@mui/icons-material/Cancel";
 
 interface SearchBarProps {
   onSubmit: any;
@@ -28,6 +29,17 @@ const SearchBar = ({ onSubmit, ...props }: SearchBarProps) => {
               <IconButton type="submit" aria-label="search" edge="end">
                 <SearchIcon />
               </IconButton>
+              {props.showCancelButton && (
+                <IconButton
+                  type="button"
+                  aria-label="cancel"
+                  edge="end"
+                  onClick={() => {
+                    props.resetSearch();
+                  }}>
+                  <CancelIcon />
+                </IconButton>
+              )}
             </InputAdornment>
           ),
         }}
