@@ -26,21 +26,24 @@ const SearchBar = ({ onSubmit, ...props }: SearchBarProps) => {
         InputProps={{
           endAdornment: (
             <InputAdornment position="end">
+              {props.showCancelButton && (
+                <div className="flex flex-row items-center">
+                  <IconButton
+                    type="button"
+                    aria-label="cancel"
+                    edge="end"
+                    onClick={() => {
+                      props.resetSearch();
+                    }}
+                  >
+                    <ClearIcon />
+                  </IconButton>
+                  <div className="ml-3 text-gray-400">|</div>
+                </div>
+              )}
               <IconButton type="submit" aria-label="search" edge="end">
                 <SearchIcon />
               </IconButton>
-              {props.showCancelButton && (
-                <IconButton
-                  type="button"
-                  aria-label="cancel"
-                  edge="end"
-                  onClick={() => {
-                    props.resetSearch();
-                  }}
-                >
-                  <ClearIcon />
-                </IconButton>
-              )}
             </InputAdornment>
           ),
         }}
