@@ -1,46 +1,52 @@
-# Your workflow name.
-name: Deploy to heroku.
+name: Deploy to AWS Elastic Beanstalk.
 
-# Run workflow on every push to master branch.
 on:
   push:
-    branches: [main]
+    branches:
+      - main
+
+env:
+  ECR_REPOSITORY: lagos-volunteer-platform
+  AWS_REGION: us-east-1
 
 jobs:
-  build:
+  deploy:
     runs-on: ubuntu-latest
+    environment: production
+
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
-      
-      - name: Setup Node.js environment to run migrations
-        uses: actions/setup-node@v3
-        with: 
-          node-version: '18.x'
+        uses: actions/checkout@v4
 
-      - name: Install dependencies and run migrations
-        working-directory: backend/
-        env: 
-          DATABASE_URL: ${{ secrets.DATABASE_URL }}
-        run: |
-          yarn install
-          npx prisma migrate deploy
-
-      - name: Build, Push and Release a Docker container to Heroku.
-        env: 
-          ENV_FILE: ${{ secrets.ENV_FILE }}
-        uses: gonuit/heroku-docker-deploy@v1.3.3 
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@0e613a0980cbf65ed5b322eb7a1e075d28913a83
         with:
-          email: ${{ secrets.HEROKU_EMAIL }}
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
 
-          heroku_api_key: ${{ secrets.HEROKU_API_KEY }}
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@62f4f872db3836360b72999f4b87f1ff13310f3a
 
-          heroku_app_name: ${{ secrets.HEROKU_APP_NAME }}
+      - name: Build, tag, and push image to Amazon ECR
+        id: build-image
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          ECR_REPOSITORY: ${{ env.ECR_REPOSITORY }}
+          IMAGE_TAG: ${{ github.sha }}
+        run: |
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG backend/
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
 
-          dockerfile_directory: backend/
-
-          dockerfile_name: Dockerfile.deploy
-
-          docker_options: "--platform linux/amd64 --env-file <(echo '$ENV_FILE')"
-
-          process_type: web
+      - name: Deploy to Elastic Beanstalk
+        uses: einaregilsson/beanstalk-deploy@v22
+        with:
+          aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          application_name: ${{ secrets.EB_APPLICATION_NAME }}
+          environment_name: ${{ secrets.EB_ENVIRONMENT_NAME }}
+          version_label: ${{ github.sha }}
+          region: ${{ env.AWS_REGION }}
+          deployment_package: backend/Dockerrun.aws.json
