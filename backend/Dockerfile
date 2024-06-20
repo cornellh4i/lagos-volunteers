@@ -3,7 +3,6 @@ FROM node:18
 WORKDIR /app
 COPY package.json . yarn.lock ./
 COPY prisma ./prisma
-COPY .env.production .env
 
 RUN yarn install 
 RUN npx prisma generate
