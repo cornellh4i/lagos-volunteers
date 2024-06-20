@@ -1,7 +1,7 @@
 import React, { ChangeEvent, FormEvent } from "react";
 import { Box, TextField, InputAdornment, IconButton } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
-import CancelIcon from "@mui/icons-material/Cancel";
+import ClearIcon from "@mui/icons-material/Clear";
 
 interface SearchBarProps {
   onSubmit: any;
@@ -38,7 +38,7 @@ const SearchBar = ({ onSubmit, ...props }: SearchBarProps) => {
                     props.resetSearch();
                   }}
                 >
-                  <CancelIcon />
+                  <ClearIcon />
                 </IconButton>
               )}
             </InputAdornment>
