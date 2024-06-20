@@ -209,6 +209,11 @@ const AttendeesTable = ({
     handleSearchQuery(value);
   };
 
+  const handleResetSearch = () => {
+    setValue("");
+    handleSearchQuery("");
+  };
+
   return (
     <div>
       {attendeesStatus === "PENDING" ? (
@@ -248,6 +253,8 @@ const AttendeesTable = ({
           value={value}
           onChange={handleChange}
           onSubmit={handleSubmit}
+          resetSearch={handleResetSearch}
+          showCancelButton={value !== ""}
         />
       </div>
       <Card size="table">

@@ -128,6 +128,11 @@ const Active = ({
     handleNewSearchQuery(value);
   };
 
+  const handleResetSearch = () => {
+    setValue("");
+    handleNewSearchQuery("");
+  };
+
   return (
     <div>
       <div className="pb-5 w-full sm:w-[600px]">
@@ -136,6 +141,8 @@ const Active = ({
           value={value}
           onChange={handleChange}
           onSubmit={handleSubmitSearch}
+          resetSearch={handleResetSearch}
+          showCancelButton={value !== ""}
         />
       </div>
       <Card size="table">
@@ -247,6 +254,11 @@ const Blacklisted = ({
     handleNewSearchQuery(value);
   };
 
+  const handleResetSearch = () => {
+    setValue("");
+    handleNewSearchQuery("");
+  };
+
   return (
     <div>
       <div className="pb-5 w-full sm:w-[600px]">
@@ -255,6 +267,8 @@ const Blacklisted = ({
           value={value}
           onChange={handleChange}
           onSubmit={handleSubmitSearch}
+          resetSearch={handleResetSearch}
+          showCancelButton={value !== ""}
         />
       </div>
       <Card size="table">
