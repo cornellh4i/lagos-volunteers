@@ -10,7 +10,7 @@ import FmdGoodIcon from "@mui/icons-material/FmdGood";
 import GroupsIcon from "@mui/icons-material/Groups";
 import { useRouter } from "next/router";
 import { useAuth } from "@/utils/AuthContext";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { api } from "@/utils/api";
 import {
   convertEnrollmentStatusToString,
@@ -26,6 +26,8 @@ import Markdown from "react-markdown";
 import DefaultTemplate from "../templates/DefaultTemplate";
 import FetchDataError from "./FetchDataError";
 import EventDetails from "./EventDetails";
+import useWebSocket from "react-use-websocket";
+import { BASE_WEBSOCKETS_URL } from "@/utils/constants";
 
 interface ViewEventDetailsProps {}
 
@@ -35,21 +37,58 @@ const ViewEventDetails = () => {
   const { user, role } = useAuth();
   const [userid, setUserid] = React.useState("");
 
+  /** Tanstack query client */
+  const queryClient = useQueryClient();
+
+  // Define the WebSocket URL
+  const socketUrl = BASE_WEBSOCKETS_URL as string;
+
+  // Use the useWebSocket hook
+  const { sendMessage, lastMessage, readyState } = useWebSocket(socketUrl, {
+    shouldReconnect: () => true,
+  });
+
+  // TODO: Proper handling of websocket messages
+  if (
+    lastMessage &&
+    lastMessage.data ==
+      `{"resource":"/events/${id}","message":"The resource has been updated!"}`
+  ) {
+    // Invalidate the number of registered volunteers query to fetch new data
+    queryClient.invalidateQueries({ queryKey: ["registeredVoluneers"] });
+  }
+
   /** Tanstack query to fetch and update the event details */
   const { data, isLoading, isError, error } = useQuery({
     queryKey: ["event", id],
     queryFn: async () => {
       const userid = await fetchUserIdFromDatabase(user?.email as string);
       setUserid(userid);
-      const { data } = await api.get(
-        `/users/${userid}/registered?eventid=${id}`
-      );
+      const { data } = await api.get(`/events/${id}`);
       return data["data"];
     },
   });
 
-  let eventData = data?.eventDetails || {};
-  let eventAttendance = data?.attendance;
+  /** Undefined if user not in the attendees list, otherwise EventAttendance object */
+  let eventData = data || {};
+
+  const { data: eventAttendance } = useQuery({
+    queryKey: ["eventAttendance", id, userid],
+    queryFn: async () => {
+      const { data } = await api.get(`/events/${id}/attendees/${userid}`);
+      return data.data;
+    },
+  });
+
+  const { data: registeredVolunteersNumber } = useQuery({
+    queryKey: ["registeredVoluneers", id],
+    queryFn: async () => {
+      const { data } = await api.get(
+        `/events/${id}/attendees/registered/length`
+      );
+      return data.data;
+    },
+  });
 
   /** If the user canceled their event registration */
   const userHasCanceledAttendance =
@@ -111,7 +150,11 @@ const ViewEventDetails = () => {
             />
             <IconTextHeader
               icon={<GroupsIcon />}
-              header={<>{capacity} volunteers needed</>}
+              header={
+                <>
+                  {registeredVolunteersNumber}/{capacity} volunteers registered
+                </>
+              }
             />
           </div>
         </div>
@@ -138,15 +181,14 @@ const ViewEventDetails = () => {
             ) : eventAttendance ? (
               <EventCardCancel
                 eventId={eventid}
-                attendeeStatus={convertEnrollmentStatusToString(
-                  eventAttendance.attendeeStatus
-                )}
+                attendeeStatus={eventAttendance.attendeeStatus}
                 attendeeId={userid}
                 date={new Date(eventData.startDate)}
               />
             ) : (
               <EventCardRegister
                 eventId={eventid}
+                overCapacity={registeredVolunteersNumber === capacity}
                 attendeeId={userid}
                 date={new Date(eventData.startDate)}
               />
