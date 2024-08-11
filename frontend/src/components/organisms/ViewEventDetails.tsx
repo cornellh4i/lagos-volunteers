@@ -15,7 +15,6 @@ import { api } from "@/utils/api";
 import {
   convertEnrollmentStatusToString,
   fetchUserIdFromDatabase,
-  registeredVolunteerNumberInEvent,
 } from "@/utils/helpers";
 import { formatDateTimeRange } from "@/utils/helpers";
 import { EventData } from "@/utils/types";

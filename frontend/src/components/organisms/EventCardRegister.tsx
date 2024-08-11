@@ -5,7 +5,6 @@ import Button from "../atoms/Button";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { api } from "@/utils/api";
 import { useAuth } from "@/utils/AuthContext";
-import Alert from "../atoms/Alert";
 
 interface EventRegisterCardProps {
   eventId: string;

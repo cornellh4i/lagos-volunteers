@@ -385,6 +385,20 @@ const updateEnrollmentStatus = async (
  * @returns promise with user or error
  */
 const addAttendee = async (eventID: string, userID: string) => {
+  // Validation
+  const eventIsInThePast = await isEventPast(eventID);
+  if (eventIsInThePast) {
+    throw Error("Event is past, cannot enroll new user");
+  }
+
+  const eventIsFull =
+    (await getRegisteredVolunteerNumberInEvent(eventID)) ===
+    (await getEvent(eventID))?.capacity;
+  if (eventIsFull) {
+    throw Error("Event is full, cannot enroll new user");
+  }
+  // End validation
+
   // grabs the user and their email for SendGrid functionality
   const user = await userController.getUserProfile(userID);
   const userEmail = user?.email as string;
@@ -395,7 +409,6 @@ const addAttendee = async (eventID: string, userID: string) => {
   var eventDateTimeUnknown = event?.startDate as unknown;
   var eventDateTimeString = eventDateTimeUnknown as string;
   var textBody = "Your registration was successful.";
-  const eventIsInThePast = await isEventPast(eventID);
 
   if (process.env.NODE_ENV != "test" && !eventIsInThePast) {
     // creates updated html path with the changed inputs
@@ -415,9 +428,6 @@ const addAttendee = async (eventID: string, userID: string) => {
         updatedHtml
       );
     }
-  }
-  if (eventIsInThePast) {
-    return Promise.reject("Event is past, cannot enroll new user");
   }
   return await prisma.eventEnrollment.create({
     data: {
