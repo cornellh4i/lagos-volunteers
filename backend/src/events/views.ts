@@ -127,14 +127,31 @@ eventRouter.get("/:eventid", useAuth, async (req: Request, res: Response) => {
 
 eventRouter.get(
   "/:eventid/attendees",
-  useAdminAuth || useSupervisorAuth,
+  useAuth,
+  async (req: Request, res: Response) => {
+    // #swagger.tags = ['Events']
+    attempt(res, 200, () => eventController.getAttendees(req.params.eventid));
+  }
+);
+
+eventRouter.get(
+  "/:eventid/attendees/:userid",
+  useAuth,
   async (req: Request, res: Response) => {
     // #swagger.tags = ['Events']
     attempt(res, 200, () =>
-      eventController.getAttendees(
-        req.params.eventid,
-        req.query.userid as string
-      )
+      eventController.getAttendee(req.params.eventid, req.params.userid)
+    );
+  }
+);
+
+eventRouter.get(
+  "/:eventid/attendees/registered/length",
+  useAuth,
+  async (req: Request, res: Response) => {
+    // #swagger.tags = ['Events']
+    attempt(res, 200, () =>
+      eventController.getRegisteredVolunteerNumberInEvent(req.params.eventid)
     );
   }
 );

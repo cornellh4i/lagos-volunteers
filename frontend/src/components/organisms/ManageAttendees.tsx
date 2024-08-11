@@ -1,10 +1,4 @@
-import React, {
-  ChangeEvent,
-  FormEvent,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import React, { ChangeEvent, FormEvent, useState } from "react";
 import TabContainer from "@/components/molecules/TabContainer";
 import {
   GridColDef,
@@ -143,6 +137,10 @@ const AttendeesTable = ({
     },
     retry: false,
     onSuccess: () => {
+      // Invalidate the number of registered volunteers query to fetch new data
+      queryClient.invalidateQueries({ queryKey: ["registeredVoluneers"] });
+
+      // Invalidate the Manage Attendees query to fetch new data
       queryClient.invalidateQueries({ queryKey: [eventid] });
 
       // Invalidating the cache will fetch new data from the server
@@ -157,6 +155,10 @@ const AttendeesTable = ({
     lastMessage.data ==
       `{"resource":"/events/${eventid}","message":"The resource has been updated!"}`
   ) {
+    // Invalidate the Event Recap query to fetch new data
+    queryClient.invalidateQueries({ queryKey: ["event"] });
+
+    // Invalidate the Manage Attendees query to fetch new data
     queryClient.invalidateQueries({ queryKey: [eventid] });
   }
 
@@ -305,6 +307,11 @@ const AttendeesTable = ({
     handleSearchQuery(value);
   };
 
+  const handleResetSearch = () => {
+    setValue("");
+    handleSearchQuery("");
+  };
+
   return (
     <div>
       {/* INFO MESSAGES */}
@@ -359,6 +366,8 @@ const AttendeesTable = ({
           value={value}
           onChange={handleChange}
           onSubmit={handleSubmit}
+          resetSearch={handleResetSearch}
+          showCancelButton={value !== ""}
         />
       </div>
       <Card size="table">
@@ -609,6 +618,7 @@ const ManageAttendees = () => {
   const { user, role } = useAuth();
   const [userid, setUserid] = React.useState("");
 
+  /** Tanstack query for fetching event information to show in the Event Recap */
   const { data, isLoading, isError, error } = useQuery({
     queryKey: ["event", eventid],
     queryFn: async () => {
@@ -762,6 +772,17 @@ const ManageAttendees = () => {
 
   /** Loading screen */
 
+  /** Number of registered volunteers */
+  const { data: registeredVolunteersNumber } = useQuery({
+    queryKey: ["registeredVoluneers", eventid],
+    queryFn: async () => {
+      const { data } = await api.get(
+        `/events/${eventid}/attendees/registered/length`
+      );
+      return data.data;
+    },
+  });
+
   return (
     <>
       {/* Notifications */}
@@ -818,7 +839,11 @@ const ManageAttendees = () => {
           />
           <IconTextHeader
             icon={<GroupsIcon />}
-            header={<>{capacity} volunteers needed</>}
+            header={
+              <>
+                {registeredVolunteersNumber}/{capacity} volunteers registered
+              </>
+            }
           />
           <TextCopy
             label="RSVP Link"
