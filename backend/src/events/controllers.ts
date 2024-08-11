@@ -279,7 +279,6 @@ const getEvent = async (eventID: string) => {
       id: eventID,
     },
     include: {
-      attendees: true,
       owner: {
         select: {
           profile: true,

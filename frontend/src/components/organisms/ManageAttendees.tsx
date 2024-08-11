@@ -70,16 +70,16 @@ type FormValues = {
 
 interface ViewCancelMessageModalBodyProps {
   handleClose: () => void;
-  eventData?: any;
+  attendees?: any[];
   userid?: string;
 }
 
 const ViewCancelMessageModalBody = ({
   handleClose,
-  eventData,
+  attendees,
   userid,
 }: ViewCancelMessageModalBodyProps) => {
-  const eventAttendance = eventData?.attendees?.find(
+  const eventAttendance = attendees?.find(
     (attendee: any) => attendee.userId === userid
   );
 
@@ -312,6 +312,16 @@ const AttendeesTable = ({
     handleSearchQuery("");
   };
 
+  // Get attendees for event
+  const { data: attendees } = useQuery({
+    queryKey: ["attendees", eventid],
+    queryFn: async () => {
+      const { data } = await api.get(`/events/${eventid}/attendees`);
+      console.log(data.data);
+      return data.data;
+    },
+  });
+
   return (
     <div>
       {/* INFO MESSAGES */}
@@ -353,8 +363,7 @@ const AttendeesTable = ({
         handleClose={handleClose}
         children={
           <ViewCancelMessageModalBody
-            // eventid={eventidCancel}
-            eventData={eventData}
+            attendees={attendees}
             userid={useridCancel}
             handleClose={handleClose}
           />
