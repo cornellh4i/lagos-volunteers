@@ -89,7 +89,7 @@ const ViewCancelMessageModalBody = ({
         Reason for Cancelation
       </div>
       <MultilineTextField disabled value={eventAttendance.cancelationMessage} />
-      <Button onClick={handleClose}>Cancel</Button>
+      <Button onClick={handleClose}>Close</Button>
     </div>
   );
 };
