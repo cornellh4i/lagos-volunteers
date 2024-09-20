@@ -65,26 +65,42 @@ This project aims to develop a volunteer management system for Lagos Food Bank I
 
 ### Installation
 
-1. Clone the repo
+1. Install Docker
+    - [Install Docker Desktop for macOS](https://docs.docker.com/desktop/install/mac-install/)
+    - [Install Docker Desktop for Windows](https://docs.docker.com/desktop/install/windows-install/)
+
+2. Install Dev Containers
+    - In VS Code, install the [Dev Containers extension](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers)
+
+3. Clone the Git repository
+
    ```sh
    git clone https://github.com/cornellh4i/lagos-volunteers.git
    ```
-2. Start the client
+
+4. Open the repository in VS Code. A button should appear in the bottom right corner asking to reopen the folder in a Dev Container. Click **Yes**.
+
+5. Add necessary environment variables. The following files should be filled out: `/backend/.env` and `/frontend/.env.local`
+
+3. Start the client and server
    ```sh
-   cd frontend
-   yarn install
-   yarn run dev
-   ```
-3. Start the server
-   ```sh
-   cd backend
-   yarn install
-   yarn run backend
+   # Run yarn setup in the root folder to build both the backend and the frontend
+   yarn setup
+
+   # Run yarn start in the root folder to start both the backend and the frontend
+   yarn start
+
+   # Run yarn test in the root folder to run Jest tests for the backend
+   yarn test
    ```
 
 > Note: See individual project files for more information on how to build and deploy the project.
 
 ## Contributors
+
+### Fall 2024
+- Akinfolami Akin-Alamu
+- Jason Zheng
 
 ### Spring 2024
 
