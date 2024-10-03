@@ -9,7 +9,7 @@
 
   <p align="center">
     Lagos Food Bank Initiative is a non-profit organization that aims to reduce food waste and hunger in Lagos, Nigeria.
-    <br />    
+    <br />
   </p>
 </div>
 
@@ -66,11 +66,13 @@ This project aims to develop a volunteer management system for Lagos Food Bank I
 ### Installation
 
 1. Install Docker
-    - [Install Docker Desktop for macOS](https://docs.docker.com/desktop/install/mac-install/)
-    - [Install Docker Desktop for Windows](https://docs.docker.com/desktop/install/windows-install/)
+
+   - [Install Docker Desktop for macOS](https://docs.docker.com/desktop/install/mac-install/)
+   - [Install Docker Desktop for Windows](https://docs.docker.com/desktop/install/windows-install/)
 
 2. Install Dev Containers
-    - In VS Code, install the [Dev Containers extension](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers)
+
+   - In VS Code, install the [Dev Containers extension](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers)
 
 3. Clone the Git repository
 
@@ -80,9 +82,10 @@ This project aims to develop a volunteer management system for Lagos Food Bank I
 
 4. Open the repository in VS Code. A button should appear in the bottom right corner asking to reopen the folder in a Dev Container. Click **Yes**.
 
-5. Add necessary environment variables. The following files should be filled out: `/backend/.env` and `/frontend/.env.local`
+5. Add necessary environment variables. In the `backend` folder, create a copy of `.env.template` and rename it as `.env`. In the `frontend` folder, create a copy of `.env.template` and rename is as `.env.local`. Fill out all the necessary details. Note that `.env` files **should never be committed to GitHub**.
 
-3. Start the client and server
+6. Start the client and server
+
    ```sh
    # Run yarn setup in the root folder to build both the backend and the frontend
    yarn setup
@@ -99,6 +102,7 @@ This project aims to develop a volunteer management system for Lagos Food Bank I
 ## Contributors
 
 ### Fall 2024
+
 - Akinfolami Akin-Alamu
 - Jason Zheng
 
