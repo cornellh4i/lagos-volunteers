@@ -489,7 +489,7 @@ const EventForm = ({
                   })}
                 />
                 <TextField
-                  placeholder="Link to meeting"
+                  placeholder="(Optional) Link to virtual meeting"
                   error={errors.locationLink?.message}
                   {...register("locationLink", {
                     required: { value: true, message: "Required" },
