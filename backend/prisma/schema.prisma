@@ -71,20 +71,21 @@ model Event {
   updatedAt DateTime @updatedAt
 
   // Event info
-  name        String
-  subtitle    String?
-  location    String
-  description String
-  imageURL    String?
-  startDate   DateTime
-  endDate     DateTime
-  mode        EventMode?        @default(IN_PERSON)
-  status      EventStatus?      @default(DRAFT)
-  owner       User              @relation(fields: [ownerId], references: [id], name: "EventOwner")
-  ownerId     String
-  attendees   EventEnrollment[]
-  capacity    Int
-  tags        EventTags[]
+  name         String
+  subtitle     String?
+  location     String
+  locationLink String?
+  description  String
+  imageURL     String?
+  startDate    DateTime
+  endDate      DateTime
+  mode         EventMode?        @default(IN_PERSON)
+  status       EventStatus?      @default(DRAFT)
+  owner        User              @relation(fields: [ownerId], references: [id], name: "EventOwner")
+  ownerId      String
+  attendees    EventEnrollment[]
+  capacity     Int
+  tags         EventTags[]
 }
 
 model EventTags {

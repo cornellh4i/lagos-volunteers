@@ -11,6 +11,7 @@ type eventData = {
   id: string;
   eventName: string;
   location: string;
+  locationLink: string;
   volunteerSignUpCap: string;
   eventDescription: string;
   imageURL: string;
@@ -40,6 +41,7 @@ const EditEvent = () => {
     id: data?.id,
     eventName: data?.name,
     location: data?.location,
+    locationLink: data?.locationLink,
     volunteerSignUpCap: data?.capacity,
     eventDescription: data?.description,
     imageURL: data?.imageURL || "",

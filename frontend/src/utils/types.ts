@@ -19,6 +19,7 @@ export type ViewEventsEvent = {
 export type EventData = {
   eventid: string;
   location: string;
+  locationLink: string;
   datetime: string;
   supervisors: string[];
   capacity: number;

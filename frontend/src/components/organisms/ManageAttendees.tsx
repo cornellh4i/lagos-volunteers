@@ -451,6 +451,7 @@ const DuplicateEventModalBody = ({
         event: {
           name: `${data["data"].name}`,
           location: `${data["data"].location}`,
+          locationLink: `${data["data"].locationLink}`,
           description: `${data["data"].description}`,
           imageURL: `${data["data"].imageURL}`,
           startDate: startDateTime,
@@ -644,6 +645,7 @@ const ManageAttendees = () => {
   const {
     eventid: idtmp, // TODO: remove this line
     location,
+    locationLink,
     datetime,
     capacity,
     image_src,
@@ -654,6 +656,7 @@ const ManageAttendees = () => {
   }: EventData = {
     eventid: eventData.id,
     location: eventData.location,
+    locationLink: eventData.locationLink,
     datetime: formatDateTimeRange(eventData.startDate, eventData.endDate),
     capacity: eventData.capacity,
     image_src: eventData.imageURL,
@@ -840,7 +843,23 @@ const ManageAttendees = () => {
             header={<>{dateHeader[0]}</>}
             body={<>{dateHeader[1]}</>}
           />
-          <IconTextHeader icon={<FmdGoodIcon />} header={<>{location}</>} />
+          <IconTextHeader
+            icon={<FmdGoodIcon />}
+            header={<>{location}</>}
+            body={
+              locationLink && (
+                <>
+                  <Link
+                    className="text-black no-underline hover:underline"
+                    target="_blank"
+                    href={locationLink}
+                  >
+                    See location
+                  </Link>
+                </>
+              )
+            }
+          />
           <IconTextHeader
             icon={<PersonIcon />}
             header={<>{supervisors[0]}</>}
