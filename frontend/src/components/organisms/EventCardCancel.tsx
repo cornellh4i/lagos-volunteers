@@ -45,7 +45,7 @@ const ModalBody = ({ handleClose, mutateFn }: modalProps) => {
           alignItems: "center",
         }}
       >
-        <div>Are you sure you want to cancel?</div>
+        <div>Are you sure you want to cancel your registration?</div>
       </Box>
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <div className="order-1 sm:order-2">
@@ -53,7 +53,7 @@ const ModalBody = ({ handleClose, mutateFn }: modalProps) => {
         </div>
         <div className="order-2 sm:order-1">
           <Button variety="secondary" onClick={handleClose}>
-            No
+            Cancel
           </Button>
         </div>
       </div>
@@ -106,6 +106,9 @@ const EventCardCancel = ({
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["event", eventId] });
+      queryClient.invalidateQueries({
+        queryKey: ["eventAttendance", eventId, attendeeId],
+      });
       handleClose();
     },
   });
