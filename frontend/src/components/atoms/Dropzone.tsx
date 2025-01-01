@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import Button from "./Button";
 
 interface DropzoneProps {
   setError: React.Dispatch<React.SetStateAction<string>>;
@@ -45,9 +46,29 @@ const Dropzone = ({
       setSelectedFile(file);
     }
   };
+
+  const clearFile = (event: any) => {
+    event.preventDefault();
+    event.target.value = null;
+    setSelectedFile(null);
+  };
+
   return (
     <>
-      <div>{label}</div>
+      <div className="w-full flex">
+        <div className="mt-auto mb-auto">{label}</div>
+        <div className="ml-auto min-w-fit">
+          <Button
+            size="small"
+            fullWidth={false}
+            variety="secondary"
+            onClick={clearFile}
+            disabled={selectedFile ? false : true}
+          >
+            Clear file
+          </Button>
+        </div>
+      </div>
       <div className="flex items-center justify-center w-full">
         <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer hover:bg-gray-50">
           <div className="flex flex-col items-center justify-center pt-5 pb-6">

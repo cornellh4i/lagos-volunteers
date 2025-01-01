@@ -21,6 +21,7 @@ import {
   convertToISO,
   fetchUserIdFromDatabase,
   uploadImageToFirebase,
+  deleteImageFromFirebase,
 } from "@/utils/helpers";
 import { api } from "@/utils/api";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -195,8 +196,14 @@ const EventForm = ({
         const userid = await fetchUserIdFromDatabase(user?.email as string);
         const startDateTime = convertToISO(startTime, startDate);
         const endDateTime = convertToISO(endTime, startDate);
-        let newImageURL = imageURL;
+        let newImageURL = imageURL ? imageURL : null;
+
+        // If user uploads a new image, delete the old image before uploading
+        // the new one
         if (selectedFile) {
+          if (eventDetails?.imageURL) {
+            await deleteImageFromFirebase(userid, eventDetails.imageURL);
+          }
           newImageURL = await uploadImageToFirebase(userid, selectedFile); // Update URL if there is any.
         }
 
@@ -507,12 +514,20 @@ const EventForm = ({
             })}
           />
         </div>
+        {eventDetails?.imageURL && (
+          <div>
+            <p>Current image:</p>
+            <img
+              className="w-full rounded-2xl border-gray-300 border-solid border"
+              src={eventDetails.imageURL}
+            />
+          </div>
+        )}
         <Dropzone
           setError={setDropzoneError}
           label="Event Image"
           selectedFile={selectedFile}
           setSelectedFile={setSelectedFile}
-          defaultValue={eventDetails?.imageURL}
         />
 
         {/* <TextCopy
