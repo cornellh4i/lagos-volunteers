@@ -172,7 +172,7 @@ const PastEvents = () => {
   const volunteerEventColumns: GridColDef[] = [
     {
       field: "name",
-      headerName: "Program Name",
+      headerName: "Event name",
       minWidth: 200,
       flex: 2,
       renderHeader: (params) => (
@@ -211,7 +211,7 @@ const PastEvents = () => {
     },
     {
       field: "attendeeStatus",
-      headerName: "Status",
+      headerName: "Registration status",
       sortable: false,
       minWidth: 150,
       renderHeader: (params) => (
@@ -242,7 +242,7 @@ const PastEvents = () => {
   const SupervisoreventColumns: GridColDef[] = [
     {
       field: "name",
-      headerName: "Program Name",
+      headerName: "Event name",
       minWidth: 200,
       flex: 1,
       renderHeader: (params) => (
