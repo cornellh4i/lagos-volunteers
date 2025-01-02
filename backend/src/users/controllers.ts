@@ -1,5 +1,5 @@
 import { Request, Response, query } from "express";
-import { Prisma, userRole, UserStatus } from "@prisma/client";
+import { EventStatus, Prisma, userRole, UserStatus } from "@prisma/client";
 import {
   User,
   Profile,
@@ -489,6 +489,9 @@ const getHours = async (userId: string) => {
     where: {
       userId: userId,
       attendeeStatus: "CHECKED_OUT",
+      event: {
+        status: EventStatus.ACTIVE,
+      },
     },
     include: {
       event: true,

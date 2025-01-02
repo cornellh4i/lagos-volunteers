@@ -23,7 +23,16 @@ function useViewEventState(
 
   const { user } = useAuth();
   const [userid, setUserid] = useState<string>("");
-  const [hours, setHours] = useState<number>(0);
+
+  /** Tanstack query for fetching the user's total hours */
+  const hoursQuery = useQuery({
+    queryKey: ["userHours", userid],
+    queryFn: async () => {
+      const { data: dataHours } = await api.get(`/users/${userid}/hours`);
+      return dataHours["data"];
+    },
+  });
+  let hours = hoursQuery.data;
 
   /** Pagination model for the table */
   const [paginationModel, setPaginationModel] = useState<GridPaginationModel>({
@@ -75,7 +84,6 @@ function useViewEventState(
       const userid = await fetchUserIdFromDatabase(user?.email as string);
       const hours = await api.get(`/users/${userid}/hours`);
       setUserid(userid);
-      setHours(hours.data["data"]);
       return await fetchBatchOfEvents(userid);
     },
     placeholderData: keepPreviousData,
@@ -85,6 +93,13 @@ function useViewEventState(
   const rows: any[] = [];
   const totalNumberofData = data?.data.totalItems;
   data?.data.result.map((event: any) => {
+    let attendeeStatus =
+      event.attendees.length > 0
+        ? convertEnrollmentStatusToString(
+            event.attendees["0"]["attendeeStatus"]
+          )
+        : undefined;
+
     rows.push({
       id: event.id,
       name: event.name,
@@ -92,14 +107,12 @@ function useViewEventState(
       startDate: formatDateString(event.startDate),
       endDate: new Date(event.endDate),
       role: event.role,
-      hours: eventHours(event.endDate, event.startDate),
+      hours:
+        attendeeStatus === "Checked out"
+          ? eventHours(event.endDate, event.startDate)
+          : "N/A",
       status: event.status,
-      attendeeStatus:
-        event.attendees.length > 0
-          ? convertEnrollmentStatusToString(
-              event.attendees["0"]["attendeeStatus"]
-            )
-          : undefined,
+      attendeeStatus: attendeeStatus,
     });
   });
 

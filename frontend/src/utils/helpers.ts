@@ -97,7 +97,20 @@ export const eventHours = (endTime: string, startTime: string) => {
   const end = new Date(endTime);
   const diff = end.getTime() - start.getTime();
   const hours = diff / (1000 * 3600);
-  return Math.round(hours);
+
+  return friendlyHours(hours);
+};
+
+/**
+ * Converts "8.53" hours into "8 hrs 32 min"
+ * @param hours is the number of hours
+ * @returns hours and mins
+ */
+export const friendlyHours = (hours: number) => {
+  const wholeHours = Math.floor(hours);
+  const minutes = Math.round((hours - wholeHours) * 60);
+
+  return `${wholeHours} hrs ${minutes} min`;
 };
 
 /**
