@@ -91,15 +91,21 @@ const ModalBody = ({ status, blacklistFunc, handleClose }: modalBodyProps) => {
   return (
     <div>
       <Box sx={{ textAlign: "center", marginBottom: 3 }}>
-        {status == "ACTIVE"
-          ? "Are you sure you want to blacklist this user?"
-          : "Are you sure you want to remove this member from the blacklist?"}
+        <p className="mt-0 text-center text-2xl font-semibold">
+          {status == "ACTIVE"
+            ? "Are you sure you want to blacklist this user?"
+            : "Are you sure you want to remove this member from the blacklist?"}
+        </p>
       </Box>
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <div className="order-1 sm:order-2">
-          <Button variety="error" onClick={blacklistFunc}>
-            {status == "ACTIVE" ? "Yes, blacklist" : "Yes, Remove"}
-          </Button>
+          {status === "ACTIVE" ? (
+            <Button variety="mainError" onClick={blacklistFunc}>
+              Yes, blacklist
+            </Button>
+          ) : (
+            <Button onClick={blacklistFunc}>Yes, remove</Button>
+          )}
         </div>
         <div className="order-2 sm:order-1">
           <Button variety="secondary" onClick={handleClose}>
@@ -415,7 +421,7 @@ const ManageUserProfileNew = () => {
           <div className="mb-4">
             {status === "ACTIVE"
               ? "Would you like to blacklist this member? This will stop them from registering for and attending future events."
-              : "Would you like to remove this member from the blacklist?"}
+              : "Would you like to remove this member from the blacklist? This allows them to start registering for and attending future events."}
           </div>
           {status === "ACTIVE" ? (
             <Button variety="error" onClick={handleOpen}>
