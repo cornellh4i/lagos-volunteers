@@ -27,6 +27,7 @@ export type EventData = {
   tags: string[] | undefined;
   description: string;
   name: string;
+  event_status: string;
 };
 
 export type EventDTO = {

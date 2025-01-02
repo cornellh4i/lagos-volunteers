@@ -466,22 +466,12 @@ const ViewEvents = () => {
   ];
 
   const [isEventCreated, setIsEventCreated] = useState(false);
-  const [isEventEdited, setIsEventEdited] = useState(false);
-  const [isEventCanceled, setIsEventCanceled] = useState(false);
 
   useEffect(() => {
     const isEventCreated = localStorage.getItem("eventCreated");
     if (isEventCreated) {
       setIsEventCreated(true);
       localStorage.removeItem("eventCreated");
-    }
-    if (localStorage.getItem("eventEdited")) {
-      setIsEventEdited(true);
-      localStorage.removeItem("eventEdited");
-    }
-    if (localStorage.getItem("eventCanceled")) {
-      setIsEventCanceled(true);
-      localStorage.removeItem("eventCanceled");
     }
   }, []);
 
@@ -494,24 +484,6 @@ const ViewEvents = () => {
         onClose={() => setIsEventCreated(false)}
       >
         Your event was successfully created!
-      </Snackbar>
-
-      {/* Event editing success notification */}
-      <Snackbar
-        variety="success"
-        open={isEventEdited}
-        onClose={() => setIsEventEdited(false)}
-      >
-        Your event has been successfully updated!
-      </Snackbar>
-
-      {/* Event canceled success notification */}
-      <Snackbar
-        variety="success"
-        open={isEventCanceled}
-        onClose={() => setIsEventCanceled(false)}
-      >
-        Your event has been successfully canceled!
       </Snackbar>
 
       <TabContainer
