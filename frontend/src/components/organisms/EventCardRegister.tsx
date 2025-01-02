@@ -39,6 +39,9 @@ const EventCardRegister = ({
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["event", eventId] });
+      queryClient.invalidateQueries({
+        queryKey: ["eventAttendance", eventId, attendeeId],
+      });
     },
   });
 
