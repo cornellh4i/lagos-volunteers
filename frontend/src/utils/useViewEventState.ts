@@ -84,7 +84,6 @@ function useViewEventState(
       const userid = await fetchUserIdFromDatabase(user?.email as string);
       const hours = await api.get(`/users/${userid}/hours`);
       setUserid(userid);
-      setHours(hours.data["data"]);
       return await fetchBatchOfEvents(userid);
     },
     placeholderData: keepPreviousData,
@@ -94,6 +93,13 @@ function useViewEventState(
   const rows: any[] = [];
   const totalNumberofData = data?.data.totalItems;
   data?.data.result.map((event: any) => {
+    let attendeeStatus =
+      event.attendees.length > 0
+        ? convertEnrollmentStatusToString(
+            event.attendees["0"]["attendeeStatus"]
+          )
+        : undefined;
+
     rows.push({
       id: event.id,
       name: event.name,
@@ -101,14 +107,12 @@ function useViewEventState(
       startDate: formatDateString(event.startDate),
       endDate: new Date(event.endDate),
       role: event.role,
-      hours: eventHours(event.endDate, event.startDate),
+      hours:
+        attendeeStatus === "Checked out"
+          ? eventHours(event.endDate, event.startDate)
+          : "N/A",
       status: event.status,
-      attendeeStatus:
-        event.attendees.length > 0
-          ? convertEnrollmentStatusToString(
-              event.attendees["0"]["attendeeStatus"]
-            )
-          : undefined,
+      attendeeStatus: attendeeStatus,
     });
   });
 
