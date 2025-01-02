@@ -17,6 +17,7 @@ interface EventCardCancelProps {
   eventId: string;
   attendeeStatus: string;
   date: Date;
+  eventCanceled: boolean;
 }
 
 interface modalProps {
@@ -66,6 +67,7 @@ const EventCardCancel = ({
   attendeeId,
   attendeeStatus,
   date,
+  eventCanceled,
 }: EventCardCancelProps) => {
   const { user } = useAuth();
   const queryClient = useQueryClient();
@@ -155,6 +157,11 @@ const EventCardCancel = ({
             You have passed the window for canceling your registration.
             Registration must be canceled at least 24 hours before the event
             begins. Failure to do so may affect your volunteer status.
+          </div>
+        ) : eventCanceled ? (
+          <div>
+            The event has been canceled. You are no longer able to cancel your
+            registration.
           </div>
         ) : attendeeStatus !== "PENDING" ? (
           <div>

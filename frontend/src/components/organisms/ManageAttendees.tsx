@@ -214,6 +214,7 @@ const AttendeesTable = ({
         <div className="w-full">
           <Select
             size="small"
+            disabled={eventData.status === "CANCELED"}
             value={params.row.status}
             onChange={(event: any) =>
               handleStatusChange(params.row.id, event.target.value)

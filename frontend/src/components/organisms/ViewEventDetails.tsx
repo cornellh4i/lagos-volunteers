@@ -215,6 +215,7 @@ const ViewEventDetails = () => {
                 attendeeStatus={eventAttendance.attendeeStatus}
                 attendeeId={userid}
                 date={new Date(eventData.startDate)}
+                eventCanceled={event_status === "CANCELED"}
               />
             ) : (
               <EventCardRegister
@@ -222,6 +223,7 @@ const ViewEventDetails = () => {
                 overCapacity={registeredVolunteersNumber === capacity}
                 attendeeId={userid}
                 date={new Date(eventData.startDate)}
+                eventCanceled={event_status === "CANCELED"}
               />
             )}
           </div>
