@@ -334,7 +334,7 @@ const ProfileForm = ({ userDetails }: ProfileFormProps) => {
               type="button"
               variety="secondary"
               onClick={() => {
-                reset(undefined, { keepDefaultValues: true });
+                reset();
               }}
               disabled={!isDirty}
             >
