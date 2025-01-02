@@ -30,7 +30,7 @@ const EventCardContent = ({ event }: EventCardNewProps) => {
       ? `/events/${event.id}/attendees`
       : `/events/${event.id}/register`;
   const buttonText =
-    event.role === "Supervisor" ? "Manage Event" : "View Event Details";
+    event.role === "Supervisor" ? "Manage event" : "View event details";
 
   return (
     <div>

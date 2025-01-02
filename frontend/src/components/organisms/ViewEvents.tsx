@@ -8,16 +8,22 @@ import { GridColDef, GridPaginationModel } from "@mui/x-data-grid";
 import Table from "@/components/molecules/Table";
 import Button from "../atoms/Button";
 import Link from "next/link";
-import { useAuth } from "@/utils/AuthContext";
+import { useAuth, Role } from "@/utils/AuthContext";
 import {
   convertEnrollmentStatusToString,
   eventHours,
   fetchUserIdFromDatabase,
 } from "@/utils/helpers";
 import { Action, ViewEventsEvent } from "@/utils/types";
+import Select from "../atoms/Select";
+import { MenuItem } from "@mui/material";
 import { api } from "@/utils/api";
 import ManageSearchIcon from "@mui/icons-material/ManageSearch";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  useQuery,
+  useQueryClient,
+  keepPreviousData,
+} from "@tanstack/react-query";
 import Loading from "@/components/molecules/Loading";
 import FetchDataError from "./FetchDataError";
 import { formatDateString } from "@/utils/helpers";
@@ -27,8 +33,58 @@ import ArrowOutwardIcon from "@mui/icons-material/ArrowOutward";
 import Snackbar from "../atoms/Snackbar";
 import useViewEventState from "@/utils/useViewEventState";
 
+/** Component that contains the Create new event and View all events button */
+const SupervisorBar = ({
+  role,
+  seeAllEvents,
+  setSeeAllEvents,
+}: {
+  role: Role;
+  seeAllEvents: boolean;
+  setSeeAllEvents: any;
+}) => {
+  const queryClient = useQueryClient();
+
+  /** Handles clicking the dropdown menu */
+  const handleClick = (event: any) => {
+    if (event.target.value === "true") {
+      setSeeAllEvents(true);
+    } else if (event.target.value === "false") {
+      setSeeAllEvents(false);
+    }
+  };
+
+  // Checks for changes to seeAllEvents and invalidates queries in those cases
+  useEffect(() => {
+    // Invalidate all queries
+    queryClient.invalidateQueries();
+  }, [seeAllEvents]);
+
+  return (
+    <>
+      {(role === "Supervisor" || role === "Admin") && (
+        <div className="flex flex-col sm:flex-row sm:gap-2">
+          <Link href="/events/create">
+            <Button className="mb-2 w-full sm:w-max">Create new event</Button>
+          </Link>
+          <Select value={seeAllEvents} onChange={handleClick}>
+            <MenuItem value="false">See my events</MenuItem>
+            <MenuItem value="true">See all events</MenuItem>
+          </Select>
+        </div>
+      )}
+    </>
+  );
+};
+
 /** Displays upcoming events for the user */
-const UpcomingEvents = () => {
+const UpcomingEvents = ({
+  seeAllEvents,
+  setSeeAllEvents,
+}: {
+  seeAllEvents: boolean;
+  setSeeAllEvents: any;
+}) => {
   const { user, role } = useAuth();
   const [userid, setUserid] = useState<string>("");
 
@@ -39,6 +95,7 @@ const UpcomingEvents = () => {
     isError,
   } = useQuery({
     queryKey: ["events"],
+    placeholderData: keepPreviousData,
     queryFn: async () => {
       // recall this is temp
       const userid = await fetchUserIdFromDatabase(user?.email as string);
@@ -46,9 +103,16 @@ const UpcomingEvents = () => {
       const upcomingEventsUserRegisteredFor = await api.get(
         `/events?userid=${userid}&date=upcoming&sort=startDate:asc`
       );
-      const upcomingEventsUserSupervises = await api.get(
-        `/events?ownerid=${userid}&date=upcoming&sort=startDate:asc`
-      );
+
+      // Change API call depending on whether supervisor choosese to see all
+      // events
+      // console.log(`seeAllEvents ${seeAllEvents}`);
+      const upcomingEventsUserSupervises =
+        seeAllEvents === true
+          ? await api.get(`/events?date=upcoming&sort=startDate:asc`)
+          : await api.get(
+              `/events?ownerid=${userid}&date=upcoming&sort=startDate:asc`
+            );
       return {
         upcomingRegistered: upcomingEventsUserRegisteredFor.data["data"],
         upcomingSupervised: upcomingEventsUserSupervises.data["data"],
@@ -98,11 +162,11 @@ const UpcomingEvents = () => {
 
   return (
     <div>
-      {(role === "Supervisor" || role === "Admin") && (
-        <Link href="/events/create">
-          <Button className="mb-2 w-full sm:w-max">Create New Event</Button>
-        </Link>
-      )}
+      <SupervisorBar
+        seeAllEvents={seeAllEvents}
+        setSeeAllEvents={setSeeAllEvents}
+        role={role}
+      />
       {/* Display when no events are found */}
       {/* TODO: make this look better */}
       {((role === "Admin" && upcomingEventsSupervisor.length == 0) ||
@@ -149,7 +213,13 @@ const UpcomingEvents = () => {
 };
 
 /** Displays past events for the user */
-const PastEvents = () => {
+const PastEvents = ({
+  seeAllEvents,
+  setSeeAllEvents,
+}: {
+  seeAllEvents: boolean;
+  setSeeAllEvents: any;
+}) => {
   const { user, role } = useAuth();
   const [userid, setUserid] = useState<string>("");
 
@@ -167,7 +237,7 @@ const PastEvents = () => {
     sortModel,
     handlePaginationModelChange,
     handleSortModelChange,
-  } = useViewEventState(role, "past");
+  } = useViewEventState(role, "past", seeAllEvents);
 
   const volunteerEventColumns: GridColDef[] = [
     {
@@ -328,18 +398,25 @@ const PastEvents = () => {
       )}
       <div>
         {role === "Supervisor" || role === "Admin" ? (
-          <Card size="table">
-            <Table
-              columns={SupervisoreventColumns}
-              rows={rows}
-              dataSetLength={totalNumberofData}
-              paginationModel={paginationModel}
-              handlePaginationModelChange={handlePaginationModelChange}
-              handleSortModelChange={handleSortModelChange}
-              sortModel={sortModel}
-              loading={isPending}
+          <>
+            <SupervisorBar
+              seeAllEvents={seeAllEvents}
+              setSeeAllEvents={setSeeAllEvents}
+              role={role}
             />
-          </Card>
+            <Card size="table" className="mt-5">
+              <Table
+                columns={SupervisoreventColumns}
+                rows={rows}
+                dataSetLength={totalNumberofData}
+                paginationModel={paginationModel}
+                handlePaginationModelChange={handlePaginationModelChange}
+                handleSortModelChange={handleSortModelChange}
+                sortModel={sortModel}
+                loading={isPending}
+              />
+            </Card>
+          </>
         ) : (
           <Card size="table">
             <Table
@@ -361,74 +438,87 @@ const PastEvents = () => {
 
 /** A ViewEvents component is where a user can view and manage their events. */
 const ViewEvents = () => {
-  {
-    const tabs = [
-      {
-        label: "Upcoming",
-        // TODO: For upcoming events, only a max of 10 events are returned from the server, include a load more button to fetch more events
-        panel: <UpcomingEvents />,
-      },
-      {
-        label: "Past",
-        panel: <PastEvents />,
-      },
-    ];
+  // For supervisors and admins only: determines if the My Events page shows
+  // all events created by all supervisors, or just the events that they
+  // themselves have created
+  const [seeAllEvents, setSeeAllEvents] = useState(false);
 
-    const [isEventCreated, setIsEventCreated] = useState(false);
-    const [isEventEdited, setIsEventEdited] = useState(false);
-    const [isEventCanceled, setIsEventCanceled] = useState(false);
-
-    useEffect(() => {
-      const isEventCreated = localStorage.getItem("eventCreated");
-      if (isEventCreated) {
-        setIsEventCreated(true);
-        localStorage.removeItem("eventCreated");
-      }
-      if (localStorage.getItem("eventEdited")) {
-        setIsEventEdited(true);
-        localStorage.removeItem("eventEdited");
-      }
-      if (localStorage.getItem("eventCanceled")) {
-        setIsEventCanceled(true);
-        localStorage.removeItem("eventCanceled");
-      }
-    }, []);
-
-    return (
-      <>
-        {/* Event creation success notification */}
-        <Snackbar
-          variety="success"
-          open={isEventCreated}
-          onClose={() => setIsEventCreated(false)}
-        >
-          Your event was successfully created!
-        </Snackbar>
-
-        {/* Event editing success notification */}
-        <Snackbar
-          variety="success"
-          open={isEventEdited}
-          onClose={() => setIsEventEdited(false)}
-        >
-          Your event has been successfully updated!
-        </Snackbar>
-
-        {/* Event canceled success notification */}
-        <Snackbar
-          variety="success"
-          open={isEventCanceled}
-          onClose={() => setIsEventCanceled(false)}
-        >
-          Your event has been successfully canceled!
-        </Snackbar>
-
-        <TabContainer
-          tabs={tabs}
-          left={<div className="text-3xl font-semibold">My Events</div>}
+  const tabs = [
+    {
+      label: "Upcoming",
+      // TODO: For upcoming events, only a max of 10 events are returned from the server, include a load more button to fetch more events
+      panel: (
+        <UpcomingEvents
+          seeAllEvents={seeAllEvents}
+          setSeeAllEvents={setSeeAllEvents}
         />
-      </>
-    );
-  }
+      ),
+    },
+    {
+      label: "Past",
+      panel: (
+        <PastEvents
+          seeAllEvents={seeAllEvents}
+          setSeeAllEvents={setSeeAllEvents}
+        />
+      ),
+    },
+  ];
+
+  const [isEventCreated, setIsEventCreated] = useState(false);
+  const [isEventEdited, setIsEventEdited] = useState(false);
+  const [isEventCanceled, setIsEventCanceled] = useState(false);
+
+  useEffect(() => {
+    const isEventCreated = localStorage.getItem("eventCreated");
+    if (isEventCreated) {
+      setIsEventCreated(true);
+      localStorage.removeItem("eventCreated");
+    }
+    if (localStorage.getItem("eventEdited")) {
+      setIsEventEdited(true);
+      localStorage.removeItem("eventEdited");
+    }
+    if (localStorage.getItem("eventCanceled")) {
+      setIsEventCanceled(true);
+      localStorage.removeItem("eventCanceled");
+    }
+  }, []);
+
+  return (
+    <>
+      {/* Event creation success notification */}
+      <Snackbar
+        variety="success"
+        open={isEventCreated}
+        onClose={() => setIsEventCreated(false)}
+      >
+        Your event was successfully created!
+      </Snackbar>
+
+      {/* Event editing success notification */}
+      <Snackbar
+        variety="success"
+        open={isEventEdited}
+        onClose={() => setIsEventEdited(false)}
+      >
+        Your event has been successfully updated!
+      </Snackbar>
+
+      {/* Event canceled success notification */}
+      <Snackbar
+        variety="success"
+        open={isEventCanceled}
+        onClose={() => setIsEventCanceled(false)}
+      >
+        Your event has been successfully canceled!
+      </Snackbar>
+
+      <TabContainer
+        tabs={tabs}
+        left={<div className="text-3xl font-semibold">My Events</div>}
+      />
+    </>
+  );
 };
 export default ViewEvents;

@@ -13,7 +13,7 @@ interface SelectProps {
 const Select = ({
   children,
   label,
-  error,
+  error = "",
   size = "medium",
   ...props
 }: SelectProps) => {
@@ -30,7 +30,7 @@ const Select = ({
 
   return (
     <div>
-      <div className="mb-1">{label}</div>
+      {label && <div className="mb-1">{label}</div>}
       <MuiSelect
         size="small"
         sx={{

@@ -16,7 +16,7 @@ import { UserCredential, onAuthStateChanged } from "firebase/auth";
 import { useRouter } from "next/router";
 import Loading from "@/components/molecules/Loading";
 
-type Role = "Volunteer" | "Supervisor" | "Admin";
+export type Role = "Volunteer" | "Supervisor" | "Admin";
 // Define types for authentication context value
 type AuthContextValue = {
   user: User | null | undefined;
@@ -210,7 +210,9 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
       return () => {
         router.events.off("routeChangeStart", hideContent);
-        router.events.off("routeChangeComplete", () => sessionStorage.removeItem("redirectPath"));
+        router.events.off("routeChangeComplete", () =>
+          sessionStorage.removeItem("redirectPath")
+        );
       };
     });
     return unsubscribe;
