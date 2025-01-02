@@ -29,6 +29,7 @@ import FetchDataError from "./FetchDataError";
 import EventDetails from "./EventDetails";
 import useWebSocket from "react-use-websocket";
 import { BASE_WEBSOCKETS_URL } from "@/utils/constants";
+import Alert from "../atoms/Alert";
 
 interface ViewEventDetailsProps {}
 
@@ -70,6 +71,19 @@ const ViewEventDetails = () => {
     },
   });
 
+  /** Tanstack query to fetch user details */
+  const {
+    data: userData,
+    isLoading: userIsLoading,
+    isError: userIsError,
+  } = useQuery({
+    queryKey: ["profile", user?.email],
+    queryFn: async () => {
+      const { data } = await api.get(`/users?email=${user?.email}`);
+      return data["data"]["result"][0];
+    },
+  });
+
   /** Undefined if user not in the attendees list, otherwise EventAttendance object */
   let eventData = data || {};
 
@@ -107,6 +121,7 @@ const ViewEventDetails = () => {
     supervisors,
     description,
     name,
+    event_status,
   }: EventData = {
     eventid: eventData.id,
     location: eventData.location,
@@ -120,15 +135,19 @@ const ViewEventDetails = () => {
     ],
     description: eventData.description,
     name: eventData.name,
+    event_status: eventData.status,
   };
+
+  // Whether the user is blacklisted or not
+  const userBlacklisted = userData?.status === "INACTIVE";
 
   const dateHeader = formatDateTimeToUI(datetime);
 
-  if (isLoading) {
+  if (isLoading || userIsLoading) {
     return <Loading />;
   }
 
-  if (isError) {
+  if (isError || userIsError) {
     console.log(error);
     return <FetchDataError />;
   }
@@ -137,6 +156,24 @@ const ViewEventDetails = () => {
     <EventTemplate
       header={
         <div>
+          {userBlacklisted && (
+            <div className="pb-6">
+              <Alert variety="warning">
+                You have been blacklisted. You are not able to change your
+                registration status for any events until your blacklist status
+                is removed.
+              </Alert>
+            </div>
+          )}
+          {event_status === "CANCELED" && (
+            <div className="pb-6">
+              <Alert variety="warning">
+                This event has been canceled. You are not allowed to change your
+                registration status, and this event will not count towards any
+                volunteer hours.
+              </Alert>
+            </div>
+          )}
           <div className="font-semibold text-3xl">{name}</div>
           <div className="mt-5" />
           <div className="grid gap-2 xl:gap-6 xl:grid-cols-2">
@@ -203,6 +240,8 @@ const ViewEventDetails = () => {
                 attendeeStatus={eventAttendance.attendeeStatus}
                 attendeeId={userid}
                 date={new Date(eventData.startDate)}
+                eventCanceled={event_status === "CANCELED"}
+                attendeeBlacklisted={userBlacklisted}
               />
             ) : (
               <EventCardRegister
@@ -210,6 +249,8 @@ const ViewEventDetails = () => {
                 overCapacity={registeredVolunteersNumber === capacity}
                 attendeeId={userid}
                 date={new Date(eventData.startDate)}
+                eventCanceled={event_status === "CANCELED"}
+                attendeeBlacklisted={userBlacklisted}
               />
             )}
           </div>

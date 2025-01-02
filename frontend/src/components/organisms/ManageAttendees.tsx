@@ -1,4 +1,4 @@
-import React, { ChangeEvent, FormEvent, useState } from "react";
+import React, { ChangeEvent, FormEvent, useEffect, useState } from "react";
 import TabContainer from "@/components/molecules/TabContainer";
 import {
   GridColDef,
@@ -40,6 +40,7 @@ import { BASE_WEBSOCKETS_URL } from "@/utils/constants";
 import useManageAttendeeState from "@/utils/useManageAttendeeState";
 import ManageSearchIcon from "@mui/icons-material/ManageSearch";
 import MultilineTextField from "../atoms/MultilineTextField";
+import Alert from "../atoms/Alert";
 
 type attendeeData = {
   id: number;
@@ -213,6 +214,7 @@ const AttendeesTable = ({
         <div className="w-full">
           <Select
             size="small"
+            disabled={eventData.status === "CANCELED"}
             value={params.row.status}
             onChange={(event: any) =>
               handleStatusChange(params.row.id, event.target.value)
@@ -653,6 +655,7 @@ const ManageAttendees = () => {
     supervisors,
     description,
     name,
+    event_status,
   }: EventData = {
     eventid: eventData.id,
     location: eventData.location,
@@ -666,6 +669,7 @@ const ManageAttendees = () => {
     ],
     description: eventData.description,
     name: eventData.name,
+    event_status: eventData.status,
   };
 
   const dateHeader = formatDateTimeToUI(datetime);
@@ -795,8 +799,41 @@ const ManageAttendees = () => {
     },
   });
 
+  // Handles success modals for completing event editing and event cancellation
+  const [isEventEdited, setIsEventEdited] = useState(false);
+  const [isEventCanceled, setIsEventCanceled] = useState(false);
+
+  useEffect(() => {
+    if (localStorage.getItem("eventEdited")) {
+      setIsEventEdited(true);
+      localStorage.removeItem("eventEdited");
+    }
+    if (localStorage.getItem("eventCanceled")) {
+      setIsEventCanceled(true);
+      localStorage.removeItem("eventCanceled");
+    }
+  }, []);
+
   return (
     <>
+      {/* Event editing success notification */}
+      <Snackbar
+        variety="success"
+        open={isEventEdited}
+        onClose={() => setIsEventEdited(false)}
+      >
+        Your event has been successfully updated!
+      </Snackbar>
+
+      {/* Event canceled success notification */}
+      <Snackbar
+        variety="success"
+        open={isEventCanceled}
+        onClose={() => setIsEventCanceled(false)}
+      >
+        Your event has been successfully canceled!
+      </Snackbar>
+
       {/* Notifications */}
       <Snackbar
         variety="error"
@@ -821,6 +858,14 @@ const ManageAttendees = () => {
       />
 
       {/* Manage event */}
+      {event_status === "CANCELED" && (
+        <div className="pb-6">
+          <Alert variety="warning">
+            This event has been canceled. You are not able to make changes, and
+            this event will not count towards any volunteer hours.
+          </Alert>
+        </div>
+      )}
       <div className="flex flex-col sm:flex-row sm:justify-between pb-6 sm:pb-4">
         <div className="font-semibold text-3xl mb-6">{name}</div>
         <div className="flex flex-col sm:flex-row gap-4">

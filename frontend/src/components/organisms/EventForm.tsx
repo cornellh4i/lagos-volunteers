@@ -84,7 +84,7 @@ const EventForm = ({
   // For deciding whether to show "In-person" or "Virtual"
   // 0: no show, 1: show yes.
   const [status, setStatus] = React.useState(
-    eventDetails ? (eventDetails.mode === "IN_PERSON" ? 1 : 0) : 0
+    eventDetails ? (eventDetails.mode === "IN_PERSON" ? 1 : 0) : 1
   );
   const radioHandler = (status: number) => {
     setStatus(status);
@@ -230,7 +230,7 @@ const EventForm = ({
           queryKey: ["event", eventId],
         });
         localStorage.setItem("eventEdited", "true");
-        router.push("/events/view");
+        router.push(`/events/${eventId}/attendees`);
       },
     });
 
@@ -249,7 +249,7 @@ const EventForm = ({
           queryKey: ["event", eventId],
         });
         localStorage.setItem("eventCanceled", "true");
-        router.push("/events/view");
+        router.push(`/events/${eventId}/attendees`);
       },
     });
 
@@ -356,7 +356,8 @@ const EventForm = ({
       {eventType == "edit" && eventIsPast && (
         <div className="pb-6">
           <Alert variety="warning">
-            This event is in the past. You are not able to make changes.
+            This event has already started or is in the past. You are not able
+            to make changes or cancel the event.
           </Alert>
         </div>
       )}
@@ -496,10 +497,9 @@ const EventForm = ({
                   })}
                 />
                 <TextField
-                  placeholder="(Optional) Link to virtual meeting"
+                  placeholder="(Optional) Link to meeting"
                   error={errors.locationLink?.message}
                   {...register("locationLink", {
-                    required: { value: true, message: "Required" },
                     pattern: {
                       value: /^(https?|ftp):\/\/[^\s/$.?#].[^\s]*$/i,
                       message: "Invalid URL",
