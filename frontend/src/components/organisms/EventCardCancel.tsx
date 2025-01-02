@@ -18,6 +18,7 @@ interface EventCardCancelProps {
   attendeeStatus: string;
   date: Date;
   eventCanceled: boolean;
+  attendeeBlacklisted: boolean;
 }
 
 interface modalProps {
@@ -68,6 +69,7 @@ const EventCardCancel = ({
   attendeeStatus,
   date,
   eventCanceled,
+  attendeeBlacklisted,
 }: EventCardCancelProps) => {
   const { user } = useAuth();
   const queryClient = useQueryClient();
@@ -152,16 +154,21 @@ const EventCardCancel = ({
           No longer able to attend?
         </div>
         <div className="mt-3" />
-        {hoursLeftToCancel < 0 ? (
+        {attendeeBlacklisted ? (
           <div>
-            You have passed the window for canceling your registration.
-            Registration must be canceled at least 24 hours before the event
-            begins. Failure to do so may affect your volunteer status.
+            You have been blacklisted. You are no longer able to cancel your
+            registration.
           </div>
         ) : eventCanceled ? (
           <div>
             The event has been canceled. You are no longer able to cancel your
             registration.
+          </div>
+        ) : hoursLeftToCancel < 0 ? (
+          <div>
+            You have passed the window for canceling your registration.
+            Registration must be canceled at least 24 hours before the event
+            begins. Failure to do so may affect your volunteer status.
           </div>
         ) : attendeeStatus !== "PENDING" ? (
           <div>

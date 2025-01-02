@@ -12,6 +12,7 @@ interface EventRegisterCardProps {
   attendeeId: string;
   date: Date;
   eventCanceled: boolean;
+  attendeeBlacklisted: boolean;
 }
 
 const EventCardRegister = ({
@@ -20,6 +21,7 @@ const EventCardRegister = ({
   attendeeId,
   date,
   eventCanceled,
+  attendeeBlacklisted,
 }: EventRegisterCardProps) => {
   const { user } = useAuth();
   const queryClient = useQueryClient();
@@ -64,11 +66,15 @@ const EventCardRegister = ({
       <div className="mt-3" />
       <CustomCheckbox
         label="I agree to the terms and conditions"
-        disabled={eventCanceled || eventInPast || overCapacity}
+        disabled={
+          attendeeBlacklisted || eventCanceled || eventInPast || overCapacity
+        }
         onChange={() => setIsChecked(!isChecked)}
       />
       <div className="mt-3" />
-      {eventCanceled ? (
+      {attendeeBlacklisted ? (
+        <Button disabled>You have been blacklisted.</Button>
+      ) : eventCanceled ? (
         <Button disabled>The event has been canceled.</Button>
       ) : eventInPast ? (
         <Button disabled>The event has concluded.</Button>
