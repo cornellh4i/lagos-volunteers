@@ -133,23 +133,27 @@ const About = () => {
               className="bg-white"
               variety="secondary"
               disabled
-              icon={<UploadIcon />}
-            >
-              Upload Image
-            </Button>
-          </div>
-          <div className="col-start-1 col-span-1 sm:col-start-2 sm:col-span-1">
-            <Button
-              className="bg-white"
-              variety="secondary"
-              disabled
               icon={<EditIcon />}
             >
               Edit Text
             </Button>
           </div>
+          {/* <div className="col-start-1 col-span-1 sm:col-start-2 sm:col-span-1">
+            <Button
+              className="bg-white"
+              variety="secondary"
+              disabled
+              icon={<UploadIcon />}
+            >
+              Upload Image
+            </Button>
+          </div> */}
           <div className="col-start-1 col-span-1 sm:col-start-5 sm:col-span-1">
-            <Button variety="error" onClick={handleEditClose}>
+            <Button
+              variety="error"
+              onClick={handleEditClose}
+              className="bg-white"
+            >
               Cancel
             </Button>
           </div>
@@ -202,21 +206,21 @@ const About = () => {
               <Button
                 className="bg-white"
                 variety="secondary"
-                icon={<UploadIcon />}
-              >
-                Upload Image
-              </Button>
-            </div>
-            <div className="col-start-1 col-span-1 sm:col-start-2 sm:col-span-1">
-              <Button
-                className="bg-white"
-                variety="secondary"
                 onClick={handleEditOpen}
                 icon={<EditIcon />}
               >
                 Edit Text
               </Button>
             </div>
+            {/* <div className="col-start-1 col-span-1 sm:col-start-2 sm:col-span-1">
+              <Button
+                className="bg-white"
+                variety="secondary"
+                icon={<UploadIcon />}
+              >
+                Upload Image
+              </Button>
+            </div> */}
           </div>
         )}
         <Markdown>{markdown}</Markdown>
