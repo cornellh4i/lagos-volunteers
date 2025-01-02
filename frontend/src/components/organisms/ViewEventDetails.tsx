@@ -71,6 +71,19 @@ const ViewEventDetails = () => {
     },
   });
 
+  /** Tanstack query to fetch user details */
+  const {
+    data: userData,
+    isLoading: userIsLoading,
+    isError: userIsError,
+  } = useQuery({
+    queryKey: ["profile", user?.email],
+    queryFn: async () => {
+      const { data } = await api.get(`/users?email=${user?.email}`);
+      return data["data"]["result"][0];
+    },
+  });
+
   /** Undefined if user not in the attendees list, otherwise EventAttendance object */
   let eventData = data || {};
 
@@ -125,13 +138,16 @@ const ViewEventDetails = () => {
     event_status: eventData.status,
   };
 
+  // Whether the user is blacklisted or not
+  const userBlacklisted = userData?.status === "INACTIVE";
+
   const dateHeader = formatDateTimeToUI(datetime);
 
-  if (isLoading) {
+  if (isLoading || userIsLoading) {
     return <Loading />;
   }
 
-  if (isError) {
+  if (isError || userIsError) {
     console.log(error);
     return <FetchDataError />;
   }
@@ -140,6 +156,15 @@ const ViewEventDetails = () => {
     <EventTemplate
       header={
         <div>
+          {userBlacklisted && (
+            <div className="pb-6">
+              <Alert variety="warning">
+                You have been blacklisted. You are not able to change your
+                registration status for any events until your blacklist status
+                is removed.
+              </Alert>
+            </div>
+          )}
           {event_status === "CANCELED" && (
             <div className="pb-6">
               <Alert variety="warning">
@@ -216,6 +241,7 @@ const ViewEventDetails = () => {
                 attendeeId={userid}
                 date={new Date(eventData.startDate)}
                 eventCanceled={event_status === "CANCELED"}
+                attendeeBlacklisted={userBlacklisted}
               />
             ) : (
               <EventCardRegister
@@ -224,6 +250,7 @@ const ViewEventDetails = () => {
                 attendeeId={userid}
                 date={new Date(eventData.startDate)}
                 eventCanceled={event_status === "CANCELED"}
+                attendeeBlacklisted={userBlacklisted}
               />
             )}
           </div>
