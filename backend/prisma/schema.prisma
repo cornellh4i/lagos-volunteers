@@ -80,7 +80,7 @@ model Event {
   startDate    DateTime
   endDate      DateTime
   mode         EventMode?        @default(IN_PERSON)
-  status       EventStatus?      @default(DRAFT)
+  status       EventStatus?      @default(ACTIVE)
   owner        User              @relation(fields: [ownerId], references: [id], name: "EventOwner")
   ownerId      String
   attendees    EventEnrollment[]
@@ -137,9 +137,7 @@ enum UserStatus {
 }
 
 enum EventStatus {
-  DRAFT
   ACTIVE
-  COMPLETED
   CANCELED
 }
 

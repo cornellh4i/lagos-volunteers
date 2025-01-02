@@ -29,6 +29,7 @@ import FetchDataError from "./FetchDataError";
 import EventDetails from "./EventDetails";
 import useWebSocket from "react-use-websocket";
 import { BASE_WEBSOCKETS_URL } from "@/utils/constants";
+import Alert from "../atoms/Alert";
 
 interface ViewEventDetailsProps {}
 
@@ -107,6 +108,7 @@ const ViewEventDetails = () => {
     supervisors,
     description,
     name,
+    event_status,
   }: EventData = {
     eventid: eventData.id,
     location: eventData.location,
@@ -120,6 +122,7 @@ const ViewEventDetails = () => {
     ],
     description: eventData.description,
     name: eventData.name,
+    event_status: eventData.status,
   };
 
   const dateHeader = formatDateTimeToUI(datetime);
@@ -137,6 +140,15 @@ const ViewEventDetails = () => {
     <EventTemplate
       header={
         <div>
+          {event_status === "CANCELED" && (
+            <div className="pb-6">
+              <Alert variety="warning">
+                This event has been canceled. You are not allowed to change your
+                registration status, and this event will not count towards any
+                volunteer hours.
+              </Alert>
+            </div>
+          )}
           <div className="font-semibold text-3xl">{name}</div>
           <div className="mt-5" />
           <div className="grid gap-2 xl:gap-6 xl:grid-cols-2">
