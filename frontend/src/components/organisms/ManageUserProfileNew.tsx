@@ -52,7 +52,7 @@ interface ManageUserProfileNew {}
 const eventColumns: GridColDef[] = [
   {
     field: "name",
-    headerName: "Program Name",
+    headerName: "Event name",
     flex: 2,
     minWidth: 100,
     renderHeader: (params) => (

@@ -202,7 +202,7 @@ const AttendeesTable = ({
     },
     {
       field: "status",
-      headerName: "Status",
+      headerName: "Registration status",
       sortable: false,
       minWidth: 175,
       flex: 0.5,
