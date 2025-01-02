@@ -6,6 +6,7 @@ import {
   ref,
   uploadBytesResumable,
   getDownloadURL,
+  deleteObject,
 } from "firebase/storage";
 
 /**
@@ -177,6 +178,37 @@ export const displayDateInfo = (date: Date) => {
  */
 export const formatRoleOrStatus = (str: string) => {
   return str[0] + str.substring(1).toLowerCase();
+};
+
+/**
+ * Deletes an image from Firebase
+ * @param userID           - The userID of who uploads the image
+ * @param imageDownloadURL - The image URL
+ * @returns The string URL to the event.
+ */
+export const deleteImageFromFirebase = async (
+  userID: string | null,
+  imageDownloadURL: string
+) => {
+  if (!userID) {
+    console.error("No userID provided");
+    return "";
+  }
+
+  // Extract the path of the image from the download URL
+  const urlParts = imageDownloadURL.split("?")[0]; // Remove the query string
+  const imagePath = decodeURIComponent(urlParts.split("o/")[1]); // Get the file path after 'o/'
+
+  // Get image ref from path
+  const storage = getStorage();
+  const imageRef = ref(storage, imagePath); // Path to the image
+
+  try {
+    await deleteObject(imageRef);
+    console.log("Image deleted successfully!");
+  } catch (error) {
+    console.error("Error deleting image:", error);
+  }
 };
 
 /**
