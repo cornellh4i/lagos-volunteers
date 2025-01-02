@@ -16,7 +16,8 @@ import { useAuth } from "@/utils/AuthContext";
 
 function useViewEventState(
   role: "Supervisor" | "Volunteer" | "Admin",
-  state: "upcoming" | "past"
+  state: "upcoming" | "past",
+  seeAllEvents: boolean
 ) {
   const queryClient = useQueryClient();
 
@@ -51,7 +52,13 @@ function useViewEventState(
     const limit = prev ? -paginationModel.pageSize : paginationModel.pageSize;
     const whichUser =
       role === "Volunteer" ? `userid=${userid}` : `ownerid=${userid}`;
-    let url = `/events?${whichUser}&limit=${limit}&after=${cursor}&sort=${sortModel[0].field}:${sortModel[0].sort}&date=${state}&include=attendees`;
+
+    // Differentiate based on whether we want to grab all events or just those
+    // created by / registered to the current user
+    let url = seeAllEvents
+      ? `/events?limit=${limit}&after=${cursor}&sort=${sortModel[0].field}:${sortModel[0].sort}&date=${state}&include=attendees`
+      : `/events?${whichUser}&limit=${limit}&after=${cursor}&sort=${sortModel[0].field}:${sortModel[0].sort}&date=${state}&include=attendees`;
+
     const { response, data } = await api.get(url);
     return data;
   };
