@@ -487,7 +487,7 @@ const DuplicateEventModalBody = ({
   return (
     <div>
       <form onSubmit={handleSubmit(handleDuplicateEvent)} className="space-y-4">
-        <div className="font-bold text-2xl">Duplicate Event</div>
+        <div className="font-bold text-2xl text-center">Duplicate Event</div>
         <div className="mb-12">
           <div>
             Create a new event with the same information as this one. Everything
