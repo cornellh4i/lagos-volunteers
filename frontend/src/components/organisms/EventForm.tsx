@@ -356,7 +356,8 @@ const EventForm = ({
       {eventType == "edit" && eventIsPast && (
         <div className="pb-6">
           <Alert variety="warning">
-            This event is in the past. You are not able to make changes.
+            This event has already started or is in the past. You are not able
+            to make changes or cancel the event.
           </Alert>
         </div>
       )}
