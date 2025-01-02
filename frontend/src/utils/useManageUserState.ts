@@ -5,7 +5,7 @@ import {
   useQuery,
 } from "@tanstack/react-query";
 import { api } from "./api";
-import { formatRoleOrStatus } from "@/utils/helpers";
+import { formatRoleOrStatus, friendlyHours } from "@/utils/helpers";
 import { GridPaginationModel, GridSortModel } from "@mui/x-data-grid";
 
 function useManageUserState(state: "ACTIVE" | "INACTIVE") {
@@ -77,7 +77,7 @@ function useManageUserState(state: "ACTIVE" | "INACTIVE") {
       email: user.email,
       role: formatRoleOrStatus(user.role),
       createdAt: new Date(user.createdAt),
-      hours: user.hours, // TODO: properly calculate hours
+      hours: friendlyHours(user.totalHours),
     });
   });
 

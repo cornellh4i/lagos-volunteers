@@ -12,7 +12,12 @@ import {
   GridSortModel,
 } from "@mui/x-data-grid";
 import { api } from "@/utils/api";
-import { eventHours, formatDateString } from "@/utils/helpers";
+import {
+  convertEnrollmentStatusToString,
+  eventHours,
+  formatDateString,
+  friendlyHours,
+} from "@/utils/helpers";
 import {
   useMutation,
   useQuery,
@@ -27,6 +32,8 @@ import Modal from "../molecules/Modal";
 import Snackbar from "../atoms/Snackbar";
 import { formatRoleOrStatus } from "@/utils/helpers";
 import { useAuth } from "@/utils/AuthContext";
+import Link from "next/link";
+import ArrowOutwardIcon from "@mui/icons-material/ArrowOutward";
 
 type userProfileData = {
   name: string;
@@ -44,7 +51,8 @@ type eventRegistrationData = {
   id: string;
   name: string;
   startDate: string;
-  hours: number;
+  hours: string;
+  attendeeStatus?: string;
 };
 
 interface ManageUserProfileNew {}
@@ -73,9 +81,38 @@ const eventColumns: GridColDef[] = [
     field: "hours",
     headerName: "Hours",
     sortable: false,
-    type: "number",
+    type: "string",
+    flex: 0.5,
     renderHeader: (params) => (
       <div style={{ fontWeight: "bold" }}>{params.colDef.headerName}</div>
+    ),
+  },
+  {
+    field: "attendeeStatus",
+    headerName: "Registration status",
+    sortable: false,
+    minWidth: 150,
+    renderHeader: (params) => (
+      <div style={{ fontWeight: "bold" }}>{params.colDef.headerName}</div>
+    ),
+  },
+  {
+    headerName: "",
+    field: "actions",
+    sortable: false,
+    minWidth: 150,
+    align: "right",
+    renderCell: (params) => (
+      <div>
+        <Link
+          href={`/events/${params.row.id}/attendees`}
+          className="no-underline"
+        >
+          <Button variety="tertiary" size="small" icon={<ArrowOutwardIcon />}>
+            View Event
+          </Button>
+        </Link>
+      </div>
     ),
   },
 ];
@@ -195,7 +232,7 @@ const ManageUserProfileNew = () => {
     prev: boolean = false
   ) => {
     const limit = prev ? -paginationModel.pageSize : paginationModel.pageSize;
-    let url = `/events?userid=${userid}&limit=${limit}&after=${cursor}&sort=${sortModel[0].field}:${sortModel[0].sort}`;
+    let url = `/events?userid=${userid}&limit=${limit}&after=${cursor}&sort=${sortModel[0].field}:${sortModel[0].sort}&include=attendees`;
     const { response, data } = await api.get(url);
     return data["data"];
   };
@@ -224,11 +261,22 @@ const ManageUserProfileNew = () => {
   const registeredEvents: eventRegistrationData[] = [];
   const totalNumberofData = data?.totalItems || 0;
   data?.result.map((event: any) => {
+    let attendeeStatus =
+      event.attendees.length > 0
+        ? convertEnrollmentStatusToString(
+            event.attendees["0"]["attendeeStatus"]
+          )
+        : undefined;
+
     registeredEvents.push({
       id: event.id,
       name: event.name,
       startDate: formatDateString(event.startDate),
-      hours: eventHours(event.endDate, event.startDate),
+      hours:
+        attendeeStatus === "Checked out"
+          ? eventHours(event.endDate, event.startDate)
+          : "N/A",
+      attendeeStatus: attendeeStatus,
     });
   });
 
@@ -393,8 +441,8 @@ const ManageUserProfileNew = () => {
             {role === "ADMIN" ? "an Admin" : `a ${formatRoleOrStatus(role)}`}
           </h3>
           <div className="mb-4">
-            This member currently has {hours} hours of volunteer experience.
-            Would you like to change this member's status?
+            This member currently has {friendlyHours(hours)} hours of volunteer
+            experience. Would you like to change this member's status?
           </div>
           <Select
             value={role}
@@ -434,7 +482,7 @@ const ManageUserProfileNew = () => {
           <LinearProgress value={100 * (hours / REFERENCE_HOURS)} />
           <h3 className="mb-2 mt-4">Reference Hour Tracker</h3>
           <div>
-            {hours} / {REFERENCE_HOURS} hours complete
+            {friendlyHours(hours)} / {REFERENCE_HOURS} hours complete
           </div>
           {/* <Button>Approve Reference Request</Button> */}
         </Card>
@@ -442,7 +490,7 @@ const ManageUserProfileNew = () => {
           <LinearProgress value={100 * (hours / CERTIFICATE_HOURS)} />
           <h3 className="mb-2 mt-4">Certificate Hour Tracker</h3>
           <div>
-            {hours} / {CERTIFICATE_HOURS} hours complete
+            {friendlyHours(hours)} / {CERTIFICATE_HOURS} hours complete
           </div>
           {/* <Button disabled={hours !== CERTIFICATE_HOURS}>
             Approve Certificate Request
