@@ -12,7 +12,6 @@ import Radio from "@mui/material/Radio";
 import RadioGroup from "@mui/material/RadioGroup";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import FormControl from "@mui/material/FormControl";
-import LocationPicker from "../atoms/LocationPicker";
 import { Typography } from "@mui/material";
 import { useAuth } from "@/utils/AuthContext";
 import router from "next/router";
@@ -39,6 +38,7 @@ type FormValues = {
   id: string;
   eventName: string;
   location: string;
+  locationLink: string;
   volunteerSignUpCap: string;
   eventDescription: string;
   imageURL: string;
@@ -108,6 +108,7 @@ const EventForm = ({
           defaultValues: {
             eventName: eventDetails.eventName,
             location: eventDetails.location,
+            locationLink: eventDetails.locationLink,
             volunteerSignUpCap: eventDetails.volunteerSignUpCap,
             eventDescription: eventDetails.eventDescription,
             imageURL: eventDetails.imageURL,
@@ -140,6 +141,7 @@ const EventForm = ({
       const {
         eventName,
         location,
+        locationLink,
         volunteerSignUpCap,
         eventDescription,
         imageURL,
@@ -160,6 +162,7 @@ const EventForm = ({
         event: {
           name: `${eventName}`,
           location: status === 0 ? "VIRTUAL" : `${location}`,
+          locationLink: locationLink,
           description: `${eventDescription}`,
           imageURL: newImageURL,
           startDate: startDateTime,
@@ -185,6 +188,7 @@ const EventForm = ({
         const {
           eventName,
           location,
+          locationLink,
           volunteerSignUpCap,
           eventDescription,
           imageURL,
@@ -203,6 +207,7 @@ const EventForm = ({
         const { response } = await api.put(`/events/${eventId}`, {
           name: `${eventName}`,
           location: status === 0 ? "VIRTUAL" : `${location}`,
+          locationLink: locationLink,
           description: `${eventDescription}`,
           imageURL: newImageURL,
           startDate: startDateTime,
@@ -436,53 +441,71 @@ const EventForm = ({
               defaultValue={
                 eventDetails?.mode === "VIRTUAL" ? "Virtual" : "In_Person"
               }
-              sx={{ borderRadius: 2, borderColor: "primary.main" }}
             >
-              <FormControlLabel
-                value="Virtual"
-                control={<Radio />}
-                label={<Typography sx={{ fontSize: 15 }}>Virtual</Typography>}
-                onClick={() => radioHandler(0)}
-              />
               <FormControlLabel
                 value="In_Person"
                 control={<Radio />}
-                label={<Typography sx={{ fontSize: 15 }}>In-Person</Typography>}
+                label="In person"
                 onClick={() => radioHandler(1)}
+              />
+              <FormControlLabel
+                value="Virtual"
+                control={<Radio />}
+                label="Virtual"
+                onClick={() => radioHandler(0)}
               />
             </RadioGroup>
           </FormControl>
-          <div className="grid grid-cols-1 sm:grid-cols-2 col-span-2  sm:col-span-1">
-            {status == 1 && (
-              <Controller
-                name="location"
-                control={control}
-                rules={{ required: { value: true, message: "Required" } }}
-                render={({ field }) => (
-                  <LocationPicker
-                    label=""
-                    error={errors.location?.message}
-                    defaultValue={{
-                      description: eventDetails?.location,
-                      structured_formatting: {
-                        main_text: eventDetails?.location,
-                        secondary_text: "",
-                      },
-                    }}
-                    {...field}
-                    form={{
-                      name: "location",
-                      setFormValue: setValue,
-                    }}
-                  />
-                )}
-              />
+          <div>
+            {status == 1 ? (
+              <div className="grid grid-cols-1 sm:grid-cols-2 col-span-2 sm:col-span-1 space-x-0 sm:space-x-4">
+                <TextField
+                  placeholder="Label for location"
+                  error={errors.location?.message}
+                  {...register("location", {
+                    required: { value: true, message: "Required" },
+                  })}
+                />
+                <TextField
+                  placeholder="(Optional) Link to directions"
+                  error={errors.locationLink?.message}
+                  {...register("locationLink", {
+                    pattern: {
+                      value: /^(https?|ftp):\/\/[^\s/$.?#].[^\s]*$/i,
+                      message: "Invalid URL",
+                    },
+                  })}
+                />
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 sm:grid-cols-2 col-span-2 sm:col-span-1 space-x-0 sm:space-x-4">
+                <TextField
+                  disabled
+                  value="VIRTUAL"
+                  placeholder="Label for location"
+                  error={errors.location?.message}
+                  {...register("location", {
+                    required: { value: true, message: "Required" },
+                  })}
+                />
+                <TextField
+                  placeholder="(Optional) Link to virtual meeting"
+                  error={errors.locationLink?.message}
+                  {...register("locationLink", {
+                    required: { value: true, message: "Required" },
+                    pattern: {
+                      value: /^(https?|ftp):\/\/[^\s/$.?#].[^\s]*$/i,
+                      message: "Invalid URL",
+                    },
+                  })}
+                />
+              </div>
             )}
           </div>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 col-span-2  sm:col-span-1">
           <TextField
-            label="Volunteer Sign Up Cap"
+            label="Maximum Number of Volunteers"
             type="number"
             error={errors.volunteerSignUpCap?.message}
             {...register("volunteerSignUpCap", {

@@ -4,6 +4,7 @@ import EventCardRegister from "./EventCardRegister";
 import Divider from "@mui/material/Divider";
 import IconTextHeader from "../atoms/IconTextHeader";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
+import Link from "next/link";
 import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
 import PersonIcon from "@mui/icons-material/Person";
 import FmdGoodIcon from "@mui/icons-material/FmdGood";
@@ -98,6 +99,7 @@ const ViewEventDetails = () => {
   const {
     eventid,
     location,
+    locationLink,
     datetime,
     capacity,
     image_src,
@@ -108,6 +110,7 @@ const ViewEventDetails = () => {
   }: EventData = {
     eventid: eventData.id,
     location: eventData.location,
+    locationLink: eventData.locationLink,
     datetime: formatDateTimeRange(eventData.startDate, eventData.endDate),
     capacity: eventData.capacity,
     image_src: eventData.imageURL,
@@ -142,7 +145,23 @@ const ViewEventDetails = () => {
               header={<>{dateHeader[0]}</>}
               body={<>{dateHeader[1]}</>}
             />
-            <IconTextHeader icon={<FmdGoodIcon />} header={<>{location}</>} />
+            <IconTextHeader
+              icon={<FmdGoodIcon />}
+              header={<>{location}</>}
+              body={
+                locationLink && (
+                  <>
+                    <Link
+                      className="text-black no-underline hover:underline"
+                      target="_blank"
+                      href={locationLink}
+                    >
+                      See location
+                    </Link>
+                  </>
+                )
+              }
+            />
             <IconTextHeader
               icon={<PersonIcon />}
               header={<>{supervisors[0]}</>}
