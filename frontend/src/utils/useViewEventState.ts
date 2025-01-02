@@ -23,7 +23,16 @@ function useViewEventState(
 
   const { user } = useAuth();
   const [userid, setUserid] = useState<string>("");
-  const [hours, setHours] = useState<number>(0);
+
+  /** Tanstack query for fetching the user's total hours */
+  const hoursQuery = useQuery({
+    queryKey: ["userHours", userid],
+    queryFn: async () => {
+      const { data: dataHours } = await api.get(`/users/${userid}/hours`);
+      return dataHours["data"];
+    },
+  });
+  let hours = hoursQuery.data;
 
   /** Pagination model for the table */
   const [paginationModel, setPaginationModel] = useState<GridPaginationModel>({

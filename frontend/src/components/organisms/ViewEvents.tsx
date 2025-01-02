@@ -13,6 +13,7 @@ import {
   convertEnrollmentStatusToString,
   eventHours,
   fetchUserIdFromDatabase,
+  friendlyHours,
 } from "@/utils/helpers";
 import { Action, ViewEventsEvent } from "@/utils/types";
 import Select from "../atoms/Select";
@@ -365,10 +366,12 @@ const PastEvents = ({
         <>
           <div className="grid gap-4 md:grid-cols-2 pb-4">
             <Card>
-              <LinearProgress value={100 * (hours / REFERENCE_HOURS)} />
+              <LinearProgress
+                value={Math.min(100, 100 * (hours / REFERENCE_HOURS))}
+              />
               <h3 className="mb-2 mt-4">Reference Hour Tracker</h3>
               <div className="mb-4">
-                {hours} / {REFERENCE_HOURS} hours complete
+                {friendlyHours(hours)} / {REFERENCE_HOURS} hours complete
               </div>
               <div>
                 You must complete a minimum of 80 hours, have photo proof, and
@@ -379,10 +382,12 @@ const PastEvents = ({
               </div> */}
             </Card>
             <Card>
-              <LinearProgress value={100 * (hours / CERTIFICATE_HOURS)} />
+              <LinearProgress
+                value={Math.min(100, 100 * (hours / CERTIFICATE_HOURS))}
+              />
               <h3 className="mb-2 mt-4">Certificate Hour Tracker</h3>
               <div className="mb-4">
-                {hours} / {CERTIFICATE_HOURS} hours complete
+                {friendlyHours(hours)} / {CERTIFICATE_HOURS} hours complete
               </div>
               <div>
                 You must complete a minimum of 120 hours, have photo proof, and

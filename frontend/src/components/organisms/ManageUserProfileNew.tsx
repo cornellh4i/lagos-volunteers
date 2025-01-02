@@ -479,7 +479,9 @@ const ManageUserProfileNew = () => {
       <h3>Hour Tracker</h3>
       <div className="grid gap-4 md:grid-cols-2">
         <Card>
-          <LinearProgress value={100 * (hours / REFERENCE_HOURS)} />
+          <LinearProgress
+            value={Math.min(100, 100 * (hours / REFERENCE_HOURS))}
+          />
           <h3 className="mb-2 mt-4">Reference Hour Tracker</h3>
           <div>
             {friendlyHours(hours)} / {REFERENCE_HOURS} hours complete
@@ -487,7 +489,9 @@ const ManageUserProfileNew = () => {
           {/* <Button>Approve Reference Request</Button> */}
         </Card>
         <Card>
-          <LinearProgress value={100 * (hours / CERTIFICATE_HOURS)} />
+          <LinearProgress
+            value={Math.min(100, 100 * (hours / CERTIFICATE_HOURS))}
+          />
           <h3 className="mb-2 mt-4">Certificate Hour Tracker</h3>
           <div>
             {friendlyHours(hours)} / {CERTIFICATE_HOURS} hours complete
