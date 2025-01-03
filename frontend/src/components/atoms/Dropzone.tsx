@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import Button from "./Button";
 
 interface DropzoneProps {
@@ -20,6 +20,7 @@ const Dropzone = ({
   label,
   ...props
 }: DropzoneProps) => {
+  const fileInputRef = useRef<HTMLInputElement | null>(null); // Ref for the file input
   const allowedFileTypes = ["image/jpg", "image/jpeg", "image/png"];
   const maxFileSize = 50 * 1024 * 1024; // 50 MB
 
@@ -51,6 +52,10 @@ const Dropzone = ({
     event.preventDefault();
     event.target.value = null;
     setSelectedFile(null);
+
+    if (fileInputRef.current) {
+      fileInputRef.current.value = ""; // Reset file input
+    }
   };
 
   return (
@@ -118,6 +123,7 @@ const Dropzone = ({
             onChange={handleFileChange}
             type="file"
             className="hidden"
+            ref={fileInputRef}
           />
         </label>
       </div>
