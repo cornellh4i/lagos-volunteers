@@ -44,30 +44,6 @@ const ForgotPasswordForm = () => {
     }
   };
 
-  const ForgotPasswordErrorComponent = (): JSX.Element | null => {
-    return error ? (
-      <Snackbar
-        variety="error"
-        open={errorSnackbarOpen}
-        onClose={() => setErrorSnackbarOpen(false)}
-      >
-        Error: {handleErrors(error.message)}
-      </Snackbar>
-    ) : null;
-  };
-
-  const ForgotPasswordSuccessComponent = (): JSX.Element | null => {
-    return success ? (
-      <Snackbar
-        variety="success"
-        open={success}
-        onClose={() => setSuccess(false)}
-      >
-        Success: Password reset email sent. Please check your inbox.
-      </Snackbar>
-    ) : null;
-  };
-
   const handleForgotPassword: SubmitHandler<FormValues> = async (data) => {
     const { email } = data;
 
@@ -84,45 +60,62 @@ const ForgotPasswordForm = () => {
   }, [error]);
 
   return (
-    <form onSubmit={handleSubmit(handleForgotPassword)} className="space-y-4">
-      <ForgotPasswordErrorComponent />
-      <ForgotPasswordSuccessComponent />
-      <img src="/lfbi_logo.png" className="w-24" />
-      <div className="font-bold text-3xl">Forgot Password</div>
-      <div className="text-sm">
-        After verifying your email, you will receive instructions on how to
-        reset your password. If you continue to experience issues, please
-        contact our support team for assistance.
-      </div>
-      <div>
-        <TextField
-          error={errors.email?.message}
-          label="Email"
-          {...register("email", {
-            required: { value: true, message: "Required" },
-            pattern: {
-              value:
-                /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/,
-              message: "Invalid email address",
-            },
-          })}
-        />
-      </div>
-      <div className="pt-2">
-        <Button loading={sending} type="submit">
-          Email me a link
-        </Button>
-      </div>
-      <div className="justify-center flex flex-row">
-        <div>Have an account?&nbsp;</div>
-        <Link
-          href="/login"
-          className="text-primary-200 hover:underline no-underline"
-        >
-          Log in
-        </Link>
-      </div>
-    </form>
+    <>
+      {/* ForgotPasswordErrorComponent */}
+      <Snackbar
+        variety="error"
+        open={errorSnackbarOpen}
+        onClose={() => setErrorSnackbarOpen(false)}
+      >
+        Error: {error && handleErrors(error.message)}
+      </Snackbar>
+
+      {/* ForgotPasswordSuccessComponent */}
+      <Snackbar
+        variety="success"
+        open={success}
+        onClose={() => setSuccess(false)}
+      >
+        Success: Password reset email sent. Please check your inbox.
+      </Snackbar>
+      <form onSubmit={handleSubmit(handleForgotPassword)} className="space-y-4">
+        <img src="/lfbi_logo.png" className="w-24" />
+        <div className="font-bold text-3xl">Forgot Password</div>
+        <div className="text-sm">
+          After verifying your email, you will receive instructions on how to
+          reset your password. If you continue to experience issues, please
+          contact our support team for assistance.
+        </div>
+        <div>
+          <TextField
+            error={errors.email?.message}
+            label="Email"
+            {...register("email", {
+              required: { value: true, message: "Required" },
+              pattern: {
+                value:
+                  /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/,
+                message: "Invalid email address",
+              },
+            })}
+          />
+        </div>
+        <div className="pt-2">
+          <Button loading={sending} type="submit">
+            Email me a link
+          </Button>
+        </div>
+        <div className="justify-center flex flex-row">
+          <div>Have an account?&nbsp;</div>
+          <Link
+            href="/login"
+            className="text-primary-200 hover:underline no-underline"
+          >
+            Log in
+          </Link>
+        </div>
+      </form>
+    </>
   );
 };
 
