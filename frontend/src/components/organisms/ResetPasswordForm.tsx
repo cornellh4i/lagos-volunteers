@@ -17,6 +17,7 @@ type FormValues = {
 };
 /** A ResetPassword page */
 const ResetPassword = () => {
+  const [showPage, setShowPage] = useState(false);
   const [openSnackbar, setOpenSnackbar] = useState(false); // State to control Snackbar visibility
   const [errorMessage, setErrorMessage] = useState<string>("");
   const router = useRouter();
@@ -72,6 +73,22 @@ const ResetPassword = () => {
     retry: false,
   });
 
+  /**
+   * Custom route protection: verify oobcode in URL is correct on page load.
+   * If not, redirect to login
+   */
+  useEffect(() => {
+    const routeProtection = async () => {
+      try {
+        await verifyPasswordResetCode(auth, oobCode);
+        setShowPage(true);
+      } catch (error) {
+        router.push("/login");
+      }
+    };
+    routeProtection();
+  }, []);
+
   const handleSubmitForm: SubmitHandler<FormValues> = async (data) => {
     const { password, confirmPassword } = data;
     try {
@@ -84,77 +101,81 @@ const ResetPassword = () => {
   };
   return (
     <>
-      <Snackbar
-        variety="error"
-        open={openSnackbar}
-        onClose={() => setOpenSnackbar(false)}
-      >
-        Error : {errorMessage}
-      </Snackbar>
-      <form onSubmit={handleSubmit(handleSubmitForm)} className="space-y-4">
-        <div className="font-bold text-3xl">Reset Password</div>
-        <div className="text-sm">
-          Passwords should meet the following requirements:
-          <ul className="m-0 px-4">
-            <li>At least 6 characters in length</li>
-            <li>Contain a mix of uppercase and lowercase letters</li>
-            <li>Include at least one number and one special character</li>
-          </ul>
-        </div>
-        <div>
-          <TextField
-            error={errors.password?.message}
-            type="password"
-            label="New password"
-            {...register("password", {
-              required: { value: true, message: "Required" },
-              minLength: {
-                value: 6,
-                message: "Password must be at least 6 characters",
-              },
-              validate: {
-                hasUpper: (value) =>
-                  /.*[A-Z].*/.test(value) ||
-                  "Password must contain at least one uppercase letter",
-                hasLower: (value) =>
-                  /.*[a-z].*/.test(value) ||
-                  "Password must contain at least one lowercase letter",
-                hasNumber: (value) =>
-                  /.*[0-9].*/.test(value) ||
-                  "Password must contain at least one number",
-                hasSpecialChar: (value) =>
-                  /.*[\W_].*/.test(value) ||
-                  "Password must contain at least one special character",
-              },
-            })}
-          />
-        </div>
-        <div>
-          <TextField
-            type="password"
-            error={errors.confirmPassword?.message}
-            label="Confirm password"
-            {...register("confirmPassword", {
-              required: { value: true, message: "Required" },
-              validate: {
-                matchPassword: (value) =>
-                  value === watch("password") || "Passwords do not match",
-              },
-            })}
-          />
-        </div>
-        <div>
-          <Button type="submit" loading={isPending}>
-            Reset Password
-          </Button>
-        </div>
-        {/* <div className="justify-center flex flex-row text-sm">
+      {showPage && (
+        <>
+          <Snackbar
+            variety="error"
+            open={openSnackbar}
+            onClose={() => setOpenSnackbar(false)}
+          >
+            Error : {errorMessage}
+          </Snackbar>
+          <form onSubmit={handleSubmit(handleSubmitForm)} className="space-y-4">
+            <div className="font-bold text-3xl">Reset Password</div>
+            <div className="text-sm">
+              Passwords should meet the following requirements:
+              <ul className="m-0 px-4">
+                <li>At least 6 characters in length</li>
+                <li>Contain a mix of uppercase and lowercase letters</li>
+                <li>Include at least one number and one special character</li>
+              </ul>
+            </div>
+            <div>
+              <TextField
+                error={errors.password?.message}
+                type="password"
+                label="New password"
+                {...register("password", {
+                  required: { value: true, message: "Required" },
+                  minLength: {
+                    value: 6,
+                    message: "Password must be at least 6 characters",
+                  },
+                  validate: {
+                    hasUpper: (value) =>
+                      /.*[A-Z].*/.test(value) ||
+                      "Password must contain at least one uppercase letter",
+                    hasLower: (value) =>
+                      /.*[a-z].*/.test(value) ||
+                      "Password must contain at least one lowercase letter",
+                    hasNumber: (value) =>
+                      /.*[0-9].*/.test(value) ||
+                      "Password must contain at least one number",
+                    hasSpecialChar: (value) =>
+                      /.*[\W_].*/.test(value) ||
+                      "Password must contain at least one special character",
+                  },
+                })}
+              />
+            </div>
+            <div>
+              <TextField
+                type="password"
+                error={errors.confirmPassword?.message}
+                label="Confirm password"
+                {...register("confirmPassword", {
+                  required: { value: true, message: "Required" },
+                  validate: {
+                    matchPassword: (value) =>
+                      value === watch("password") || "Passwords do not match",
+                  },
+                })}
+              />
+            </div>
+            <div>
+              <Button type="submit" loading={isPending}>
+                Reset Password
+              </Button>
+            </div>
+            {/* <div className="justify-center flex flex-row text-sm">
           <Link href="/" className="text-black">
             {" "}
             Didn't request to reset password?
           </Link>
         </div> */}
-      </form>
+          </form>
+        </>
+      )}
     </>
   );
 };
