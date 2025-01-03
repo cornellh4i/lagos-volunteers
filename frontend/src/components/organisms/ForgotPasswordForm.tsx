@@ -44,30 +44,6 @@ const ForgotPasswordForm = () => {
     }
   };
 
-  const ForgotPasswordErrorComponent = (): JSX.Element | null => {
-    return error ? (
-      <Snackbar
-        variety="error"
-        open={errorSnackbarOpen}
-        onClose={() => setErrorSnackbarOpen(false)}
-      >
-        Error: {handleErrors(error.message)}
-      </Snackbar>
-    ) : null;
-  };
-
-  const ForgotPasswordSuccessComponent = (): JSX.Element | null => {
-    return success ? (
-      <Snackbar
-        variety="success"
-        open={success}
-        onClose={() => setSuccess(false)}
-      >
-        Success: Password reset email sent. Please check your inbox.
-      </Snackbar>
-    ) : null;
-  };
-
   const handleForgotPassword: SubmitHandler<FormValues> = async (data) => {
     const { email } = data;
 
@@ -85,8 +61,23 @@ const ForgotPasswordForm = () => {
 
   return (
     <>
-      <ForgotPasswordErrorComponent />
-      <ForgotPasswordSuccessComponent />
+      {/* ForgotPasswordErrorComponent */}
+      <Snackbar
+        variety="error"
+        open={errorSnackbarOpen}
+        onClose={() => setErrorSnackbarOpen(false)}
+      >
+        Error: {error && handleErrors(error.message)}
+      </Snackbar>
+
+      {/* ForgotPasswordSuccessComponent */}
+      <Snackbar
+        variety="success"
+        open={success}
+        onClose={() => setSuccess(false)}
+      >
+        Success: Password reset email sent. Please check your inbox.
+      </Snackbar>
       <form onSubmit={handleSubmit(handleForgotPassword)} className="space-y-4">
         <img src="/lfbi_logo.png" className="w-24" />
         <div className="font-bold text-3xl">Forgot Password</div>
