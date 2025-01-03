@@ -50,7 +50,7 @@ const Active = ({
     {
       field: "firstName",
       headerName: "Name",
-      flex: 2,
+      flex: 1.25,
       minWidth: 200,
       renderHeader: (params) => (
         <div style={{ fontWeight: "bold" }}>{params.colDef.headerName}</div>
@@ -61,6 +61,16 @@ const Active = ({
       headerName: "Email",
       flex: 1,
       minWidth: 150,
+      renderHeader: (params) => (
+        <div style={{ fontWeight: "bold" }}>{params.colDef.headerName}</div>
+      ),
+    },
+    {
+      field: "phone",
+      headerName: "Phone number",
+      sortable: false,
+      minWidth: 200,
+      flex: 0.5,
       renderHeader: (params) => (
         <div style={{ fontWeight: "bold" }}>{params.colDef.headerName}</div>
       ),
