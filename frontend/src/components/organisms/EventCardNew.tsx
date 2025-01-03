@@ -112,7 +112,7 @@ const EventCardNew = ({ event }: EventCardNewProps) => {
               <div className="flex-1 hidden md:block md:pl-6">
                 <div className="relative h-full w-full overflow-auto rounded-2xl">
                   <img
-                    className="absolute right-0 h-full rounded-2xl w-[300px] object-cover border-gray-300 border-solid border"
+                    className="absolute right-0 h-full rounded-2xl w-[300px] object-cover border-gray-300 border-solid border box-border"
                     src={
                       event.imageURL == null
                         ? "/lfbi_splash.png"
