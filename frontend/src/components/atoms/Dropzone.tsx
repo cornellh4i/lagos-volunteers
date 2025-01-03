@@ -75,7 +75,7 @@ const Dropzone = ({
         </div>
       </div>
       <div className="flex items-center justify-center w-full">
-        <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer hover:bg-gray-50">
+        <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer hover:bg-gray-50 overflow-hidden">
           <div className="flex flex-col items-center justify-center pt-5 pb-6">
             {props.defaultValue ? (
               <div className="flex items-center">
