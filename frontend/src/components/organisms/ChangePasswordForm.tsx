@@ -200,7 +200,7 @@ const ChangePasswordForm = ({ userDetails }: ChangePasswordFormProps) => {
               type="button"
               variety="secondary"
               onClick={() => {
-                reset(undefined, { keepDefaultValues: true });
+                reset();
               }}
               disabled={!isDirty}
             >
