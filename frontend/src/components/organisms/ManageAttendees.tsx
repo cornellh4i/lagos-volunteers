@@ -214,7 +214,10 @@ const AttendeesTable = ({
         <div className="w-full">
           <Select
             size="small"
-            disabled={eventData.status === "CANCELED"}
+            disabled={
+              eventData.status === "CANCELED" ||
+              attendeesStatus === "CHECKED_OUT"
+            }
             value={params.row.status}
             onChange={(event: any) =>
               handleStatusChange(params.row.id, event.target.value)
@@ -330,18 +333,21 @@ const AttendeesTable = ({
       {attendeesStatus === "PENDING" ? (
         <p>
           Volunteers are <b>pending</b> when they have registered for an event
-          but have not been checked in by a supervisor{" "}
+          but have not been checked in by a supervisor.
         </p>
       ) : attendeesStatus === "CHECKED_IN" ? (
         <p>
           Volunteers are <b>checked in</b> when they arrive at the volunteer
-          event.
+          event. Hours are not tracked for volunteers until they are checked
+          out.
         </p>
       ) : attendeesStatus === "CHECKED_OUT" ? (
         <p>
           Volunteers are <b>checked out</b> when they leave the volunteer event.
           Only volunteers listed in this category have their hours tracked for
-          the event.
+          the event. Once volunteers are checked out, their status{" "}
+          <b>cannot be changed</b> by supervisors, so make sure you are not
+          making any mistakes.
         </p>
       ) : attendeesStatus === "CANCELED" ? (
         <p>
