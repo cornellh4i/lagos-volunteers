@@ -75,6 +75,7 @@ function useManageUserState(state: "ACTIVE" | "INACTIVE") {
       id: user.id,
       firstName: user.profile?.firstName + " " + user.profile?.lastName,
       email: user.email,
+      phone: user.profile?.phoneNumber,
       role: formatRoleOrStatus(user.role),
       createdAt: new Date(user.createdAt),
       hours: friendlyHours(user.totalHours),
