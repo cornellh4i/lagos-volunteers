@@ -83,10 +83,10 @@ export const authIfVolunteer = (
 };
 
 /**
- * Authorizes a request if a token is present with the supervisor claim,
+ * Authorizes a request if a token is present with the supervisor or admin claim,
  * returning an error otherwise.
  */
-export const authIfSupervisor = (
+export const authIfSupervisorOrAdmin = (
   req: IGetAuthTokenRequest,
   res: Response,
   next: NextFunction
@@ -94,7 +94,7 @@ export const authIfSupervisor = (
   getAuthToken(req, res, async () => {
     try {
       const userInfo = await firebase.auth().verifyIdToken(req.authToken);
-      if (userInfo.supervisor === true) {
+      if (userInfo.supervisor === true || userInfo.admin === true) {
         req.authId = userInfo.uid;
         return next();
       }

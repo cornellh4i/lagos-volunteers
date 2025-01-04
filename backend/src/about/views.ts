@@ -3,7 +3,7 @@ import {
   auth,
   NoAuth,
   authIfAdmin,
-  authIfSupervisor,
+  authIfSupervisorOrAdmin,
 } from "../middleware/auth";
 import { attempt } from "../utils/helpers";
 import aboutController from "./controllers";
@@ -20,7 +20,7 @@ process.env.NODE_ENV === "test"
     (useSupervisorAuth = NoAuth as RequestHandler))
   : ((useAuth = auth as RequestHandler),
     (useAdminAuth = authIfAdmin as RequestHandler),
-    (useSupervisorAuth = authIfSupervisor as RequestHandler));
+    (useSupervisorAuth = authIfSupervisorOrAdmin as RequestHandler));
 
 aboutRouter.get("/", useAuth, async (req: Request, res: Response) => {
   attempt(res, 200, () => aboutController.getAboutPageContent());

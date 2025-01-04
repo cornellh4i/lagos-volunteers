@@ -8,7 +8,7 @@ import {
   updateFirebaseUserToAdmin,
   NoAuth,
   authIfAdmin,
-  authIfSupervisor,
+  authIfSupervisorOrAdmin,
 } from "../middleware/auth";
 const userRouter = Router();
 import * as firebase from "firebase-admin";
@@ -17,15 +17,15 @@ import admin from "firebase-admin";
 
 let useAuth: RequestHandler;
 let useAdminAuth: RequestHandler;
-let useSupervisorAuth: RequestHandler;
+let useSupervisorAdminAuth: RequestHandler;
 
 process.env.NODE_ENV === "test"
   ? ((useAuth = NoAuth as RequestHandler),
     (useAdminAuth = NoAuth as RequestHandler),
-    (useSupervisorAuth = NoAuth as RequestHandler))
+    (useSupervisorAdminAuth = NoAuth as RequestHandler))
   : ((useAuth = auth as RequestHandler),
     (useAdminAuth = authIfAdmin as RequestHandler),
-    (useSupervisorAuth = authIfSupervisor as RequestHandler));
+    (useSupervisorAdminAuth = authIfSupervisorOrAdmin as RequestHandler));
 
 userRouter.post(
   "/",
@@ -129,7 +129,7 @@ userRouter.put("/:userid", useAuth, async (req: Request, res: Response) => {
 
 userRouter.get(
   "/count",
-  useAdminAuth || useSupervisorAuth,
+  useSupervisorAdminAuth,
   async (req: Request, res: Response) => {
     // #swagger.tags = ['Users']
     attempt(res, 200, userController.getCountUsers);
@@ -176,7 +176,7 @@ userRouter.get("/", useAuth, async (req: Request, res: Response) => {
 
 userRouter.get(
   "/pagination",
-  useAdminAuth || useSupervisorAuth,
+  useSupervisorAdminAuth,
   async (req: Request, res: Response) => {
     // #swagger.tags = ['Users']
     attempt(res, 200, () => userController.getUsersPaginated(req));
@@ -203,7 +203,7 @@ userRouter.get("/search", useAuth, async (req: Request, res: Response) => {
 
 userRouter.get(
   "/sorting",
-  useAdminAuth || useSupervisorAuth,
+  useSupervisorAdminAuth,
   async (req: Request, res: Response) => {
     // #swagger.tags = ['Users']
     attempt(res, 200, () => userController.getUsersSorted(req));
@@ -349,7 +349,7 @@ userRouter.patch(
 
 userRouter.patch(
   "/:userid/hours",
-  useAdminAuth || useSupervisorAuth,
+  useSupervisorAdminAuth,
   async (req: Request, res: Response) => {
     // #swagger.tags = ['Users']
     const { hours } = req.body;
