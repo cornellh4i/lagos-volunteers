@@ -12,7 +12,7 @@ import {
 } from "../middleware/auth";
 const userRouter = Router();
 import * as firebase from "firebase-admin";
-import { attempt, socketNotify } from "../utils/helpers";
+import { attempt, checkUserMatch, socketNotify } from "../utils/helpers";
 import admin from "firebase-admin";
 
 let useAuth: RequestHandler;
@@ -112,9 +112,22 @@ userRouter.post(
 
 userRouter.delete("/:userid", useAuth, async (req: Request, res: Response) => {
   // #swagger.tags = ['Users']
-  await admin.auth().deleteUser(req.params.userid);
-  attempt(res, 200, () => userController.deleteUser(req.params.userid));
-  socketNotify("/users");
+  try {
+    const match = await checkUserMatch(req, req.params.userid);
+    if (match) {
+      await admin.auth().deleteUser(req.params.userid);
+      attempt(res, 200, () => userController.deleteUser(req.params.userid));
+      socketNotify("/users");
+    } else {
+      return res.status(500).send({
+        success: false,
+        error:
+          "You are not authorized since your Firebase id does not match the specified userid.",
+      });
+    }
+  } catch (e: any) {
+    return res.status(500).send({ success: false, error: e.message });
+  }
 });
 
 userRouter.put("/:userid", useAuth, async (req: Request, res: Response) => {

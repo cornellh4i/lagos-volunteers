@@ -1,8 +1,9 @@
-import { Response } from "express";
+import { Request, Response } from "express";
 import { errorJson, successJson } from "./jsonResponses";
 import admin from "firebase-admin";
 import { User } from "@prisma/client";
 import deleteUser from "../users/controllers";
+import userController from "../users/controllers";
 import prisma from "../../client";
 import { WebSocket } from "ws";
 import { wss } from "../server";
@@ -33,6 +34,30 @@ interface UserRecord {
   displayName?: string;
   photoURL?: string;
 }
+
+/**
+ * Takes in a userid and returns true if it matches the same user as the current
+ * Firebase token.
+ * @param req - The request
+ * @param userId - The user ID from your database
+ * @returns A promise that resolves to true if both refer to the same user, otherwise false
+ */
+export const checkUserMatch = async (req: Request, userId: string) => {
+  // Get auth token
+  if (
+    req.headers.authorization &&
+    req.headers.authorization.split(" ")[0] === "Bearer"
+  ) {
+    const authToken = req.headers.authorization.split(" ")[1];
+    const userInfo = await admin.auth().verifyIdToken(authToken);
+    const firebaseId = userInfo.uid;
+    const firebaseUser = await admin.auth().getUser(firebaseId);
+    const user = await userController.getUserByID(userId);
+    return firebaseUser.email === user?.email;
+  } else {
+    return false;
+  }
+};
 
 /**
  * Looks through Firebase and deletes every user created over 24 hours ago with an

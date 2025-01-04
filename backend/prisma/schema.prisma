@@ -81,8 +81,8 @@ model Event {
   endDate      DateTime
   mode         EventMode?        @default(IN_PERSON)
   status       EventStatus?      @default(ACTIVE)
-  owner        User              @relation(fields: [ownerId], references: [id], name: "EventOwner")
-  ownerId      String
+  owner        User?             @relation(fields: [ownerId], references: [id], name: "EventOwner")
+  ownerId      String?
   attendees    EventEnrollment[]
   capacity     Int
   tags         EventTags[]

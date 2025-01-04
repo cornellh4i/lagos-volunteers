@@ -147,11 +147,46 @@
             "name": "limit",
             "in": "query",
             "type": "string"
+          },
+          {
+            "name": "include",
+            "in": "query",
+            "type": "string"
           }
         ],
         "responses": {
           "default": {
             "description": ""
+          }
+        }
+      }
+    },
+    "/users/google": {
+      "post": {
+        "tags": [
+          "Users"
+        ],
+        "description": "",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "rest": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "500": {
+            "description": "Internal Server Error"
           }
         }
       }
@@ -600,6 +635,11 @@
             "name": "limit",
             "in": "query",
             "type": "string"
+          },
+          {
+            "name": "include",
+            "in": "query",
+            "type": "string"
           }
         ],
         "responses": {
@@ -716,11 +756,6 @@
             "in": "path",
             "required": true,
             "type": "string"
-          },
-          {
-            "name": "userid",
-            "in": "query",
-            "type": "string"
           }
         ],
         "responses": {
@@ -759,8 +794,10 @@
             "description": ""
           }
         }
-      },
-      "put": {
+      }
+    },
+    "/events/{eventid}/attendees/{userid}": {
+      "get": {
         "tags": [
           "Events"
         ],
@@ -773,19 +810,31 @@
             "type": "string"
           },
           {
-            "name": "body",
-            "in": "body",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "attendeeid": {
-                  "example": "any"
-                },
-                "cancelationMessage": {
-                  "example": "any"
-                }
-              }
-            }
+            "name": "userid",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/events/{eventid}/attendees/registered/length": {
+      "get": {
+        "tags": [
+          "Events"
+        ],
+        "description": "",
+        "parameters": [
+          {
+            "name": "eventid",
+            "in": "path",
+            "required": true,
+            "type": "string"
           }
         ],
         "responses": {
@@ -821,6 +870,45 @@
               "type": "object",
               "properties": {
                 "attendeeStatus": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/events/{eventid}/attendees/{attendeeid}/cancel": {
+      "put": {
+        "tags": [
+          "Events"
+        ],
+        "description": "",
+        "parameters": [
+          {
+            "name": "eventid",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "attendeeid",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "cancelationMessage": {
                   "example": "any"
                 }
               }
