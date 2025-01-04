@@ -98,11 +98,12 @@ const UpcomingEvents = ({
     queryKey: ["events"],
     placeholderData: keepPreviousData,
     queryFn: async () => {
+      const limit = 1000;
       // recall this is temp
       const userid = await fetchUserIdFromDatabase(user?.email as string);
       setUserid(userid);
       const upcomingEventsUserRegisteredFor = await api.get(
-        `/events?userid=${userid}&date=upcoming&sort=startDate:asc`
+        `/events?userid=${userid}&date=upcoming&sort=startDate:asc&limit=${limit}`
       );
 
       // Change API call depending on whether supervisor choosese to see all
@@ -110,9 +111,11 @@ const UpcomingEvents = ({
       // console.log(`seeAllEvents ${seeAllEvents}`);
       const upcomingEventsUserSupervises =
         seeAllEvents === true
-          ? await api.get(`/events?date=upcoming&sort=startDate:asc`)
+          ? await api.get(
+              `/events?date=upcoming&sort=startDate:asc&limit=${limit}`
+            )
           : await api.get(
-              `/events?ownerid=${userid}&date=upcoming&sort=startDate:asc`
+              `/events?ownerid=${userid}&date=upcoming&sort=startDate:asc&limit=${limit}`
             );
       return {
         upcomingRegistered: upcomingEventsUserRegisteredFor.data["data"],
