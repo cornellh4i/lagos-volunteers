@@ -193,11 +193,11 @@ const ManageUserProfileNew = () => {
   const {
     data: userProfileDetailsQuery,
     isPending: userProfileFetchPending,
-    isError,
+    isError: userProfileFetchHasError,
   } = useQuery({
     queryKey: ["user", userid],
     queryFn: async () => {
-      const { data } = await api.get(`/users/${userid}/profile`);
+      const { data } = await api.get(`/users/${userid}`);
       return data["data"];
     },
   });
@@ -372,6 +372,14 @@ const ManageUserProfileNew = () => {
 
   if (userProfileFetchPending) {
     return <Loading />;
+  }
+
+  if (userProfileFetchHasError) {
+    return (
+      <div className="p-10">
+        <div className="text-center">This user could not be found.</div>
+      </div>
+    );
   }
 
   return (

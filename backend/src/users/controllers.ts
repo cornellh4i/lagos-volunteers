@@ -408,7 +408,7 @@ const getSearchedUser = async (
  * @returns promise with user or error
  */
 const getUserByID = async (userID: string) => {
-  return prisma.user.findUnique({
+  return prisma.user.findUniqueOrThrow({
     where: {
       id: userID,
     },

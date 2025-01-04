@@ -41,6 +41,7 @@ import useManageAttendeeState from "@/utils/useManageAttendeeState";
 import ManageSearchIcon from "@mui/icons-material/ManageSearch";
 import MultilineTextField from "../atoms/MultilineTextField";
 import Alert from "../atoms/Alert";
+import Loading from "../molecules/Loading";
 
 type attendeeData = {
   id: number;
@@ -637,7 +638,12 @@ const ManageAttendees = () => {
   const [userid, setUserid] = React.useState("");
 
   /** Tanstack query for fetching event information to show in the Event Recap */
-  const { data, isLoading, isError, error } = useQuery({
+  const {
+    data,
+    isLoading: isEventLoading,
+    isError: isEventError,
+    error,
+  } = useQuery({
     queryKey: ["event", eventid],
     queryFn: async () => {
       const userid = await fetchUserIdFromDatabase(user?.email as string);
@@ -821,6 +827,18 @@ const ManageAttendees = () => {
       localStorage.removeItem("eventCanceled");
     }
   }, []);
+
+  if (isEventLoading) {
+    return <Loading />;
+  }
+
+  if (isEventError) {
+    return (
+      <div className="p-10">
+        <div className="text-center">This event could not be found.</div>
+      </div>
+    );
+  }
 
   return (
     <>
