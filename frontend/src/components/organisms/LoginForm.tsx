@@ -159,9 +159,9 @@ const LoginForm = () => {
           : ["", ""];
 
         // Check if user exists in local database
-        const { response, data } = await api.get(`/users/${userid}`);
-        console.log(data);
-        if (!data["data"]) {
+        try {
+          await api.get(`/users/${userid}`);
+        } catch (e: any) {
           const backendUser = await createLocalUserFromGoogle({
             userid,
             firstName,
