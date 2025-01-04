@@ -165,8 +165,8 @@ eventRouter.post(
   useAuth,
   async (req: Request, res: Response) => {
     // #swagger.tags = ['Events']
-    checkUserMatchOrSupervisorAdmin(req, res, req.params.userid, async () => {
-      const { attendeeid } = req.body;
+    const { attendeeid } = req.body;
+    checkUserMatchOrSupervisorAdmin(req, res, attendeeid, async () => {
       attempt(res, 200, () =>
         eventController.addAttendee(req.params.eventid, attendeeid)
       );
@@ -197,17 +197,22 @@ eventRouter.put(
   useAuth,
   async (req: Request, res: Response) => {
     // #swagger.tags = ['Events']
-    checkUserMatchOrSupervisorAdmin(req, res, req.params.userid, async () => {
-      const { cancelationMessage } = req.body;
-      attempt(res, 200, () =>
-        eventController.deleteAttendee(
-          req.params.eventid,
-          req.params.attendeeid,
-          cancelationMessage
-        )
-      );
-      socketNotify(`/events/${req.params.eventid}`);
-    });
+    checkUserMatchOrSupervisorAdmin(
+      req,
+      res,
+      req.params.attendeeid,
+      async () => {
+        const { cancelationMessage } = req.body;
+        attempt(res, 200, () =>
+          eventController.deleteAttendee(
+            req.params.eventid,
+            req.params.attendeeid,
+            cancelationMessage
+          )
+        );
+        socketNotify(`/events/${req.params.eventid}`);
+      }
+    );
   }
 );
 
