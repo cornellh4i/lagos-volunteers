@@ -60,7 +60,10 @@ export function createRandomEvent(): dummyEvent {
     (faker.location.buildingNumber, faker.location.city())
   }, ${faker.location.state()}`;
   const startDate = faker.date.soon();
-  const endDate = faker.date.future();
+  const endDate = new Date(startDate);
+  endDate.setHours(
+    startDate.getHours() + faker.number.int({ min: 1, max: 12 })
+  );
   const capacity = faker.number.int({ min: 10, max: 1000 });
   const imageURL = faker.image.urlLoremFlickr({ category: "people" });
   const status = faker.helpers.arrayElement([
