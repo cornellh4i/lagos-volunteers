@@ -274,7 +274,7 @@ const getPastEvents = async () => {
  * @returns promise with all event info or error
  */
 const getEvent = async (eventID: string) => {
-  return prisma.event.findUnique({
+  return prisma.event.findUniqueOrThrow({
     where: {
       id: eventID,
     },
