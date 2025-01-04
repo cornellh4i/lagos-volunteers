@@ -111,11 +111,33 @@ const ModalBody = ({
     <div className="space-y-4">
       <div className="font-bold text-2xl text-center">Delete Account</div>
       <div className="mb-12">
-        <div>
+        <p>
           Are you sure you want to delete your account? This change is{" "}
           <b>permanent</b> and there is{" "}
-          <b>no ability to restore your account once it is deleted</b>.
-        </div>
+          <b>no ability to restore your account</b>.
+        </p>
+        {userDetails.role === "VOLUNTEER" && (
+          <p>
+            As a volunteer,{" "}
+            <b>your account details and volunteer history will be deleted</b>.
+            There is no way to recover this data.
+          </p>
+        )}
+        {userDetails.role === "SUPERVISOR" && (
+          <p>
+            As a supervisor, your account details and volunteer history will be
+            deleted. However, <b>events you have created</b> will still remain
+            and can still be managed by other supervisors.
+          </p>
+        )}
+        {userDetails.role === "ADMIN" && (
+          <p>
+            As an admin, make sure that{" "}
+            <b>you have assigned the admin role to at least one other user</b>.
+            Only admins can change the roles of other users. All of your created
+            events will still remain.
+          </p>
+        )}
       </div>
 
       <form onSubmit={handleSubmit(handleDeleteAccount)}>

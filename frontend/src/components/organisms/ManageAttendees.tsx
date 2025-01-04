@@ -670,9 +670,11 @@ const ManageAttendees = () => {
     capacity: eventData.capacity,
     image_src: eventData.imageURL,
     tags: eventData.tags,
-    supervisors: [
-      `${eventData.owner?.profile?.firstName} ${eventData.owner?.profile?.lastName}`,
-    ],
+    supervisors: eventData.owner
+      ? [
+          `${eventData.owner?.profile?.firstName} ${eventData.owner?.profile?.lastName}`,
+        ]
+      : ["[deleted user]"],
     description: eventData.description,
     name: eventData.name,
     event_status: eventData.status,
