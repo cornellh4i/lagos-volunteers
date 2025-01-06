@@ -7,7 +7,11 @@ import {
   authIfSupervisorOrAdmin,
   authIfVolunteer,
 } from "../middleware/auth";
-import { attempt, socketNotify } from "../utils/helpers";
+import {
+  attempt,
+  checkUserMatchOrSupervisorAdmin,
+  socketNotify,
+} from "../utils/helpers";
 
 import { errorJson, successJson } from "../utils/jsonResponses";
 import { EventMode, EventStatus, Prisma } from "@prisma/client";
@@ -162,10 +166,12 @@ eventRouter.post(
   async (req: Request, res: Response) => {
     // #swagger.tags = ['Events']
     const { attendeeid } = req.body;
-    attempt(res, 200, () =>
-      eventController.addAttendee(req.params.eventid, attendeeid)
-    );
-    socketNotify(`/events/${req.params.eventid}`);
+    checkUserMatchOrSupervisorAdmin(req, res, attendeeid, async () => {
+      attempt(res, 200, () =>
+        eventController.addAttendee(req.params.eventid, attendeeid)
+      );
+      socketNotify(`/events/${req.params.eventid}`);
+    });
   }
 );
 
@@ -191,15 +197,22 @@ eventRouter.put(
   useAuth,
   async (req: Request, res: Response) => {
     // #swagger.tags = ['Events']
-    const { cancelationMessage } = req.body;
-    attempt(res, 200, () =>
-      eventController.deleteAttendee(
-        req.params.eventid,
-        req.params.attendeeid,
-        cancelationMessage
-      )
+    checkUserMatchOrSupervisorAdmin(
+      req,
+      res,
+      req.params.attendeeid,
+      async () => {
+        const { cancelationMessage } = req.body;
+        attempt(res, 200, () =>
+          eventController.deleteAttendee(
+            req.params.eventid,
+            req.params.attendeeid,
+            cancelationMessage
+          )
+        );
+        socketNotify(`/events/${req.params.eventid}`);
+      }
     );
-    socketNotify(`/events/${req.params.eventid}`);
   }
 );
 
