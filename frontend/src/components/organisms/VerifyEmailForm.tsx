@@ -54,7 +54,6 @@ const VerifyEmailForm = () => {
       if (user) {
         // Periodically reload the user's state
         const interval = setInterval(async () => {
-          console.log("reloading");
           await user.reload();
           const refreshedUser = auth.currentUser;
           if (refreshedUser?.emailVerified) {
