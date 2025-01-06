@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import { auth } from "@/utils/firebase";
+import { onAuthStateChanged, updateCurrentUser } from "firebase/auth";
 import Button from "@/components/atoms/Button";
 import { useSendEmailVerification } from "react-firebase-hooks/auth";
 import { useQueryClient } from "@tanstack/react-query";
@@ -46,6 +47,28 @@ const VerifyEmailForm = () => {
       setNotifOpenOnError(true);
     }
   }, [emailError]);
+
+  useEffect(() => {
+    // Watch for authentication state changes
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        // Periodically reload the user's state
+        const interval = setInterval(async () => {
+          console.log("reloading");
+          await user.reload();
+          const refreshedUser = auth.currentUser;
+          if (refreshedUser?.emailVerified) {
+            clearInterval(interval);
+          }
+        }, 5000); // Check every 5 seconds
+
+        return () => clearInterval(interval);
+      }
+    });
+
+    // Clean up listener on component unmount
+    return () => unsubscribe();
+  }, [auth]);
 
   return (
     <>

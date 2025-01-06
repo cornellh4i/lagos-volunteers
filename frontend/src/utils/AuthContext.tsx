@@ -6,7 +6,13 @@ import React, {
   ReactNode,
 } from "react";
 import { auth } from "./firebase";
-import { User, AuthError, signOut, signInWithCustomToken } from "firebase/auth";
+import {
+  User,
+  AuthError,
+  signOut,
+  signInWithCustomToken,
+  onIdTokenChanged,
+} from "firebase/auth";
 import {
   useAuthState,
   useCreateUserWithEmailAndPassword,
@@ -153,7 +159,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const router = useRouter();
   useEffect(() => {
     const path = router.asPath;
-    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+    const unsubscribe = onIdTokenChanged(auth, async (user) => {
       let userRole;
       const regexMatcherforSupervisorPaths =
         /^\/events\/[a-zA-Z0-9_-]+\/(attendees|edit)|\/events\/create$/;
@@ -216,7 +222,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       };
     });
     return unsubscribe;
-  }, [user, router, loading]);
+  }, [auth, user, router, loading]);
 
   // No longer needed, moved to individual templates to avoid white flash on load
   // if (loading || !isAuthenticated) {
