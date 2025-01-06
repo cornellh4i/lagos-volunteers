@@ -23,7 +23,12 @@ export const attempt = async (
   try {
     res.status(successCode).send(successJson(await controller()));
   } catch (error: any) {
-    res.status(500).send(errorJson(error.message));
+    // P2025 is Prisma error for NotFoundError
+    if (error.code === "P2025") {
+      res.status(404).send(errorJson(error.message));
+    } else {
+      res.status(500).send(errorJson(error.message));
+    }
   }
 };
 
