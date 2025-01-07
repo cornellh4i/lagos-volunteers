@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import ProfileForm from "@/components/organisms/ProfileForm";
 import ChangePasswordForm from "@/components/organisms/ChangePasswordForm";
 import CenteredTemplate from "@/components/templates/CenteredTemplate";
@@ -13,10 +13,33 @@ import { formatRoleOrStatus } from "@/utils/helpers";
 import DefaultTemplate from "@/components/templates/DefaultTemplate";
 import LinkEmailPasswordForm from "@/components/organisms/LinkEmailPasswordForm";
 import ManageProvidersForm from "@/components/organisms/ManageProvidersForm";
+import { onIdTokenChanged } from "firebase/auth";
+import { auth } from "@/utils/firebase";
+import Snackbar from "@/components/atoms/Snackbar";
 
 /** A Profile page */
 const Profile = () => {
   const { user } = useAuth();
+
+  // Notification for a successful password change.
+  const [successNotificationOpen, setSuccessNotificationOpen] = useState(false);
+
+  // Whether the user only has sign-in providers. Use a state variable and
+  // useEffect so we can monitor for changes and update when the user token
+  // changes.
+  const [hasOnlyGoogleProvider, setHasOnlyGoogleProvider] = useState(false);
+  useEffect(() => {
+    const unsubscribe = onIdTokenChanged(auth, (user) => {
+      if (user) {
+        setHasOnlyGoogleProvider(
+          user.providerData.some((x) => x.providerId === "google.com") &&
+            !user.providerData.some((x) => x.providerId === "password")
+        );
+      }
+    });
+
+    return () => unsubscribe();
+  }, []);
 
   /** Tanstack query to fetch user details */
   const { data, isLoading, isError } = useQuery({
@@ -45,13 +68,17 @@ const Profile = () => {
     );
   }
 
-  /** Whether the user only has sign-in providers */
-  const hasOnlyGoogleProvider =
-    user?.providerData.some((x) => x.providerId === "google.com") &&
-    !user?.providerData.some((x) => x.providerId === "password");
-
   return (
     <CenteredTemplate>
+      {/* Profile update success snackbar */}
+      <Snackbar
+        variety="success"
+        open={successNotificationOpen}
+        onClose={() => setSuccessNotificationOpen(false)}
+      >
+        Success: Account has been linked to an email and password!
+      </Snackbar>
+
       <Avatar
         name={`${data?.profile.firstName} ${data?.profile.lastName}`}
         startDate={new Date(data?.createdAt)}
@@ -120,7 +147,9 @@ const Profile = () => {
       </Card>
       <Card size="medium">
         {hasOnlyGoogleProvider ? (
-          <LinkEmailPasswordForm />
+          <LinkEmailPasswordForm
+            setSuccessNotificationOpen={setSuccessNotificationOpen}
+          />
         ) : (
           <ChangePasswordForm
             userDetails={{
