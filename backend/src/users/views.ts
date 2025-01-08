@@ -368,4 +368,13 @@ userRouter.patch(
   }
 );
 
+userRouter.patch(
+  "/email/recover",
+  NoAuth as RequestHandler,
+  async (req: Request, res: Response) => {
+    const { oldEmail } = req.body;
+    attempt(res, 200, () => userController.recoverEmail(oldEmail));
+  }
+);
+
 export default userRouter;

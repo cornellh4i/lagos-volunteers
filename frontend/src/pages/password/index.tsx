@@ -14,6 +14,9 @@ const Password = () => {
       case "verifyEmail":
         router.push(`/password/${oobCode}/verify`);
         break;
+      case "recoverEmail":
+        router.push(`/password/${oobCode}/recover`);
+        break;
       default:
         router.push("/login");
     }

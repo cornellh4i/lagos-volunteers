@@ -7,6 +7,7 @@ import { useRouter } from "next/router";
 import Link from "next/link";
 import { auth } from "@/utils/firebase";
 import {
+  useDeleteUser,
   useSignInWithEmailAndPassword,
   useSignInWithGoogle,
 } from "react-firebase-hooks/auth";
@@ -143,13 +144,18 @@ const LoginForm = () => {
       retry: false,
     });
 
+  // Firebase hook for deleting a user
+  const [deleteUser, deleteLoading, deleteError] = useDeleteUser(auth);
+
   /** Sign in with Google */
   const handleGoogleLogin = async () => {
     try {
+      // Firebase login
       const provider = new GoogleAuthProvider();
       const result = await signInWithPopup(auth, provider);
       const user = result.user;
 
+      // Proceed only if Firebase login succeeds
       if (user) {
         const email = user?.email as string;
         const userid = user?.uid as string;
@@ -159,20 +165,30 @@ const LoginForm = () => {
           : ["", ""];
 
         // Check if user exists in local database
-        const { response, data } = await api.get(`/users/${userid}`);
-        console.log(data);
-        if (!data["data"]) {
-          const backendUser = await createLocalUserFromGoogle({
-            userid,
-            firstName,
-            lastName,
-            email,
-            phoneNumber,
-          });
-          console.log(backendUser);
+        try {
+          await api.get(`/users/${userid}`);
+        } catch (error: any) {
+          // If user doesn't exist in local database (404 error returned), try to
+          // create it. If the local db account creation fails for whatever reason,
+          // delete the Firebase user.
+          if (error.status === 404) {
+            try {
+              const backendUser = await createLocalUserFromGoogle({
+                userid,
+                firstName,
+                lastName,
+                email,
+                phoneNumber,
+              });
+            } catch (e: any) {
+              // Delete Firebase user and throw error again
+              await deleteUser();
+              throw e;
+            }
+          }
         }
       }
-    } catch (e) {
+    } catch (e: any) {
       setNotifOpen(true);
       setErrorMessage(
         "Your account could not be created. Please try again later."
@@ -180,10 +196,28 @@ const LoginForm = () => {
     }
   };
 
+  // For successful password reset notifications
+  const [passwordResetNotif, setPasswordResetNotif] = useState(false);
+  useEffect(() => {
+    if (localStorage.getItem("passwordReset")) {
+      setPasswordResetNotif(true);
+      localStorage.removeItem("passwordReset");
+    }
+  }, []);
+
   if (googleLoading) return <Loading />;
 
   return (
     <>
+      {/* Password reset success component */}
+      <Snackbar
+        variety="success"
+        open={passwordResetNotif}
+        onClose={() => setPasswordResetNotif(false)}
+      >
+        Success: Your password has been reset!
+      </Snackbar>
+
       {/* Login error component */}
       <Snackbar
         variety="error"

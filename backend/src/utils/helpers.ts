@@ -23,7 +23,12 @@ export const attempt = async (
   try {
     res.status(successCode).send(successJson(await controller()));
   } catch (error: any) {
-    res.status(500).send(errorJson(error.message));
+    // P2025 is Prisma error for NotFoundError
+    if (error.code === "P2025") {
+      res.status(404).send(errorJson(error.message));
+    } else {
+      res.status(500).send(errorJson(error.message));
+    }
   }
 };
 
@@ -53,26 +58,36 @@ export const checkUserMatchOrSupervisorAdmin = async (
     req.headers.authorization &&
     req.headers.authorization.split(" ")[0] === "Bearer"
   ) {
-    const authToken = req.headers.authorization.split(" ")[1];
-    const userInfo = await admin.auth().verifyIdToken(authToken);
-    const firebaseId = userInfo.uid;
-    const firebaseUser = await admin.auth().getUser(firebaseId);
-    const user = await userController.getUserByID(userId);
-    if (
-      userInfo.supervisor === true ||
-      userInfo.admin === true ||
-      firebaseUser.email === user?.email
-    ) {
-      return next();
+    try {
+      const authToken = req.headers.authorization.split(" ")[1];
+      const userInfo = await admin.auth().verifyIdToken(authToken);
+      const firebaseId = userInfo.uid;
+      const firebaseUser = await admin.auth().getUser(firebaseId);
+
+      const user = await userController.getUserByID(userId);
+      if (
+        userInfo.supervisor === true ||
+        userInfo.admin === true ||
+        firebaseUser.email === user?.email
+      ) {
+        return next();
+      }
+
+      // Fall-through case
+      return res.status(500).send({
+        success: false,
+        error:
+          "You are not authorized since your Firebase id does not match the specified userid.",
+      });
+    } catch (error: any) {
+      // P2025 is Prisma error for NotFoundError
+      if (error.code === "P2025") {
+        res.status(404).send(errorJson(error.message));
+      } else {
+        res.status(500).send(errorJson(error.message));
+      }
     }
   }
-
-  // Fall-through case
-  return res.status(500).send({
-    success: false,
-    error:
-      "You are not authorized since your Firebase id does not match the specified userid.",
-  });
 };
 
 /**

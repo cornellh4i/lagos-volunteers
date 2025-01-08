@@ -28,7 +28,7 @@ const Snackbar = ({
   return (
     <MuiSnackbar
       anchorOrigin={{ vertical: "top", horizontal: "center" }}
-      autoHideDuration={6000}
+      autoHideDuration={10000}
       open={open}
       onClose={onClose}
       TransitionComponent={TransitionDown}

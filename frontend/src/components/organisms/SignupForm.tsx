@@ -85,7 +85,6 @@ const SignupForm = () => {
       const signedInUser = await signInWithEmailAndPassword(email, password);
       if (signedInUser?.user) {
         await sendEmailVerification();
-        router.push("/verify");
       }
     }
   };

@@ -2,24 +2,29 @@ import React, { useState } from "react";
 import Button from "../atoms/Button";
 import TextField from "../atoms/TextField";
 import { useForm, SubmitHandler } from "react-hook-form";
-import { useRouter } from "next/router";
 import Snackbar from "../atoms/Snackbar";
 import { useAuth } from "@/utils/AuthContext";
-import { linkWithCredential } from "firebase/auth";
-import { EmailAuthProvider } from "firebase/auth";
+import {
+  updatePassword,
+  reauthenticateWithPopup,
+  GoogleAuthProvider,
+  reload,
+} from "firebase/auth";
 
 type FormValues = {
   password: string;
   confirmPassword: string;
 };
 
-const LinkEmailPasswordForm = () => {
+const LinkEmailPasswordForm = ({
+  setSuccessNotificationOpen,
+}: {
+  setSuccessNotificationOpen: any;
+}) => {
   /** State variables for the notification popups */
-  const [successNotificationOpen, setSuccessNotificationOpen] = useState(false);
   const [errorNotificationOpen, setErrorNotificationOpen] = useState(false);
 
   const [errorMessage, setErrorMessage] = useState<string>("");
-  const router = useRouter();
   const { user } = useAuth();
 
   const {
@@ -50,6 +55,8 @@ const LinkEmailPasswordForm = () => {
         return "You have made too many requests to change your password. Please try again later.";
       case "provider-already-linked":
         return "Your provider has already been linked.";
+      case "user-mismatch":
+        return "The user email you signed in with does not match the user email here. Please sign in with the correct account.";
       default:
         return "Something went wrong. Please try again";
     }
@@ -60,11 +67,14 @@ const LinkEmailPasswordForm = () => {
     try {
       if (password !== confirmPassword) {
         throw new Error("Passwords do not match");
-      } else if (user?.email) {
-        const credential = EmailAuthProvider.credential(user.email, password);
-        const usercred = await linkWithCredential(user, credential);
+      } else if (user) {
+        // Reauthenticate with Google and set password, then refresh page
+        const provider = new GoogleAuthProvider();
+        const result = await reauthenticateWithPopup(user, provider);
+        updatePassword(user, password);
+
+        reload(user);
         setSuccessNotificationOpen(true);
-        router.push("/profile");
       }
     } catch (error: any) {
       setErrorMessage(handleErrors(error.message));
@@ -80,15 +90,6 @@ const LinkEmailPasswordForm = () => {
         onClose={() => setErrorNotificationOpen(false)}
       >
         Error: {errorMessage}
-      </Snackbar>
-
-      {/* Profile update success snackbar */}
-      <Snackbar
-        variety="success"
-        open={successNotificationOpen}
-        onClose={() => setSuccessNotificationOpen(false)}
-      >
-        Success: Account has been linked to an email and password!
       </Snackbar>
 
       <h3 className="mt-0 mb-4 font-normal">Set up a password</h3>
