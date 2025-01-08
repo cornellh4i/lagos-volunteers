@@ -302,6 +302,7 @@ const ProfileForm = ({ userDetails }: ProfileFormProps) => {
         />
         <TextField
           error={errors.email?.message}
+          disabled
           label="Email"
           {...register("email", {
             required: { value: true, message: "Required" },

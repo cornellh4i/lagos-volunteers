@@ -16,6 +16,7 @@ import ManageProvidersForm from "@/components/organisms/ManageProvidersForm";
 import { onIdTokenChanged } from "firebase/auth";
 import { auth } from "@/utils/firebase";
 import Snackbar from "@/components/atoms/Snackbar";
+import ChangeEmailForm from "@/components/organisms/ChangeEmailForm";
 
 /** A Profile page */
 const Profile = () => {
@@ -145,20 +146,33 @@ const Profile = () => {
       <Card size="medium" className="mb-4">
         <ManageProvidersForm />
       </Card>
-      <Card size="medium">
-        {hasOnlyGoogleProvider ? (
+      {hasOnlyGoogleProvider ? (
+        <Card size="medium">
           <LinkEmailPasswordForm
             setSuccessNotificationOpen={setSuccessNotificationOpen}
           />
-        ) : (
-          <ChangePasswordForm
-            userDetails={{
-              ...data.profile,
-              ...data,
-            }}
-          />
-        )}
-      </Card>
+        </Card>
+      ) : (
+        <>
+          <Card size="medium" className="mb-4">
+            <ChangeEmailForm
+              userDetails={{
+                ...data.profile,
+                ...data.preferences,
+                ...data,
+              }}
+            />
+          </Card>
+          <Card size="medium">
+            <ChangePasswordForm
+              userDetails={{
+                ...data.profile,
+                ...data,
+              }}
+            />
+          </Card>
+        </>
+      )}
     </CenteredTemplate>
   );
 };
