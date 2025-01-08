@@ -65,6 +65,7 @@ const ResetPassword = () => {
       await confirmPasswordReset(auth, oobCode, password);
     },
     onSuccess: () => {
+      localStorage.setItem("passwordReset", "true");
       router.push("/login");
     },
     onError: (error) => {

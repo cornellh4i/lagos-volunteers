@@ -196,10 +196,28 @@ const LoginForm = () => {
     }
   };
 
+  // For successful password reset notifications
+  const [passwordResetNotif, setPasswordResetNotif] = useState(false);
+  useEffect(() => {
+    if (localStorage.getItem("passwordReset")) {
+      setPasswordResetNotif(true);
+      localStorage.removeItem("passwordReset");
+    }
+  }, []);
+
   if (googleLoading) return <Loading />;
 
   return (
     <>
+      {/* Password reset success component */}
+      <Snackbar
+        variety="success"
+        open={passwordResetNotif}
+        onClose={() => setPasswordResetNotif(false)}
+      >
+        Success: Your password has been reset!
+      </Snackbar>
+
       {/* Login error component */}
       <Snackbar
         variety="error"
