@@ -106,7 +106,7 @@ const ChangeEmailForm = ({ userDetails }: ChangeEmailFormProps) => {
       const user = auth.currentUser as User;
       await ReAuthenticateUserSession.mutateAsync(data);
       await updateEmail(user, data.newEmail);
-      return api.put(`/users/${userDetails.id}`, {
+      const { response } = await api.put(`/users/${userDetails.id}`, {
         email: data.newEmail,
       });
     },
