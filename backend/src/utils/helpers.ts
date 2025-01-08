@@ -1,4 +1,4 @@
-import { Request, Response } from "express";
+import { Request, Response, NextFunction } from "express";
 import { errorJson, successJson } from "./jsonResponses";
 import admin from "firebase-admin";
 import { User } from "@prisma/client";
@@ -42,12 +42,17 @@ interface UserRecord {
 
 /**
  * Takes in a userid and returns true if it matches the same user as the current
- * Firebase token.
+ * Firebase token OR if the Firebase token represents a supervisor or admin.
  * @param req - The request
  * @param userId - The user ID from your database
  * @returns A promise that resolves to true if both refer to the same user, otherwise false
  */
-export const checkUserMatch = async (req: Request, userId: string) => {
+export const checkUserMatchOrSupervisorAdmin = async (
+  req: Request,
+  res: Response,
+  userId: string,
+  next: NextFunction
+) => {
   // Get auth token
   if (
     req.headers.authorization &&
@@ -58,10 +63,21 @@ export const checkUserMatch = async (req: Request, userId: string) => {
     const firebaseId = userInfo.uid;
     const firebaseUser = await admin.auth().getUser(firebaseId);
     const user = await userController.getUserByID(userId);
-    return firebaseUser.email === user?.email;
-  } else {
-    return false;
+    if (
+      userInfo.supervisor === true ||
+      userInfo.admin === true ||
+      firebaseUser.email === user?.email
+    ) {
+      return next();
+    }
   }
+
+  // Fall-through case
+  return res.status(500).send({
+    success: false,
+    error:
+      "You are not authorized since your Firebase id does not match the specified userid.",
+  });
 };
 
 /**

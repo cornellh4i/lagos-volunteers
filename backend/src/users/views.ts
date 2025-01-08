@@ -12,7 +12,11 @@ import {
 } from "../middleware/auth";
 const userRouter = Router();
 import * as firebase from "firebase-admin";
-import { attempt, checkUserMatch, socketNotify } from "../utils/helpers";
+import {
+  attempt,
+  checkUserMatchOrSupervisorAdmin,
+  socketNotify,
+} from "../utils/helpers";
 import admin from "firebase-admin";
 
 let useAuth: RequestHandler;
@@ -112,22 +116,11 @@ userRouter.post(
 
 userRouter.delete("/:userid", useAuth, async (req: Request, res: Response) => {
   // #swagger.tags = ['Users']
-  try {
-    const match = await checkUserMatch(req, req.params.userid);
-    if (match) {
-      await admin.auth().deleteUser(req.params.userid);
-      attempt(res, 200, () => userController.deleteUser(req.params.userid));
-      socketNotify("/users");
-    } else {
-      return res.status(500).send({
-        success: false,
-        error:
-          "You are not authorized since your Firebase id does not match the specified userid.",
-      });
-    }
-  } catch (e: any) {
-    return res.status(500).send({ success: false, error: e.message });
-  }
+  checkUserMatchOrSupervisorAdmin(req, res, req.params.userid, async () => {
+    await admin.auth().deleteUser(req.params.userid);
+    attempt(res, 200, () => userController.deleteUser(req.params.userid));
+    socketNotify("/users");
+  });
 });
 
 userRouter.put("/:userid", useAuth, async (req: Request, res: Response) => {
@@ -294,10 +287,12 @@ userRouter.put(
   useAuth,
   async (req: Request, res: Response) => {
     // #swagger.tags = ['Users']
-    attempt(res, 200, () =>
-      userController.editProfile(req.params.userid, req.body)
-    );
-    socketNotify(`/users/${req.params.userid}`);
+    checkUserMatchOrSupervisorAdmin(req, res, req.params.userid, async () => {
+      attempt(res, 200, () =>
+        userController.editProfile(req.params.userid, req.body)
+      );
+      socketNotify(`/users/${req.params.userid}`);
+    });
   }
 );
 
@@ -306,10 +301,12 @@ userRouter.put(
   useAuth,
   async (req: Request, res: Response) => {
     // #swagger.tags = ['Users']
-    attempt(res, 200, () =>
-      userController.editPreferences(req.params.userid, req.body)
-    );
-    socketNotify(`/users/${req.params.userid}`);
+    checkUserMatchOrSupervisorAdmin(req, res, req.params.userid, async () => {
+      attempt(res, 200, () =>
+        userController.editPreferences(req.params.userid, req.body)
+      );
+      socketNotify(`/users/${req.params.userid}`);
+    });
   }
 );
 
