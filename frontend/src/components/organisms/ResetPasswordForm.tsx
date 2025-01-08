@@ -9,6 +9,7 @@ import { auth } from "@/utils/firebase";
 import { Router, useRouter } from "next/router";
 import Snackbar from "../atoms/Snackbar";
 import { useMutation } from "@tanstack/react-query";
+import CancelIcon from "@mui/icons-material/Cancel";
 
 //commit message
 type FormValues = {
@@ -75,7 +76,7 @@ const ResetPassword = () => {
 
   /**
    * Custom route protection: verify oobcode in URL is correct on page load.
-   * If not, redirect to login
+   * If not, show error
    */
   useEffect(() => {
     const routeProtection = async () => {
@@ -83,7 +84,7 @@ const ResetPassword = () => {
         await verifyPasswordResetCode(auth, oobCode);
         setShowPage(true);
       } catch (error) {
-        router.push("/login");
+        setShowPage(false);
       }
     };
     routeProtection();
@@ -101,7 +102,7 @@ const ResetPassword = () => {
   };
   return (
     <>
-      {showPage && (
+      {showPage ? (
         <>
           <Snackbar
             variety="error"
@@ -175,6 +176,18 @@ const ResetPassword = () => {
         </div> */}
           </form>
         </>
+      ) : (
+        <div className="max-w-lg mx-auto border border-gray-300 rounded-lg p-6 text-center">
+          <div>
+            <div>
+              <CancelIcon sx={{ fontSize: 100, color: "red" }} />
+            </div>
+
+            <p className="text-gray-700 mb-4">
+              Your link may be expired or invalid. Please try again.
+            </p>
+          </div>
+        </div>
       )}
     </>
   );
