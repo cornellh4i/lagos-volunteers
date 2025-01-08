@@ -58,11 +58,12 @@ export const checkUserMatchOrSupervisorAdmin = async (
     req.headers.authorization &&
     req.headers.authorization.split(" ")[0] === "Bearer"
   ) {
-    const authToken = req.headers.authorization.split(" ")[1];
-    const userInfo = await admin.auth().verifyIdToken(authToken);
-    const firebaseId = userInfo.uid;
-    const firebaseUser = await admin.auth().getUser(firebaseId);
     try {
+      const authToken = req.headers.authorization.split(" ")[1];
+      const userInfo = await admin.auth().verifyIdToken(authToken);
+      const firebaseId = userInfo.uid;
+      const firebaseUser = await admin.auth().getUser(firebaseId);
+
       const user = await userController.getUserByID(userId);
       if (
         userInfo.supervisor === true ||
