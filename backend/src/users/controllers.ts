@@ -759,6 +759,35 @@ const deleteUser = async (userID: string) => {
   });
 };
 
+/**
+ * Completes the email recovery by setting the local db user email to match that
+ * in Firebase. Has no effect when done normally so it's fine to leave unauthenticated.
+ */
+const recoverEmail = async (oldEmail: string) => {
+  // First get userid from old email
+  const user = await prisma.user.findUniqueOrThrow({
+    where: {
+      email: oldEmail,
+    },
+  });
+  const userid = user.id;
+
+  // Now get correct email from Firebase and update to match
+  const correctEmail = (await admin.auth().getUser(userid))?.email;
+  if (correctEmail) {
+    return prisma.user.update({
+      where: {
+        id: userid,
+      },
+      data: {
+        email: correctEmail,
+      },
+    });
+  } else {
+    throw "No email found";
+  }
+};
+
 export default {
   createUser,
   deleteUser,
@@ -781,4 +810,5 @@ export default {
   editHours,
   getUsersSorted,
   sendEmail,
+  recoverEmail,
 };
