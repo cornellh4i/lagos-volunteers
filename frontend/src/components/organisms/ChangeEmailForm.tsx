@@ -12,6 +12,7 @@ import Snackbar from "../atoms/Snackbar";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { User } from "firebase/auth";
 import { api } from "@/utils/api";
+import { useSendEmailVerification } from "react-firebase-hooks/auth";
 
 type FormValues = {
   email: string;
@@ -100,6 +101,10 @@ const ChangeEmailForm = ({ userDetails }: ChangeEmailFormProps) => {
     retry: false,
   });
 
+  // Firebase sendEmailVerification hook
+  const [sendEmailVerification, sending, emailError] =
+    useSendEmailVerification(auth);
+
   /** Tanstack query mutation to update user password in Firebase */
   const updateUserEmail = useMutation({
     mutationFn: async (data: any) => {
@@ -109,6 +114,7 @@ const ChangeEmailForm = ({ userDetails }: ChangeEmailFormProps) => {
       const { response } = await api.put(`/users/${userDetails.id}`, {
         email: data.newEmail,
       });
+      await sendEmailVerification();
     },
     retry: false,
   });
