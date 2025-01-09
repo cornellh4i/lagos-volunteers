@@ -44,8 +44,7 @@ userRouter.post(
       user = await userController.createUser(
         rest,
         rest.profile,
-        rest.preferences,
-        rest.permissions
+        rest.preferences
       );
 
       // If local user doesn't exist, throw error
@@ -104,8 +103,7 @@ userRouter.post(
       const user = await userController.createUser(
         rest,
         rest.profile,
-        rest.preferences,
-        rest.permissions
+        rest.preferences
       );
       return res.status(200).send({ success: true, user: user });
     } catch (e: any) {

@@ -33,16 +33,11 @@ async function createPoolOfRandomUsers(pool: number) {
           create: {
             firstName: user.firstName,
             lastName: user.lastName,
-            nickname: user.nickname,
             imageURL: user.imageURL,
             phoneNumber: user.phone,
           },
         },
-        preferences: {
-          create: {
-            sendPromotions: true,
-          },
-        },
+        preferences: {},
       },
     });
     userDataSeed.push(createdUser);
@@ -59,15 +54,10 @@ async function createPoolOfRandomUsers(pool: number) {
         create: {
           firstName: "Lagos",
           lastName: "Food Bank",
-          nickname: "LFB",
           phoneNumber: "08012345678",
         },
       },
-      preferences: {
-        create: {
-          sendPromotions: true,
-        },
-      },
+      preferences: {},
     },
   });
 
@@ -80,15 +70,10 @@ async function createPoolOfRandomUsers(pool: number) {
         create: {
           firstName: "Olumide",
           lastName: "Ade",
-          nickname: "Olu",
           phoneNumber: "08012345678",
         },
       },
-      preferences: {
-        create: {
-          sendPromotions: true,
-        },
-      },
+      preferences: {},
     },
   });
 
@@ -101,15 +86,10 @@ async function createPoolOfRandomUsers(pool: number) {
         create: {
           firstName: "LFB",
           lastName: "Volunteer",
-          nickname: "Volunteer",
           phoneNumber: "08012345678",
         },
       },
-      preferences: {
-        create: {
-          sendPromotions: true,
-        },
-      },
+      preferences: {},
     },
   });
   userDataSeed.push(admin, supervisor, volunteer);
@@ -139,16 +119,11 @@ async function createPoolOfRandomEvents(pool: number) {
           create: {
             firstName: supervisor.firstName,
             lastName: supervisor.lastName,
-            nickname: supervisor.nickname,
             imageURL: supervisor.imageURL,
             phoneNumber: supervisor.phone,
           },
         },
-        preferences: {
-          create: {
-            sendPromotions: true,
-          },
-        },
+        preferences: {},
       },
     });
     supervisors.push(createdSupervisor);
@@ -202,14 +177,9 @@ const userData: Prisma.UserCreateInput[] = [
       create: {
         firstName: "Alice",
         lastName: "Smith",
-        nickname: "Asmithy",
       },
     },
-    preferences: {
-      create: {
-        sendPromotions: true,
-      },
-    },
+    preferences: {},
   },
   {
     email: "grace@hey.com",
@@ -217,7 +187,6 @@ const userData: Prisma.UserCreateInput[] = [
       create: {
         firstName: "Grace",
         lastName: "Vanderwaal",
-        nickname: "Gracey",
       },
     },
     role: "SUPERVISOR",
@@ -228,7 +197,6 @@ const userData: Prisma.UserCreateInput[] = [
       create: {
         firstName: "Prisma",
         lastName: "Solanke",
-        nickname: "Destiny",
       },
     },
     role: "ADMIN",
