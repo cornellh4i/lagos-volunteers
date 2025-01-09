@@ -1,149 +1,136 @@
 import React from "react";
-import IconText from "@/components/atoms/IconText";
-import Button from "@/components/atoms/Button";
-import { Card, Grid, Icon, IconButton } from "@mui/material";
-import LocationOnIcon from "@mui/icons-material/LocationOn";
-import EmojiFoodBeverageIcon from "@mui/icons-material/EmojiFoodBeverage";
-import WatchLaterIcon from "@mui/icons-material/WatchLater";
-import MoreVertIcon from "@mui/icons-material/MoreVert";
+import Card from "../molecules/Card";
+import IconText from "../atoms/IconText";
+import FmdGoodIcon from "@mui/icons-material/FmdGood";
+import Button from "../atoms/Button";
+import FiberManualRecordIcon from "@mui/icons-material/FiberManualRecord";
+import { ViewEventsEvent } from "@/utils/types";
+import { format } from "date-fns";
 import Link from "next/link";
-import MenuItem from "@mui/material/MenuItem";
-import Menu from "@mui/material/Menu";
-import { Action } from "@/utils/types";
-import { formatDateTimeRange } from "@/utils/helpers";
+import { displayDateInfo } from "@/utils/helpers";
+import Chip from "../atoms/Chip";
 
 interface EventCardProps {
-  eventid?: string;
-  mainAction: Action;
-  dropdownActions?: Action[];
-  title?: string;
-  location?: string;
-  startDate: Date;
-  endDate: Date;
+  event: ViewEventsEvent;
 }
 
-/**
- * An EventCard component shows an event and some quick details. The card action
- * buttons are as follows:
- *
- * Volunteers:
- *   Main action button: Register if not registered, else Cancel Registration
- *
- * Supervisors:
- *   Main action button: Publish Event if draft, else Manage Attendees
- *   Dropdown options: Edit Event Details
- */
-const EventCard = ({
-  eventid,
-  mainAction,
-  dropdownActions = [],
-  title,
-  location,
-  startDate,
-  endDate,
-}: EventCardProps) => {
-  // Handling the dropdown menu
-  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
-  const handleClick = (event: any) => {
-    setAnchorEl(event.currentTarget);
-  };
-  const open = Boolean(anchorEl);
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
-
-  // Check date
-  const start = startDate.getTime();
-  const now = Date.now();
-  let variety: "primary" | "secondary" = "primary";
-  if (start > now) {
-    variety = "secondary";
-  }
-  const MainAction = () => {
-    switch (mainAction) {
-      case "rsvp":
-        return (
-          <Link href={`/events/${eventid}/register`} className="w-full">
-            <Button variety={variety}>View Event Details</Button>
-          </Link>
-        );
-      case "cancel rsvp":
-        return (
-          <Link href={`/events/${eventid}/register`} className="w-full">
-            <Button variety={variety}>View Event Details</Button>
-          </Link>
-        );
-      case "manage attendees":
-        return (
-          <Button variety={variety} href={`/events/${eventid}/attendees`}>
-            Manage Event
-          </Button>
-        );
-      default:
-        return <></>;
-    }
-  };
+const EventCardContent = ({ event }: EventCardProps) => {
+  const formattedStartTime = format(new Date(event.startDate), "hh:mm a");
+  const formattedEndTime = format(new Date(event.endDate), "hh:mm a");
+  const timeRange = `${formattedStartTime} - ${formattedEndTime}`;
+  const date = new Date(event.startDate);
+  const dateInfo =
+    event.status === "CANCELED" ? (
+      <Chip size="small" label="Canceled" color="error" />
+    ) : (
+      displayDateInfo(date)
+    );
+  const url =
+    event.role === "Supervisor"
+      ? `/events/${event.id}/attendees`
+      : `/events/${event.id}/register`;
+  const buttonText =
+    event.role === "Supervisor" ? "Manage event" : "View event details";
 
   return (
-    <Card variant="outlined" className="w-full">
-      <div className="p-5">
-        {/* Main card body */}
-        <div className="pb-2">
-          <IconText icon={<EmojiFoodBeverageIcon />}>
-            <b className="text-2xl">{title?.toLocaleUpperCase()}</b>
+    <div>
+      <div className="flex flex-row gap-4">
+        <div
+          className={`font-semibold ${
+            event.status === "CANCELED" ? "text-red-600" : "text-orange-500"
+          }`}
+        >
+          <IconText icon={<FiberManualRecordIcon className="text-xs" />}>
+            {dateInfo}
           </IconText>
         </div>
-        <div className="pb-2">
-          <IconText icon={<LocationOnIcon />}>
-            {location?.toLocaleUpperCase()}
-          </IconText>
-        </div>
-        <IconText icon={<WatchLaterIcon />}>
-          {formatDateTimeRange(startDate.toString(), endDate.toString())}
-        </IconText>
-
-        {/* Card buttons */}
-        {dropdownActions.length > 0 ? (
-          <div className="pt-4 flex flex-row">
-            <MainAction />
-            <div className="pl-1">
-              {/* Icon button */}
-              {/* <IconButton
-                className="bg-gray-300 rounded-md"
-                onClick={handleClick}
-              >
-                <MoreVertIcon />
-              </IconButton> */}
-
-              {/* Dropdown menu */}
-              {/* <Menu
-                id="demo-positioned-menu"
-                aria-labelledby="demo-positioned-button"
-                anchorEl={anchorEl}
-                onClose={handleClose}
-                anchorOrigin={{
-                  vertical: "top",
-                  horizontal: "left",
-                }}
-                transformOrigin={{
-                  vertical: "top",
-                  horizontal: "left",
-                }}
-                open={open}
-              >
-                {dropdownActions?.map((action) => (
-                  <MenuItem onClick={handleClose}>{action}</MenuItem>
-                ))}
-              </Menu> */}
-            </div>
-          </div>
-        ) : (
-          <div className="pt-4">
-            <MainAction />
-          </div>
-        )}
+        <div>{timeRange}</div>
       </div>
-    </Card>
+      <div className="my-3 text-2xl font-semibold">{event.name}</div>
+      <IconText icon={<FmdGoodIcon className="text-gray-500" />}>
+        {event.location}
+      </IconText>
+      <div className="mt-3" />
+      {/* Bad UX behavior: Looks like button is as wide as length of location so it looks different with different event.  */}
+      <Link href={url}>
+        <Button
+          variety={displayDateInfo(date) === "Today" ? "primary" : "secondary"}
+        >
+          {buttonText}
+        </Button>
+      </Link>
+    </div>
   );
 };
+
+const EventCard = ({ event }: EventCardProps) => {
+  // Date formatting shenanigans
+  const formattedStartDate = format(new Date(event.startDate), "d MMMM yyyy");
+  const weekdayStartDate = format(new Date(event.startDate), "EEEE");
+
+  return (
+    <div>
+      {/* Mobile view */}
+      <div className="block sm:hidden">
+        {/* Header */}
+        <div className="grid grid-cols-2">
+          <div className="text-xl font-semibold">{weekdayStartDate}</div>
+          <div className="flex items-center justify-end">
+            {formattedStartDate}
+          </div>
+        </div>
+
+        {/* Divider */}
+        <div className="h-0.5 w-full bg-orange-300" />
+        <div className="my-5" />
+
+        {/* Event card */}
+        <Card>
+          <EventCardContent event={event} />
+        </Card>
+      </div>
+
+      {/* Desktop view */}
+      <div className="hidden grid-cols-12 sm:grid">
+        {/* Left header */}
+        <div className="col-span-3">
+          <div className="text-xl font-semibold">{formattedStartDate}</div>
+          <p>{weekdayStartDate}</p>
+        </div>
+
+        {/* Middle divider */}
+        <div className="col-span-1 flex justify-center">
+          <div className="h-full w-0.5 bg-orange-300" />
+        </div>
+
+        {/* Event card */}
+        <div className="col-span-8">
+          <Card>
+            <div className="flex">
+              {/* Card left content */}
+              <div className="md:max-w-xs w-full">
+                <EventCardContent event={event} />
+              </div>
+
+              {/* Card right image */}
+              <div className="flex-1 hidden md:block md:pl-6">
+                <div className="relative h-full w-full overflow-auto rounded-2xl">
+                  <img
+                    className="absolute right-0 h-full rounded-2xl w-[300px] object-cover border-gray-300 border-solid border box-border"
+                    src={
+                      event.imageURL == null
+                        ? "/lfbi_splash.png"
+                        : event.imageURL
+                    }
+                  />
+                </div>
+              </div>
+            </div>
+          </Card>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 export default EventCard;
