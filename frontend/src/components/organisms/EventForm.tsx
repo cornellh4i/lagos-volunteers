@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import Link from "next/link";
 import DatePicker from "../atoms/DatePicker";
 import TimePicker from "../atoms/TimePicker";
-import Upload from "../atoms/Upload";
 import MultilineTextField from "../atoms/MultilineTextField";
 import Button from "../atoms/Button";
 import TextCopy from "../atoms/TextCopy";
