@@ -26,7 +26,6 @@ import EventCardCancel from "./EventCardCancel";
 import Markdown from "react-markdown";
 import DefaultTemplate from "../templates/DefaultTemplate";
 import FetchDataError from "./FetchDataError";
-import EventDetails from "./EventDetails";
 import useWebSocket from "react-use-websocket";
 import { BASE_WEBSOCKETS_URL } from "@/utils/constants";
 import Alert from "../atoms/Alert";
