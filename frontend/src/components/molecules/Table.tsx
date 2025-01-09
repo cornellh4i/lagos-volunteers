@@ -47,7 +47,12 @@ const Table = ({
         ),
       }}
       rows={rows}
-      sx={{ border: 0 }}
+      sx={{
+        border: 0,
+        "& .MuiDataGrid-cell:focus": {
+          outline: "none",
+        },
+      }}
       disableRowSelectionOnClick
       rowCount={dataSetLength} // number of rows in the entire dataset
       paginationModel={paginationModel} // current page and page size
