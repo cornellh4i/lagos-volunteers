@@ -14,7 +14,7 @@ interface AlertProps {
 /** A simple Alert component */
 const Alert = forwardRef(
   (
-    { children, variety, onClose, ...props }: AlertProps,
+    { children, variety, onClose, ...props }: Omit<AlertProps, "ref">,
     ref: Ref<HTMLDivElement>
   ) => {
     // Set alert variety
