@@ -3,7 +3,6 @@ import { EventStatus, Prisma, userRole, UserStatus } from "@prisma/client";
 import {
   User,
   Profile,
-  Permission,
   UserPreferences,
   EnrollmentStatus,
 } from "@prisma/client";
@@ -42,8 +41,7 @@ const stringUserUpdate: string = fs.readFileSync(
 const createUser = async (
   user: User,
   profile?: Profile,
-  preferences?: UserPreferences,
-  permissions?: Permission
+  preferences?: UserPreferences
 ) => {
   return prisma.user.create({
     data: {
@@ -56,11 +54,6 @@ const createUser = async (
       preferences: {
         create: {
           ...preferences,
-        },
-      },
-      permissions: {
-        create: {
-          ...permissions,
         },
       },
     },
@@ -378,7 +371,6 @@ const getSearchedUser = async (
           role: {
             equals: query.role as userRole,
           },
-          hours: query.hours ? parseInt(query.hours as any) : undefined,
           status: {
             equals: query.status as UserStatus,
           },
@@ -389,9 +381,6 @@ const getSearchedUser = async (
             lastName: Array.isArray(query.lastName)
               ? { in: query.lastName }
               : query.lastName,
-            nickname: Array.isArray(query.nickname)
-              ? { in: query.nickname }
-              : query.nickname,
           },
         },
       ],
@@ -685,23 +674,6 @@ const editRole = async (userId: string, role: string) => {
 };
 
 /**
- * Updates a user's hours
- * @param hours: hours of type number
- * @param userid: id of user to be updated
- * @returns promise with user or error
- */
-const editHours = async (userId: string, hours: string) => {
-  return prisma.user.update({
-    where: {
-      id: userId,
-    },
-    data: {
-      hours: parseInt(hours),
-    },
-  });
-};
-
-/**
  * Returns sorted Users based on one key
  * @param req: Request parameter
  * @returns promise with user or error
@@ -715,10 +687,6 @@ const getUsersSorted = async (req: Request) => {
   if (key == "email") {
     return prisma.user.findMany({
       orderBy: [{ email: order }],
-    });
-  } else if (key == "hours") {
-    return prisma.user.findMany({
-      orderBy: [{ hours: order }],
     });
   } else if (key == "firstName") {
     return prisma.user.findMany({
@@ -807,7 +775,6 @@ export default {
   editPreferences,
   editStatus,
   editRole,
-  editHours,
   getUsersSorted,
   sendEmail,
   recoverEmail,

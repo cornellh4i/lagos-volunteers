@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import Chip from "@/components/atoms/Chip";
 import TabContainer from "@/components/molecules/TabContainer";
 import EventCard from "@/components/organisms/EventCard";
-import EventCardNew from "@/components/organisms/EventCardNew";
 import CardList from "@/components/molecules/CardList";
 import { GridColDef, GridPaginationModel } from "@mui/x-data-grid";
 import Table from "@/components/molecules/Table";
@@ -185,7 +184,7 @@ const UpcomingEvents = ({
         upcomingEventsSupervisor.map((event: ViewEventsEvent) => (
           <div>
             <div className="mt-5" />
-            <EventCardNew key={event.id} event={event} />
+            <EventCard key={event.id} event={event} />
           </div>
         ))}
       {/* List of Upcoming events user registered for */}
@@ -193,7 +192,7 @@ const UpcomingEvents = ({
         upcomingEventsVolunteer.map((event: ViewEventsEvent) => (
           <div>
             <div className="mt-5" />
-            <EventCardNew key={event.id} event={event} />
+            <EventCard key={event.id} event={event} />
           </div>
         ))}
       {/* <CardList>

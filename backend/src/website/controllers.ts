@@ -5,7 +5,6 @@ const downloadAllWebsiteData = async () => {
   const getAllUsers = await prisma.user.findMany({
     include: {
       profile: true,
-      permissions: true,
       preferences: true,
       events: true,
     },

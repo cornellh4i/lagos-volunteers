@@ -69,16 +69,6 @@ eventRouter.put(
   }
 );
 
-eventRouter.delete(
-  "/:eventid",
-  useSupervisorAdminAuth,
-  async (req: Request, res: Response) => {
-    // #swagger.tags = ['Events']
-    attempt(res, 200, () => eventController.deleteEvent(req.params.eventid));
-    socketNotify("/events");
-  }
-);
-
 eventRouter.get("/", useAuth, async (req: Request, res: Response) => {
   // #swagger.tags = ['Events']
   const filter = {
@@ -108,21 +98,6 @@ eventRouter.get("/", useAuth, async (req: Request, res: Response) => {
   attempt(res, 200, () =>
     eventController.getEvents(filter, sort, pagination, include)
   );
-});
-
-eventRouter.get("/upcoming", useAuth, async (req: Request, res: Response) => {
-  // #swagger.tags = ['Events']
-  attempt(res, 200, eventController.getUpcomingEvents);
-});
-
-eventRouter.get("/current", useAuth, async (req: Request, res: Response) => {
-  // #swagger.tags = ['Events']
-  attempt(res, 200, eventController.getCurrentEvents);
-});
-
-eventRouter.get("/past", useAuth, async (req: Request, res: Response) => {
-  // #swagger.tags = ['Events']
-  attempt(res, 200, eventController.getPastEvents);
 });
 
 eventRouter.get("/:eventid", useAuth, async (req: Request, res: Response) => {
@@ -224,30 +199,6 @@ eventRouter.patch(
     const { status } = req.body;
     attempt(res, 200, () =>
       eventController.updateEventStatus(req.params.eventid, status)
-    );
-    socketNotify(`/events/${req.params.eventid}`);
-  }
-);
-
-eventRouter.patch(
-  "/:eventid/owner",
-  useSupervisorAdminAuth,
-  async (req: Request, res: Response) => {
-    // #swagger.tags = ['Events']
-    const { ownerid } = req.body;
-    attempt(res, 200, () =>
-      eventController.updateEventOwner(req.params.eventid, ownerid)
-    );
-  }
-);
-
-eventRouter.patch(
-  "/:eventid/attendees/:attendeeid/confirm",
-  useSupervisorAdminAuth,
-  async (req: Request, res: Response) => {
-    // #swagger.tags = ['Events']
-    attempt(res, 200, () =>
-      eventController.confirmUser(req.params.eventid, req.params.attendeeid)
     );
     socketNotify(`/events/${req.params.eventid}`);
   }

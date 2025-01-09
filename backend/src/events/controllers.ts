@@ -284,7 +284,6 @@ const getEvent = async (eventID: string) => {
           profile: true,
         },
       },
-      tags: true,
     },
   });
 };
@@ -583,9 +582,7 @@ const confirmUser = async (eventID: string, userID: string) => {
         eventId: eventID,
       },
     },
-    data: {
-      showedUp: true,
-    },
+    data: {},
   });
 };
 
