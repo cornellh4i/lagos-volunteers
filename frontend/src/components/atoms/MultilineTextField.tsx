@@ -10,7 +10,7 @@ interface MultilineTextFieldProps {
 /** A text field with multiple lines */
 const MultilineTextField = forwardRef(
   (
-    { label, error = "", ...props }: MultilineTextFieldProps,
+    { label, error = "", ...props }: Omit<MultilineTextFieldProps, "ref">,
     ref: Ref<HTMLInputElement>
   ) => {
     return (

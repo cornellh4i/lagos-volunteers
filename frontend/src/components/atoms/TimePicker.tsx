@@ -24,7 +24,7 @@ const CustomTimePicker = forwardRef(
       error = "",
       disablePast = false,
       ...props
-    }: TimePickerProps,
+    }: Omit<TimePickerProps, "ref">,
     ref: Ref<HTMLInputElement>
   ) => {
     return (

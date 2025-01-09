@@ -11,7 +11,7 @@ interface TextFieldProps {
 /** A simple text field */
 const TextField = forwardRef(
   (
-    { label, type = "text", error = "", ...props }: TextFieldProps,
+    { label, type = "text", error = "", ...props }: Omit<TextFieldProps, "ref">,
     ref: Ref<HTMLInputElement>
   ) => {
     return (
