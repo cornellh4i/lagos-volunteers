@@ -133,15 +133,6 @@ userRouter.put("/:userid", useAuth, async (req: Request, res: Response) => {
   socketNotify(`/users/${req.params.userid}`);
 });
 
-userRouter.get(
-  "/count",
-  useSupervisorAdminAuth,
-  async (req: Request, res: Response) => {
-    // #swagger.tags = ['Users']
-    attempt(res, 200, userController.getCountUsers);
-  }
-);
-
 userRouter.get("/", useAuth, async (req: Request, res: Response) => {
   // #swagger.tags = ['Users']
   const filter = {
@@ -180,98 +171,10 @@ userRouter.get("/", useAuth, async (req: Request, res: Response) => {
   );
 });
 
-userRouter.get(
-  "/pagination",
-  useSupervisorAdminAuth,
-  async (req: Request, res: Response) => {
-    // #swagger.tags = ['Users']
-    attempt(res, 200, () => userController.getUsersPaginated(req));
-  }
-);
-
-userRouter.get("/search", useAuth, async (req: Request, res: Response) => {
-  // #swagger.tags = ['Users']
-  const { email, firstName, lastName, role, status, hours, nickname } =
-    req.body;
-  attempt(res, 200, () =>
-    userController.getSearchedUser(
-      req,
-      email,
-      firstName,
-      lastName,
-      role,
-      status,
-      hours,
-      nickname
-    )
-  );
-});
-
-userRouter.get(
-  "/sorting",
-  useSupervisorAdminAuth,
-  async (req: Request, res: Response) => {
-    // #swagger.tags = ['Users']
-    attempt(res, 200, () => userController.getUsersSorted(req));
-  }
-);
-
-userRouter.get(
-  "/:userid/profile",
-  useAuth,
-  async (req: Request, res: Response) => {
-    // #swagger.tags = ['Users']
-    attempt(res, 200, () => userController.getUserProfile(req.params.userid));
-  }
-);
-
-userRouter.get(
-  "/:userid/role",
-  useAuth,
-  async (req: Request, res: Response) => {
-    // #swagger.tags = ['Users']
-    attempt(res, 200, () => userController.getUserRole(req.params.userid));
-  }
-);
-
-userRouter.get(
-  "/:userid/preferences",
-  useAuth,
-  async (req: Request, res: Response) => {
-    // #swagger.tags = ['Users']
-    attempt(res, 200, () =>
-      userController.getUserPreferences(req.params.userid)
-    );
-  }
-);
-
 userRouter.get("/:userid", useAuth, async (req: Request, res: Response) => {
   // #swagger.tags = ['Users']
   attempt(res, 200, () => userController.getUserByID(req.params.userid));
 });
-
-userRouter.get(
-  "/:userid/created",
-  useAuth,
-  async (req: Request, res: Response) => {
-    // #swagger.tags = ['Users']
-    attempt(res, 200, () => userController.getCreatedEvents(req.params.userid));
-  }
-);
-
-userRouter.get(
-  "/:userid/registered",
-  useAuth,
-  async (req: Request, res: Response) => {
-    // #swagger.tags = ['Users']
-    attempt(res, 200, () =>
-      userController.getRegisteredEvents(
-        req.params.userid,
-        req.query.eventid as string
-      )
-    );
-  }
-);
 
 userRouter.get(
   "/:userid/hours",
@@ -354,17 +257,6 @@ userRouter.patch(
     } catch (error: any) {
       res.status(500).json({ error: error.message });
     }
-  }
-);
-
-userRouter.patch(
-  "/:userid/hours",
-  useSupervisorAdminAuth,
-  async (req: Request, res: Response) => {
-    // #swagger.tags = ['Users']
-    const { hours } = req.body;
-    attempt(res, 200, () => userController.editHours(req.params.userid, hours));
-    socketNotify(`/users/${req.params.userid}`);
   }
 );
 
