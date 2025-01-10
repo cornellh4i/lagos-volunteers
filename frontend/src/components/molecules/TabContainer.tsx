@@ -124,7 +124,7 @@ const TabContainer = ({
   // Note: value in local storage must be a number in a string, e.g. "0" or "1"
   const storageString = localStorage.getItem(localStorageString);
   const [value, setValue] = React.useState(
-    localStorageString ? storageString : "0"
+    localStorageString && storageString ? storageString : "0"
   );
   return (
     <>
