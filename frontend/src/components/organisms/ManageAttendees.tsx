@@ -951,7 +951,11 @@ const ManageAttendees = () => {
         </div>
       </div>
       <div className="font-semibold text-2xl mt-6 mb-6">Manage Volunteers</div>
-      <TabContainer fullWidth tabs={tabs} />
+      <TabContainer
+        fullWidth
+        tabs={tabs}
+        localStorageString="manageAttendeesTabs"
+      />
     </>
   );
 };

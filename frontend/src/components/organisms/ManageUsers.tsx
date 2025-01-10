@@ -362,6 +362,7 @@ const ManageUsers = ({}: ManageUsersProps) => {
   return (
     <TabContainer
       left={<div className="font-semibold text-3xl">Manage Members</div>}
+      localStorageString="manageUsersActiveBlacklistedTabs"
       tabs={tabs}
     />
   );
