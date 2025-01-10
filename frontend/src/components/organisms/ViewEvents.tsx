@@ -49,8 +49,10 @@ const SupervisorBar = ({
   const handleClick = (event: any) => {
     if (event.target.value === "true") {
       setSeeAllEvents(true);
+      localStorage.setItem("seeAllEvents", "true");
     } else if (event.target.value === "false") {
       setSeeAllEvents(false);
+      localStorage.setItem("seeAllEvents", "false");
     }
   };
 
@@ -448,7 +450,19 @@ const ViewEvents = () => {
   // For supervisors and admins only: determines if the My Events page shows
   // all events created by all supervisors, or just the events that they
   // themselves have created
-  const [seeAllEvents, setSeeAllEvents] = useState(false);
+  const showSeeAllEvents = localStorage.getItem("seeAllEvents");
+  const [seeAllEvents, setSeeAllEvents] = useState(
+    showSeeAllEvents === "true" ? true : false
+  );
+
+  useEffect(() => {
+    // Event creation notif
+    const isEventCreated = localStorage.getItem("eventCreated");
+    if (isEventCreated) {
+      setIsEventCreated(true);
+      localStorage.removeItem("eventCreated");
+    }
+  }, []);
 
   const tabs = [
     {
@@ -473,14 +487,6 @@ const ViewEvents = () => {
   ];
 
   const [isEventCreated, setIsEventCreated] = useState(false);
-
-  useEffect(() => {
-    const isEventCreated = localStorage.getItem("eventCreated");
-    if (isEventCreated) {
-      setIsEventCreated(true);
-      localStorage.removeItem("eventCreated");
-    }
-  }, []);
 
   return (
     <>
