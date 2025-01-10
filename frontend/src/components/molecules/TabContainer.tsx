@@ -9,7 +9,7 @@ interface RootTabContainerProps {
   /** A list of tab labels and panels in order of display */
   tabs: { label: string; panel: ReactElement }[];
   /** The local storage string to get the default tab from */
-  localStorageString?: string;
+  localStorageString: string;
   /** The element to align to the right of the tab bar */
   left?: React.ReactElement;
   fullWidth?: boolean;
