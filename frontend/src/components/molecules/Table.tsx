@@ -52,6 +52,9 @@ const Table = ({
         "& .MuiDataGrid-cell:focus": {
           outline: "none",
         },
+        "& .MuiDataGrid-columnHeader:focus": {
+          outline: "none",
+        },
       }}
       disableRowSelectionOnClick
       rowCount={dataSetLength} // number of rows in the entire dataset
