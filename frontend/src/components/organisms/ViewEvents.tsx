@@ -501,6 +501,7 @@ const ViewEvents = () => {
 
       <TabContainer
         tabs={tabs}
+        localStorageString="upcomingPastTabs"
         left={<div className="text-3xl font-semibold">My Events</div>}
       />
     </>

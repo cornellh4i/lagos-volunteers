@@ -5,9 +5,25 @@ import { FormControl, MenuItem, SelectChangeEvent } from "@mui/material";
 import Select from "../atoms/Select";
 import { TabPanel, TabContext, TabList } from "@mui/lab";
 
+interface RootTabContainerProps {
+  /** A list of tab labels and panels in order of display */
+  tabs: { label: string; panel: ReactElement }[];
+  /** The local storage string to get the default tab from */
+  localStorageString: string;
+  /** The element to align to the right of the tab bar */
+  left?: React.ReactElement;
+  fullWidth?: boolean;
+}
+
 interface TabContainerProps {
   /** A list of tab labels and panels in order of display */
   tabs: { label: string; panel: ReactElement }[];
+  /** The default tab to focus on */
+  value: string;
+  /** The function to change the tab focus */
+  setValue: React.Dispatch<React.SetStateAction<string>>;
+  /** The local storage string to get the default tab from */
+  localStorageString: string;
   /** The element to align to the right of the tab bar */
   left?: React.ReactElement;
   fullWidth?: boolean;
@@ -15,12 +31,15 @@ interface TabContainerProps {
 
 const HorizontalTabContainer = ({
   tabs,
+  value,
+  setValue,
+  localStorageString,
   left,
   fullWidth,
 }: TabContainerProps) => {
-  const [value, setValue] = React.useState("0");
   const handleChange = (event: React.SyntheticEvent, newValue: string) => {
     setValue(newValue);
+    localStorage.setItem(localStorageString, newValue);
   };
   return (
     <div className="w-full">
@@ -63,11 +82,14 @@ const HorizontalTabContainer = ({
 
 const VerticalTabContainer = ({
   tabs,
+  value,
+  setValue,
+  localStorageString,
   left: rightAlignedComponent,
 }: TabContainerProps) => {
-  const [value, setValue] = React.useState("0");
   const handleChange = (event: SelectChangeEvent) => {
     setValue(event.target.value);
+    localStorage.setItem(localStorageString, event.target.value);
   };
   return (
     <div>
@@ -93,14 +115,37 @@ const VerticalTabContainer = ({
  * and an element can be aligned to the right of the tab bar. The component
  * contains both the tabs and the panels associated with each tab
  */
-const TabContainer = ({ tabs, left, fullWidth = false }: TabContainerProps) => {
+const TabContainer = ({
+  tabs,
+  localStorageString,
+  left,
+  fullWidth = false,
+}: RootTabContainerProps) => {
+  // Note: value in local storage must be a number in a string, e.g. "0" or "1"
+  const storageString = localStorage.getItem(localStorageString);
+  const [value, setValue] = React.useState(
+    localStorageString ? storageString : "0"
+  );
   return (
     <>
       <div className="hidden sm:block">
-        <HorizontalTabContainer tabs={tabs} left={left} fullWidth={fullWidth} />
+        <HorizontalTabContainer
+          tabs={tabs}
+          value={value}
+          setValue={setValue}
+          localStorageString={localStorageString}
+          left={left}
+          fullWidth={fullWidth}
+        />
       </div>
       <div className="block sm:hidden">
-        <VerticalTabContainer tabs={tabs} left={left} />
+        <VerticalTabContainer
+          tabs={tabs}
+          value={value}
+          setValue={setValue}
+          localStorageString={localStorageString}
+          left={left}
+        />
       </div>
     </>
   );
