@@ -348,6 +348,7 @@ const PastEvents = ({
     {
       field: "actions",
       headerName: "",
+      sortable: false,
       minWidth: 175,
       renderCell: (params) => {
         return (

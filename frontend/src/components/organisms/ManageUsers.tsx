@@ -108,6 +108,7 @@ const Active = ({
     },
     {
       headerName: "",
+      sortable: false,
       field: "actions",
       flex: 0.5,
       minWidth: 140,

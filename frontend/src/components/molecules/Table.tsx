@@ -49,6 +49,9 @@ const Table = ({
       rows={rows}
       sx={{
         border: 0,
+        "&.MuiDataGrid-root .MuiDataGrid-cell:focus-within": {
+          outline: "none !important",
+        },
         "& .MuiDataGrid-cell:focus": {
           outline: "none",
         },
