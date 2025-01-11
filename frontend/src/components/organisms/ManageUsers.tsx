@@ -50,7 +50,7 @@ const Active = ({
     {
       field: "firstName",
       headerName: "Name",
-      flex: 1.25,
+      flex: 1,
       minWidth: 200,
       renderHeader: (params) => (
         <div style={{ fontWeight: "bold" }}>{params.colDef.headerName}</div>
@@ -108,19 +108,22 @@ const Active = ({
     },
     {
       headerName: "",
+      sortable: false,
       field: "actions",
       flex: 0.5,
-      minWidth: 140,
+      minWidth: 150,
       renderCell: (params) => (
-        <div>
-          <Link
-            href={`/users/${params.row.id}/manage`}
-            className="no-underline"
-          >
-            <Button variety="tertiary" size="small" icon={<PersonIcon />}>
-              View Profile
-            </Button>
-          </Link>
+        <div className="w-full flex">
+          <div className="ml-auto">
+            <Link
+              href={`/users/${params.row.id}/manage`}
+              className="no-underline"
+            >
+              <Button variety="tertiary" size="small" icon={<PersonIcon />}>
+                View Profile
+              </Button>
+            </Link>
+          </div>
         </div>
       ),
     },
