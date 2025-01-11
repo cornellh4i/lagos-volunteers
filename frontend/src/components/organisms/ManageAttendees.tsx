@@ -187,7 +187,7 @@ const AttendeesTable = ({
       field: "email",
       headerName: "Email",
       minWidth: 200,
-      flex: 0.5,
+      flex: 1,
       renderHeader: (params) => (
         <div style={{ fontWeight: "bold" }}>{params.colDef.headerName}</div>
       ),
@@ -206,7 +206,7 @@ const AttendeesTable = ({
       field: "status",
       headerName: "Registration status",
       sortable: false,
-      minWidth: 175,
+      minWidth: 200,
       flex: 0.5,
       renderHeader: (params) => (
         <div style={{ fontWeight: "bold" }}>{params.colDef.headerName}</div>
@@ -265,7 +265,7 @@ const AttendeesTable = ({
       field: "email",
       headerName: "Email",
       minWidth: 200,
-      flex: 0.5,
+      flex: 1,
       renderHeader: (params) => (
         <div style={{ fontWeight: "bold" }}>{params.colDef.headerName}</div>
       ),
@@ -290,14 +290,18 @@ const AttendeesTable = ({
         <div style={{ fontWeight: "bold" }}>{params.colDef.headerName}</div>
       ),
       renderCell: (params) => (
-        <Button
-          variety="tertiary"
-          size="small"
-          icon={<ManageSearchIcon />}
-          onClick={() => handleOpen(params.row.id)}
-        >
-          View Cancelation
-        </Button>
+        <div className="w-full flex">
+          <div className="ml-auto">
+            <Button
+              variety="tertiary"
+              size="small"
+              icon={<ManageSearchIcon />}
+              onClick={() => handleOpen(params.row.id)}
+            >
+              View Cancelation
+            </Button>
+          </div>
+        </div>
       ),
     },
   ];

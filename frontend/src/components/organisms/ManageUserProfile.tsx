@@ -34,6 +34,7 @@ import { formatRoleOrStatus } from "@/utils/helpers";
 import { useAuth } from "@/utils/AuthContext";
 import Link from "next/link";
 import ArrowOutwardIcon from "@mui/icons-material/ArrowOutward";
+import Chip from "../atoms/Chip";
 
 type userProfileData = {
   name: string;
@@ -52,6 +53,7 @@ type eventRegistrationData = {
   name: string;
   startDate: string;
   hours: string;
+  status: string;
   attendeeStatus?: string;
 };
 
@@ -65,6 +67,14 @@ const eventColumns: GridColDef[] = [
     minWidth: 100,
     renderHeader: (params) => (
       <div style={{ fontWeight: "bold" }}>{params.colDef.headerName}</div>
+    ),
+    renderCell: (params) => (
+      <div className="flex items-center">
+        {params.row.name}
+        {params.row.status == "CANCELED" && (
+          <Chip size="small" label="Canceled" color="error" className="ml-3" />
+        )}
+      </div>
     ),
   },
   {
@@ -103,15 +113,17 @@ const eventColumns: GridColDef[] = [
     minWidth: 150,
     align: "right",
     renderCell: (params) => (
-      <div>
-        <Link
-          href={`/events/${params.row.id}/attendees`}
-          className="no-underline"
-        >
-          <Button variety="tertiary" size="small" icon={<ArrowOutwardIcon />}>
-            View Event
-          </Button>
-        </Link>
+      <div className="w-full flex">
+        <div className="ml-auto">
+          <Link
+            href={`/events/${params.row.id}/attendees`}
+            className="no-underline"
+          >
+            <Button variety="tertiary" size="small" icon={<ArrowOutwardIcon />}>
+              View Event
+            </Button>
+          </Link>
+        </div>
       </div>
     ),
   },
@@ -282,6 +294,7 @@ const ManageUserProfile = () => {
         attendeeStatus === "Checked out"
           ? eventHours(event.endDate, event.startDate)
           : "N/A",
+      status: event.status,
       attendeeStatus: attendeeStatus,
     });
   });

@@ -248,8 +248,8 @@ const PastEvents = ({
     {
       field: "name",
       headerName: "Event name",
-      minWidth: 200,
       flex: 2,
+      minWidth: 100,
       renderHeader: (params) => (
         <div style={{ fontWeight: "bold" }}>{params.colDef.headerName}</div>
       ),
@@ -270,7 +270,8 @@ const PastEvents = ({
     {
       field: "startDate",
       headerName: "Date",
-      minWidth: 150,
+      flex: 0.5,
+      minWidth: 100,
       renderHeader: (params) => (
         <div style={{ fontWeight: "bold" }}>{params.colDef.headerName}</div>
       ),
@@ -279,7 +280,7 @@ const PastEvents = ({
       field: "hours",
       headerName: "Hours",
       sortable: false,
-      minWidth: 50,
+      flex: 0.5,
       renderHeader: (params) => (
         <div style={{ fontWeight: "bold" }}>{params.colDef.headerName}</div>
       ),
@@ -300,15 +301,21 @@ const PastEvents = ({
       minWidth: 150,
       align: "right",
       renderCell: (params) => (
-        <div>
-          <Link
-            href={`/events/${params.row.id}/register`}
-            className="no-underline"
-          >
-            <Button variety="tertiary" size="small" icon={<ArrowOutwardIcon />}>
-              View Event
-            </Button>
-          </Link>
+        <div className="w-full flex">
+          <div className="ml-auto">
+            <Link
+              href={`/events/${params.row.id}/register`}
+              className="no-underline"
+            >
+              <Button
+                variety="tertiary"
+                size="small"
+                icon={<ArrowOutwardIcon />}
+              >
+                View Event
+              </Button>
+            </Link>
+          </div>
         </div>
       ),
     },
@@ -352,11 +359,15 @@ const PastEvents = ({
       minWidth: 175,
       renderCell: (params) => {
         return (
-          <Link href={`/events/${params.row.id}/attendees`}>
-            <Button variety="tertiary" icon={<ManageSearchIcon />}>
-              Manage Event
-            </Button>
-          </Link>
+          <div className="w-full flex">
+            <div className="ml-auto">
+              <Link href={`/events/${params.row.id}/attendees`}>
+                <Button variety="tertiary" icon={<ManageSearchIcon />}>
+                  Manage Event
+                </Button>
+              </Link>
+            </div>
+          </div>
         );
       },
     },
