@@ -512,10 +512,13 @@ const EventForm = ({
         <div className="grid grid-cols-1 sm:grid-cols-2 col-span-2  sm:col-span-1">
           <TextField
             label="Maximum Number of Volunteers"
-            type="number"
             error={errors.volunteerSignUpCap?.message}
             {...register("volunteerSignUpCap", {
               required: { value: true, message: "Required " },
+              pattern: {
+                value: /^\d+$/i,
+                message: "Invalid number",
+              },
             })}
           />
         </div>
