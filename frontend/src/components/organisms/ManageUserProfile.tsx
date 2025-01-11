@@ -484,8 +484,8 @@ const ManageUserProfile = () => {
         </Card>
         <Card>
           <h3 className="mb-2 mt-0">
-            {name} is {status === "ACTIVE" ? ` an Active ` : ` a Blacklisted `}
-            member
+            {name} is{" "}
+            {status === "ACTIVE" ? ` an Active Member` : ` Blacklisted`}
           </h3>
           <div className="mb-4">
             {status === "ACTIVE"
@@ -503,44 +503,48 @@ const ManageUserProfile = () => {
           )}
         </Card>
       </div>
-      <h3>Hour Tracker</h3>
-      <div className="grid gap-4 md:grid-cols-2">
-        <Card>
-          <LinearProgress
-            value={Math.min(100, 100 * (hours / REFERENCE_HOURS))}
-          />
-          <h3 className="mb-2 mt-4">Reference Hour Tracker</h3>
-          <div>
-            {friendlyHours(hours)} / {REFERENCE_HOURS} hours complete
-          </div>
-          {/* <Button>Approve Reference Request</Button> */}
-        </Card>
-        <Card>
-          <LinearProgress
-            value={Math.min(100, 100 * (hours / CERTIFICATE_HOURS))}
-          />
-          <h3 className="mb-2 mt-4">Certificate Hour Tracker</h3>
-          <div>
-            {friendlyHours(hours)} / {CERTIFICATE_HOURS} hours complete
-          </div>
-          {/* <Button disabled={hours !== CERTIFICATE_HOURS}>
+      {role === "VOLUNTEER" && (
+        <>
+          <h3>Hour Tracker</h3>
+          <div className="grid gap-4 md:grid-cols-2">
+            <Card>
+              <LinearProgress
+                value={Math.min(100, 100 * (hours / REFERENCE_HOURS))}
+              />
+              <h3 className="mb-2 mt-4">Reference Hour Tracker</h3>
+              <div>
+                {friendlyHours(hours)} / {REFERENCE_HOURS} hours complete
+              </div>
+              {/* <Button>Approve Reference Request</Button> */}
+            </Card>
+            <Card>
+              <LinearProgress
+                value={Math.min(100, 100 * (hours / CERTIFICATE_HOURS))}
+              />
+              <h3 className="mb-2 mt-4">Certificate Hour Tracker</h3>
+              <div>
+                {friendlyHours(hours)} / {CERTIFICATE_HOURS} hours complete
+              </div>
+              {/* <Button disabled={hours !== CERTIFICATE_HOURS}>
             Approve Certificate Request
           </Button> */}
-        </Card>
-      </div>
-      <h3>Event History</h3>
-      <Card size="table">
-        <Table
-          columns={eventColumns}
-          rows={registeredEvents}
-          dataSetLength={totalNumberofData}
-          paginationModel={paginationModel}
-          handlePaginationModelChange={handlePaginationModelChange}
-          handleSortModelChange={handleSortModelChange}
-          sortModel={sortModel}
-          loading={isPending}
-        />
-      </Card>
+            </Card>
+          </div>
+          <h3>Event History</h3>
+          <Card size="table">
+            <Table
+              columns={eventColumns}
+              rows={registeredEvents}
+              dataSetLength={totalNumberofData}
+              paginationModel={paginationModel}
+              handlePaginationModelChange={handlePaginationModelChange}
+              handleSortModelChange={handleSortModelChange}
+              sortModel={sortModel}
+              loading={isPending}
+            />
+          </Card>
+        </>
+      )}
     </>
   );
 };
