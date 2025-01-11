@@ -241,7 +241,7 @@ const ManageUserProfile = () => {
     pageSize: 10,
   });
   const [sortModel, setSortModel] = useState<GridSortModel>([
-    { field: "startDate", sort: "asc" },
+    { field: "startDate", sort: "desc" },
   ]);
 
   const fetchBatchOfEvents = async (
@@ -537,6 +537,7 @@ const ManageUserProfile = () => {
           paginationModel={paginationModel}
           handlePaginationModelChange={handlePaginationModelChange}
           handleSortModelChange={handleSortModelChange}
+          sortModel={sortModel}
           loading={isPending}
         />
       </Card>
