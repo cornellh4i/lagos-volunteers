@@ -2,4 +2,5 @@ build:
   docker:
     web: backend/Dockerfile
 release:
+  image: web
   command: npx prisma migrate deploy
