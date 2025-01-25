@@ -66,8 +66,8 @@ userRouter.post(
         });
         if (fbUser) {
           await firebase.auth().setCustomUserClaims(fbUser.uid, {
-            admin: true,
-            supervisor: true,
+            admin: false,
+            supervisor: false,
             volunteer: true,
           });
           return res.status(200).send({ success: true, user: user });
