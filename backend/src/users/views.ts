@@ -96,8 +96,8 @@ userRouter.post(
     const { ...rest } = req.body;
     try {
       await firebase.auth().setCustomUserClaims(rest.id, {
-        admin: false,
-        supervisor: false,
+        admin: true,
+        supervisor: true,
         volunteer: true,
       });
       const user = await userController.createUser(
