@@ -3,13 +3,19 @@ import React from "react";
 import ResetPasswordForm from "@/components/organisms/ResetPasswordForm";
 import WelcomeTemplate from "@/components/templates/WelcomeTemplate";
 import { useRouter } from "next/router";
+import Head from "next/head";
 
 /** A ResetPassword page */
 const ResetPassword = () => {
   return (
-    <WelcomeTemplate>
-      <ResetPasswordForm />
-    </WelcomeTemplate>
+    <>
+      <Head>
+        <title>Reset Password - LFBI Volunteer Platform</title>
+      </Head>
+      <WelcomeTemplate>
+        <ResetPasswordForm />
+      </WelcomeTemplate>
+    </>
   );
 };
 

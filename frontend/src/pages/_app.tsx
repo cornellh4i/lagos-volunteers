@@ -5,6 +5,7 @@ import { createTheme, StyledEngineProvider } from "@mui/material/styles";
 import Layout from "@/components/Layout";
 import { AuthProvider } from "@/utils/AuthContext";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import Head from "next/head";
 
 const rootElement = () => document.getElementById("__next");
 
@@ -73,6 +74,9 @@ const App = ({ Component, pageProps }: AppProps) => {
         <StyledEngineProvider injectFirst>
           <ThemeProvider theme={theme}>
             <Layout>
+              <Head>
+                <title>LFBI Volunteer Platform</title>
+              </Head>
               <Component {...pageProps} />
             </Layout>
           </ThemeProvider>
