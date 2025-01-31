@@ -6,6 +6,7 @@ import Loading from "@/components/molecules/Loading";
 import { api } from "@/utils/api";
 import { useQuery } from "@tanstack/react-query";
 import Card from "@/components/molecules/Card";
+import Head from "next/head";
 
 type eventData = {
   id: string;
@@ -58,11 +59,18 @@ const EditEvent = () => {
   if (isLoading) return <Loading />;
 
   return (
-    <CenteredTemplate>
-      <Card size="medium">
-        <EventForm eventType="edit" eventDetails={event} />
-      </Card>
-    </CenteredTemplate>
+    <>
+      {data?.name && (
+        <Head>
+          <title>{data.name} - Edit Event - LFBI Volunteer Platform</title>
+        </Head>
+      )}
+      <CenteredTemplate>
+        <Card size="medium">
+          <EventForm eventType="edit" eventDetails={event} />
+        </Card>
+      </CenteredTemplate>
+    </>
   );
 };
 
