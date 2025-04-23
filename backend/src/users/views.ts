@@ -225,6 +225,19 @@ userRouter.patch(
 );
 
 userRouter.patch(
+  "/:userid/legacyHours",
+  useAdminAuth,
+  async (req: Request, res: Response) => {
+    // #swagger.tags = ['Users']
+    const { legacyHours } = req.body;
+    attempt(res, 200, () =>
+      userController.editLegacyHours(req.params.userid, legacyHours)
+    );
+    socketNotify(`/users/${req.params.userid}`);
+  }
+);
+
+userRouter.patch(
   "/:userid/role",
   useAdminAuth,
   async (req: Request, res: Response) => {
