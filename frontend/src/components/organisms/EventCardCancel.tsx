@@ -10,7 +10,11 @@ import { useAuth } from "@/utils/AuthContext";
 import { Box, Grid } from "@mui/material";
 import Modal from "@/components/molecules/Modal";
 import { useForm, SubmitHandler } from "react-hook-form";
-import { convertEnrollmentStatusToString } from "@/utils/helpers";
+import {
+  convertEnrollmentStatusToString,
+  convertEnrollmentStatusToTitle,
+  convertEnrollmentStatusToDescription,
+} from "@/utils/helpers";
 
 interface EventCardCancelProps {
   attendeeId: string;
@@ -47,15 +51,20 @@ const ModalBody = ({ handleClose, mutateFn }: modalProps) => {
           alignItems: "center",
         }}
       >
-        <div>Are you sure you want to cancel your registration?</div>
+        <div>
+          Are you sure you want to cancel your registration?{" "}
+          <b>This action is final and cannot be undone.</b>
+        </div>
       </Box>
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <div className="order-1 sm:order-2">
-          <Button onClick={mutateFn}>Yes</Button>
+          <Button variety="mainError" onClick={mutateFn}>
+            Yes, cancel
+          </Button>
         </div>
         <div className="order-2 sm:order-1">
           <Button variety="secondary" onClick={handleClose}>
-            Cancel
+            Go back
           </Button>
         </div>
       </div>
@@ -143,11 +152,12 @@ const EventCardCancel = ({
       />
 
       <Card>
-        <div className="font-semibold text-2xl">You're registered</div>
+        <div className="font-semibold text-2xl">
+          {convertEnrollmentStatusToTitle(attendeeStatus)}
+        </div>
         <div className="mt-5" />
         <div className="mb-2">
-          Your registration status is{" "}
-          <b>{convertEnrollmentStatusToString(attendeeStatus)}</b>.
+          {convertEnrollmentStatusToDescription(attendeeStatus)}
         </div>
         <div className="mt-5" />
         <div className="font-semibold text-lg mb-2">

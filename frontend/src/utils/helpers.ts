@@ -278,3 +278,41 @@ export const convertEnrollmentStatusToString = (status: string) => {
       return "";
   }
 };
+
+/**
+ * Converts the user registration status enum to a title
+ * @param status is the EnrollmentStatus enum
+ */
+export const convertEnrollmentStatusToTitle = (status: string) => {
+  switch (status) {
+    case "PENDING":
+      return "You're registered";
+    case "CHECKED_IN":
+      return "You're checked in";
+    case "CHECKED_OUT":
+      return "You're checked out";
+    case "REMOVED":
+      return "Your registration has been removed";
+    default:
+      return "";
+  }
+};
+
+/**
+ * Converts the user registration status enum to a description
+ * @param status is the EnrollmentStatus enum
+ */
+export const convertEnrollmentStatusToDescription = (status: string) => {
+  switch (status) {
+    case "PENDING":
+      return "You will be checked in on the day of the event.";
+    case "CHECKED_IN":
+      return "You will be checked out after the event concludes.";
+    case "CHECKED_OUT":
+      return "Your volunteer hours have been recorded.";
+    case "REMOVED":
+      return "Please contact your supervisor for further information.";
+    default:
+      return "";
+  }
+};
