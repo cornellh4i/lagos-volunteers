@@ -37,9 +37,9 @@ const TextCopy = ({ label, text }: TextCopyProps) => {
           </div>
         </div>
         <div className="flex items-center truncate">
-          <div className="flex-col">
+          <div className="flex flex-col max-w-full">
             <div className="font-semibold">{label}</div>
-            <div>{text}</div>
+            <div className="truncate">{text}</div>
           </div>
         </div>
       </div>
