@@ -12,6 +12,7 @@ const NavBar = () => {
 
   const handleSignOut = async () => {
     try {
+      localStorage.setItem("seeAllEvents", "false"); // clear local storage setting
       await signOutUser();
       queryClient.clear(); // Clear cache for react query
       router.replace("/login");
