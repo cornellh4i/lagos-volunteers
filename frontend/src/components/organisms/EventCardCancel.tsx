@@ -51,15 +51,20 @@ const ModalBody = ({ handleClose, mutateFn }: modalProps) => {
           alignItems: "center",
         }}
       >
-        <div>Are you sure you want to cancel your registration?</div>
+        <div>
+          Are you sure you want to cancel your registration?{" "}
+          <b>This action is final and cannot be undone.</b>
+        </div>
       </Box>
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <div className="order-1 sm:order-2">
-          <Button onClick={mutateFn}>Yes</Button>
+          <Button variety="mainError" onClick={mutateFn}>
+            Yes, cancel
+          </Button>
         </div>
         <div className="order-2 sm:order-1">
           <Button variety="secondary" onClick={handleClose}>
-            Cancel
+            Go back
           </Button>
         </div>
       </div>
