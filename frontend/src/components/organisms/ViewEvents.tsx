@@ -9,7 +9,6 @@ import Button from "../atoms/Button";
 import Link from "next/link";
 import { useAuth, Role } from "@/utils/AuthContext";
 import {
-  convertEnrollmentStatusToString,
   eventHours,
   fetchUserIdFromDatabase,
   friendlyHours,

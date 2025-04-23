@@ -13,10 +13,7 @@ import { useRouter } from "next/router";
 import { useAuth } from "@/utils/AuthContext";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { api } from "@/utils/api";
-import {
-  convertEnrollmentStatusToString,
-  fetchUserIdFromDatabase,
-} from "@/utils/helpers";
+import { fetchUserIdFromDatabase } from "@/utils/helpers";
 import { formatDateTimeRange } from "@/utils/helpers";
 import { EventData } from "@/utils/types";
 import Loading from "@/components/molecules/Loading";
