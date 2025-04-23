@@ -88,6 +88,9 @@ const LoginForm = () => {
   useEffect(() => {
     if (signInErrors) {
       switch (signInErrors.code) {
+        case "auth/invalid-credential":
+          setErrorMessage("Invalid email or password.");
+          break;
         case "auth/invalid-email":
           setErrorMessage("Invalid email address format.");
           break;
