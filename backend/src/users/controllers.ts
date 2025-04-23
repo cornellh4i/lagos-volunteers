@@ -495,7 +495,17 @@ const getHours = async (userId: string) => {
     totalTime += eventDuration;
   }
   const hours = totalTime / (1000 * 60 * 60);
-  return hours;
+
+  // Include legacy hours
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+  });
+
+  if (user) {
+    return user.legacyHours + hours;
+  } else {
+    return hours;
+  }
 };
 
 /**
@@ -673,6 +683,13 @@ const editRole = async (userId: string, role: string) => {
   });
 };
 
+const editLegacyHours = async (userid: string, newHours: number) => {
+  return prisma.user.update({
+    where: { id: userid },
+    data: { legacyHours: newHours },
+  });
+};
+
 /**
  * Returns sorted Users based on one key
  * @param req: Request parameter
@@ -775,6 +792,7 @@ export default {
   editPreferences,
   editStatus,
   editRole,
+  editLegacyHours,
   getUsersSorted,
   sendEmail,
   recoverEmail,

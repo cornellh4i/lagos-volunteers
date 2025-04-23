@@ -35,6 +35,8 @@ import { useAuth } from "@/utils/AuthContext";
 import Link from "next/link";
 import ArrowOutwardIcon from "@mui/icons-material/ArrowOutward";
 import Chip from "../atoms/Chip";
+import { SubmitHandler, useForm } from "react-hook-form";
+import TextField from "../atoms/TextField";
 
 type userProfileData = {
   name: string;
@@ -42,7 +44,7 @@ type userProfileData = {
   email: string;
   joinDate: string;
   userId: string;
-  hours: number;
+  legacyHours: number;
   status: string;
   imgSrc?: string;
   phoneNumber: string;
@@ -135,6 +137,101 @@ type modalBodyProps = {
   handleClose: () => void;
 };
 
+type UpdateLegacyHoursFormValues = {
+  hours: string;
+};
+
+/** Update modal for updating a volunteer's legacy hours */
+const LegacyHoursModalBody = ({
+  handleClose,
+  userid,
+  setNotifSuccess,
+  setNotifFailure,
+}: {
+  handleClose: () => void;
+  userid: string;
+  setNotifSuccess: React.Dispatch<React.SetStateAction<boolean>>;
+  setNotifFailure: React.Dispatch<React.SetStateAction<boolean>>;
+}) => {
+  const queryClient = useQueryClient();
+
+  const {
+    register,
+    handleSubmit,
+    watch,
+    formState: { errors },
+  } = useForm<UpdateLegacyHoursFormValues>();
+
+  /** Tanstack query mutation to update the user profile */
+  const updateLegacyHours = useMutation({
+    mutationFn: async (data: any) => {
+      return api.patch(`/users/${userid}/legacyHours`, {
+        legacyHours: data.hours,
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["userHours", userid] });
+      queryClient.invalidateQueries({ queryKey: ["user", userid] });
+    },
+    retry: false,
+  });
+
+  const handleUpdateLegacyHours: SubmitHandler<
+    UpdateLegacyHoursFormValues
+  > = async (data) => {
+    try {
+      await updateLegacyHours.mutateAsync(data);
+      setNotifSuccess(true);
+      handleClose();
+    } catch (error: any) {
+      setNotifFailure(true);
+      handleClose();
+    }
+  };
+
+  return (
+    <div>
+      <div className="font-bold text-2xl text-center">Update Legacy Hours</div>
+      <div className="mb-8">
+        <p>
+          Legacy hours are hours that are stored and tracked outside of the
+          platform. They do not correspond to any event stored within the
+          platform, but they are included in calculations that track a
+          volunteer's total number of hours.
+        </p>
+      </div>
+
+      <form onSubmit={handleSubmit(handleUpdateLegacyHours)}>
+        <TextField
+          error={errors.hours?.message}
+          label="Enter the new number of hours here:"
+          {...register("hours", {
+            required: { value: true, message: "Required" },
+            valueAsNumber: true,
+            validate: {
+              matchConfirmation: (value) =>
+                (Number(value) >= 0 && Number.isInteger(value)) ||
+                "Hours must be a non-negative whole number.",
+            },
+          })}
+        />
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 mt-10">
+          <div className="order-1 sm:order-2">
+            <Button loading={updateLegacyHours.isPending} type="submit">
+              Update
+            </Button>
+          </div>
+          <div className="order-2 sm:order-1">
+            <Button variety="secondary" onClick={handleClose}>
+              Cancel
+            </Button>
+          </div>
+        </div>
+      </form>
+    </div>
+  );
+};
+
 /** Confirmation modal for blacklisting a user */
 const ModalBody = ({ status, blacklistFunc, handleClose }: modalBodyProps) => {
   return (
@@ -181,11 +278,18 @@ const ManageUserProfile = () => {
     useState(false);
   const [roleChangeNotifOpenOnFailure, setRoleChangeNotifOpenOnFailure] =
     useState(false);
+  const [legacyHoursNotifSuccess, setLegacyHoursNotifSuccess] = useState(false);
+  const [legacyHoursNotifFailure, setLegacyHoursNotifFailure] = useState(false);
 
   /** State variables for the blacklist confirmation modal */
   const [open, setOpen] = useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
+
+  /** State variables for the legacy hours confirmation modal */
+  const [legacyHoursOpen, setLegacyHoursOpen] = useState(false);
+  const handleLegacyHoursOpen = () => setLegacyHoursOpen(true);
+  const handleLegacyHoursClose = () => setLegacyHoursOpen(false);
 
   // TODO: REPLACE CONSTANTS WITH ACTUAL VALUES
   const REFERENCE_HOURS = 80;
@@ -219,7 +323,7 @@ const ManageUserProfile = () => {
     email,
     joinDate,
     userId,
-    hours: fakeHours,
+    legacyHours,
     status,
     imgSrc,
     phoneNumber,
@@ -229,7 +333,7 @@ const ManageUserProfile = () => {
     email: userProfileDetailsQuery?.email,
     joinDate: userProfileDetailsQuery?.createdAt,
     userId: userProfileDetailsQuery?.id,
-    hours: userProfileDetailsQuery?.hours,
+    legacyHours: userProfileDetailsQuery?.legacyHours,
     status: userProfileDetailsQuery?.status,
     imgSrc: userProfileDetailsQuery?.profile?.imageURL,
     phoneNumber: userProfileDetailsQuery?.profile?.phoneNumber,
@@ -397,6 +501,21 @@ const ManageUserProfile = () => {
 
   return (
     <>
+      {/* Update legacy hours modal */}
+      <Modal
+        open={legacyHoursOpen}
+        handleClose={handleLegacyHoursClose}
+        children={
+          <LegacyHoursModalBody
+            handleClose={handleLegacyHoursClose}
+            userid={userid as string}
+            setNotifSuccess={setLegacyHoursNotifSuccess}
+            setNotifFailure={setLegacyHoursNotifFailure}
+          />
+        }
+      />
+
+      {/* Blacklist confirmation modal */}
       <Modal
         open={open}
         handleClose={handleClose}
@@ -451,6 +570,24 @@ const ManageUserProfile = () => {
         variety="error"
       >
         {`Error: ${name}'s status could not be changed. Please try again`}
+      </Snackbar>
+
+      {/* Legacy hours notification success */}
+      <Snackbar
+        onClose={() => setLegacyHoursNotifSuccess(false)}
+        open={legacyHoursNotifSuccess}
+        variety="success"
+      >
+        {`Success: Legacy hours have been updated for ${name}`}
+      </Snackbar>
+
+      {/* Legacy hours notification failure */}
+      <Snackbar
+        onClose={() => setLegacyHoursNotifFailure(false)}
+        open={legacyHoursNotifFailure}
+        variety="error"
+      >
+        {`Error: Legacy hours for ${name} could not be updated. Please try again.`}
       </Snackbar>
 
       {/* Manage user profile */}
@@ -515,7 +652,6 @@ const ManageUserProfile = () => {
               <div>
                 {friendlyHours(hours)} / {REFERENCE_HOURS} hours complete
               </div>
-              {/* <Button>Approve Reference Request</Button> */}
             </Card>
             <Card>
               <LinearProgress
@@ -525,9 +661,20 @@ const ManageUserProfile = () => {
               <div>
                 {friendlyHours(hours)} / {CERTIFICATE_HOURS} hours complete
               </div>
-              {/* <Button disabled={hours !== CERTIFICATE_HOURS}>
-            Approve Certificate Request
-          </Button> */}
+            </Card>
+          </div>
+          <h3>Legacy Hours</h3>
+          <div className="grid gap-4 md:grid-cols-2">
+            <Card>
+              <h3 className="mb-2 mt-0">Legacy Hour Tracker</h3>
+              <div className="mb-4">
+                This member currently has {friendlyHours(legacyHours)} hours of
+                previous volunteer experience. These hours are stored outside of
+                the platform.
+              </div>
+              <Button variety="secondary" onClick={handleLegacyHoursOpen}>
+                Update
+              </Button>
             </Card>
           </div>
           <h3>Event History</h3>

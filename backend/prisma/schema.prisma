@@ -24,6 +24,7 @@ model User {
   createdEvents Event[]           @relation(name: "EventOwner")
   events        EventEnrollment[]
   preferences   UserPreferences?
+  legacyHours   Int               @default(0)
 }
 
 model Profile {
