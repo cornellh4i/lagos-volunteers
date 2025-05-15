@@ -14,6 +14,7 @@ type eventData = {
   location: string;
   locationLink: string;
   volunteerSignUpCap: string;
+  defaultHoursAwarded: string;
   eventDescription: string;
   imageURL: string;
   rsvpLinkImage: string;
@@ -44,6 +45,7 @@ const EditEvent = () => {
     location: data?.location,
     locationLink: data?.locationLink,
     volunteerSignUpCap: data?.capacity,
+    defaultHoursAwarded: data?.hours,
     eventDescription: data?.description,
     imageURL: data?.imageURL || "",
     rsvpLinkImage: data?.rsvpLinkImage || "",
