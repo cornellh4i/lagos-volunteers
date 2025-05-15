@@ -93,10 +93,15 @@ function useViewEventState(
   const rows: any[] = [];
   const totalNumberofData = data?.data.totalItems;
   data?.data.result.map((event: any) => {
+    // Filter event attendees to only show the userid we are looking for
+    let attendeesFiltered = event.attendees.filter(
+      (attendee: any) => attendee["userId"] === userid
+    );
+
     let attendeeStatus =
-      event.attendees.length > 0
+      attendeesFiltered.length > 0
         ? convertEnrollmentStatusToString(
-            event.attendees["0"]["attendeeStatus"]
+            attendeesFiltered["0"]["attendeeStatus"]
           )
         : undefined;
 
