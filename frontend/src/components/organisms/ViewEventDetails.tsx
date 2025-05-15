@@ -3,7 +3,7 @@ import EventTemplate from "../templates/EventTemplate";
 import EventCardRegister from "./EventCardRegister";
 import Divider from "@mui/material/Divider";
 import IconTextHeader from "../atoms/IconTextHeader";
-import LocationOnIcon from "@mui/icons-material/LocationOn";
+import HourglassBottomIcon from "@mui/icons-material/HourglassBottom";
 import Link from "next/link";
 import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
 import PersonIcon from "@mui/icons-material/Person";
@@ -112,6 +112,7 @@ const ViewEventDetails = () => {
     locationLink,
     datetime,
     capacity,
+    hours,
     image_src,
     tags,
     supervisors,
@@ -124,6 +125,7 @@ const ViewEventDetails = () => {
     locationLink: eventData.locationLink,
     datetime: formatDateTimeRange(eventData.startDate, eventData.endDate),
     capacity: eventData.capacity,
+    hours: eventData.hours,
     image_src: eventData.imageURL,
     tags: eventData.tags,
     supervisors: [
@@ -207,6 +209,11 @@ const ViewEventDetails = () => {
                   {registeredVolunteersNumber}/{capacity} volunteers registered
                 </>
               }
+            />
+            <IconTextHeader
+              icon={<HourglassBottomIcon />}
+              header={<>Volunteer Hours</>}
+              body={<>{hours} hours</>}
             />
           </div>
         </div>

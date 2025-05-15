@@ -10,6 +10,7 @@ import Modal from "@/components/molecules/Modal";
 import { useForm, SubmitHandler, Controller } from "react-hook-form";
 import { MenuItem, Grid } from "@mui/material";
 import FileCopyIcon from "@mui/icons-material/FileCopy";
+import HourglassBottomIcon from "@mui/icons-material/HourglassBottom";
 import SearchBar from "../atoms/SearchBar";
 import Button from "../atoms/Button";
 import Select from "../atoms/Select";
@@ -666,6 +667,7 @@ const ManageAttendees = () => {
     locationLink,
     datetime,
     capacity,
+    hours,
     image_src,
     tags,
     supervisors,
@@ -678,6 +680,7 @@ const ManageAttendees = () => {
     locationLink: eventData.locationLink,
     datetime: formatDateTimeRange(eventData.startDate, eventData.endDate),
     capacity: eventData.capacity,
+    hours: eventData.hours,
     image_src: eventData.imageURL,
     tags: eventData.tags,
     supervisors: eventData.owner
@@ -947,6 +950,11 @@ const ManageAttendees = () => {
                 {registeredVolunteersNumber}/{capacity} volunteers registered
               </>
             }
+          />
+          <IconTextHeader
+            icon={<HourglassBottomIcon />}
+            header={<>Volunteer Hours</>}
+            body={<>{hours} hours</>}
           />
           <TextCopy
             label="RSVP Link"
