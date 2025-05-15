@@ -395,14 +395,19 @@ const ManageUserProfile = () => {
           )
         : undefined;
 
+    // Get number of hours awarded to this event enrollment
+    let awardedHours =
+      attendeesFiltered.length > 0 &&
+      attendeesFiltered["0"]["customHours"] !== null
+        ? attendeesFiltered["0"]["customHours"]
+        : event.hours;
+
     registeredEvents.push({
       id: event.id,
       name: event.name,
       startDate: formatDateString(event.startDate),
       hours:
-        attendeeStatus === "Checked out"
-          ? eventHours(event.endDate, event.startDate)
-          : "N/A",
+        attendeeStatus === "Checked out" ? friendlyHours(awardedHours) : "N/A",
       status: event.status,
       attendeeStatus: attendeeStatus,
     });

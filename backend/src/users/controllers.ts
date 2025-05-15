@@ -470,10 +470,11 @@ const getRegisteredEvents = async (userID: string, eventID: string) => {
 };
 
 /**
- * Gets number of hours the requested user has completed in the database.
+ * Gets number of hours the requested user has completed in the database. Uses
+ * the now-legacy assumption that we compute hours by doing end time - start time
  * @returns promise with Int or error
  */
-const getHours = async (userId: string) => {
+const getHoursLegacy = async (userId: string) => {
   const enrollments = await prisma.eventEnrollment.findMany({
     where: {
       userId: userId,
@@ -495,6 +496,50 @@ const getHours = async (userId: string) => {
     totalTime += eventDuration;
   }
   const hours = totalTime / (1000 * 60 * 60);
+
+  // Include legacy hours
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+  });
+
+  if (user) {
+    return user.legacyHours + hours;
+  } else {
+    return hours;
+  }
+};
+
+/**
+ * Gets number of hours the requested user has completed in the database. For each
+ * event enrollment, if customHours is null, then we add the default number of hours
+ * as defined in event.hours. Otherwise, we ignore event.hours and just add the
+ * value of eventEnrollment.customHours
+ * @returns promise with Int or error
+ */
+const getHours = async (userId: string) => {
+  const enrollments = await prisma.eventEnrollment.findMany({
+    where: {
+      userId: userId,
+      attendeeStatus: "CHECKED_OUT",
+      event: {
+        status: EventStatus.ACTIVE,
+      },
+    },
+    include: {
+      event: true,
+    },
+  });
+
+  // Sum total hours
+  let totalTime = 0;
+  for (const enrollment of enrollments) {
+    const awardedHours =
+      enrollment.customHours !== null
+        ? enrollment.customHours
+        : enrollment.event.hours;
+    totalTime += awardedHours;
+  }
+  const hours = totalTime;
 
   // Include legacy hours
   const user = await prisma.user.findUnique({
