@@ -40,6 +40,7 @@ type FormValues = {
   location: string;
   locationLink: string;
   volunteerSignUpCap: string;
+  defaultHoursAwarded: string;
   eventDescription: string;
   imageURL: string;
   rsvpLinkImage: string;
@@ -110,6 +111,7 @@ const EventForm = ({
             location: eventDetails.location,
             locationLink: eventDetails.locationLink,
             volunteerSignUpCap: eventDetails.volunteerSignUpCap,
+            defaultHoursAwarded: eventDetails.defaultHoursAwarded,
             eventDescription: eventDetails.eventDescription,
             imageURL: eventDetails.imageURL,
             rsvpLinkImage: eventDetails.rsvpLinkImage,
@@ -143,6 +145,7 @@ const EventForm = ({
         location,
         locationLink,
         volunteerSignUpCap,
+        defaultHoursAwarded,
         eventDescription,
         imageURL,
         startDate,
@@ -168,6 +171,7 @@ const EventForm = ({
           startDate: startDateTime,
           endDate: endDateTime,
           capacity: +volunteerSignUpCap,
+          hours: +defaultHoursAwarded,
           mode: `${mode}`,
         },
       });
@@ -190,6 +194,7 @@ const EventForm = ({
           location,
           locationLink,
           volunteerSignUpCap,
+          defaultHoursAwarded,
           eventDescription,
           imageURL,
           startDate,
@@ -219,6 +224,7 @@ const EventForm = ({
           startDate: startDateTime,
           endDate: endDateTime,
           capacity: +volunteerSignUpCap,
+          hours: +defaultHoursAwarded,
           mode: `${mode}`,
         });
         return response;
@@ -465,7 +471,7 @@ const EventForm = ({
           </FormControl>
           <div>
             {status == 1 ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 col-span-2 sm:col-span-1 space-x-0 sm:space-x-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 col-span-2 sm:col-span-1 space-x-0 sm:gap-4">
                 <TextField
                   placeholder="Label for location"
                   error={errors.location?.message}
@@ -485,7 +491,7 @@ const EventForm = ({
                 />
               </div>
             ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 col-span-2 sm:col-span-1 space-x-0 sm:space-x-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 col-span-2 sm:col-span-1 space-x-0 sm:gap-4">
                 <TextField
                   disabled
                   value="VIRTUAL"
@@ -509,11 +515,22 @@ const EventForm = ({
             )}
           </div>
         </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 col-span-2  sm:col-span-1">
+        <div className="grid grid-cols-1 sm:grid-cols-2 col-span-2 sm:col-span-1 gap-4">
           <TextField
             label="Maximum Number of Volunteers"
             error={errors.volunteerSignUpCap?.message}
             {...register("volunteerSignUpCap", {
+              required: { value: true, message: "Required " },
+              pattern: {
+                value: /^\d+$/i,
+                message: "Invalid number",
+              },
+            })}
+          />
+          <TextField
+            label="Default Hours Awarded"
+            error={errors.defaultHoursAwarded?.message}
+            {...register("defaultHoursAwarded", {
               required: { value: true, message: "Required " },
               pattern: {
                 value: /^\d+$/i,

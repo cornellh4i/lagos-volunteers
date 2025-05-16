@@ -23,6 +23,7 @@ export type EventData = {
   datetime: string;
   supervisors: string[];
   capacity: number;
+  hours: number;
   image_src: string;
   tags: string[] | undefined;
   description: string;

@@ -8,8 +8,9 @@ import {
 import Table from "@/components/molecules/Table";
 import Modal from "@/components/molecules/Modal";
 import { useForm, SubmitHandler, Controller } from "react-hook-form";
-import { MenuItem, Grid } from "@mui/material";
+import { MenuItem, Grid, Tooltip } from "@mui/material";
 import FileCopyIcon from "@mui/icons-material/FileCopy";
+import HourglassBottomIcon from "@mui/icons-material/HourglassBottom";
 import SearchBar from "../atoms/SearchBar";
 import Button from "../atoms/Button";
 import Select from "../atoms/Select";
@@ -42,6 +43,9 @@ import ManageSearchIcon from "@mui/icons-material/ManageSearch";
 import MultilineTextField from "../atoms/MultilineTextField";
 import Alert from "../atoms/Alert";
 import Loading from "../molecules/Loading";
+import Switch from "@mui/material/Switch";
+import TextField from "../atoms/TextField";
+import InfoOutlineIcon from "@mui/icons-material/InfoOutlined";
 
 type attendeeData = {
   id: number;
@@ -62,6 +66,10 @@ interface AttendeesTableProps {
   handleSortModelChange: (newModel: GridSortModel) => void;
   handleSearchQuery: (newQuery: string) => void;
   isLoading: boolean;
+  useCustomHours: boolean;
+  setUseCustomHours: React.Dispatch<React.SetStateAction<boolean>>;
+  setErrorMessage: React.Dispatch<React.SetStateAction<string>>;
+  setErrorNotificationOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 type FormValues = {
@@ -108,8 +116,16 @@ const AttendeesTable = ({
   handleSortModelChange,
   handleSearchQuery,
   isLoading,
+  useCustomHours,
+  setUseCustomHours,
+  setErrorMessage,
+  setErrorNotificationOpen,
 }: AttendeesTableProps) => {
   const queryClient = useQueryClient();
+
+  // The userid of the currently selected user to check out, used only for the
+  // custom checkout modal
+  const [selectedUserId, setSelectedUserId] = useState("");
 
   // Define the WebSocket URL
   const socketUrl = BASE_WEBSOCKETS_URL as string;
@@ -118,6 +134,10 @@ const AttendeesTable = ({
   const { sendMessage, lastMessage, readyState } = useWebSocket(socketUrl, {
     shouldReconnect: () => true,
   });
+
+  // Custom checkout modal
+  const [customCheckoutOpen, setCustomCheckoutOpen] = useState(false);
+  const handleCustomCheckoutClose = () => setCustomCheckoutOpen(false);
 
   /**
    * Updates the attendee status for a user.
@@ -133,6 +153,7 @@ const AttendeesTable = ({
         `/events/${eventid}/attendees/${userId}/attendee-status`,
         {
           attendeeStatus: newValue,
+          customHours: null,
         }
       );
       return response;
@@ -164,10 +185,19 @@ const AttendeesTable = ({
     queryClient.invalidateQueries({ queryKey: [eventid] });
   }
 
-  const handleStatusChange = async (userId: string, newValue: string) => {
+  const handleStatusChange = async (
+    userId: string,
+    newValue: string,
+    useCustomHours: boolean
+  ) => {
     console.log(userId, newValue);
     try {
-      await mutateAsync({ userId, newValue });
+      if (newValue === "CHECKED_OUT" && useCustomHours === true) {
+        setSelectedUserId(userId);
+        setCustomCheckoutOpen(true);
+      } else {
+        await mutateAsync({ userId, newValue });
+      }
     } catch (error) {
       console.error("Error updating user status:", error);
     }
@@ -203,6 +233,21 @@ const AttendeesTable = ({
       ),
     },
     {
+      field: "customHours",
+      headerName: "Awarded hours",
+      sortable: false,
+      minWidth: 150,
+      flex: 0.5,
+      renderHeader: (params) => (
+        <div className="flex flex-row items-center gap-1">
+          <div style={{ fontWeight: "bold" }}>{params.colDef.headerName}</div>
+          <Tooltip title="Awarded hours are the actual number of hours you receive for participating in the event. This may be different from the default hours if a supervisor manually changes the hours you were awarded.">
+            <InfoOutlineIcon fontSize="small" />
+          </Tooltip>
+        </div>
+      ),
+    },
+    {
       field: "status",
       headerName: "Registration status",
       sortable: false,
@@ -221,7 +266,11 @@ const AttendeesTable = ({
             }
             value={params.row.status}
             onChange={(event: any) =>
-              handleStatusChange(params.row.id, event.target.value)
+              handleStatusChange(
+                params.row.id,
+                event.target.value,
+                useCustomHours
+              )
             }
           >
             <MenuItem value="PENDING">Pending</MenuItem>
@@ -334,6 +383,22 @@ const AttendeesTable = ({
 
   return (
     <div>
+      {/* Custom checkout modal */}
+      <Modal
+        open={customCheckoutOpen}
+        handleClose={handleCustomCheckoutClose}
+        children={
+          <CustomCheckoutModalBody
+            userid={selectedUserId}
+            eventid={eventid}
+            handleClose={handleCustomCheckoutClose}
+            setErrorMessage={setErrorMessage}
+            setErrorNotificationOpen={setErrorNotificationOpen}
+            handlePaginationModelChange={handlePaginationModelChange}
+          />
+        }
+      />
+
       {/* INFO MESSAGES */}
       {attendeesStatus === "PENDING" ? (
         <p>
@@ -382,15 +447,26 @@ const AttendeesTable = ({
           />
         }
       />
-      <div className="pb-5 w-full sm:w-[600px]">
-        <SearchBar
-          placeholder="Search member by name or email"
-          value={value}
-          onChange={handleChange}
-          onSubmit={handleSubmit}
-          resetSearch={handleResetSearch}
-          showCancelButton={value !== ""}
-        />
+      <div className="pb-5 flex flex-col gap-4 sm:flex-row sm:justify-between">
+        <div className="w-full sm:w-[600px]">
+          <SearchBar
+            placeholder="Search member by name or email"
+            value={value}
+            onChange={handleChange}
+            onSubmit={handleSubmit}
+            resetSearch={handleResetSearch}
+            showCancelButton={value !== ""}
+          />
+        </div>
+        <div className="flex items-center justify-center">
+          <span>Customize hours in check out</span>
+          <Switch
+            checked={useCustomHours}
+            onChange={() => setUseCustomHours(!useCustomHours)}
+            name="loading"
+            color="primary"
+          />
+        </div>
       </div>
       <Card size="table">
         <Table
@@ -573,70 +649,135 @@ const DuplicateEventModalBody = ({
   );
 };
 
+/** A modal body for a custom checkout of a volunteer */
+const CustomCheckoutModalBody = ({
+  handleClose,
+  eventDetails,
+  eventid,
+  userid,
+  setErrorMessage,
+  setErrorNotificationOpen,
+  handlePaginationModelChange,
+}: {
+  handleClose: () => void;
+  eventDetails?: FormValues;
+  eventid: string;
+  userid: string;
+  setErrorMessage: React.Dispatch<React.SetStateAction<string>>;
+  setErrorNotificationOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  handlePaginationModelChange: (newModel: GridPaginationModel) => void;
+}) => {
+  const queryClient = useQueryClient();
+
+  const {
+    register,
+    handleSubmit,
+    watch,
+    formState: { errors },
+  } = useForm<CustomCheckoutFormValues>();
+
+  /** Tanstack query mutation to update the user profile */
+  const updateAttendeeStatus = useMutation({
+    mutationFn: async (variables: {
+      userid: string;
+      newValue: string;
+      customHours: string;
+    }) => {
+      const { userid, newValue, customHours } = variables;
+      const { response } = await api.patch(
+        `/events/${eventid}/attendees/${userid}/attendee-status`,
+        {
+          attendeeStatus: newValue,
+          customHours: customHours,
+        }
+      );
+      return response;
+    },
+    retry: false,
+    onSuccess: () => {
+      // Invalidate the number of registered volunteers query to fetch new data
+      queryClient.invalidateQueries({ queryKey: ["registeredVoluneers"] });
+
+      // Invalidate the Manage Attendees query to fetch new data
+      queryClient.invalidateQueries({ queryKey: [eventid] });
+
+      // Invalidating the cache will fetch new data from the server
+      // hence we need to reset the pagination model
+      handlePaginationModelChange({ page: 0, pageSize: 10 });
+    },
+  });
+
+  type CustomCheckoutFormValues = {
+    hours: string;
+  };
+
+  const handleCustomCheckout: SubmitHandler<CustomCheckoutFormValues> = async (
+    data
+  ) => {
+    try {
+      await updateAttendeeStatus.mutateAsync({
+        userid,
+        newValue: "CHECKED_OUT",
+        customHours: data.hours,
+      });
+      handleClose();
+    } catch (error: any) {
+      setErrorNotificationOpen(true);
+      setErrorMessage(
+        "We were unable to check the volunteer out. Please try again."
+      );
+      handleClose();
+    }
+  };
+
+  return (
+    <div>
+      <div className="font-bold text-2xl text-center">
+        Check out with custom hours
+      </div>
+      <div className="mb-8">
+        <p>
+          You have selected to check out this volunteer with a custom number of
+          hours. For this event, the volunteer will only receive the hours you
+          input below instead of the standard number of hours set in the event.
+        </p>
+      </div>
+
+      <form onSubmit={handleSubmit(handleCustomCheckout)}>
+        <TextField
+          error={errors.hours?.message}
+          label="Enter the new number of hours here:"
+          {...register("hours", {
+            required: { value: true, message: "Required" },
+            valueAsNumber: true,
+            validate: {
+              matchConfirmation: (value) =>
+                (Number(value) >= 0 && Number.isInteger(value)) ||
+                "Hours must be a non-negative whole number.",
+            },
+          })}
+        />
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 mt-10">
+          <div className="order-1 sm:order-2">
+            <Button loading={updateAttendeeStatus.isPending} type="submit">
+              Check out
+            </Button>
+          </div>
+          <div className="order-2 sm:order-1">
+            <Button variety="secondary" onClick={handleClose}>
+              Cancel
+            </Button>
+          </div>
+        </div>
+      </form>
+    </div>
+  );
+};
+
 /** A ManageAttendees component */
 const ManageAttendees = () => {
   const router = useRouter();
   const eventid = router.query.eventid as string;
-
-  const {
-    rows: pendingUsers,
-    isPending: pendingUsersIsPending,
-    error: pendingUsersError,
-    paginationModel: pendingUsersPaginationModel,
-    sortModel: pendingUsersSortModel,
-    handlePaginationModelChange: handlePendingUsersPaginationModelChange,
-    handleSortModelChange: handlePendingUsersSortModelChange,
-    handleSearchQuery: handlePendingUsersSearchQuery,
-    totalNumberofData: totalNumberofPendingUsers,
-  } = useManageAttendeeState("PENDING", eventid);
-
-  const {
-    rows: checkedInUsers,
-    isPending: checkedInUsersIsPending,
-    error: checkedInUsersError,
-    paginationModel: checkedInUsersPaginationModel,
-    sortModel: checkedInUsersSortModel,
-    handlePaginationModelChange: handleCheckedInUsersPaginationModelChange,
-    handleSortModelChange: handleCheckedInUsersSortModelChange,
-    handleSearchQuery: handleCheckedInUsersSearchQuery,
-    totalNumberofData: totalNumberofCheckedInUsers,
-  } = useManageAttendeeState("CHECKED_IN", eventid);
-
-  const {
-    rows: checkedOutUsers,
-    isPending: checkedOutUsersIsPending,
-    error: checkedOutUsersError,
-    paginationModel: checkedOutUsersPaginationModel,
-    sortModel: checkedOutUsersSortModel,
-    handlePaginationModelChange: handleCheckedOutUsersPaginationModelChange,
-    handleSortModelChange: handleCheckedOutUsersSortModelChange,
-    handleSearchQuery: handleCheckedOutUsersSearchQuery,
-    totalNumberofData: totalNumberofCheckedOutUsers,
-  } = useManageAttendeeState("CHECKED_OUT", eventid);
-
-  const {
-    rows: canceledUsers,
-    isPending: canceledUsersIsPending,
-    error: canceledUsersError,
-    paginationModel: canceledUsersPaginationModel,
-    sortModel: canceledUsersSortModel,
-    handlePaginationModelChange: handleCanceledUsersPaginationModelChange,
-    handleSortModelChange: handleCanceledUsersSortModelChange,
-    handleSearchQuery: handleCanceledUsersSearchQuery,
-    totalNumberofData: totalNumberofCanceledUsers,
-  } = useManageAttendeeState("CANCELED", eventid);
-
-  const {
-    rows: removedUsers,
-    isPending: removedUsersIsPending,
-    error: removedUsersError,
-    paginationModel: removedUsersPaginationModel,
-    sortModel: removedUsersSortModel,
-    handlePaginationModelChange: handleRemovedUsersPaginationModelChange,
-    handleSortModelChange: handleRemovedUsersSortModelChange,
-    handleSearchQuery: handleRemovedUsersSearchQuery,
-    totalNumberofData: totalNumberofRemovedUsers,
-  } = useManageAttendeeState("REMOVED", eventid);
 
   const { user, role } = useAuth();
   const [userid, setUserid] = React.useState("");
@@ -666,6 +807,7 @@ const ManageAttendees = () => {
     locationLink,
     datetime,
     capacity,
+    hours,
     image_src,
     tags,
     supervisors,
@@ -678,6 +820,7 @@ const ManageAttendees = () => {
     locationLink: eventData.locationLink,
     datetime: formatDateTimeRange(eventData.startDate, eventData.endDate),
     capacity: eventData.capacity,
+    hours: eventData.hours,
     image_src: eventData.imageURL,
     tags: eventData.tags,
     supervisors: eventData.owner
@@ -691,6 +834,75 @@ const ManageAttendees = () => {
   };
 
   const dateHeader = formatDateTimeToUI(datetime);
+
+  /** State variables for the notification popups */
+  const [errorNotificationOpen, setErrorNotificationOpen] = useState(false);
+
+  /** Handles form errors for time and date validation */
+  const [errorMessage, setErrorMessage] = useState<string>("");
+
+  /** Whether checking a volunteer out should prompt for using a custom set of hours */
+  const [useCustomHours, setUseCustomHours] = useState(false);
+
+  const {
+    rows: pendingUsers,
+    isPending: pendingUsersIsPending,
+    error: pendingUsersError,
+    paginationModel: pendingUsersPaginationModel,
+    sortModel: pendingUsersSortModel,
+    handlePaginationModelChange: handlePendingUsersPaginationModelChange,
+    handleSortModelChange: handlePendingUsersSortModelChange,
+    handleSearchQuery: handlePendingUsersSearchQuery,
+    totalNumberofData: totalNumberofPendingUsers,
+  } = useManageAttendeeState("PENDING", eventid, eventData.hours);
+
+  const {
+    rows: checkedInUsers,
+    isPending: checkedInUsersIsPending,
+    error: checkedInUsersError,
+    paginationModel: checkedInUsersPaginationModel,
+    sortModel: checkedInUsersSortModel,
+    handlePaginationModelChange: handleCheckedInUsersPaginationModelChange,
+    handleSortModelChange: handleCheckedInUsersSortModelChange,
+    handleSearchQuery: handleCheckedInUsersSearchQuery,
+    totalNumberofData: totalNumberofCheckedInUsers,
+  } = useManageAttendeeState("CHECKED_IN", eventid, eventData.hours);
+
+  const {
+    rows: checkedOutUsers,
+    isPending: checkedOutUsersIsPending,
+    error: checkedOutUsersError,
+    paginationModel: checkedOutUsersPaginationModel,
+    sortModel: checkedOutUsersSortModel,
+    handlePaginationModelChange: handleCheckedOutUsersPaginationModelChange,
+    handleSortModelChange: handleCheckedOutUsersSortModelChange,
+    handleSearchQuery: handleCheckedOutUsersSearchQuery,
+    totalNumberofData: totalNumberofCheckedOutUsers,
+  } = useManageAttendeeState("CHECKED_OUT", eventid, eventData.hours);
+
+  const {
+    rows: canceledUsers,
+    isPending: canceledUsersIsPending,
+    error: canceledUsersError,
+    paginationModel: canceledUsersPaginationModel,
+    sortModel: canceledUsersSortModel,
+    handlePaginationModelChange: handleCanceledUsersPaginationModelChange,
+    handleSortModelChange: handleCanceledUsersSortModelChange,
+    handleSearchQuery: handleCanceledUsersSearchQuery,
+    totalNumberofData: totalNumberofCanceledUsers,
+  } = useManageAttendeeState("CANCELED", eventid, eventData.hours);
+
+  const {
+    rows: removedUsers,
+    isPending: removedUsersIsPending,
+    error: removedUsersError,
+    paginationModel: removedUsersPaginationModel,
+    sortModel: removedUsersSortModel,
+    handlePaginationModelChange: handleRemovedUsersPaginationModelChange,
+    handleSortModelChange: handleRemovedUsersSortModelChange,
+    handleSearchQuery: handleRemovedUsersSearchQuery,
+    totalNumberofData: totalNumberofRemovedUsers,
+  } = useManageAttendeeState("REMOVED", eventid, eventData.hours);
 
   /** Attendees list tabs */
   const tabs = [
@@ -709,6 +921,10 @@ const ManageAttendees = () => {
           handleSortModelChange={handlePendingUsersSortModelChange}
           handleSearchQuery={handlePendingUsersSearchQuery}
           isLoading={pendingUsersIsPending}
+          useCustomHours={useCustomHours}
+          setUseCustomHours={setUseCustomHours}
+          setErrorMessage={setErrorMessage}
+          setErrorNotificationOpen={setErrorNotificationOpen}
         />
       ),
     },
@@ -729,6 +945,10 @@ const ManageAttendees = () => {
           handleSortModelChange={handleCheckedInUsersSortModelChange}
           handleSearchQuery={handleCheckedInUsersSearchQuery}
           isLoading={checkedInUsersIsPending}
+          useCustomHours={useCustomHours}
+          setUseCustomHours={setUseCustomHours}
+          setErrorMessage={setErrorMessage}
+          setErrorNotificationOpen={setErrorNotificationOpen}
         />
       ),
     },
@@ -749,6 +969,10 @@ const ManageAttendees = () => {
           handleSortModelChange={handleCheckedOutUsersSortModelChange}
           handleSearchQuery={handleCheckedOutUsersSearchQuery}
           isLoading={checkedOutUsersIsPending}
+          useCustomHours={useCustomHours}
+          setUseCustomHours={setUseCustomHours}
+          setErrorMessage={setErrorMessage}
+          setErrorNotificationOpen={setErrorNotificationOpen}
         />
       ),
     },
@@ -767,6 +991,10 @@ const ManageAttendees = () => {
           handleSortModelChange={handleCanceledUsersSortModelChange}
           handleSearchQuery={handleCanceledUsersSearchQuery}
           isLoading={canceledUsersIsPending}
+          useCustomHours={useCustomHours}
+          setUseCustomHours={setUseCustomHours}
+          setErrorMessage={setErrorMessage}
+          setErrorNotificationOpen={setErrorNotificationOpen}
         />
       ),
     },
@@ -785,6 +1013,10 @@ const ManageAttendees = () => {
           handleSortModelChange={handleRemovedUsersSortModelChange}
           handleSearchQuery={handleRemovedUsersSearchQuery}
           isLoading={removedUsersIsPending}
+          useCustomHours={useCustomHours}
+          setUseCustomHours={setUseCustomHours}
+          setErrorMessage={setErrorMessage}
+          setErrorNotificationOpen={setErrorNotificationOpen}
         />
       ),
     },
@@ -797,12 +1029,6 @@ const ManageAttendees = () => {
   const handleDuplicateEvent = async () => {
     setOpen(!open);
   };
-
-  /** State variables for the notification popups */
-  const [errorNotificationOpen, setErrorNotificationOpen] = useState(false);
-
-  /** Handles form errors for time and date validation */
-  const [errorMessage, setErrorMessage] = useState<string>("");
 
   /** Loading screen */
 
@@ -947,6 +1173,11 @@ const ManageAttendees = () => {
                 {registeredVolunteersNumber}/{capacity} volunteers registered
               </>
             }
+          />
+          <IconTextHeader
+            icon={<HourglassBottomIcon />}
+            header={<>Volunteer Hours</>}
+            body={<>{hours} hours</>}
           />
           <TextCopy
             label="RSVP Link"

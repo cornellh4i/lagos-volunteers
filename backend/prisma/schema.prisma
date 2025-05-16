@@ -68,6 +68,7 @@ model Event {
   ownerId      String?
   attendees    EventEnrollment[]
   capacity     Int
+  hours        Int               @default(0)
 }
 
 model EventEnrollment {
@@ -82,6 +83,7 @@ model EventEnrollment {
   user               User             @relation(fields: [userId], references: [id], onDelete: Cascade)
   cancelationMessage String?
   attendeeStatus     EnrollmentStatus @default(PENDING)
+  customHours        Int?
 
   @@id([userId, eventId])
 }

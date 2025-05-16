@@ -8,6 +8,7 @@ import { api } from "./api";
 import {
   convertEnrollmentStatusToString,
   formatRoleOrStatus,
+  friendlyHours,
 } from "@/utils/helpers";
 import { GridPaginationModel, GridSortModel } from "@mui/x-data-grid";
 import { eventHours } from "@/utils/helpers";
@@ -105,6 +106,14 @@ function useViewEventState(
           )
         : undefined;
 
+    // Get number of hours awarded to this event enrollment
+    let hasCustomHours =
+      attendeesFiltered.length > 0 &&
+      attendeesFiltered["0"]["customHours"] !== null;
+    let awardedHours = hasCustomHours
+      ? attendeesFiltered["0"]["customHours"]
+      : event.hours;
+
     rows.push({
       id: event.id,
       name: event.name,
@@ -112,10 +121,12 @@ function useViewEventState(
       startDate: formatDateString(event.startDate),
       endDate: new Date(event.endDate),
       role: event.role,
+      standardHours:
+        hasCustomHours || attendeeStatus !== "Checked out"
+          ? friendlyHours(event.hours)
+          : "",
       hours:
-        attendeeStatus === "Checked out"
-          ? eventHours(event.endDate, event.startDate)
-          : "N/A",
+        attendeeStatus === "Checked out" ? friendlyHours(awardedHours) : "N/A",
       status: event.status,
       attendeeStatus: attendeeStatus,
     });
