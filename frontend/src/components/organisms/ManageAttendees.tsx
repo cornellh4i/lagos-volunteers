@@ -34,7 +34,7 @@ import PersonIcon from "@mui/icons-material/Person";
 import EditIcon from "@mui/icons-material/Edit";
 import TextCopy from "../atoms/TextCopy";
 import { formatDateTimeToUI, formatDateTimeRange } from "@/utils/helpers";
-import { EventData } from "@/utils/types";
+import { EventData, EventDTO } from "@/utils/types";
 import { BASE_URL_CLIENT } from "@/utils/constants";
 import useWebSocket from "react-use-websocket";
 import { BASE_WEBSOCKETS_URL } from "@/utils/constants";
@@ -46,6 +46,7 @@ import Loading from "../molecules/Loading";
 import Switch from "@mui/material/Switch";
 import TextField from "../atoms/TextField";
 import InfoOutlineIcon from "@mui/icons-material/InfoOutlined";
+import dayjs from "dayjs";
 
 type attendeeData = {
   id: number;
@@ -73,9 +74,9 @@ interface AttendeesTableProps {
 }
 
 type FormValues = {
-  startDate: Date;
-  startTime: Date;
-  endTime: Date;
+  startDate: dayjs.Dayjs;
+  startTime: dayjs.Dayjs;
+  endTime: dayjs.Dayjs;
 };
 
 interface ViewCancelMessageModalBodyProps {
@@ -203,6 +204,7 @@ const AttendeesTable = ({
     }
   };
 
+  const currentDate = new Date();
   const eventColumns: GridColDef[] = [
     {
       field: "firstName",
@@ -262,7 +264,8 @@ const AttendeesTable = ({
             size="small"
             disabled={
               eventData.status === "CANCELED" ||
-              attendeesStatus === "CHECKED_OUT"
+              (attendeesStatus === "CHECKED_OUT" &&
+                currentDate > eventData.endDate)
             }
             value={params.row.status}
             onChange={(event: any) =>
@@ -416,8 +419,8 @@ const AttendeesTable = ({
           Volunteers are <b>checked out</b> when they leave the volunteer event.
           Only volunteers listed in this category have their hours tracked for
           the event. Once volunteers are checked out, their status{" "}
-          <b>cannot be changed</b> by supervisors, so make sure you are not
-          making any mistakes.
+          <b>cannot be changed</b> after the event concludes, so make sure you
+          are not making any mistakes.
         </p>
       ) : attendeesStatus === "CANCELED" ? (
         <p>
@@ -497,7 +500,7 @@ const DuplicateEventModalBody = ({
   setErrorNotificationOpen,
 }: {
   handleClose: () => void;
-  eventDetails?: FormValues;
+  eventDetails?: EventDTO;
   eventid: string;
   setErrorMessage: React.Dispatch<React.SetStateAction<string>>;
   setErrorNotificationOpen: React.Dispatch<React.SetStateAction<boolean>>;
@@ -518,9 +521,9 @@ const DuplicateEventModalBody = ({
     eventDetails
       ? {
           defaultValues: {
-            startDate: eventDetails.startDate,
-            startTime: eventDetails.startTime,
-            endTime: eventDetails.endTime,
+            startDate: dayjs(eventDetails.startDate),
+            startTime: dayjs(eventDetails.startDate),
+            endTime: dayjs(eventDetails.endDate),
           },
         }
       : {}
@@ -1105,6 +1108,7 @@ const ManageAttendees = () => {
         handleClose={handleClose}
         children={
           <DuplicateEventModalBody
+            eventDetails={eventData}
             eventid={eventid}
             handleClose={handleClose}
             setErrorMessage={setErrorMessage}
