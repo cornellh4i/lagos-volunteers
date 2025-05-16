@@ -249,7 +249,7 @@ const PastEvents = ({
       field: "name",
       headerName: "Event name",
       flex: 2,
-      minWidth: 100,
+      minWidth: 200,
       renderHeader: (params) => (
         <div style={{ fontWeight: "bold" }}>{params.colDef.headerName}</div>
       ),
@@ -271,7 +271,7 @@ const PastEvents = ({
       field: "startDate",
       headerName: "Date",
       flex: 0.5,
-      minWidth: 100,
+      minWidth: 120,
       renderHeader: (params) => (
         <div style={{ fontWeight: "bold" }}>{params.colDef.headerName}</div>
       ),
@@ -370,7 +370,8 @@ const PastEvents = ({
     {
       field: "startDate",
       headerName: "Date",
-      minWidth: 200,
+      minWidth: 120,
+      flex: 0.25,
       renderHeader: (params) => (
         <div style={{ fontWeight: "bold" }}>{params.colDef.headerName}</div>
       ),
