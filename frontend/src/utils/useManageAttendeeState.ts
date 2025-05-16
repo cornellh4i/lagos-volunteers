@@ -5,12 +5,13 @@ import {
   useQuery,
 } from "@tanstack/react-query";
 import { api } from "./api";
-import { formatRoleOrStatus } from "@/utils/helpers";
+import { formatRoleOrStatus, friendlyHours } from "@/utils/helpers";
 import { GridPaginationModel, GridSortModel } from "@mui/x-data-grid";
 
 export default function useManageAttendeeState(
   state: "PENDING" | "CHECKED_IN" | "CHECKED_OUT" | "REMOVED" | "CANCELED",
-  eventid: string
+  eventid: string,
+  defaultHours: number
 ) {
   const queryClient = useQueryClient();
 
@@ -48,6 +49,15 @@ export default function useManageAttendeeState(
     return data["data"];
   };
 
+  // Get attendees for event
+  const { data: attendees } = useQuery({
+    queryKey: ["attendees", eventid],
+    queryFn: async () => {
+      const { data } = await api.get(`/events/${eventid}/attendees`);
+      return data.data;
+    },
+  });
+
   /** Tanstack query for fetching users
    * This runs initially when the component is rendered.
    * The default sorting and pagination states are used.
@@ -74,13 +84,24 @@ export default function useManageAttendeeState(
   const rows: any[] = [];
   const totalNumberofData = data?.totalItems || 0;
   data?.result.map((user: any) => {
+    const eventAttendance = attendees?.find(
+      (attendee: any) => attendee.userId === user.id
+    );
+
     rows.push({
       id: user.id,
       status: state,
       firstName: `${user.profile?.firstName} ${user.profile?.lastName}`,
       email: user.email,
       role: user.role,
-      phone: user.profile?.phoneNumber || "123-456-7890", // TODO: Change to actual phone number
+      phone: user.profile?.phoneNumber || "N/A",
+      customHours:
+        eventAttendance.attendeeStatus === "CHECKED_OUT" &&
+        eventAttendance.customHours !== null
+          ? friendlyHours(eventAttendance.customHours)
+          : eventAttendance.attendeeStatus === "CHECKED_OUT"
+          ? friendlyHours(defaultHours)
+          : "N/A",
     });
   });
 

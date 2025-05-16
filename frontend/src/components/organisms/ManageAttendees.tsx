@@ -8,7 +8,7 @@ import {
 import Table from "@/components/molecules/Table";
 import Modal from "@/components/molecules/Modal";
 import { useForm, SubmitHandler, Controller } from "react-hook-form";
-import { MenuItem, Grid } from "@mui/material";
+import { MenuItem, Grid, Tooltip } from "@mui/material";
 import FileCopyIcon from "@mui/icons-material/FileCopy";
 import HourglassBottomIcon from "@mui/icons-material/HourglassBottom";
 import SearchBar from "../atoms/SearchBar";
@@ -45,6 +45,7 @@ import Alert from "../atoms/Alert";
 import Loading from "../molecules/Loading";
 import Switch from "@mui/material/Switch";
 import TextField from "../atoms/TextField";
+import InfoOutlineIcon from "@mui/icons-material/InfoOutlined";
 
 type attendeeData = {
   id: number;
@@ -229,6 +230,21 @@ const AttendeesTable = ({
       flex: 0.5,
       renderHeader: (params) => (
         <div style={{ fontWeight: "bold" }}>{params.colDef.headerName}</div>
+      ),
+    },
+    {
+      field: "customHours",
+      headerName: "Awarded hours",
+      sortable: false,
+      minWidth: 150,
+      flex: 0.5,
+      renderHeader: (params) => (
+        <div className="flex flex-row items-center gap-1">
+          <div style={{ fontWeight: "bold" }}>{params.colDef.headerName}</div>
+          <Tooltip title="Awarded hours are the actual number of hours you receive for participating in the event. This may be different from the default hours if a supervisor manually changes the hours you were awarded.">
+            <InfoOutlineIcon fontSize="small" />
+          </Tooltip>
+        </div>
       ),
     },
     {
@@ -763,66 +779,6 @@ const ManageAttendees = () => {
   const router = useRouter();
   const eventid = router.query.eventid as string;
 
-  const {
-    rows: pendingUsers,
-    isPending: pendingUsersIsPending,
-    error: pendingUsersError,
-    paginationModel: pendingUsersPaginationModel,
-    sortModel: pendingUsersSortModel,
-    handlePaginationModelChange: handlePendingUsersPaginationModelChange,
-    handleSortModelChange: handlePendingUsersSortModelChange,
-    handleSearchQuery: handlePendingUsersSearchQuery,
-    totalNumberofData: totalNumberofPendingUsers,
-  } = useManageAttendeeState("PENDING", eventid);
-
-  const {
-    rows: checkedInUsers,
-    isPending: checkedInUsersIsPending,
-    error: checkedInUsersError,
-    paginationModel: checkedInUsersPaginationModel,
-    sortModel: checkedInUsersSortModel,
-    handlePaginationModelChange: handleCheckedInUsersPaginationModelChange,
-    handleSortModelChange: handleCheckedInUsersSortModelChange,
-    handleSearchQuery: handleCheckedInUsersSearchQuery,
-    totalNumberofData: totalNumberofCheckedInUsers,
-  } = useManageAttendeeState("CHECKED_IN", eventid);
-
-  const {
-    rows: checkedOutUsers,
-    isPending: checkedOutUsersIsPending,
-    error: checkedOutUsersError,
-    paginationModel: checkedOutUsersPaginationModel,
-    sortModel: checkedOutUsersSortModel,
-    handlePaginationModelChange: handleCheckedOutUsersPaginationModelChange,
-    handleSortModelChange: handleCheckedOutUsersSortModelChange,
-    handleSearchQuery: handleCheckedOutUsersSearchQuery,
-    totalNumberofData: totalNumberofCheckedOutUsers,
-  } = useManageAttendeeState("CHECKED_OUT", eventid);
-
-  const {
-    rows: canceledUsers,
-    isPending: canceledUsersIsPending,
-    error: canceledUsersError,
-    paginationModel: canceledUsersPaginationModel,
-    sortModel: canceledUsersSortModel,
-    handlePaginationModelChange: handleCanceledUsersPaginationModelChange,
-    handleSortModelChange: handleCanceledUsersSortModelChange,
-    handleSearchQuery: handleCanceledUsersSearchQuery,
-    totalNumberofData: totalNumberofCanceledUsers,
-  } = useManageAttendeeState("CANCELED", eventid);
-
-  const {
-    rows: removedUsers,
-    isPending: removedUsersIsPending,
-    error: removedUsersError,
-    paginationModel: removedUsersPaginationModel,
-    sortModel: removedUsersSortModel,
-    handlePaginationModelChange: handleRemovedUsersPaginationModelChange,
-    handleSortModelChange: handleRemovedUsersSortModelChange,
-    handleSearchQuery: handleRemovedUsersSearchQuery,
-    totalNumberofData: totalNumberofRemovedUsers,
-  } = useManageAttendeeState("REMOVED", eventid);
-
   const { user, role } = useAuth();
   const [userid, setUserid] = React.useState("");
 
@@ -887,6 +843,66 @@ const ManageAttendees = () => {
 
   /** Whether checking a volunteer out should prompt for using a custom set of hours */
   const [useCustomHours, setUseCustomHours] = useState(false);
+
+  const {
+    rows: pendingUsers,
+    isPending: pendingUsersIsPending,
+    error: pendingUsersError,
+    paginationModel: pendingUsersPaginationModel,
+    sortModel: pendingUsersSortModel,
+    handlePaginationModelChange: handlePendingUsersPaginationModelChange,
+    handleSortModelChange: handlePendingUsersSortModelChange,
+    handleSearchQuery: handlePendingUsersSearchQuery,
+    totalNumberofData: totalNumberofPendingUsers,
+  } = useManageAttendeeState("PENDING", eventid, eventData.hours);
+
+  const {
+    rows: checkedInUsers,
+    isPending: checkedInUsersIsPending,
+    error: checkedInUsersError,
+    paginationModel: checkedInUsersPaginationModel,
+    sortModel: checkedInUsersSortModel,
+    handlePaginationModelChange: handleCheckedInUsersPaginationModelChange,
+    handleSortModelChange: handleCheckedInUsersSortModelChange,
+    handleSearchQuery: handleCheckedInUsersSearchQuery,
+    totalNumberofData: totalNumberofCheckedInUsers,
+  } = useManageAttendeeState("CHECKED_IN", eventid, eventData.hours);
+
+  const {
+    rows: checkedOutUsers,
+    isPending: checkedOutUsersIsPending,
+    error: checkedOutUsersError,
+    paginationModel: checkedOutUsersPaginationModel,
+    sortModel: checkedOutUsersSortModel,
+    handlePaginationModelChange: handleCheckedOutUsersPaginationModelChange,
+    handleSortModelChange: handleCheckedOutUsersSortModelChange,
+    handleSearchQuery: handleCheckedOutUsersSearchQuery,
+    totalNumberofData: totalNumberofCheckedOutUsers,
+  } = useManageAttendeeState("CHECKED_OUT", eventid, eventData.hours);
+
+  const {
+    rows: canceledUsers,
+    isPending: canceledUsersIsPending,
+    error: canceledUsersError,
+    paginationModel: canceledUsersPaginationModel,
+    sortModel: canceledUsersSortModel,
+    handlePaginationModelChange: handleCanceledUsersPaginationModelChange,
+    handleSortModelChange: handleCanceledUsersSortModelChange,
+    handleSearchQuery: handleCanceledUsersSearchQuery,
+    totalNumberofData: totalNumberofCanceledUsers,
+  } = useManageAttendeeState("CANCELED", eventid, eventData.hours);
+
+  const {
+    rows: removedUsers,
+    isPending: removedUsersIsPending,
+    error: removedUsersError,
+    paginationModel: removedUsersPaginationModel,
+    sortModel: removedUsersSortModel,
+    handlePaginationModelChange: handleRemovedUsersPaginationModelChange,
+    handleSortModelChange: handleRemovedUsersSortModelChange,
+    handleSearchQuery: handleRemovedUsersSearchQuery,
+    totalNumberofData: totalNumberofRemovedUsers,
+  } = useManageAttendeeState("REMOVED", eventid, eventData.hours);
 
   /** Attendees list tabs */
   const tabs = [
