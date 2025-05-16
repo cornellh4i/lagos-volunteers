@@ -59,8 +59,8 @@ const EventCardRegister = ({
       <Card>
         <div className="font-semibold text-2xl">Register for this event</div>
         <div className="my-5">
-          Unfortunately, you have been blacklisted by a supervisor. You are no
-          longer able to register for any event.
+          You have been blacklisted. You are no longer able to register for any
+          event.
         </div>
         <Button disabled>You have been blacklisted</Button>
       </Card>
@@ -73,8 +73,7 @@ const EventCardRegister = ({
       <Card>
         <div className="font-semibold text-2xl">Register for this event</div>
         <div className="my-5">
-          Unfortunately, the event has been canceled. You are no longer able to
-          register.
+          The event has been canceled. You are no longer able to register.
         </div>
         <Button disabled>The event has been canceled</Button>
       </Card>
@@ -87,8 +86,7 @@ const EventCardRegister = ({
       <Card>
         <div className="font-semibold text-2xl">Register for this event</div>
         <div className="my-5">
-          Unfortunately, the event has concluded. You are no longer able to
-          register.
+          The event has concluded. You are no longer able to register.
         </div>
         <Button disabled>The event has concluded</Button>
       </Card>
@@ -101,8 +99,7 @@ const EventCardRegister = ({
       <Card>
         <div className="font-semibold text-2xl">Register for this event</div>
         <div className="my-5">
-          Unfortunately, the event has reached capacity. You are no longer able
-          to register.
+          The event has reached capacity. You are no longer able to register.
         </div>
         <Button disabled>The event has reached capacity</Button>
       </Card>
