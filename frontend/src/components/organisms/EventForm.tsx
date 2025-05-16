@@ -508,16 +508,7 @@ const EventForm = ({
                 />
               </div>
             ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 col-span-2 sm:col-span-1 space-x-0 sm:gap-4">
-                <TextField
-                  disabled
-                  value="VIRTUAL"
-                  placeholder="Label for location"
-                  error={errors.location?.message}
-                  {...register("location", {
-                    required: { value: true, message: "Required" },
-                  })}
-                />
+              <div className="grid space-x-0 sm:gap-4">
                 <TextField
                   placeholder="(Optional) Link to meeting"
                   error={errors.locationLink?.message}
