@@ -362,7 +362,8 @@ export const getRegisteredVolunteerNumberInEvent = async (eventid: string) => {
 const updateEnrollmentStatus = async (
   eventID: string,
   userID: string,
-  newStatus: EnrollmentStatus
+  newStatus: EnrollmentStatus,
+  customHours: number | null
 ) => {
   return await prisma.eventEnrollment.update({
     where: {
@@ -373,6 +374,7 @@ const updateEnrollmentStatus = async (
     },
     data: {
       attendeeStatus: newStatus,
+      customHours: customHours,
     },
   });
 };
