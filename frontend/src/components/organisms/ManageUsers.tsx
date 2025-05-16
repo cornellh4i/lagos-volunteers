@@ -51,7 +51,7 @@ const Active = ({
       field: "firstName",
       headerName: "Name",
       flex: 1,
-      minWidth: 200,
+      minWidth: 250,
       renderHeader: (params) => (
         <div style={{ fontWeight: "bold" }}>{params.colDef.headerName}</div>
       ),
@@ -60,7 +60,7 @@ const Active = ({
       field: "email",
       headerName: "Email",
       flex: 1,
-      minWidth: 150,
+      minWidth: 250,
       renderHeader: (params) => (
         <div style={{ fontWeight: "bold" }}>{params.colDef.headerName}</div>
       ),
@@ -189,7 +189,7 @@ const Blacklisted = ({
       field: "firstName",
       headerName: "Name",
       flex: 2,
-      minWidth: 200,
+      minWidth: 250,
       renderHeader: (params) => (
         <div style={{ fontWeight: "bold" }}>{params.colDef.headerName}</div>
       ),
@@ -198,7 +198,7 @@ const Blacklisted = ({
       field: "email",
       headerName: "Email",
       flex: 1,
-      minWidth: 150,
+      minWidth: 250,
       renderHeader: (params) => (
         <div style={{ fontWeight: "bold" }}>{params.colDef.headerName}</div>
       ),
