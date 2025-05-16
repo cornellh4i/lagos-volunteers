@@ -12,18 +12,16 @@ import {
 } from "@/utils/helpers";
 import { GridPaginationModel, GridSortModel } from "@mui/x-data-grid";
 import { eventHours } from "@/utils/helpers";
-import { fetchUserIdFromDatabase, formatDateString } from "@/utils/helpers";
+import { formatDateString } from "@/utils/helpers";
 import { useAuth } from "@/utils/AuthContext";
 
 function useViewEventState(
   role: "Supervisor" | "Volunteer" | "Admin",
   state: "upcoming" | "past",
-  seeAllEvents: boolean
+  seeAllEvents: boolean,
+  userid: string
 ) {
   const queryClient = useQueryClient();
-
-  const { user } = useAuth();
-  const [userid, setUserid] = useState<string>("");
 
   /** Tanstack query for fetching the user's total hours */
   const hoursQuery = useQuery({
@@ -82,9 +80,7 @@ function useViewEventState(
       sortModel[0].field,
     ],
     queryFn: async () => {
-      const userid = await fetchUserIdFromDatabase(user?.email as string);
       const hours = await api.get(`/users/${userid}/hours`);
-      setUserid(userid);
       return await fetchBatchOfEvents(userid);
     },
     placeholderData: keepPreviousData,

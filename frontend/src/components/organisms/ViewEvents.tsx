@@ -32,6 +32,7 @@ import LinearProgress from "../atoms/LinearProgress";
 import ArrowOutwardIcon from "@mui/icons-material/ArrowOutward";
 import Snackbar from "../atoms/Snackbar";
 import useViewEventState from "@/utils/useViewEventState";
+import { userAgent } from "next/server";
 
 /** Component that contains the Create new event and View all events button */
 const SupervisorBar = ({
@@ -83,12 +84,13 @@ const SupervisorBar = ({
 const UpcomingEvents = ({
   seeAllEvents,
   setSeeAllEvents,
+  userid,
 }: {
   seeAllEvents: boolean;
   setSeeAllEvents: any;
+  userid: string;
 }) => {
   const { user, role } = useAuth();
-  const [userid, setUserid] = useState<string>("");
 
   /** Tanstack query for fetching upcoming events */
   const {
@@ -100,9 +102,6 @@ const UpcomingEvents = ({
     placeholderData: keepPreviousData,
     queryFn: async () => {
       const limit = 1000;
-      // recall this is temp
-      const userid = await fetchUserIdFromDatabase(user?.email as string);
-      setUserid(userid);
       const upcomingEventsUserRegisteredFor = await api.get(
         `/events?userid=${userid}&date=upcoming&sort=startDate:asc&limit=${limit}`
       );
@@ -221,12 +220,13 @@ const UpcomingEvents = ({
 const PastEvents = ({
   seeAllEvents,
   setSeeAllEvents,
+  userid,
 }: {
   seeAllEvents: boolean;
   setSeeAllEvents: any;
+  userid: string;
 }) => {
   const { user, role } = useAuth();
-  const [userid, setUserid] = useState<string>("");
 
   // NOTE: Since supervisors/admins can't register for events,
   // They will only see past events that they have created.
@@ -242,7 +242,7 @@ const PastEvents = ({
     sortModel,
     handlePaginationModelChange,
     handleSortModelChange,
-  } = useViewEventState(role, "past", seeAllEvents);
+  } = useViewEventState(role, "past", seeAllEvents, userid);
 
   const volunteerEventColumns: GridColDef[] = [
     {
@@ -490,6 +490,16 @@ const ViewEvents = () => {
     showSeeAllEvents === "true" ? true : false
   );
 
+  const { user } = useAuth();
+  const { data: userid } = useQuery({
+    queryKey: ["userid"],
+    placeholderData: keepPreviousData,
+    queryFn: async () => {
+      const userid = await fetchUserIdFromDatabase(user?.email as string);
+      return userid;
+    },
+  });
+
   useEffect(() => {
     // Event creation notif
     const isEventCreated = localStorage.getItem("eventCreated");
@@ -507,6 +517,7 @@ const ViewEvents = () => {
         <UpcomingEvents
           seeAllEvents={seeAllEvents}
           setSeeAllEvents={setSeeAllEvents}
+          userid={userid}
         />
       ),
     },
@@ -516,6 +527,7 @@ const ViewEvents = () => {
         <PastEvents
           seeAllEvents={seeAllEvents}
           setSeeAllEvents={setSeeAllEvents}
+          userid={userid}
         />
       ),
     },
