@@ -27,14 +27,15 @@ import Dropzone from "../atoms/Dropzone";
 import Alert from "../atoms/Alert";
 import EditorComp from "@/components/atoms/Editor";
 import Modal from "../molecules/Modal";
+import dayjs from "dayjs";
 
 interface EventFormProps {
   eventId?: string | string[] | undefined;
   eventType: string; //"create" | "edit"
-  eventDetails?: FormValues;
+  eventDetails?: EventDetailsProp;
 }
 
-type FormValues = {
+type EventDetailsProp = {
   id: string;
   eventName: string;
   location: string;
@@ -47,6 +48,23 @@ type FormValues = {
   startDate: string;
   startTime: string;
   endTime: string;
+  mode: string;
+  status: string;
+};
+
+type FormValues = {
+  id: string;
+  eventName: string;
+  location: string;
+  locationLink: string;
+  volunteerSignUpCap: string;
+  defaultHoursAwarded: string;
+  eventDescription: string;
+  imageURL: string;
+  rsvpLinkImage: string;
+  startDate: dayjs.Dayjs;
+  startTime: dayjs.Dayjs;
+  endTime: dayjs.Dayjs;
   mode: string;
   status: string;
 };
@@ -115,9 +133,9 @@ const EventForm = ({
             eventDescription: eventDetails.eventDescription,
             imageURL: eventDetails.imageURL,
             rsvpLinkImage: eventDetails.rsvpLinkImage,
-            startDate: eventDetails.startDate,
-            startTime: eventDetails.startTime,
-            endTime: eventDetails.endTime,
+            startDate: dayjs(eventDetails.startDate),
+            startTime: dayjs(eventDetails.startTime),
+            endTime: dayjs(eventDetails.endTime),
           },
         }
       : {}
@@ -294,11 +312,10 @@ const EventForm = ({
     }
   };
 
-  /** Performs validation to ensure event starts after current time */
+  /** Performs validation to ensure event ends after current time */
   const timeAndDateValidation = () => {
-    const { startTime, startDate } = getValues();
-    const startDateTime = convertToISO(startTime, startDate);
-    if (new Date(startDateTime) <= new Date()) {
+    const { endTime } = getValues();
+    if (endTime.toDate() <= new Date()) {
       setErrorNotificationOpen(true);
       setErrorMessage("Created event cannot be in the past.");
       return false;
@@ -334,7 +351,7 @@ const EventForm = ({
   /** Edit event "Save changes" button should be disabled if event is in the past */
   const currentDate = new Date();
   const eventIsPast = eventDetails
-    ? new Date(eventDetails?.startDate) < currentDate
+    ? new Date(eventDetails?.endTime) < currentDate
     : false;
 
   /** Check if this event has been canceled */
@@ -361,8 +378,8 @@ const EventForm = ({
       {eventType == "edit" && eventIsPast && (
         <div className="pb-6">
           <Alert variety="warning">
-            This event has already started or is in the past. You are not able
-            to make changes or cancel the event.
+            This event has concluded. You are not able to make changes or cancel
+            the event.
           </Alert>
         </div>
       )}

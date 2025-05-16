@@ -251,7 +251,7 @@ const ViewEventDetails = () => {
                 eventId={eventid}
                 overCapacity={registeredVolunteersNumber === capacity}
                 attendeeId={userid}
-                date={new Date(eventData.startDate)}
+                date={new Date(eventData.endDate)}
                 eventCanceled={event_status === "CANCELED"}
                 attendeeBlacklisted={userBlacklisted}
               />

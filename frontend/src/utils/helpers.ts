@@ -77,11 +77,11 @@ export const formatDateString = (dateString: string) => {
  * @returns the ISO string
  */
 export const convertToISO = (
-  inputTime: Date | string,
-  inputDate: Date | string
+  inputTime: dayjs.Dayjs,
+  inputDate: dayjs.Dayjs
 ) => {
-  const date = format(new Date(inputDate), "yyyy-MM-dd");
-  const time = format(new Date(inputTime), "HH:mm:ss");
+  const date = format(inputDate.toDate(), "yyyy-MM-dd");
+  const time = format(inputTime.toDate(), "HH:mm:ss");
 
   return dayjs(`${date} ${time}`).toJSON();
 };
