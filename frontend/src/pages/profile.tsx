@@ -21,7 +21,7 @@ import Head from "next/head";
 
 /** A Profile page */
 const Profile = () => {
-  const { user } = useAuth();
+  const { user, role } = useAuth();
 
   // Notification for a successful password change.
   const [successNotificationOpen, setSuccessNotificationOpen] = useState(false);
@@ -159,15 +159,17 @@ const Profile = () => {
           </Card>
         ) : (
           <>
-            <Card size="medium" className="mb-4">
-              <ChangeEmailForm
-                userDetails={{
-                  ...data.profile,
-                  ...data.preferences,
-                  ...data,
-                }}
-              />
-            </Card>
+            {role !== "Volunteer" && (
+              <Card size="medium" className="mb-4">
+                <ChangeEmailForm
+                  userDetails={{
+                    ...data.profile,
+                    ...data.preferences,
+                    ...data,
+                  }}
+                />
+              </Card>
+            )}
             <Card size="medium">
               <ChangePasswordForm
                 userDetails={{
