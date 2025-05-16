@@ -107,11 +107,12 @@ function useViewEventState(
         : undefined;
 
     // Get number of hours awarded to this event enrollment
-    let awardedHours =
+    let hasCustomHours =
       attendeesFiltered.length > 0 &&
-      attendeesFiltered["0"]["customHours"] !== null
-        ? attendeesFiltered["0"]["customHours"]
-        : event.hours;
+      attendeesFiltered["0"]["customHours"] !== null;
+    let awardedHours = hasCustomHours
+      ? attendeesFiltered["0"]["customHours"]
+      : event.hours;
 
     rows.push({
       id: event.id,
@@ -120,6 +121,10 @@ function useViewEventState(
       startDate: formatDateString(event.startDate),
       endDate: new Date(event.endDate),
       role: event.role,
+      standardHours:
+        hasCustomHours || attendeeStatus !== "Checked out"
+          ? friendlyHours(event.hours)
+          : "",
       hours:
         attendeeStatus === "Checked out" ? friendlyHours(awardedHours) : "N/A",
       status: event.status,

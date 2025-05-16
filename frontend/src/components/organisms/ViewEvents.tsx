@@ -15,7 +15,8 @@ import {
 } from "@/utils/helpers";
 import { Action, ViewEventsEvent } from "@/utils/types";
 import Select from "../atoms/Select";
-import { MenuItem } from "@mui/material";
+import { MenuItem, Tooltip } from "@mui/material";
+import InfoOutlineIcon from "@mui/icons-material/InfoOutlined";
 import { api } from "@/utils/api";
 import ManageSearchIcon from "@mui/icons-material/ManageSearch";
 import {
@@ -276,12 +277,35 @@ const PastEvents = ({
       ),
     },
     {
-      field: "hours",
-      headerName: "Hours",
+      field: "standardHours",
+      headerName: "Default hours",
       sortable: false,
+      type: "string",
       flex: 0.5,
+      minWidth: 150,
       renderHeader: (params) => (
-        <div style={{ fontWeight: "bold" }}>{params.colDef.headerName}</div>
+        <div className="flex flex-row items-center gap-1">
+          <div style={{ fontWeight: "bold" }}>{params.colDef.headerName}</div>
+          <Tooltip title="Default hours is the default number of hours awarded to each volunteer that is checked out of the event. This number is hidden if it is the same as your awarded hours.">
+            <InfoOutlineIcon fontSize="small" />
+          </Tooltip>
+        </div>
+      ),
+    },
+    {
+      field: "hours",
+      headerName: "Awarded hours",
+      sortable: false,
+      type: "string",
+      flex: 0.5,
+      minWidth: 150,
+      renderHeader: (params) => (
+        <div className="flex flex-row items-center gap-1">
+          <div style={{ fontWeight: "bold" }}>{params.colDef.headerName}</div>
+          <Tooltip title="Awarded hours are the actual number of hours you receive for participating in the event. This may be different from the default hours if a supervisor manually changes the hours you were awarded.">
+            <InfoOutlineIcon fontSize="small" />
+          </Tooltip>
+        </div>
       ),
     },
     {

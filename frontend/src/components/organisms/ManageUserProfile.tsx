@@ -27,7 +27,7 @@ import {
 import { useRouter } from "next/router";
 import Loading from "../molecules/Loading";
 import { SelectChangeEvent } from "@mui/material/Select";
-import { Box, Grid } from "@mui/material";
+import { Box, Grid, Tooltip } from "@mui/material";
 import Modal from "../molecules/Modal";
 import Snackbar from "../atoms/Snackbar";
 import { formatRoleOrStatus } from "@/utils/helpers";
@@ -37,6 +37,7 @@ import ArrowOutwardIcon from "@mui/icons-material/ArrowOutward";
 import Chip from "../atoms/Chip";
 import { SubmitHandler, useForm } from "react-hook-form";
 import TextField from "../atoms/TextField";
+import InfoOutlineIcon from "@mui/icons-material/InfoOutlined";
 
 type userProfileData = {
   name: string;
@@ -54,6 +55,7 @@ type eventRegistrationData = {
   id: string;
   name: string;
   startDate: string;
+  standardHours: string;
   hours: string;
   status: string;
   attendeeStatus?: string;
@@ -90,13 +92,35 @@ const eventColumns: GridColDef[] = [
     ),
   },
   {
-    field: "hours",
-    headerName: "Hours",
+    field: "standardHours",
+    headerName: "Default hours",
     sortable: false,
     type: "string",
     flex: 0.5,
+    minWidth: 150,
     renderHeader: (params) => (
-      <div style={{ fontWeight: "bold" }}>{params.colDef.headerName}</div>
+      <div className="flex flex-row items-center gap-1">
+        <div style={{ fontWeight: "bold" }}>{params.colDef.headerName}</div>
+        <Tooltip title="Default hours is the default number of hours awarded to each volunteer that is checked out of the event. This number is hidden if it is the same as your awarded hours.">
+          <InfoOutlineIcon fontSize="small" />
+        </Tooltip>
+      </div>
+    ),
+  },
+  {
+    field: "hours",
+    headerName: "Awarded hours",
+    sortable: false,
+    type: "string",
+    flex: 0.5,
+    minWidth: 150,
+    renderHeader: (params) => (
+      <div className="flex flex-row items-center gap-1">
+        <div style={{ fontWeight: "bold" }}>{params.colDef.headerName}</div>
+        <Tooltip title="Awarded hours are the actual number of hours you receive for participating in the event. This may be different from the default hours if a supervisor manually changes the hours you were awarded.">
+          <InfoOutlineIcon fontSize="small" />
+        </Tooltip>
+      </div>
     ),
   },
   {
@@ -396,16 +420,21 @@ const ManageUserProfile = () => {
         : undefined;
 
     // Get number of hours awarded to this event enrollment
-    let awardedHours =
+    let hasCustomHours =
       attendeesFiltered.length > 0 &&
-      attendeesFiltered["0"]["customHours"] !== null
-        ? attendeesFiltered["0"]["customHours"]
-        : event.hours;
+      attendeesFiltered["0"]["customHours"] !== null;
+    let awardedHours = hasCustomHours
+      ? attendeesFiltered["0"]["customHours"]
+      : event.hours;
 
     registeredEvents.push({
       id: event.id,
       name: event.name,
       startDate: formatDateString(event.startDate),
+      standardHours:
+        hasCustomHours || attendeeStatus !== "Checked out"
+          ? friendlyHours(event.hours)
+          : "",
       hours:
         attendeeStatus === "Checked out" ? friendlyHours(awardedHours) : "N/A",
       status: event.status,
