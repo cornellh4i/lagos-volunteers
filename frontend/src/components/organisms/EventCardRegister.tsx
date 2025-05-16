@@ -53,44 +53,93 @@ const EventCardRegister = ({
   const currentDate = new Date();
   const eventInPast = date < currentDate;
 
-  return (
-    <Card>
-      <div className="font-semibold text-2xl">Register for this event</div>
-      <div className="mt-5" />
-      <div className="font-semibold">Terms and conditions</div>
-      <div>
-        By registering, I commit to attending the event. If I'm unable to
-        participate, I will cancel my registration at least 24 hours before the
-        event starts. Failure to do so may affect my volunteer status.
-      </div>
-      <div className="mt-3" />
-      <CustomCheckbox
-        label="I agree to the terms and conditions"
-        disabled={
-          attendeeBlacklisted || eventCanceled || eventInPast || overCapacity
-        }
-        onChange={() => setIsChecked(!isChecked)}
-      />
-      <div className="mt-3" />
-      {attendeeBlacklisted ? (
-        <Button disabled>You have been blacklisted.</Button>
-      ) : eventCanceled ? (
-        <Button disabled>The event has been canceled.</Button>
-      ) : eventInPast ? (
-        <Button disabled>The event has concluded.</Button>
-      ) : overCapacity ? (
-        <Button disabled>The event has reached capacity.</Button>
-      ) : (
-        <Button
-          onClick={handleEventResgistration}
-          disabled={!isChecked}
-          loading={isPending}
-        >
-          Register
-        </Button>
-      )}
-    </Card>
-  );
+  // If volunteer has been blacklisted
+  if (attendeeBlacklisted) {
+    return (
+      <Card>
+        <div className="font-semibold text-2xl">Register for this event</div>
+        <div className="my-5">
+          Unfortunately, you have been blacklisted by a supervisor. You are no
+          longer able to register for any event.
+        </div>
+        <Button disabled>You have been blacklisted</Button>
+      </Card>
+    );
+  }
+
+  // If the event has been canceled
+  else if (eventCanceled) {
+    return (
+      <Card>
+        <div className="font-semibold text-2xl">Register for this event</div>
+        <div className="my-5">
+          Unfortunately, the event has been canceled. You are no longer able to
+          register.
+        </div>
+        <Button disabled>The event has been canceled</Button>
+      </Card>
+    );
+  }
+
+  // If the event has been concluded
+  else if (eventInPast) {
+    return (
+      <Card>
+        <div className="font-semibold text-2xl">Register for this event</div>
+        <div className="my-5">
+          Unfortunately, the event has concluded. You are no longer able to
+          register.
+        </div>
+        <Button disabled>The event has concluded</Button>
+      </Card>
+    );
+  }
+
+  // If the event is over capacity
+  else if (overCapacity) {
+    return (
+      <Card>
+        <div className="font-semibold text-2xl">Register for this event</div>
+        <div className="my-5">
+          Unfortunately, the event has reached capacity. You are no longer able
+          to register.
+        </div>
+        <Button disabled>The event has reached capacity</Button>
+      </Card>
+    );
+  }
+
+  // If the vollunteer is eligible to register for the event
+  else {
+    return (
+      <Card>
+        <div className="font-semibold text-2xl mb-5">
+          Register for this event
+        </div>
+        <div>
+          <div className="font-semibold mb-3">Terms and conditions</div>
+          <div className="mb-3">
+            By registering, I commit to attending the event. If I'm unable to
+            participate, I will cancel my registration at least 24 hours before
+            the event starts. Failure to do so may affect my volunteer status.
+          </div>
+          <CustomCheckbox
+            label="I agree to the terms and conditions"
+            onChange={() => setIsChecked(!isChecked)}
+          />
+          <div className="mt-3">
+            <Button
+              onClick={handleEventResgistration}
+              disabled={!isChecked}
+              loading={isPending}
+            >
+              Register
+            </Button>
+          </div>
+        </div>
+      </Card>
+    );
+  }
 };
 
 export default EventCardRegister;
