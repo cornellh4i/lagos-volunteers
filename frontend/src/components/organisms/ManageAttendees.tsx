@@ -265,7 +265,7 @@ const AttendeesTable = ({
             disabled={
               eventData.status === "CANCELED" ||
               (attendeesStatus === "CHECKED_OUT" &&
-                currentDate > eventData.endDate)
+                currentDate > new Date(eventData.endDate))
             }
             value={params.row.status}
             onChange={(event: any) =>
