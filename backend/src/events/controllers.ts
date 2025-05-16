@@ -201,12 +201,9 @@ const getEvents = async (
  * @returns promise with eventID or error.
  */
 const updateEvent = async (eventID: string, event: Event) => {
-  const eventDetails = await getEvent(eventID);
-  const currentDate = new Date();
-  if (eventDetails) {
-    if (eventDetails.startDate < currentDate) {
-      return Promise.reject("Event has already started");
-    }
+  const isPast = await isEventPast(eventID);
+  if (isPast === true) {
+    throw Error("Event has already concluded");
   }
 
   return prisma.event.update({
@@ -296,7 +293,7 @@ const getEvent = async (eventID: string) => {
 export const isEventPast = async (eventID: string) => {
   const currentDateTime = new Date();
   const event = (await getEvent(eventID)) as Event;
-  const eventDate = new Date(event.startDate);
+  const eventDate = new Date(event.endDate);
   return eventDate < currentDateTime;
 };
 
@@ -511,7 +508,7 @@ const deleteAttendee = async (
  */
 const updateEventStatus = async (eventID: string, status: string) => {
   if (await isEventPast(eventID)) {
-    return Promise.reject("Event is past, cannot update status");
+    throw Error("Event is past, cannot update status");
   }
 
   return await prisma.event.update({
