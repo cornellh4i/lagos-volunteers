@@ -109,7 +109,7 @@ const EventCardRegister = ({
     );
   }
 
-  // If the vollunteer is eligible to register for the event
+  // If the volunteer is eligible to register for the event
   else {
     return (
       <Card>
