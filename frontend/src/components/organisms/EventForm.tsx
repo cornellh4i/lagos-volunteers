@@ -314,8 +314,9 @@ const EventForm = ({
 
   /** Performs validation to ensure event ends after current time */
   const timeAndDateValidation = () => {
-    const { endTime } = getValues();
-    if (endTime.toDate() <= new Date()) {
+    const { startDate, endTime } = getValues();
+    const endDateTime = convertToISO(endTime, startDate);
+    if (new Date(endDateTime) <= new Date()) {
       setErrorNotificationOpen(true);
       setErrorMessage("Created event cannot be in the past.");
       return false;
