@@ -9,6 +9,7 @@ import { WebSocket } from "ws";
 import { wss } from "../server";
 import sgMail from "@sendgrid/mail";
 import { readFile } from "fs/promises";
+const { SendMailClient } = require("zeptomail");
 
 /**
  * Attempts the given controller and sends a success code or error code as necessary
@@ -150,30 +151,40 @@ export const socketNotify = (resource: string) => {
 
 /**
  * Sends an email to the specified address
- * @param email is the email address to send to
+ * @param recipientAddress is the email address to send to
  * @param subject is the email subject
  * @param path is the path of the email template
  */
 export const sendEmail = async (
-  email: string,
+  recipientAddress: string,
   subject: string,
   html: string
 ) => {
   try {
-    // // Loads an email template
-    // const html = await readFile(path, "utf-8");
-    // console.log("File content:", html);
+    const url = "api.zeptomail.com/";
+    const token = process.env.ZEPTOMAIL_API_KEY as string;
+    let zeptoClient = new SendMailClient({ url, token });
 
     // Create an email message
     const msg = {
-      to: email, // Recipient's email address
-      from: "lagosfoodbankdev@gmail.com", // Sender's email address
-      subject: subject, // Email subject
-      html: html, // HTML body content
+      from: {
+        address: "noreply@lagosfoodbank.org",
+        name: "Lagos Food Bank Initiative",
+      },
+      to: [
+        {
+          email_address: {
+            address: recipientAddress,
+            name: "",
+          },
+        },
+      ],
+      subject: subject,
+      htmlbody: html,
     };
 
     // Send the email
-    await sgMail.send(msg);
+    await zeptoClient.sendMail(msg);
     console.log("Email sent successfully!");
   } catch (err) {
     console.error("Error sending email:", err);

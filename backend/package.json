@@ -27,7 +27,8 @@
     "ts-jest": "^29.1.2",
     "ts-node": "^10.9.2",
     "typescript": "^5.3.3",
-    "ws": "^8.16.0"
+    "ws": "^8.16.0",
+    "zeptomail": "^6.2.1"
   },
   "scripts": {
     "setup": "yarn install && npx prisma migrate dev && yarn prisma db seed && yarn swagger",
