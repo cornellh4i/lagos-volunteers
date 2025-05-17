@@ -549,7 +549,7 @@ const DuplicateEventModalBody = ({
           location: `${data["data"].location}`,
           locationLink: `${data["data"].locationLink}`,
           description: `${data["data"].description}`,
-          imageURL: `${data["data"].imageURL}`,
+          imageURL: data["data"].imageURL,
           startDate: startDateTime,
           endDate: endDateTime,
           capacity: +data["data"].capacity,
