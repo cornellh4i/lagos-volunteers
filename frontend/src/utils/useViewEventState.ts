@@ -33,6 +33,23 @@ function useViewEventState(
   });
   let hours = hoursQuery.data;
 
+  /** Tanstack query for fetching the user profile data */
+  const {
+    data: userProfileDetailsQuery,
+    isPending: userProfileFetchPending,
+    isError: userProfileFetchHasError,
+  } = useQuery({
+    queryKey: ["user", userid],
+    queryFn: async () => {
+      const { data } = await api.get(`/users/${userid}`);
+      return data["data"];
+    },
+  });
+
+  let { legacyHours }: { legacyHours: number } = {
+    legacyHours: userProfileDetailsQuery?.legacyHours,
+  };
+
   /** Pagination model for the table */
   const [paginationModel, setPaginationModel] = useState<GridPaginationModel>({
     page: 0,
@@ -177,6 +194,7 @@ function useViewEventState(
     isPending: isPending || isPlaceholderData,
     error,
     hours,
+    legacyHours,
     totalNumberofData,
     paginationModel,
     sortModel,
