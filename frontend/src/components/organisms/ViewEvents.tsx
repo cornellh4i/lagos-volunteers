@@ -471,7 +471,6 @@ const PastEvents = ({
               setSeeAllEvents={setSeeAllEvents}
               role={role}
             />
-            <h3>Event History</h3>
             <Card size="table" className="mt-5">
               <Table
                 columns={SupervisoreventColumns}
