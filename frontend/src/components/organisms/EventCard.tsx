@@ -54,7 +54,12 @@ const EventCardContent = ({ event }: EventCardProps) => {
       {/* Bad UX behavior: Looks like button is as wide as length of location so it looks different with different event.  */}
       <Link href={url}>
         <Button
-          variety={displayDateInfo(date) === "Today" ? "primary" : "secondary"}
+          variety={
+            displayDateInfo(date) === "Today" ||
+            displayDateInfo(date) === "Ongoing"
+              ? "primary"
+              : "secondary"
+          }
         >
           {buttonText}
         </Button>
