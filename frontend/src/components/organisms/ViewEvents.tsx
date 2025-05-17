@@ -237,6 +237,7 @@ const PastEvents = ({
     isPending,
     error,
     hours,
+    legacyHours,
     totalNumberofData,
     paginationModel,
     sortModel,
@@ -404,6 +405,7 @@ const PastEvents = ({
     <>
       {role === "Volunteer" && (
         <>
+          <h3>Hour Tracker</h3>
           <div className="grid gap-4 md:grid-cols-2 pb-4">
             <Card>
               <LinearProgress
@@ -439,6 +441,26 @@ const PastEvents = ({
               </div> */}
             </Card>
           </div>
+
+          <h3>Legacy Hours</h3>
+          <div className="grid gap-4 md:grid-cols-2 pb-4">
+            <Card>
+              <h3 className="mb-2 mt-0">Legacy Hour Tracker</h3>
+              <div>
+                You currently have {friendlyHours(legacyHours)} hours of
+                previous volunteer experience. These hours are stored outside of
+                the platform.
+              </div>
+            </Card>
+            <Card>
+              <h3 className="mb-2 mt-0">Active Hour Tracker</h3>
+              <div>
+                You currently have {friendlyHours(hours - legacyHours)} hours of
+                volunteer experience calculated from volunteer events recorded
+                on the platform.
+              </div>
+            </Card>
+          </div>
         </>
       )}
       <div>
@@ -449,6 +471,7 @@ const PastEvents = ({
               setSeeAllEvents={setSeeAllEvents}
               role={role}
             />
+            <h3>Event History</h3>
             <Card size="table" className="mt-5">
               <Table
                 columns={SupervisoreventColumns}
@@ -463,18 +486,21 @@ const PastEvents = ({
             </Card>
           </>
         ) : (
-          <Card size="table">
-            <Table
-              columns={volunteerEventColumns}
-              rows={rows}
-              dataSetLength={totalNumberofData}
-              paginationModel={paginationModel}
-              handlePaginationModelChange={handlePaginationModelChange}
-              handleSortModelChange={handleSortModelChange}
-              sortModel={sortModel}
-              loading={isPending}
-            />
-          </Card>
+          <>
+            <h3>Event History</h3>
+            <Card size="table">
+              <Table
+                columns={volunteerEventColumns}
+                rows={rows}
+                dataSetLength={totalNumberofData}
+                paginationModel={paginationModel}
+                handlePaginationModelChange={handlePaginationModelChange}
+                handleSortModelChange={handleSortModelChange}
+                sortModel={sortModel}
+                loading={isPending}
+              />
+            </Card>
+          </>
         )}
       </div>
     </>
