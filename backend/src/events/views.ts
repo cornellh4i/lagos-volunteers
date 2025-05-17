@@ -52,8 +52,8 @@ eventRouter.post(
   async (req: Request, res: Response) => {
     // #swagger.tags = ['Events']
     const eventDTO: EventDTO = req.body;
-    attempt(res, 201, () => eventController.createEvent(eventDTO));
-    socketNotify("/events");
+    await attempt(res, 201, () => eventController.createEvent(eventDTO));
+    await socketNotify("/events");
   }
 );
 
@@ -62,10 +62,10 @@ eventRouter.put(
   useSupervisorAdminAuth,
   async (req: Request, res: Response) => {
     // #swagger.tags = ['Events']
-    attempt(res, 200, () =>
+    await attempt(res, 200, () =>
       eventController.updateEvent(req.params.eventid, req.body)
     );
-    socketNotify(`/events/${req.params.eventid}`);
+    await socketNotify(`/events/${req.params.eventid}`);
   }
 );
 
@@ -142,10 +142,10 @@ eventRouter.post(
     // #swagger.tags = ['Events']
     const { attendeeid } = req.body;
     checkUserMatchOrSupervisorAdmin(req, res, attendeeid, async () => {
-      attempt(res, 200, () =>
+      await attempt(res, 200, () =>
         eventController.addAttendee(req.params.eventid, attendeeid)
       );
-      socketNotify(`/events/${req.params.eventid}`);
+      await socketNotify(`/events/${req.params.eventid}`);
     });
   }
 );
@@ -156,7 +156,7 @@ eventRouter.patch(
   async (req: Request, res: Response) => {
     // #swagger.tags = ['Events']
     const { attendeeStatus, customHours } = req.body;
-    attempt(res, 200, () =>
+    await attempt(res, 200, () =>
       eventController.updateEnrollmentStatus(
         req.params.eventid,
         req.params.userid,
@@ -164,7 +164,7 @@ eventRouter.patch(
         customHours
       )
     );
-    socketNotify(`/events/${req.params.eventid}`);
+    await socketNotify(`/events/${req.params.eventid}`);
   }
 );
 
@@ -179,14 +179,14 @@ eventRouter.put(
       req.params.attendeeid,
       async () => {
         const { cancelationMessage } = req.body;
-        attempt(res, 200, () =>
+        await attempt(res, 200, () =>
           eventController.deleteAttendee(
             req.params.eventid,
             req.params.attendeeid,
             cancelationMessage
           )
         );
-        socketNotify(`/events/${req.params.eventid}`);
+        await socketNotify(`/events/${req.params.eventid}`);
       }
     );
   }
@@ -198,10 +198,10 @@ eventRouter.patch(
   async (req: Request, res: Response) => {
     // #swagger.tags = ['Events']
     const { status } = req.body;
-    attempt(res, 200, () =>
+    await attempt(res, 200, () =>
       eventController.updateEventStatus(req.params.eventid, status)
     );
-    socketNotify(`/events/${req.params.eventid}`);
+    await socketNotify(`/events/${req.params.eventid}`);
   }
 );
 
