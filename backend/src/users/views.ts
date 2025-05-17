@@ -36,7 +36,7 @@ userRouter.post(
   NoAuth as RequestHandler,
   async (req: Request, res: Response) => {
     // #swagger.tags = ['Users']
-    socketNotify("/users");
+    await socketNotify("/users");
     let user;
     const { password, ...rest } = req.body;
     try {
@@ -92,7 +92,7 @@ userRouter.post(
   NoAuth as RequestHandler,
   async (req: Request, res: Response) => {
     // #swagger.tags = ['Users']
-    socketNotify("/users");
+    await socketNotify("/users");
     const { ...rest } = req.body;
     try {
       await firebase.auth().setCustomUserClaims(rest.id, {
@@ -116,8 +116,8 @@ userRouter.delete("/:userid", useAuth, async (req: Request, res: Response) => {
   // #swagger.tags = ['Users']
   checkUserMatchOrSupervisorAdmin(req, res, req.params.userid, async () => {
     await admin.auth().deleteUser(req.params.userid);
-    attempt(res, 200, () => userController.deleteUser(req.params.userid));
-    socketNotify("/users");
+    await attempt(res, 200, () => userController.deleteUser(req.params.userid));
+    await socketNotify("/users");
   });
 });
 
@@ -125,10 +125,10 @@ userRouter.put("/:userid", useAuth, async (req: Request, res: Response) => {
   // #swagger.tags = ['Users']
 
   // Do API call
-  attempt(res, 200, () =>
+  await attempt(res, 200, () =>
     userController.updateUser(req.params.userid, req.body)
   );
-  socketNotify(`/users/${req.params.userid}`);
+  await socketNotify(`/users/${req.params.userid}`);
 });
 
 userRouter.get("/", useAuth, async (req: Request, res: Response) => {
@@ -189,10 +189,10 @@ userRouter.put(
   async (req: Request, res: Response) => {
     // #swagger.tags = ['Users']
     checkUserMatchOrSupervisorAdmin(req, res, req.params.userid, async () => {
-      attempt(res, 200, () =>
+      await attempt(res, 200, () =>
         userController.editProfile(req.params.userid, req.body)
       );
-      socketNotify(`/users/${req.params.userid}`);
+      await socketNotify(`/users/${req.params.userid}`);
     });
   }
 );
@@ -203,10 +203,10 @@ userRouter.put(
   async (req: Request, res: Response) => {
     // #swagger.tags = ['Users']
     checkUserMatchOrSupervisorAdmin(req, res, req.params.userid, async () => {
-      attempt(res, 200, () =>
+      await attempt(res, 200, () =>
         userController.editPreferences(req.params.userid, req.body)
       );
-      socketNotify(`/users/${req.params.userid}`);
+      await socketNotify(`/users/${req.params.userid}`);
     });
   }
 );
@@ -217,10 +217,10 @@ userRouter.patch(
   async (req: Request, res: Response) => {
     // #swagger.tags = ['Users']
     const { status } = req.body;
-    attempt(res, 200, () =>
+    await attempt(res, 200, () =>
       userController.editStatus(req.params.userid, status)
     );
-    socketNotify(`/users/${req.params.userid}`);
+    await socketNotify(`/users/${req.params.userid}`);
   }
 );
 
@@ -230,10 +230,10 @@ userRouter.patch(
   async (req: Request, res: Response) => {
     // #swagger.tags = ['Users']
     const { legacyHours } = req.body;
-    attempt(res, 200, () =>
+    await attempt(res, 200, () =>
       userController.editLegacyHours(req.params.userid, legacyHours)
     );
-    socketNotify(`/users/${req.params.userid}`);
+    await socketNotify(`/users/${req.params.userid}`);
   }
 );
 
@@ -260,7 +260,7 @@ userRouter.patch(
         }
 
         const editRoleResponse = await userController.editRole(userid, role);
-        socketNotify(`/users/${req.params.userid}`);
+        await socketNotify(`/users/${req.params.userid}`);
         res.status(200).json(editRoleResponse);
       } else {
         throw new Error("User not found");

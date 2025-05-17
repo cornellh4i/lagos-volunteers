@@ -174,17 +174,21 @@ const AttendeesTable = ({
   });
 
   //TODO: Proper handling of websocket messages
-  if (
-    lastMessage &&
-    lastMessage.data ==
-      `{"resource":"/events/${eventid}","message":"The resource has been updated!"}`
-  ) {
-    // Invalidate the Event Recap query to fetch new data
-    queryClient.invalidateQueries({ queryKey: ["event"] });
+  useEffect(() => {
+    if (
+      lastMessage &&
+      lastMessage.data ==
+        `{"resource":"/events/${eventid}","message":"The resource has been updated!"}`
+    ) {
+      console.log(lastMessage.data);
 
-    // Invalidate the Manage Attendees query to fetch new data
-    queryClient.invalidateQueries({ queryKey: [eventid] });
-  }
+      // Invalidate the Event Recap query to fetch new data
+      queryClient.invalidateQueries({ queryKey: ["event"] });
+
+      // Invalidate the Manage Attendees query to fetch new data
+      queryClient.invalidateQueries({ queryKey: [eventid] });
+    }
+  }, [lastMessage]);
 
   const handleStatusChange = async (
     userId: string,

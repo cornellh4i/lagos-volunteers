@@ -88,6 +88,21 @@ export default function useManageAttendeeState(
       (attendee: any) => attendee.userId === user.id
     );
 
+    // Define custom hours
+    let customHours = "N/A";
+    if (
+      eventAttendance &&
+      eventAttendance.attendeeStatus === "CHECKED_OUT" &&
+      eventAttendance.customHours !== null
+    ) {
+      customHours = friendlyHours(eventAttendance.customHours);
+    } else if (
+      eventAttendance &&
+      eventAttendance.attendeeStatus === "CHECKED_OUT"
+    ) {
+      customHours = friendlyHours(defaultHours);
+    }
+
     rows.push({
       id: user.id,
       status: state,
@@ -95,13 +110,7 @@ export default function useManageAttendeeState(
       email: user.email,
       role: user.role,
       phone: user.profile?.phoneNumber || "N/A",
-      customHours:
-        eventAttendance.attendeeStatus === "CHECKED_OUT" &&
-        eventAttendance.customHours !== null
-          ? friendlyHours(eventAttendance.customHours)
-          : eventAttendance.attendeeStatus === "CHECKED_OUT"
-          ? friendlyHours(defaultHours)
-          : "N/A",
+      customHours: customHours,
     });
   });
 

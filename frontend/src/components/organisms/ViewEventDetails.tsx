@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import EventTemplate from "../templates/EventTemplate";
 import EventCardRegister from "./EventCardRegister";
 import Divider from "@mui/material/Divider";
@@ -47,14 +47,19 @@ const ViewEventDetails = () => {
   });
 
   // TODO: Proper handling of websocket messages
-  if (
-    lastMessage &&
-    lastMessage.data ==
-      `{"resource":"/events/${id}","message":"The resource has been updated!"}`
-  ) {
-    // Invalidate the number of registered volunteers query to fetch new data
-    queryClient.invalidateQueries({ queryKey: ["registeredVoluneers"] });
-  }
+  useEffect(() => {
+    if (
+      lastMessage &&
+      lastMessage.data ==
+        `{"resource":"/events/${id}","message":"The resource has been updated!"}`
+    ) {
+      // Invalidate the number of registered volunteers query to fetch new data
+      queryClient.invalidateQueries({ queryKey: ["registeredVolunteers"] });
+
+      // Invalidate the event data
+      queryClient.invalidateQueries({ queryKey: ["eventAttendance"] });
+    }
+  }, [lastMessage]);
 
   /** Tanstack query to fetch and update the event details */
   const { data, isLoading, isError, error } = useQuery({
@@ -92,7 +97,7 @@ const ViewEventDetails = () => {
   });
 
   const { data: registeredVolunteersNumber } = useQuery({
-    queryKey: ["registeredVoluneers", id],
+    queryKey: ["registeredVolunteers", id],
     queryFn: async () => {
       const { data } = await api.get(
         `/events/${id}/attendees/registered/length`
